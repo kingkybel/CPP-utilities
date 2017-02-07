@@ -1,0 +1,485 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configurationDescriptor version="94">
+  <logicalFolder name="root" displayName="root" projectFiles="true" kind="ROOT">
+    <logicalFolder name="HeaderFiles"
+                   displayName="Header Files"
+                   projectFiles="true">
+      <itemPath>include/anyutil.h</itemPath>
+      <itemPath>include/bayesutil.h</itemPath>
+      <itemPath>include/csvutil.h</itemPath>
+      <itemPath>include/dateutil.h</itemPath>
+      <itemPath>include/floatingpoint.h</itemPath>
+      <itemPath>include/graphutil.h</itemPath>
+      <itemPath>include/statutil.h</itemPath>
+      <itemPath>include/stringutil.h</itemPath>
+    </logicalFolder>
+    <logicalFolder name="ResourceFiles"
+                   displayName="Resource Files"
+                   projectFiles="true">
+    </logicalFolder>
+    <logicalFolder name="SourceFiles"
+                   displayName="Source Files"
+                   projectFiles="true">
+      <itemPath>src/anyutil.cc</itemPath>
+      <itemPath>src/bayesutil.cc</itemPath>
+      <itemPath>src/csvutil.cc</itemPath>
+      <itemPath>src/dateutil.cc</itemPath>
+      <itemPath>src/floatingpoint.cc</itemPath>
+      <itemPath>src/graphutil.cc</itemPath>
+      <itemPath>src/statutil.cc</itemPath>
+      <itemPath>src/stringutil.cc</itemPath>
+    </logicalFolder>
+    <logicalFolder name="TestFiles"
+                   displayName="Test Files"
+                   projectFiles="false"
+                   kind="TEST_LOGICAL_FOLDER">
+      <logicalFolder name="f1"
+                     displayName="Utility tests"
+                     projectFiles="true"
+                     kind="TEST">
+        <itemPath>tests/tests.cc</itemPath>
+      </logicalFolder>
+    </logicalFolder>
+    <logicalFolder name="ExternalFiles"
+                   displayName="Important Files"
+                   projectFiles="false"
+                   kind="IMPORTANT_FILES_FOLDER">
+      <itemPath>Makefile</itemPath>
+    </logicalFolder>
+  </logicalFolder>
+  <projectmakefile>Makefile</projectmakefile>
+  <confs>
+    <conf name="Debug" type="2">
+      <toolsSet>
+        <compilerSet>default</compilerSet>
+        <dependencyChecking>true</dependencyChecking>
+        <rebuildPropChanged>false</rebuildPropChanged>
+      </toolsSet>
+      <compileType>
+        <ccTool>
+          <incDir>
+            <pElem>${BOOST_INCLUDE_PATH}</pElem>
+            <pElem>include</pElem>
+          </incDir>
+          <preprocessorList>
+            <Elem>DO_TRACE_</Elem>
+          </preprocessorList>
+        </ccTool>
+        <linkerTool>
+          <linkerAddLib>
+            <pElem>${BOOST_LIB_PATH}</pElem>
+          </linkerAddLib>
+          <linkerDynSerch>
+            <pElem>${BOOST_LIB_PATH}</pElem>
+          </linkerDynSerch>
+          <linkerLibItems>
+            <linkerLibLibItem>gmp</linkerLibLibItem>
+            <linkerLibLibItem>gmpxx</linkerLibLibItem>
+            <linkerLibLibItem>boost_filesystem</linkerLibLibItem>
+          </linkerLibItems>
+        </linkerTool>
+      </compileType>
+      <packaging>
+        <packType>Tar</packType>
+        <output>${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/package/util-src.tar.gz</output>
+        <additionalOptions>-v -z</additionalOptions>
+        <packTopDir>util</packTopDir>
+        <packFileList>
+          <packFileListElem type="File"
+                            to="${PACKAGE_TOP_DIR}include/anyutil.h"
+                            from="include/anyutil.h"
+                            perm="644"
+                            owner="root"
+                            group="bin"/>
+          <packFileListElem type="File"
+                            to="${PACKAGE_TOP_DIR}include/bayesutil.h"
+                            from="include/bayesutil.h"
+                            perm="644"
+                            owner="root"
+                            group="bin"/>
+          <packFileListElem type="File"
+                            to="${PACKAGE_TOP_DIR}include/csvutil.h"
+                            from="include/csvutil.h"
+                            perm="644"
+                            owner="root"
+                            group="bin"/>
+          <packFileListElem type="File"
+                            to="${PACKAGE_TOP_DIR}include/dateutil.h"
+                            from="include/dateutil.h"
+                            perm="644"
+                            owner="root"
+                            group="bin"/>
+          <packFileListElem type="File"
+                            to="${PACKAGE_TOP_DIR}include/floatingpoint.h"
+                            from="include/floatingpoint.h"
+                            perm="644"
+                            owner="root"
+                            group="bin"/>
+          <packFileListElem type="File"
+                            to="${PACKAGE_TOP_DIR}include/graphutil.h"
+                            from="include/graphutil.h"
+                            perm="644"
+                            owner="root"
+                            group="bin"/>
+          <packFileListElem type="File"
+                            to="${PACKAGE_TOP_DIR}include/statutil.h"
+                            from="include/statutil.h"
+                            perm="644"
+                            owner="root"
+                            group="bin"/>
+          <packFileListElem type="File"
+                            to="${PACKAGE_TOP_DIR}include/stringutil.h"
+                            from="include/stringutil.h"
+                            perm="644"
+                            owner="root"
+                            group="bin"/>
+          <packFileListElem type="File"
+                            to="${PACKAGE_TOP_DIR}src/anyutil.cc"
+                            from="src/anyutil.cc"
+                            perm="644"
+                            owner="root"
+                            group="bin"/>
+          <packFileListElem type="File"
+                            to="${PACKAGE_TOP_DIR}src/bayesutil.cc"
+                            from="src/bayesutil.cc"
+                            perm="644"
+                            owner="root"
+                            group="bin"/>
+          <packFileListElem type="File"
+                            to="${PACKAGE_TOP_DIR}src/csvutil.cc"
+                            from="src/csvutil.cc"
+                            perm="644"
+                            owner="root"
+                            group="bin"/>
+          <packFileListElem type="File"
+                            to="${PACKAGE_TOP_DIR}src/dateutil.cc"
+                            from="src/dateutil.cc"
+                            perm="644"
+                            owner="root"
+                            group="bin"/>
+          <packFileListElem type="File"
+                            to="${PACKAGE_TOP_DIR}src/floatingpoint.cc"
+                            from="src/floatingpoint.cc"
+                            perm="644"
+                            owner="root"
+                            group="bin"/>
+          <packFileListElem type="File"
+                            to="${PACKAGE_TOP_DIR}src/graphutil.cc"
+                            from="src/graphutil.cc"
+                            perm="644"
+                            owner="root"
+                            group="bin"/>
+          <packFileListElem type="File"
+                            to="${PACKAGE_TOP_DIR}src/statutil.cc"
+                            from="src/statutil.cc"
+                            perm="644"
+                            owner="root"
+                            group="bin"/>
+          <packFileListElem type="File"
+                            to="${PACKAGE_TOP_DIR}src/stringutil.cc"
+                            from="src/stringutil.cc"
+                            perm="644"
+                            owner="root"
+                            group="bin"/>
+          <packFileListElem type="File"
+                            to="${PACKAGE_TOP_DIR}nbproject/project.xml"
+                            from="nbproject/project.xml"
+                            perm="644"
+                            owner="root"
+                            group="bin"/>
+          <packFileListElem type="File"
+                            to="${PACKAGE_TOP_DIR}nbproject/configurations.xml"
+                            from="nbproject/configurations.xml"
+                            perm="644"
+                            owner="root"
+                            group="bin"/>
+          <packFileListElem type="File"
+                            to="${PACKAGE_TOP_DIR}nbproject/private/configurations.xml"
+                            from="nbproject/private/configurations.xml"
+                            perm="644"
+                            owner="root"
+                            group="bin"/>
+          <packFileListElem type="File"
+                            to="${PACKAGE_TOP_DIR}nbproject/private/Makefile-variables.mk"
+                            from="nbproject/private/Makefile-variables.mk"
+                            perm="644"
+                            owner="root"
+                            group="bin"/>
+          <packFileListElem type="File"
+                            to="${PACKAGE_TOP_DIR}nbproject/private/private.xml"
+                            from="nbproject/private/private.xml"
+                            perm="644"
+                            owner="root"
+                            group="bin"/>
+          <packFileListElem type="File"
+                            to="${PACKAGE_TOP_DIR}nbproject/private/launcher.properties"
+                            from="nbproject/private/launcher.properties"
+                            perm="644"
+                            owner="root"
+                            group="bin"/>
+          <packFileListElem type="File"
+                            to="${PACKAGE_TOP_DIR}nbproject/Makefile-impl.mk"
+                            from="nbproject/Makefile-impl.mk"
+                            perm="644"
+                            owner="root"
+                            group="bin"/>
+          <packFileListElem type="File"
+                            to="${PACKAGE_TOP_DIR}nbproject/Makefile-Debug.mk"
+                            from="nbproject/Makefile-Debug.mk"
+                            perm="644"
+                            owner="root"
+                            group="bin"/>
+          <packFileListElem type="File"
+                            to="${PACKAGE_TOP_DIR}nbproject/Package-Debug.bash"
+                            from="nbproject/Package-Debug.bash"
+                            perm="755"
+                            owner="root"
+                            group="bin"/>
+          <packFileListElem type="File"
+                            to="${PACKAGE_TOP_DIR}nbproject/Makefile-Release.mk"
+                            from="nbproject/Makefile-Release.mk"
+                            perm="644"
+                            owner="root"
+                            group="bin"/>
+          <packFileListElem type="File"
+                            to="${PACKAGE_TOP_DIR}nbproject/Package-Release.bash"
+                            from="nbproject/Package-Release.bash"
+                            perm="755"
+                            owner="root"
+                            group="bin"/>
+          <packFileListElem type="File"
+                            to="${PACKAGE_TOP_DIR}nbproject/Makefile-variables.mk"
+                            from="nbproject/Makefile-variables.mk"
+                            perm="644"
+                            owner="root"
+                            group="bin"/>
+          <packFileListElem type="File"
+                            to="${PACKAGE_TOP_DIR}Makefile"
+                            from="Makefile"
+                            perm="644"
+                            owner="root"
+                            group="bin"/>
+          <packFileListElem type="File"
+                            to="${PACKAGE_TOP_DIR}dox.cfg"
+                            from="dox.cfg"
+                            perm="644"
+                            owner="root"
+                            group="bin"/>
+          <packFileListElem type="File"
+                            to="${PACKAGE_TOP_DIR}layout.xml"
+                            from="layout.xml"
+                            perm="644"
+                            owner="root"
+                            group="bin"/>
+          <packFileListElem type="File"
+                            to="${PACKAGE_TOP_DIR}tests/tests.cc"
+                            from="tests/tests.cc"
+                            perm="644"
+                            owner="root"
+                            group="bin"/>
+        </packFileList>
+      </packaging>
+      <folder path="TestFiles/f1">
+        <cTool>
+          <incDir>
+            <pElem>.</pElem>
+          </incDir>
+        </cTool>
+        <ccTool>
+          <incDir>
+            <pElem>.</pElem>
+          </incDir>
+        </ccTool>
+        <linkerTool>
+          <output>${TESTDIR}/TestFiles/f1</output>
+        </linkerTool>
+      </folder>
+      <item path="include/anyutil.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="include/bayesutil.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="include/csvutil.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="include/dateutil.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="include/floatingpoint.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="include/graphutil.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="include/statutil.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="include/stringutil.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="src/anyutil.cc" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="src/bayesutil.cc" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="src/csvutil.cc" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="src/dateutil.cc" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="src/floatingpoint.cc" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="src/graphutil.cc" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="src/statutil.cc" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="src/stringutil.cc" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="tests/tests.cc" ex="false" tool="1" flavor2="0">
+      </item>
+    </conf>
+    <conf name="Release" type="2">
+      <toolsSet>
+        <compilerSet>default</compilerSet>
+        <dependencyChecking>true</dependencyChecking>
+        <rebuildPropChanged>false</rebuildPropChanged>
+      </toolsSet>
+      <compileType>
+        <cTool>
+          <developmentMode>5</developmentMode>
+        </cTool>
+        <ccTool>
+          <developmentMode>5</developmentMode>
+          <incDir>
+            <pElem>${BOOST_INCLUDE_PATH}</pElem>
+            <pElem>include</pElem>
+          </incDir>
+        </ccTool>
+        <fortranCompilerTool>
+          <developmentMode>5</developmentMode>
+        </fortranCompilerTool>
+        <asmTool>
+          <developmentMode>5</developmentMode>
+        </asmTool>
+        <linkerTool>
+          <linkerAddLib>
+            <pElem>${BOOST_LIB_PATH}</pElem>
+          </linkerAddLib>
+          <linkerDynSerch>
+            <pElem>${BOOST_LIB_PATH}</pElem>
+          </linkerDynSerch>
+          <linkerLibItems>
+            <linkerLibLibItem>gmp</linkerLibLibItem>
+            <linkerLibLibItem>gmpxx</linkerLibLibItem>
+            <linkerLibLibItem>boost_filesystem</linkerLibLibItem>
+          </linkerLibItems>
+        </linkerTool>
+      </compileType>
+      <packaging>
+        <packType>Tar</packType>
+        <packFileList>
+          <packFileListElem type="File"
+                            to="${PACKAGE_TOP_DIR}lib/${OUTPUT_BASENAME}"
+                            from="${OUTPUT_PATH}"
+                            perm="644"
+                            owner="root"
+                            group="bin"/>
+          <packFileListElem type="File"
+                            to="${PACKAGE_TOP_DIR}tests/tests.cc"
+                            from="tests/tests.cc"
+                            perm="644"
+                            owner="root"
+                            group="bin"/>
+          <packFileListElem type="File"
+                            to="${PACKAGE_TOP_DIR}include/anyutil.h"
+                            from="include/anyutil.h"
+                            perm="644"
+                            owner="root"
+                            group="bin"/>
+          <packFileListElem type="File"
+                            to="${PACKAGE_TOP_DIR}include/bayesutil.h"
+                            from="include/bayesutil.h"
+                            perm="644"
+                            owner="root"
+                            group="bin"/>
+          <packFileListElem type="File"
+                            to="${PACKAGE_TOP_DIR}include/csvutil.h"
+                            from="include/csvutil.h"
+                            perm="644"
+                            owner="root"
+                            group="bin"/>
+          <packFileListElem type="File"
+                            to="${PACKAGE_TOP_DIR}include/dateutil.h"
+                            from="include/dateutil.h"
+                            perm="644"
+                            owner="root"
+                            group="bin"/>
+          <packFileListElem type="File"
+                            to="${PACKAGE_TOP_DIR}include/floatingpoint.h"
+                            from="include/floatingpoint.h"
+                            perm="644"
+                            owner="root"
+                            group="bin"/>
+          <packFileListElem type="File"
+                            to="${PACKAGE_TOP_DIR}include/graphutil.h"
+                            from="include/graphutil.h"
+                            perm="644"
+                            owner="root"
+                            group="bin"/>
+          <packFileListElem type="File"
+                            to="${PACKAGE_TOP_DIR}include/statutil.h"
+                            from="include/statutil.h"
+                            perm="644"
+                            owner="root"
+                            group="bin"/>
+          <packFileListElem type="File"
+                            to="${PACKAGE_TOP_DIR}include/stringutil.h"
+                            from="include/stringutil.h"
+                            perm="644"
+                            owner="root"
+                            group="bin"/>
+        </packFileList>
+      </packaging>
+      <folder path="TestFiles/f1">
+        <cTool>
+          <incDir>
+            <pElem>.</pElem>
+          </incDir>
+        </cTool>
+        <ccTool>
+          <incDir>
+            <pElem>.</pElem>
+          </incDir>
+        </ccTool>
+        <linkerTool>
+          <output>${TESTDIR}/TestFiles/f1</output>
+        </linkerTool>
+      </folder>
+      <item path="include/anyutil.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="include/bayesutil.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="include/csvutil.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="include/dateutil.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="include/floatingpoint.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="include/graphutil.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="include/statutil.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="include/stringutil.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="src/anyutil.cc" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="src/bayesutil.cc" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="src/csvutil.cc" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="src/dateutil.cc" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="src/floatingpoint.cc" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="src/graphutil.cc" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="src/statutil.cc" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="src/stringutil.cc" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="tests/tests.cc" ex="false" tool="1" flavor2="0">
+      </item>
+    </conf>
+  </confs>
+</configurationDescriptor>
