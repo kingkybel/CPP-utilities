@@ -30,6 +30,8 @@
 #include <stdexcept>
 #include <vector>
 
+#include "grid.h"
+
 namespace util
 {
 
@@ -183,6 +185,16 @@ namespace util
                                        asString(rhs.sizeY()) +
                                        ".");
             }
+            else if (operation == "solve")
+            {
+                if (lhs.sizeY() != rhs.sizeY())
+                    throw matrix_error(location +
+                                       ": matrix-y-dimension lhs " +
+                                       asString(lhs.sizeY()) +
+                                       " is not equal matrix-y-dimension rhs" +
+                                       asString(rhs.sizeY()) +
+                                       ".");
+            }
         }
 
         void checkNotZero(T c, const std::string& location)
@@ -227,23 +239,23 @@ namespace util
             return m_[y][x];
         }
 
-
-        // Unary operators
-
-        matrix operator+()
+        /**
+         * Unary + operator.
+         */
+        matrix& operator+()
         {
             return *this;
         }
-        matrix<T> operator-();
 
         /**
-         * unary negation operator
+         * Unary negation operator.
+         * @param rhs right-hand-side matrix
          */
         matrix<T>&& matrix<T>::operator-(const matrix<T>& rhs)
         {
             matrix<T> temp(rhs);
 
-            for (size_t y = 0; i < temp.sizeY(); i++)
+            for (size_t y = 0; y < temp.sizeY(); y++)
                 for (size_t x = 0; x < temp.sizeX(); x++)
                     temp(x, y) = -temp(x, y);
 
@@ -548,28 +560,295 @@ namespace util
             return temp;
         }
 
-        // Utility methods
-        matrix<T> Solve(const matrix<T>& v) const;
+        /**
+         * Solve simultaneous equations.
+         * @param v
+         * @return
+         */
+        matrix<T> matrix<T>::solve(const matrix<T>& v) const
+        {
+            checkSquare(*this, "matrix<T>::solve(v)");
+            checkCompatibleSizes(*this, v, "solve", "matrix<T>::solve(v)");
+            size_t x, y, k;
+            T a1;
+
+            matrix<T> temp(sizeX(), sizeY() + v.sizeY());
+            for (x = 0; x < sizeX(); x++)
+            {
+                for (y = 0; y < sizeY(); y++)
+                    temp.m_[x][y] = m_[x][y];
+                for (k = 0; k < v.sizeY(); k++, y++)
+                    temp.m_[x][y] = v.m_[x][k];
+            }
+            for (k = 0; k < sizeX(); k++)
+            {
+                long long indx = temp.pivot(k);
+                if (indx == -1)
+                    throw grid_error("matrix<T>::solve(): Singular matrix!");
+
+                a1 = temp.m_[k][k];
+                for (y = k; y < temp.sizeY(); y++)
+                    temp.m_[k][y] /= a1;
+
+                for (x = k + 1; x < sizeX(); x++)
+                {
+                    a1 = temp.m_[x][k];
+                    for (y = k; y < temp.sizeY(); y++)
+                        temp.m_[x][y] -= a1 * temp.m_[k][y];
+                }
+            }
+            matrix<T> s(v.sizeX(), v.sizeY());
+            for (k = 0; k < v.sizeY(); k++)
+                for (int m = int(sizeX()) - 1; m >= 0; m--)
+                {
+                    s.m_[m][k] = temp.m_[m][sizeY() + k];
+                    for (y = m + 1; y < sizeY(); y++)
+                        s.m_[m][k] -= temp.m_[m][y] * s.m_[y][k];
+                }
+            return s;
+        }
+
         matrix<T> Adj();
         matrix<T> Inv();
-        T Det() const;
-        T Norm();
+
+        /**
+         * Calculate the determinant of this matrix.
+         * @return the determinant
+         */
+        T det() const
+        {
+            checkSquare(*this, "matrix<T>::det()");
+            size_t x, y, k;
+            T piv(0);
+            T reval = T(1.0);
+
+            matrix<T> temp(*this);
+
+            for (k = 0; k < sizeX(); k++)
+            {
+                int indx = temp.pivot(k);
+                if (indx == -1)
+                    return 0;
+                if (indx != 0)
+                    reval = -reval;
+                reval = reval * temp.m_[k][k];
+                for (x = k + 1; x < sizeX(); x++)
+                {
+                    piv = temp.m_[x][k] / temp.m_[k][k];
+                    for (y = k + 1; y < sizeY(); y++)
+                        temp.m_[x][y] -= piv * temp.m_[k][y];
+                }
+            }
+            return reval;
+        }
+
+        /**
+         * Calculate the norm of a matrix
+         * @return
+         */
+        T norm()
+        {
+            T reval = T(0);
+
+            for (size_t x = 0; x < sizeX(); x++)
+                for (size_t y = 0; y < sizeY(); y++)
+                    reval += m_[x][y] * m_[x][y];
+            reval = sqrt(reval);
+
+            return reval;
+        }
+
+        /**
+         * Calculate the condition number of a matrix.
+         * @return
+         */
+        T cond()
+        {
+            matrix<T> inv = !(*this);
+            return (norm() * inv.norm());
+        }
+
         T Cofact(size_t row, size_t col);
-        T Cond();
+
+        /**
+         * Calculate the cofactor of a matrix for a given element.
+         * @param x
+         * @param y
+         * @return
+         */
+        T cofact(size_t x, size_t y)
+        {
+            checkSquare(*this, "cofact(x,y)");
+            checkBounds(x, y, "cofact(x,y)");
+            size_t i, i1, j, j1;
+
+            matrix<T> temp(sizeX() - 1, sizeY() - 1);
+
+            for (i = i1 = 0; i < sizeX(); i++)
+            {
+                if (i == x)
+                    continue;
+                for (j = j1 = 0; j < sizeY(); j++)
+                {
+                    if (j == y)
+                        continue;
+                    temp.m_[i1][j1] = m_[i][j];
+                    j1++;
+                }
+                i1++;
+            }
+            T cof = temp.det();
+            if ((x + y) % 2 == 1)
+                cof = -cof;
+
+            return cof;
+        }
+
+        /**
+         * Calculate adjoin of a matrix.
+         * @return
+         */
+        matrix<T>&& adj()
+        {
+            checkSquare(*this, "matrix<T>::adj()");
+
+            matrix<T> temp(sizeX(), sizeY());
+
+            for (size_t i = 0; i < sizeX(); i++)
+                for (size_t j = 0; j < sizeY(); j++)
+                    temp.m_[j][i] = Cofact(i, j);
+            return temp;
+        }
 
         bool isSquare() const
         {
             return (sizeX() == sizeY());
         }
-        bool IsSingular();
-        bool IsDiagonal();
-        bool IsScalar();
-        bool IsUnit();
-        bool IsNull();
-        bool IsSymmetric();
-        bool IsSkewSymmetric();
-        bool IsUpperTriangular();
-        bool IsLowerTriangular();
+
+        /**
+         * Check whether this is a singular matrix.
+         * @return true if so, false otherwise
+         */
+        bool isSingular() const
+        {
+            return isSquare() && det() == T(0);
+        }
+
+        /**
+         * Check whether this is a diagonal matrix.
+         * @return true if so, false otherwise
+         */
+        bool isDiagonal() const
+        {
+            if (isSquare())
+                return false;
+            for (size_t i = 0; i < sizeX(); i++)
+                for (size_t j = 0; j < sizeY(); j++)
+                    if (i != j && m_[i][j] != T(0))
+                        return false;
+            return true;
+        }
+
+        /**
+         * Check whether this is a scalar matrix.
+         * @return true if so, false otherwise
+         */
+        bool isScalar() const
+        {
+            if (!isDiagonal())
+                return false;
+            T v = m_[0][0];
+            for (size_t i = 1; i < sizeX(); i++)
+                if (m_[i][i] != v)
+                    return false;
+            return true;
+        }
+
+        /**
+         * Check whether this is a unit matrix.
+         * @return true if so, false otherwise
+         */
+        bool isUnit() const
+        {
+            if (isScalar() && m_[0][0] == T(1))
+                return true;
+            return false;
+        }
+
+        /**
+         * Check whether this is a null matrix.
+         * @return true if so, false otherwise
+         */
+        bool isNull() const
+        {
+            for (size_t i = 0; i < sizeX(); i++)
+                for (size_t j = 0; j < sizeY(); j++)
+                    if (m_[i][j] != T(0))
+                        return false;
+            return true;
+        }
+
+        /**
+         * Check whether this is a symmetric matrix.
+         * @return true if so, false otherwise
+         */
+        bool isSymmetric() const
+        {
+            if (!isSquare())
+                return false;
+            for (size_t i = 0; i < sizeX(); i++)
+                for (size_t j = 0; j < sizeY(); j++)
+                    if (m_[i][j] != m_[j][i])
+                        return false;
+            return true;
+        }
+
+        /**
+         * Check whether this is a skew-symmetric matrix.
+         * @return true if so, false otherwise
+         */
+        bool isSkewSymmetric() const
+        {
+            if (!isSquare())
+                return false;
+            for (size_t i = 0; i < sizeX(); i++)
+                for (size_t j = 0; j < sizeY(); j++)
+                    if (m_[i][j] != -m_[j][i])
+                        return false;
+            return true;
+        }
+
+        /**
+         * Check whether this is a upper triangular matrix.
+         * @return true if so, false otherwise
+         */
+        bool isUpperTriangular() const
+        {
+            if (!isSquare())
+                return false;
+            for (size_t i = 1; i < sizeX(); i++)
+                for (size_t j = 0; j < i - 1; j++)
+                    if (m_[i][j] != T(0))
+                        return false;
+            return true;
+        }
+
+        /**
+         * Check whether this is a lower triangular matrix.
+         * @return true if so, false otherwise
+         */
+        bool isLowerTriangular() const
+        {
+            if (sizeX() != sizeY())
+                return false;
+
+            for (size_t j = 1; j < sizeY(); j++)
+                for (size_t i = 0; i < j - 1; i++)
+                    if (m_[i][j] != T(0))
+                        return false;
+
+            return true;
+        }
 
         /**
          * Equality operator.
@@ -660,281 +939,6 @@ namespace util
             return 0;
         }
     };
-
-
-    // solve simultaneous equation
-
-    template<typename T> inline matrix<T>
-    matrix<T>::Solve(const matrix<T>& v) const _THROW_MATRIX_ERROR
-    {
-        size_t i, j, k;
-        T a1;
-
-        if (!(m_->Row == m_->Col && m_->Col == v.m_->Row))
-            REPORT_ERROR("matrix<T>::Solve():Inconsistent matrices!");
-
-        matrix<T> temp(m_->Row, m_->Col + v.m_->Col);
-        for (i = 0; i < m_->Row; i++)
-        {
-            for (j = 0; j < m_->Col; j++)
-                temp.m_->Val[i][j] = m_->Val[i][j];
-            for (k = 0; k < v.m_->Col; k++)
-                temp.m_->Val[i][m_->Col + k] = v.m_->Val[i][k];
-        }
-        for (k = 0; k < m_->Row; k++)
-        {
-            int indx = temp.pivot(k);
-            if (indx == -1)
-                REPORT_ERROR("matrix<T>::Solve(): Singular matrix!");
-
-            a1 = temp.m_->Val[k][k];
-            for (j = k; j < temp.m_->Col; j++)
-                temp.m_->Val[k][j] /= a1;
-
-            for (i = k + 1; i < m_->Row; i++)
-            {
-                a1 = temp.m_->Val[i][k];
-                for (j = k; j < temp.m_->Col; j++)
-                    temp.m_->Val[i][j] -= a1 * temp.m_->Val[k][j];
-            }
-        }
-        matrix<T> s(v.m_->Row, v.m_->Col);
-        for (k = 0; k < v.m_->Col; k++)
-            for (int m = int(m_->Row) - 1; m >= 0; m--)
-            {
-                s.m_->Val[m][k] = temp.m_->Val[m][m_->Col + k];
-                for (j = m + 1; j < m_->Col; j++)
-                    s.m_->Val[m][k] -= temp.m_->Val[m][j] * s.m_->Val[j][k];
-            }
-        return s;
-    }
-
-
-    // calculate the determinant of a matrix
-
-    template<typename T> inline T
-    matrix<T>::Det() const _THROW_MATRIX_ERROR
-    {
-        size_t i, j, k;
-        T piv, detVal = T(1);
-
-        if (m_->Row != m_->Col)
-            REPORT_ERROR("matrix<T>::Det(): Determinant a non-square matrix!");
-
-        matrix<T> temp(*this);
-        if (temp.m_->Refcnt > 1) temp.clone();
-
-        for (k = 0; k < m_->Row; k++)
-        {
-            int indx = temp.pivot(k);
-            if (indx == -1)
-                return 0;
-            if (indx != 0)
-                detVal = -detVal;
-            detVal = detVal * temp.m_->Val[k][k];
-            for (i = k + 1; i < m_->Row; i++)
-            {
-                piv = temp.m_->Val[i][k] / temp.m_->Val[k][k];
-                for (j = k + 1; j < m_->Row; j++)
-                    temp.m_->Val[i][j] -= piv * temp.m_->Val[k][j];
-            }
-        }
-        return detVal;
-    }
-
-    // calculate the norm of a matrix
-
-    template<typename T> inline T
-    matrix<T>::Norm() _NO_THROW
-    {
-        T retVal = T(0);
-
-        for (size_t i = 0; i < m_->Row; i++)
-            for (size_t j = 0; j < m_->Col; j++)
-                retVal += m_->Val[i][j] * m_->Val[i][j];
-        retVal = sqrt(retVal);
-
-        return retVal;
-    }
-
-    // calculate the condition number of a matrix
-
-    template<typename T> inline T
-    matrix<T>::Cond() _NO_THROW
-    {
-        matrix<T> inv = !(*this);
-        return (Norm() * inv.Norm());
-    }
-
-    // calculate the cofactor of a matrix for a given element
-
-    template<typename T> inline T
-    matrix<T>::Cofact(size_t row, size_t col) _THROW_MATRIX_ERROR
-    {
-        size_t i, i1, j, j1;
-
-        if (m_->Row != m_->Col)
-            REPORT_ERROR("matrix<T>::Cofact(): Cofactor of a non-square matrix!");
-
-        if (row > m_->Row || col > m_->Col)
-            REPORT_ERROR("matrix<T>::Cofact(): Index out of range!");
-
-        matrix<T> temp(m_->Row - 1, m_->Col - 1);
-
-        for (i = i1 = 0; i < m_->Row; i++)
-        {
-            if (i == row)
-                continue;
-            for (j = j1 = 0; j < m_->Col; j++)
-            {
-                if (j == col)
-                    continue;
-                temp.m_->Val[i1][j1] = m_->Val[i][j];
-                j1++;
-            }
-            i1++;
-        }
-        T cof = temp.Det();
-        if ((row + col) % 2 == 1)
-            cof = -cof;
-
-        return cof;
-    }
-
-
-    // calculate adjoin of a matrix
-
-    template<typename T> inline matrix<T>
-    matrix<T>::Adj() _THROW_MATRIX_ERROR
-    {
-        if (m_->Row != m_->Col)
-            REPORT_ERROR("matrix<T>::Adj(): Adjoin of a non-square matrix.");
-
-        matrix<T> temp(m_->Row, m_->Col);
-
-        for (size_t i = 0; i < m_->Row; i++)
-            for (size_t j = 0; j < m_->Col; j++)
-                temp.m_->Val[j][i] = Cofact(i, j);
-        return temp;
-    }
-
-    // Determine if the matrix is singular
-
-    template<typename T> inline bool
-    matrix<T>::IsSingular() _NO_THROW
-    {
-        if (m_->Row != m_->Col)
-            return false;
-        return (Det() == T(0));
-    }
-
-    // Determine if the matrix is diagonal
-
-    template<typename T> inline bool
-    matrix<T>::IsDiagonal() _NO_THROW
-    {
-        if (m_->Row != m_->Col)
-            return false;
-        for (size_t i = 0; i < m_->Row; i++)
-            for (size_t j = 0; j < m_->Col; j++)
-                if (i != j && m_->Val[i][j] != T(0))
-                    return false;
-        return true;
-    }
-
-    // Determine if the matrix is scalar
-
-    template<typename T> inline bool
-    matrix<T>::IsScalar() _NO_THROW
-    {
-        if (!IsDiagonal())
-            return false;
-        T v = m_->Val[0][0];
-        for (size_t i = 1; i < m_->Row; i++)
-            if (m_->Val[i][i] != v)
-                return false;
-        return true;
-    }
-
-    // Determine if the matrix is a unit matrix
-
-    template<typename T> inline bool
-    matrix<T>::IsUnit() _NO_THROW
-    {
-        if (IsScalar() && m_->Val[0][0] == T(1))
-            return true;
-        return false;
-    }
-
-    // Determine if this is a null matrix
-
-    template<typename T> inline bool
-    matrix<T>::IsNull() _NO_THROW
-    {
-        for (size_t i = 0; i < m_->Row; i++)
-            for (size_t j = 0; j < m_->Col; j++)
-                if (m_->Val[i][j] != T(0))
-                    return false;
-        return true;
-    }
-
-    // Determine if the matrix is symmetric
-
-    template<typename T> inline bool
-    matrix<T>::IsSymmetric() _NO_THROW
-    {
-        if (m_->Row != m_->Col)
-            return false;
-        for (size_t i = 0; i < m_->Row; i++)
-            for (size_t j = 0; j < m_->Col; j++)
-                if (m_->Val[i][j] != m_->Val[j][i])
-                    return false;
-        return true;
-    }
-
-    // Determine if the matrix is skew-symmetric
-
-    template<typename T> inline bool
-    matrix<T>::IsSkewSymmetric() _NO_THROW
-    {
-        if (m_->Row != m_->Col)
-            return false;
-        for (size_t i = 0; i < m_->Row; i++)
-            for (size_t j = 0; j < m_->Col; j++)
-                if (m_->Val[i][j] != -m_->Val[j][i])
-                    return false;
-        return true;
-    }
-
-    // Determine if the matrix is upper triangular
-
-    template<typename T> inline bool
-    matrix<T>::IsUpperTriangular() _NO_THROW
-    {
-        if (m_->Row != m_->Col)
-            return false;
-        for (size_t i = 1; i < m_->Row; i++)
-            for (size_t j = 0; j < i - 1; j++)
-                if (m_->Val[i][j] != T(0))
-                    return false;
-        return true;
-    }
-
-    // Determine if the matrix is lower triangular
-
-    template<typename T> inline bool
-    matrix<T>::IsLowerTriangular() _NO_THROW
-    {
-        if (m_->Row != m_->Col)
-            return false;
-
-        for (size_t j = 1; j < m_->Col; j++)
-            for (size_t i = 0; i < j - 1; i++)
-                if (m_->Val[i][j] != T(0))
-                    return false;
-
-        return true;
-    }
 
 }
 
