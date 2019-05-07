@@ -29,8 +29,7 @@
 #include <iostream>
 #include <stdexcept>
 #include <vector>
-
-#include "grid.h"
+#include "stringutil.h"
 
 namespace util
 {
@@ -39,7 +38,7 @@ namespace util
     {
     public:
 
-        matrix_error(const string& what_arg)
+        matrix_error(const std::string& what_arg)
         : logic_error(what_arg)
         {
         }
@@ -81,7 +80,7 @@ namespace util
      *    operator <<   :   It is used to write matrix to output stream as per
      *                      standard C++ stream operators.
      */
-    template <typename T>
+    template <typename T = long double>
     class matrix
     {
     private:
@@ -90,6 +89,14 @@ namespace util
         mat_t m_;
 
     public:
+
+        enum class InitType
+        {
+            NullMatrix,
+            UnitMatrix,
+            ScalarMatrix,
+            DiagonalMatrix
+        };
 
         mat_t&& initializeData(size_t& xDim, size_t& yDim)
         {
@@ -101,7 +108,7 @@ namespace util
             row_t newRow = row_t(xDim);
             for (size_t y = 0; y < yDim; y++)
                 reval.push_back(newRow);
-            return reval;
+            return std::move(reval);
         }
 
         /**
@@ -109,7 +116,7 @@ namespace util
          * @param xDim x-dimension
          * @param yDim y-dimension
          */
-        matrix(size_t xDim = 6, size_t yDim = 6)
+        matrix(size_t xDim, size_t yDim)
         {
             std::swap(m_, initializeData(xDim, yDim));
         }
@@ -119,12 +126,14 @@ namespace util
          * @param xDim x-dimension
          * @param yDim y-dimension
          */
-        matrix(size_t xyDim = 6, bool isUnit = false)
+        explicit matrix(size_t xyDim, InitType type, T value = T(1.0))
         {
             std::swap(m_, initializeData(xyDim, xyDim));
-            if (isUnit)
+            if (type != InitType::NullMatrix)
                 for (size_t xy = 0; xy < xyDim; xy++)
-                    m_[xy][xy] = (T) 1.0;
+                    m_[xy][xy] = (type == InitType::UnitMatrix ?
+                                  1.0 :
+                                  value);
         }
 
         matrix(const matrix& m) = default;
@@ -141,25 +150,25 @@ namespace util
             return m_.size();
         }
 
-        void checkBounds(size_t x, size_t y, const std::string& location)
+        void checkBounds(size_t x, size_t y, const std::string& location) const
         {
             if (x >= sizeX() || y >= sizeY())
                 throw matrix_error(location +
                                    ": index (" +
-                                   asString(x) +
+                                   util::asString(x) +
                                    "," +
-                                   asString(y) +
+                                   util::asString(y) +
                                    ") is out of bounds (" +
-                                   sizeX() +
+                                   util::asString(sizeX()) +
                                    "," +
-                                   sizeY() +
+                                   util::asString(sizeY()) +
                                    ").");
         }
 
         void checkCompatibleSizes(const matrix<T>& lhs,
                                   const matrix<T>& rhs,
                                   const std::string& operation,
-                                  const std::string& location)
+                                  const std::string& location) const
         {
             if (operation == "+" || operation == "-")
             {
@@ -197,7 +206,7 @@ namespace util
             }
         }
 
-        void checkNotZero(T c, const std::string& location)
+        void checkNotZero(T c, const std::string& location) const
         {
             if (c == (T) 0)
                 throw matrix_error(location +
@@ -206,7 +215,7 @@ namespace util
                                    "must not be 0(Zero).");
         }
 
-        void checkSquare(const matrix<T>& lhs, const std::string& location)
+        void checkSquare(const matrix<T>& lhs, const std::string& location) const
         {
             if (!lhs.isSquare())
                 throw matrix_error(location +
@@ -251,7 +260,7 @@ namespace util
          * Unary negation operator.
          * @param rhs right-hand-side matrix
          */
-        matrix<T>&& matrix<T>::operator-(const matrix<T>& rhs)
+        matrix<T>&& operator-(const matrix<T>& rhs)
         {
             matrix<T> temp(rhs);
 
@@ -365,7 +374,7 @@ namespace util
          * @param rhs right-hand-side matrix
          * @return the product lhs*rhs
          */
-        matrix<T>&& operator*(const matrix<T>& lhs, const matrix<T>& rhs)
+        friend matrix<T>&& operator*(const matrix<T>& lhs, const matrix<T>& rhs)
         {
             checkCompatibleSizes(lhs, rhs, "operator*(lhs,rhs)", "*");
             matrix<T> temp(rhs.sizeX(), lhs.sizeY());
@@ -414,7 +423,7 @@ namespace util
          * @param c left-hand-side constant scalar value
          * @return the result of c/rhs
          */
-        matrix<T>&& operator/(const T& c, const matrix<T>& rhs)
+        friend matrix<T>&& operator/(const T& c, const matrix<T>& rhs)
         {
             return (!rhs * c);
         }
@@ -425,7 +434,7 @@ namespace util
          * @param rhs right-hand-side matrix
          * @return the result of lhs/rhs
          */
-        matrix<T>&& operator/(const matrix<T>& lhs, const matrix<T>& rhs)
+        friend matrix<T>&& operator/(const matrix<T>& lhs, const matrix<T>& rhs)
         {
             return (lhs * !rhs);
         }
@@ -447,14 +456,14 @@ namespace util
          * @param pow power
          * @return lhs ^ pow
          */
-        matrix<T>& operator^(const matrix<T>& lhs, const size_t& pow)
+        friend matrix<T>& operator^(const matrix<T>& lhs, const size_t& pow)
         {
             checkSquare(lhs, "operator^(lhs,pow)");
             matrix<T> temp(lhs);
             for (size_t i = 2; i <= pow; i++)
                 temp = lhs * temp;
 
-            return *this;
+            return temp;
         }
 
         /**
@@ -474,7 +483,7 @@ namespace util
          * @param rhs right-hand-side matrix
          * @return lhs.transposed
          */
-        matrix<T>&& operator~(const matrix<T>& rhs)
+        friend matrix<T>&& operator~(const matrix<T>& rhs)
         {
             matrix<T> temp(rhs.sizeY(), rhs.sizeX());
 
@@ -511,7 +520,7 @@ namespace util
          * @param rhs right-hand-side matrix
          * @return lhs.transposed
          */
-        matrix<T>&& operator!(const matrix<T>& rhs)
+        friend matrix<T>&& operator!(const matrix<T>& rhs)
         {
             matrix<T> temp = rhs;
             return temp.Inv();
@@ -522,7 +531,7 @@ namespace util
          *
          * @return the inverted non-singular square matrix if possible.
          */
-        matrix<T>&& matrix<T>::Inv()
+        matrix<T>&& inv()
         {
             checkSquare(*this, "matrix<T>::Inv()");
             size_t i, j, k;
@@ -565,7 +574,7 @@ namespace util
          * @param v
          * @return
          */
-        matrix<T> matrix<T>::solve(const matrix<T>& v) const
+        matrix<T> solve(const matrix<T>& v) const
         {
             checkSquare(*this, "matrix<T>::solve(v)");
             checkCompatibleSizes(*this, v, "solve", "matrix<T>::solve(v)");
@@ -584,7 +593,7 @@ namespace util
             {
                 long long indx = temp.pivot(k);
                 if (indx == -1)
-                    throw grid_error("matrix<T>::solve(): Singular matrix!");
+                    throw matrix_error("matrix<T>::solve(): Singular matrix!");
 
                 a1 = temp.m_[k][k];
                 for (y = k; y < temp.sizeY(); y++)
@@ -878,7 +887,7 @@ namespace util
          * @param m the matrix to read into
          * @return reference to the stream
          */
-        friend istream& operator>>(istream& istrm, matrix<T>& m)
+        friend std::istream& operator>>(std::istream& istrm, matrix<T>& m)
         {
             for (size_t y = 0; y < m.sizeY(); y++)
                 for (size_t x = 0; x < m.sizeX(); x++)
@@ -896,7 +905,7 @@ namespace util
          * @param m the matrix to write
          * @return reference to the stream
          */
-        friend ostream& operator<<(ostream& ostrm, const matrix<T>& m)
+        friend std::ostream& operator<<(std::ostream& ostrm, const matrix<T>& m)
         {
             for (size_t i = 0; i < m.sizeY(); i++)
             {
@@ -905,7 +914,7 @@ namespace util
                     T x = m(i, j);
                     ostrm << x << '\t';
                 }
-                ostrm << endl;
+                ostrm << std::endl;
             }
             return ostrm;
         }
@@ -931,7 +940,7 @@ namespace util
                 }
             if (m_[k][pivX] == T(0))
                 return -1;
-            if (k != long long(pivX))
+            if (k != (long long) (pivX))
             {
                 std::swap(m_[k], m_[pivX]);
                 return k;
