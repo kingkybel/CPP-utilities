@@ -47,40 +47,16 @@ namespace util
     };
 
     /**
-     *  matrix template
+     * matrix template
      *
      * Note: This matrix template class defines majority of the matrix
      *  operations as overloaded operators or methods. It is assumed that
      * users of this class is familiar with matrix algebra. We have not
-     * defined any specialization of this template here, so all the instances
+     * defined any specialisation of this template here, so all the instances
      * of matrix will be created implicitly by the compiler. The data types
      * tested with this class are float, double, long double, complex<float>,
      * complex<double> and complex<long double>. Note that this class is not
-     * optimized for performance.
-     *
-     *  Operator/Method                          Description
-     *  ---------------                          -----------
-     *   operator ()   :   This function operator can be used as a
-     *                      two-dimensional subscript operator to get/set
-     *                      individual matrix elements.
-     *
-     *    operator !    :   This operator has been used to calculate inversion
-     *                      of matrix.
-     *
-     *    operator ~    :   This operator has been used to return transpose of
-     *                      a matrix.
-     *
-     *    operator ^    :   It is used calculate power (by a scalar) of a matrix.
-     *                      When using this operator in a matrix equation, care
-     *                      must be taken by parenthesizing it because it has
-     *                      lower precedence than addition, subtraction,
-     *                      multiplication and division operators.
-     *
-     *    operator >>   :   It is used to read matrix from input stream as per
-     *                      standard C++ stream operators.
-     *
-     *    operator <<   :   It is used to write matrix to output stream as per
-     *                      standard C++ stream operators.
+     * optimised for performance.
      */
     template <typename T = long double>
     class matrix
@@ -89,8 +65,6 @@ namespace util
         typedef std::vector<T> row_t;
         typedef std::vector<row_t> mat_t;
         mat_t m_;
-
-    public:
 
         mat_t& initializeData(size_t xDim = 0, size_t yDim = 0)
         {
@@ -104,6 +78,9 @@ namespace util
                 m_.push_back(newRow);
             return m_;
         }
+
+
+    public:
 
         /**
          * Default constructor.
@@ -274,7 +251,7 @@ namespace util
          */
         T& operator()(size_t x, size_t y)
         {
-            checkBounds(*this, x, y, "matrix<T>::operator()");
+            checkBounds(*this, x, y, "T& matrix<T>::operator()");
             return m_[y][x];
         }
 
@@ -287,7 +264,7 @@ namespace util
          */
         T operator()(size_t x, size_t y) const
         {
-            checkBounds(*this, x, y, "matrix<T>::operator()");
+            checkBounds(*this, x, y, "T matrix<T>::operator() const");
             return m_[y][x];
         }
 
@@ -427,7 +404,7 @@ namespace util
                 {
                     temp(y, x) = T(0);
                     for (size_t k = 0; k < lhs.sizeX(); k++)
-                        temp(y, x) += lhs(y, k) * rhs(k, x);
+                        temp(y, x) += lhs(k, y) * rhs(x, k);
                 }
 
             return temp;
@@ -522,9 +499,9 @@ namespace util
         }
 
         /**
-         * Transpose operator.
+         * This operator is used to return the transposition of the matrix.
          * @param rhs right-hand-side matrix
-         * @return lhs.transposed
+         * @return rhs.transposed
          */
         friend matrix<T> operator~(const matrix<T>& rhs)
         {
@@ -553,9 +530,9 @@ namespace util
         }
 
         /**
-         * Inversion operator.
+         * This operator has been used to calculate inversion of matrix.
          * @param rhs right-hand-side matrix
-         * @return lhs.transposed
+         * @return lhs^(-1)
          */
         friend matrix<T> operator!(const matrix<T>& rhs)
         {
@@ -574,7 +551,7 @@ namespace util
             size_t i, j, k;
             T a1, a2;
 
-            matrix<T> temp = matrix<T>(sizeX(), true); //make unit
+            matrix<T> temp = matrix<T>::scalar(sizeX(), T(1.0)); //make unit
 
             for (k = 0; k < sizeX(); k++)
             {
@@ -608,8 +585,8 @@ namespace util
 
         /**
          * Solve simultaneous equations.
-         * @param v
-         * @return
+         * @param v matrix of values. Can be seen as set of vertical vectors
+         * @return matrix representing the solutions
          */
         matrix<T> solve(const matrix<T>& v) const
         {
@@ -713,9 +690,9 @@ namespace util
 
         /**
          * Calculate the cofactor of a matrix for a given element.
-         * @param x
-         * @param y
-         * @return
+         * @param x x-coordinate
+         * @param y y-coordinate
+         * @return the cofactor of matrix value at (x,y)
          */
         T cofact(size_t x, size_t y)
         {
