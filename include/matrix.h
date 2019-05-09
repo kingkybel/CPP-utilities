@@ -237,6 +237,29 @@ namespace util
 
         matrix(const matrix& rhs) = default;
 
+        matrix(size_t xDim, size_t yDim, std::initializer_list<T> l)
+        : matrix(xDim, yDim)
+        {
+            size_t x = 0;
+            size_t y = 0;
+            auto it = l.begin();
+            size_t count = 0;
+            size_t maxCount = sizeX() * sizeY();
+            while (it != l.end() && count < maxCount)
+            {
+                (*this)(x, y) = *it;
+                x++;
+                if (x == sizeX())
+                {
+                    x = 0;
+                    y++;
+                }
+                count++;
+                it++;
+            }
+
+        }
+
         matrix(matrix&& rhs)
         : m_(rhs.m_)
         {
@@ -723,49 +746,6 @@ namespace util
          *
          * @return the inverted non-singular square matrix if possible.
          */
-        matrix<T> inv_old()
-        {
-            checkSquare(*this, "matrix<T>::Inv()");
-            size_t i, j, k;
-            T a1, a2;
-
-            matrix<T> temp = matrix<T>::scalar(sizeX(), T(1.0)); //make unit
-
-            for (k = 0; k < sizeX(); k++)
-            {
-                int indx = pivot(k);
-                if (indx == -1)
-                    throw matrix_error("matrix<T>::operator!: Inversion of a singular matrix");
-
-                if (indx != 0)
-                {
-                    std::swap(m_[k], m_[indx]);
-                }
-                a1 = m_[k][k];
-                for (j = 0; j < sizeX(); j++)
-                {
-                    m_[k][j] /= a1;
-                    temp.m_[k][j] /= a1;
-                }
-                for (i = 0; i < sizeX(); i++)
-                    if (i != k)
-                    {
-                        a2 = m_[i][k];
-                        for (j = 0; j < sizeX(); j++)
-                        {
-                            m_[i][j] -= a2 * m_[k][j];
-                            temp.m_[i][j] -= a2 * temp.m_[k][j];
-                        }
-                    }
-            }
-            return temp;
-        }
-
-        /**
-         * Inversion function.
-         *
-         * @return the inverted non-singular square matrix if possible.
-         */
         matrix<T> inv()
         {
             checkSquare(*this, "matrix<T>::inv()");
@@ -961,7 +941,6 @@ namespace util
         matrix<T>&& adj()
         {
             checkSquare(*this, "matrix<T>::adj()");
-
             matrix<T> temp(sizeX(), sizeY());
 
             for (size_t i = 0; i < sizeX(); i++)
@@ -989,10 +968,9 @@ namespace util
         {
             if (isSquare())
                 return false;
-            for (size_t i = 0; i < sizeX(); i++)
-                for (size_t j = 0; j < sizeY(); j++)
-
-                    if (i != j && m_[i][j] != T(0))
+            for (size_t y = 0; y < sizeX(); y++)
+                for (size_t x = 0; x < sizeY(); x++)
+                    if (x != y && (*this)(x, y) != T(0))
                         return false;
             return true;
         }
@@ -1005,10 +983,9 @@ namespace util
         {
             if (!isDiagonal())
                 return false;
-            T v = m_[0][0];
-            for (size_t i = 1; i < sizeX(); i++)
-
-                if (m_[i][i] != v)
+            T v = (*this)(0, 0);
+            for (size_t xy = 1; xy < sizeX(); xy++)
+                if ((*this)(xy, xy) != v)
                     return false;
             return true;
         }
@@ -1019,8 +996,7 @@ namespace util
          */
         bool isUnit() const
         {
-
-            if (isScalar() && m_[0][0] == T(1))
+            if (isScalar() && (*this)(0, 0) == T(1))
                 return true;
             return false;
         }
@@ -1031,10 +1007,9 @@ namespace util
          */
         bool isNull() const
         {
-            for (size_t i = 0; i < sizeX(); i++)
-                for (size_t j = 0; j < sizeY(); j++)
-
-                    if (m_[i][j] != T(0))
+            for (size_t y = 0; y < sizeX(); y++)
+                for (size_t x = 0; x < sizeY(); x++)
+                    if ((*this)(x, y) != T(0))
                         return false;
             return true;
         }
@@ -1047,10 +1022,9 @@ namespace util
         {
             if (!isSquare())
                 return false;
-            for (size_t i = 0; i < sizeX(); i++)
-                for (size_t j = 0; j < sizeY(); j++)
-
-                    if (m_[i][j] != m_[j][i])
+            for (size_t y = 1; y < sizeY(); y++)
+                for (size_t x = 0; x < y; x++)
+                    if ((*this)(x, y) != (*this)(y, x))
                         return false;
             return true;
         }
@@ -1063,10 +1037,9 @@ namespace util
         {
             if (!isSquare())
                 return false;
-            for (size_t i = 0; i < sizeX(); i++)
-                for (size_t j = 0; j < sizeY(); j++)
-
-                    if (m_[i][j] != -m_[j][i])
+            for (size_t y = 1; y < sizeY(); y++)
+                for (size_t x = 0; x < y; x++)
+                    if ((*this)(x, y) != -(*this)(y, x))
                         return false;
             return true;
         }
@@ -1079,10 +1052,9 @@ namespace util
         {
             if (!isSquare())
                 return false;
-            for (size_t i = 1; i < sizeX(); i++)
-                for (size_t j = 0; j < i - 1; j++)
-
-                    if (m_[i][j] != T(0))
+            for (size_t y = 1; y < sizeY(); y++)
+                for (size_t x = 0; x < y; x++)
+                    if ((*this)(x, y) != T(0))
                         return false;
             return true;
         }
@@ -1093,13 +1065,11 @@ namespace util
          */
         bool isLowerTriangular() const
         {
-            if (sizeX() != sizeY())
+            if (!isSquare())
                 return false;
-
-            for (size_t j = 1; j < sizeY(); j++)
-                for (size_t i = 0; i < j - 1; i++)
-
-                    if (m_[i][j] != T(0))
+            for (size_t x = 1; x < sizeX(); x++)
+                for (size_t y = 0; y < x; y++)
+                    if ((*this)(x, y) != T(0))
                         return false;
 
             return true;
@@ -1183,17 +1153,17 @@ namespace util
             long double temp = 0.0;
 
             for (size_t x = pivX; x < sizeX(); x++)
-                if ((temp = abs(m_[x][pivX])) > amax && temp != 0.0)
+                if ((temp = abs((*this)(pivX, x))) > amax && temp != 0.0)
                 {
                     amax = temp;
                     k = x;
                 }
-            if (m_[k][pivX] == T(0))
+            if ((*this)(pivX, k) == T(0))
                 return -1;
             if (k != (long long) (pivX))
             {
 
-                std::swap(m_[k], m_[pivX]);
+                std::swap(row(k), row(pivX));
                 return k;
             }
             return 0;
@@ -1211,15 +1181,15 @@ namespace util
 
             std::stringstream ss;
             ss << location
-                    << ": index ("
-                    << x
-                    << ","
-                    << y
-                    << ") is out of bounds ("
-                    << lhs.sizeX()
-                    << ","
-                    << lhs.sizeY()
-                    << ").";
+                << ": index ("
+                << x
+                << ","
+                << y
+                << ") is out of bounds ("
+                << lhs.sizeX()
+                << ","
+                << lhs.sizeY()
+                << ").";
             throw matrix_error(ss.str());
         }
     }
