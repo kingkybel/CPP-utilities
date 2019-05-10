@@ -225,21 +225,18 @@ namespace util
 
     public:
 
+        matrix(const matrix& rhs) = default;
+
         /**
          * Default constructor.
          * @param xDim x-dimension: if equal 0 than set to 1
          * @param yDim y-dimension: if equal 0 than make matrix square
          */
-        explicit matrix(size_t xDim = 0, size_t yDim = 0)
+        explicit matrix(size_t xDim = 0,
+                        size_t yDim = 0,
+                        std::initializer_list<T> l = std::initializer_list<T>())
         {
             initializeData(xDim, yDim);
-        }
-
-        matrix(const matrix& rhs) = default;
-
-        matrix(size_t xDim, size_t yDim, std::initializer_list<T> l)
-        : matrix(xDim, yDim)
-        {
             size_t x = 0;
             size_t y = 0;
             auto it = l.begin();
@@ -278,18 +275,18 @@ namespace util
             return *this;
         }
 
-        static matrix<T> diag(std::initializer_list<T> l)
+        static matrix<T, enableBoundsCheck> diag(std::initializer_list<T> l)
         {
-            matrix<T> reval(l.size(), l.size());
+            matrix<T, enableBoundsCheck> reval(l.size(), l.size());
             auto it = l.begin();
             for (size_t i = 0; i < l.size(); i++)
                 reval(i, i) = *it++;
             return reval;
         }
 
-        static matrix<T> scalar(size_t dim, const T& c = T(1.0))
+        static matrix<T, enableBoundsCheck> scalar(size_t dim, const T& c = T(1.0))
         {
-            matrix<T> reval(dim);
+            matrix<T, enableBoundsCheck> reval(dim);
             for (size_t i = 0; i < reval.sizeX(); i++)
                 reval(i, i) = c;
             return reval;
@@ -300,9 +297,9 @@ namespace util
          * @param l list of values, determines also the size of the matrix
          * @return l.size() x 1 - matrix with values from the list
          */
-        static matrix<T> hvect(std::initializer_list<T> l)
+        static matrix<T, enableBoundsCheck> hvect(std::initializer_list<T> l)
         {
-            matrix<T> reval(l.size(), 1);
+            matrix<T, enableBoundsCheck> reval(l.size(), 1);
             auto it = l.begin();
             for (size_t i = 0; i < l.size(); i++)
                 reval(i, 0) = *it++;
@@ -314,9 +311,9 @@ namespace util
          * @param l list of values, determines also the size of the matrix
          * @return 1 x l.size() - matrix with values from the list
          */
-        static matrix<T> vvect(std::initializer_list<T> l)
+        static matrix<T, enableBoundsCheck> vvect(std::initializer_list<T> l)
         {
-            matrix<T> reval(1, l.size());
+            matrix<T, enableBoundsCheck> reval(1, l.size());
             auto it = l.begin();
             for (size_t i = 0; i < l.size(); i++)
                 reval(0, i) = *it++;
@@ -341,8 +338,8 @@ namespace util
             return m_.size();
         }
 
-        static bool checkCompatibleSizes(const matrix<T>& lhs,
-                                         const matrix<T>& rhs,
+        static bool checkCompatibleSizes(const matrix<T, enableBoundsCheck>& lhs,
+                                         const matrix<T, enableBoundsCheck>& rhs,
                                          const std::string& operation,
                                          const std::string& location)
         {
@@ -393,7 +390,7 @@ namespace util
             return true;
         }
 
-        static bool checkSquare(const matrix<T>& lhs, const std::string& location)
+        static bool checkSquare(const matrix<T, enableBoundsCheck>& lhs, const std::string& location)
         {
             if (!lhs.isSquare())
                 throw matrix_error(location +
@@ -414,7 +411,7 @@ namespace util
             checkBounds<enableBoundsCheck>(*this,
                                            x,
                                            y,
-                                           "T& matrix<T>::operator()");
+                                           "T& matrix<T,enableBoundsCheck>::operator()");
             return m_[y][x];
         }
 
@@ -431,7 +428,7 @@ namespace util
             checkBounds<enableBoundsCheck>(*this,
                                            x,
                                            y,
-                                           "T matrix<T>::operator() const");
+                                           "T matrix<T,enableBoundsCheck>::operator() const");
             return m_[y][x];
         }
 
@@ -445,7 +442,7 @@ namespace util
             checkBounds<enableBoundsCheck>(*this,
                                            0,
                                            y,
-                                           "row_t& matrix<T>::row(y)");
+                                           "row_t& matrix<T,enableBoundsCheck>::row(y)");
             return m_[y];
         }
 
@@ -459,7 +456,7 @@ namespace util
             checkBounds<enableBoundsCheck>(*this,
                                            0,
                                            y,
-                                           "row_t& matrix<T>::row(y)");
+                                           "row_t& matrix<T,enableBoundsCheck>::row(y)");
             return m_[y];
         }
 
@@ -475,9 +472,9 @@ namespace util
          * Unary negation operator.
          * @param rhs right-hand-side matrix
          */
-        matrix<T> operator-(const matrix<T>& rhs)
+        matrix<T, enableBoundsCheck> operator-(const matrix<T, enableBoundsCheck>& rhs)
         {
-            matrix<T> temp(rhs);
+            matrix<T, enableBoundsCheck> temp(rhs);
 
             for (size_t y = 0; y < temp.sizeY(); y++)
                 for (size_t x = 0; x < temp.sizeX(); x++)
@@ -492,10 +489,10 @@ namespace util
          * @param rhs right-hand-side matrix
          * @return the sum of the two matrices
          */
-        friend matrix<T> operator+(const matrix<T>& lhs, const matrix<T>& rhs)
+        friend matrix<T, enableBoundsCheck> operator+(const matrix<T, enableBoundsCheck>& lhs, const matrix<T, enableBoundsCheck>& rhs)
         {
             checkCompatibleSizes(lhs, rhs, "operator+(lhs,rhs)", "+");
-            matrix<T> reval = lhs;
+            matrix<T, enableBoundsCheck> reval = lhs;
             for (size_t y = 0; y < reval.sizeY(); y++)
                 for (size_t x = 0; x < reval.sizeX(); x++)
                     reval(x, y) += rhs(x, y);
@@ -507,7 +504,7 @@ namespace util
          * @param rhs right-hand-side matrix
          * @return the sum of this with the rhs
          */
-        matrix<T>& operator+=(const matrix<T>& rhs)
+        matrix<T, enableBoundsCheck>& operator+=(const matrix<T, enableBoundsCheck>& rhs)
         {
             checkCompatibleSizes(*this, rhs, "operator+=(rhs)", "+");
             *this = *this+rhs;
@@ -520,10 +517,10 @@ namespace util
          * @param rhs right-hand-side matrix
          * @return the result of lhs-rhs
          */
-        friend matrix<T> operator-(const matrix<T>& lhs, const matrix<T>& rhs)
+        friend matrix<T, enableBoundsCheck> operator-(const matrix<T, enableBoundsCheck>& lhs, const matrix<T, enableBoundsCheck>& rhs)
         {
             checkCompatibleSizes(lhs, rhs, "operator-(lhs,rhs)", "+");
-            matrix<T> reval = lhs;
+            matrix<T, enableBoundsCheck> reval = lhs;
             for (size_t y = 0; y < reval.sizeY(); y++)
                 for (size_t x = 0; x < reval.sizeX(); x++)
                     reval(x, y, false) -= rhs(x, y, false);
@@ -535,7 +532,7 @@ namespace util
          * @param rhs right-hand-side matrix
          * @return the result of *this - rhs
          */
-        matrix<T>& operator-=(const matrix<T>& rhs)
+        matrix<T, enableBoundsCheck>& operator-=(const matrix<T, enableBoundsCheck>& rhs)
         {
             checkCompatibleSizes(*this, rhs, "operator-=(rhs)", "-");
             *this = *this-rhs;
@@ -548,9 +545,9 @@ namespace util
          * @param c right-hand-side constant scalar value
          * @return the result of lhs*c
          */
-        friend matrix<T> operator*(const matrix<T>& lhs, const T& c)
+        friend matrix<T, enableBoundsCheck> operator*(const matrix<T, enableBoundsCheck>& lhs, const T& c)
         {
-            matrix<T> reval = lhs;
+            matrix<T, enableBoundsCheck> reval = lhs;
             for (size_t y = 0; y < reval.sizeY(); y++)
                 for (size_t x = 0; x < reval.sizeX(); x++)
                     reval(x, y) *= c;
@@ -563,9 +560,9 @@ namespace util
          * @param rhs left-hand-side matrix
          * @return the result of c*rhs
          */
-        friend matrix<T> operator*(const T& c, const matrix<T>& rhs)
+        friend matrix<T, enableBoundsCheck> operator*(const T& c, const matrix<T, enableBoundsCheck>& rhs)
         {
-            matrix<T> reval = rhs;
+            matrix<T, enableBoundsCheck> reval = rhs;
             for (size_t y = 0; y < reval.sizeY(); y++)
                 for (size_t x = 0; x < reval.sizeX(); x++)
                     reval(x, y, false) *= c;
@@ -577,7 +574,7 @@ namespace util
          * @param c scalar
          * @return the result of *this * c
          */
-        matrix<T>& operator*=(const T& c)
+        matrix<T, enableBoundsCheck>& operator*=(const T& c)
         {
             *this = *this * c;
             return *this;
@@ -589,10 +586,10 @@ namespace util
          * @param rhs right-hand-side matrix
          * @return the product lhs*rhs
          */
-        friend matrix<T> operator*(const matrix<T>& lhs, const matrix<T>& rhs)
+        friend matrix<T, enableBoundsCheck> operator*(const matrix<T, enableBoundsCheck>& lhs, const matrix<T, enableBoundsCheck>& rhs)
         {
             checkCompatibleSizes(lhs, rhs, "operator*(lhs,rhs)", "*");
-            matrix<T> reval(rhs.sizeX(), lhs.sizeY());
+            matrix<T, enableBoundsCheck> reval(rhs.sizeX(), lhs.sizeY());
 
             for (size_t y = 0; y < lhs.sizeY(); y++)
                 for (size_t x = 0; x < rhs.sizeX(); x++)
@@ -610,7 +607,7 @@ namespace util
          * @param rhs right-hand-side matrix
          * @return the result of *this * rhs
          */
-        matrix<T>& operator*=(const matrix<T>& rhs)
+        matrix<T, enableBoundsCheck>& operator*=(const matrix<T, enableBoundsCheck>& rhs)
         {
             *this = *this * rhs;
             return *this;
@@ -622,10 +619,10 @@ namespace util
          * @param c right-hand-side constant scalar value
          * @return the result of lhs/c
          */
-        friend matrix<T> operator/(const matrix<T>& lhs, const T& c)
+        friend matrix<T, enableBoundsCheck> operator/(const matrix<T, enableBoundsCheck>& lhs, const T& c)
         {
             checkNotZero(c, "operator/(lhs,c)");
-            matrix<T> reval = lhs;
+            matrix<T, enableBoundsCheck> reval = lhs;
             for (size_t y = 0; y < reval.sizeY(); y++)
                 for (size_t x = 0; x < reval.sizeX(); x++)
                     reval(x, y) /= c;
@@ -638,7 +635,7 @@ namespace util
          * @param c left-hand-side constant scalar value
          * @return the result of c/rhs
          */
-        friend matrix<T> operator/(const T& c, const matrix<T>& rhs)
+        friend matrix<T, enableBoundsCheck> operator/(const T& c, const matrix<T, enableBoundsCheck>& rhs)
         {
             return (!rhs * c);
         }
@@ -649,7 +646,7 @@ namespace util
          * @param rhs right-hand-side matrix
          * @return the result of lhs/rhs
          */
-        friend matrix<T> operator/(const matrix<T>& lhs, const matrix<T>& rhs)
+        friend matrix<T, enableBoundsCheck> operator/(const matrix<T, enableBoundsCheck>& lhs, const matrix<T, enableBoundsCheck>& rhs)
         {
             return (lhs * !rhs);
         }
@@ -659,7 +656,7 @@ namespace util
          * @param c scalar
          * @return the result of *this * c
          */
-        matrix<T>& operator/=(const T& c)
+        matrix<T, enableBoundsCheck>& operator/=(const T& c)
         {
             checkNotZero(c, "operator/=(lhs,c)");
             *this = *this / c;
@@ -671,10 +668,10 @@ namespace util
          * @param pow power
          * @return lhs ^ pow
          */
-        friend matrix<T> operator^(const matrix<T>& lhs, const size_t& pow)
+        friend matrix<T, enableBoundsCheck> operator^(const matrix<T, enableBoundsCheck>& lhs, const size_t& pow)
         {
             checkSquare(lhs, "operator^(lhs,pow)");
-            matrix<T> reval(lhs);
+            matrix<T, enableBoundsCheck> reval(lhs);
             for (size_t i = 2; i <= pow; i++)
                 reval = lhs * reval;
 
@@ -686,7 +683,7 @@ namespace util
          * @param pow power
          * @return *this ^ pow
          */
-        matrix<T>& operator^=(const size_t& pow)
+        matrix<T, enableBoundsCheck>& operator^=(const size_t& pow)
         {
             checkSquare(*this, "operator^=(pow)");
             *this = *this ^ pow;
@@ -698,9 +695,9 @@ namespace util
          * @param rhs right-hand-side matrix
          * @return rhs.transposed
          */
-        friend matrix<T> operator~(const matrix<T>& rhs)
+        friend matrix<T, enableBoundsCheck> operator~(const matrix<T, enableBoundsCheck>& rhs)
         {
-            matrix<T> reval(rhs.sizeY(), rhs.sizeX());
+            matrix<T, enableBoundsCheck> reval(rhs.sizeY(), rhs.sizeX());
 
             for (size_t y = 0; y < rhs.sizeY(); y++)
                 for (size_t x = 0; x < rhs.sizeX(); x++)
@@ -722,11 +719,11 @@ namespace util
                 newXDim = sizeX();
             if (newYdim == 0)
                 newYdim = sizeY();
-            mat_t&& tmp = initializeData(newYdim, newXDim);
+            mat_t tmp = initializeData(newYdim, newXDim);
             for (size_t y = 0; y < std::min(sizeY(), newYdim); y++)
-                std::copy(m_[y].begin(),
-                          m_[y].begin()+(std::min(newXDim, sizeX())),
-                          tmp.begin());
+                std::copy(row(y).begin(),
+                          row(y).begin()+(std::min(newXDim, sizeX())),
+                          tmp[y].begin());
             std::swap(tmp, m_);
         }
 
@@ -735,9 +732,9 @@ namespace util
          * @param rhs right-hand-side matrix
          * @return lhs^(-1)
          */
-        friend matrix<T> operator!(const matrix<T>& rhs)
+        friend matrix<T, enableBoundsCheck> operator!(const matrix<T, enableBoundsCheck>& rhs)
         {
-            matrix<T> reval = rhs;
+            matrix<T, enableBoundsCheck> reval = rhs;
             return reval.inv();
         }
 
@@ -746,14 +743,14 @@ namespace util
          *
          * @return the inverted non-singular square matrix if possible.
          */
-        matrix<T> inv()
+        matrix<T, enableBoundsCheck> inv()
         {
-            checkSquare(*this, "matrix<T>::inv()");
+            checkSquare(*this, "matrix<T,enableBoundsCheck>::inv()");
             size_t y, x, k;
             T pivotVal, a2;
 
             // initialize the return matrix as the unit-matrix of sizeX
-            matrix<T> reval = matrix<T>::scalar(sizeX(), T(1.0));
+            matrix<T, enableBoundsCheck> reval = matrix<T, enableBoundsCheck>::scalar(sizeX(), T(1.0));
 
             for (k = 0; k < sizeX(); k++)
             {
@@ -761,7 +758,7 @@ namespace util
                 // singular and cannot be inverted
                 int pivIdx = pivot(k);
                 if (pivIdx == -1)
-                    throw matrix_error("matrix<T>::operator!: Inversion of a singular matrix");
+                    throw matrix_error("matrix<T,enableBoundsCheck>::operator!: Inversion of a singular matrix");
 
                 // swap rows so that the pivot element is on the diagonal at k
                 if (pivIdx != 0)
@@ -783,7 +780,7 @@ namespace util
                         for (x = 0; x < sizeX(); x++)
                         {
                             (*this)(x, y) -= a2 * (*this)(x, k);
-                            reval.m_[y][x] -= a2 * reval(x, k);
+                            reval(x, y) -= a2 * reval(x, k);
                         }
                     }
             }
@@ -795,14 +792,63 @@ namespace util
          * @param v matrix of values. Can be seen as set of vertical vectors
          * @return matrix representing the solutions
          */
-        matrix<T> solve(const matrix<T>& v) const
+        matrix<T, enableBoundsCheck> solve(const matrix<T, enableBoundsCheck>& v) const
         {
-            checkSquare(*this, "matrix<T>::solve(v)");
-            checkCompatibleSizes(*this, v, "solve", "matrix<T>::solve(v)");
+            checkSquare(*this, "matrix<T,enableBoundsCheck>::solve(v)");
+            checkCompatibleSizes(*this, v, "solve", "matrix<T,enableBoundsCheck>::solve(v)");
             size_t x, y, k;
             T a1;
 
-            matrix<T> temp(sizeX(), sizeY() + v.sizeY());
+            matrix<T, enableBoundsCheck> temp(*this);
+            temp.resize(sizeX() + v.sizeX(), sizeY());
+            for (size_t x = sizeX(); x < sizeX() + v.sizeX(); x++)
+            {
+                for (size_t y = 0; y < v.sizeY(); y++)
+                    temp(x, y) = v(x - sizeX(), y);
+            }
+            std::cout << "temp=\n" << temp << std::endl;
+            for (k = 0; k < sizeX(); k++)
+            {
+                long long indx = temp.pivot(k);
+                if (indx == -1)
+                    throw matrix_error("matrix<T,enableBoundsCheck>::solve(): Singular matrix!");
+
+                a1 = temp(k, k);
+                for (y = k; y < temp.sizeY(); y++)
+                    temp(k, y) /= a1;
+
+                for (x = k + 1; x < sizeX(); x++)
+                {
+                    a1 = temp(x, k);
+                    for (y = k; y < temp.sizeY(); y++)
+                        temp(x, y) -= a1 * temp(k, y);
+                }
+            }
+            matrix<T, enableBoundsCheck> reval(v.sizeX(), v.sizeY());
+            for (k = 0; k < v.sizeY(); k++)
+                for (int m = int(sizeX()) - 1; m >= 0; m--)
+                {
+                    reval(m, k) = temp(m, sizeY() + k);
+
+                    for (y = m + 1; y < sizeY(); y++)
+                        reval(m, k) -= temp(m, y) * reval(y, k);
+                }
+            return reval;
+        }
+
+        /**
+         * Solve simultaneous equations.
+         * @param v matrix of values. Can be seen as set of vertical vectors
+         * @return matrix representing the solutions
+         */
+        matrix<T, enableBoundsCheck> solve_old(const matrix<T, enableBoundsCheck>& v) const
+        {
+            checkSquare(*this, "matrix<T,enableBoundsCheck>::solve(v)");
+            checkCompatibleSizes(*this, v, "solve", "matrix<T,enableBoundsCheck>::solve(v)");
+            size_t x, y, k;
+            T a1;
+
+            matrix<T, enableBoundsCheck> temp(sizeX(), sizeY() + v.sizeY());
             for (x = 0; x < sizeX(); x++)
             {
                 for (y = 0; y < sizeY(); y++)
@@ -814,7 +860,7 @@ namespace util
             {
                 long long indx = temp.pivot(k);
                 if (indx == -1)
-                    throw matrix_error("matrix<T>::solve(): Singular matrix!");
+                    throw matrix_error("matrix<T,enableBoundsCheck>::solve(): Singular matrix!");
 
                 a1 = temp.m_[k][k];
                 for (y = k; y < temp.sizeY(); y++)
@@ -827,7 +873,7 @@ namespace util
                         temp.m_[x][y] -= a1 * temp.m_[k][y];
                 }
             }
-            matrix<T> reval(v.sizeX(), v.sizeY());
+            matrix<T, enableBoundsCheck> reval(v.sizeX(), v.sizeY());
             for (k = 0; k < v.sizeY(); k++)
                 for (int m = int(sizeX()) - 1; m >= 0; m--)
                 {
@@ -845,27 +891,26 @@ namespace util
          */
         T det() const
         {
-            checkSquare(*this, "matrix<T>::det()");
-            size_t x, y, k;
+            checkSquare(*this, "matrix<T,enableBoundsCheck>::det()");
             T piv(0);
             T reval = T(1.0);
 
-            matrix<T> temp(*this);
+            matrix<T, enableBoundsCheck> temp(*this);
 
-            for (k = 0; k < sizeX(); k++)
+            for (size_t k = 0; k < sizeX(); k++)
             {
                 int indx = temp.pivot(k);
                 if (indx == -1)
                     return 0;
                 if (indx != 0)
                     reval = -reval;
-                reval = reval * temp.m_[k][k];
-                for (x = k + 1; x < sizeX(); x++)
+                reval *= temp(k, k);
+                for (size_t x = k + 1; x < sizeX(); x++)
                 {
-                    piv = temp.m_[x][k] / temp.m_[k][k];
+                    piv = temp(x, k) / temp(k, k);
 
-                    for (y = k + 1; y < sizeY(); y++)
-                        temp.m_[x][y] -= piv * temp.m_[k][y];
+                    for (size_t y = k + 1; y < sizeY(); y++)
+                        temp(x, y) -= piv * temp(k, y);
                 }
             }
             return reval;
@@ -880,9 +925,8 @@ namespace util
             T reval = T(0);
 
             for (size_t x = 0; x < sizeX(); x++)
-
                 for (size_t y = 0; y < sizeY(); y++)
-                    reval += m_[x][y] * m_[x][y];
+                    reval += (*this)(x, y)*(*this)(x, y);
             reval = sqrt(reval);
 
             return reval;
@@ -895,7 +939,7 @@ namespace util
         T cond()
         {
 
-            matrix<T> inv = !(*this);
+            matrix<T, enableBoundsCheck> inv = !(*this);
             return (norm() * inv.norm());
         }
 
@@ -909,24 +953,23 @@ namespace util
         {
             checkSquare(*this, "cofact(x,y)");
             checkBounds(*this, x, y, "cofact(x,y)");
-            size_t i, i1, j, j1;
 
-            matrix<T> temp(sizeX() - 1, sizeY() - 1);
+            matrix<T, enableBoundsCheck> subMat(sizeX() - 1, sizeY() - 1);
 
-            for (i = i1 = 0; i < sizeX(); i++)
+            for (size_t x1 = 0, x2 = 0; x1 < sizeX(); x1++)
             {
-                if (i == x)
+                if (x1 == x)
                     continue;
-                for (j = j1 = 0; j < sizeY(); j++)
+                for (size_t y1 = 0, y2 = 0; y1 < sizeY(); y1++)
                 {
-                    if (j == y)
+                    if (y1 == y)
                         continue;
-                    temp.m_[i1][j1] = m_[i][j];
-                    j1++;
+                    subMat(x2, y2) = (*this)(x1, y1);
+                    y2++;
                 }
-                i1++;
+                x2++;
             }
-            T cof = temp.det();
+            T cof = subMat.det();
 
             if ((x + y) % 2 == 1)
                 cof = -cof;
@@ -938,16 +981,15 @@ namespace util
          * Calculate adjoin of a matrix.
          * @return the adjoin
          */
-        matrix<T>&& adj()
+        matrix<T, enableBoundsCheck>&& adj()
         {
-            checkSquare(*this, "matrix<T>::adj()");
-            matrix<T> temp(sizeX(), sizeY());
+            checkSquare(*this, "matrix<T,enableBoundsCheck>::adj()");
+            matrix<T, enableBoundsCheck> reval(sizeX(), sizeY());
 
-            for (size_t i = 0; i < sizeX(); i++)
-
-                for (size_t j = 0; j < sizeY(); j++)
-                    temp.m_[j][i] = cofact(i, j);
-            return temp;
+            for (size_t x = 0; x < sizeX(); x++)
+                for (size_t y = 0; y < sizeY(); y++)
+                    reval(x, y) = cofact(x, y);
+            return reval;
         }
 
         /**
@@ -1081,7 +1123,7 @@ namespace util
          * @param rhs right-hand-side matrix
          * @return true if equal, false, otherwise
          */
-        friend bool operator==(const matrix<T>& lhs, const matrix<T>& rhs)
+        friend bool operator==(const matrix<T, enableBoundsCheck>& lhs, const matrix<T, enableBoundsCheck>& rhs)
         {
 
             return lhs.m_ == rhs.m_;
@@ -1093,7 +1135,7 @@ namespace util
          * @param rhs right-hand-side matrix
          * @return true if *NOT* equal, false, otherwise
          */
-        friend bool operator!=(const matrix<T>& lhs, const matrix<T>& rhs)
+        friend bool operator!=(const matrix<T, enableBoundsCheck>& lhs, const matrix<T, enableBoundsCheck>& rhs)
         {
 
             return !(lhs == rhs);
@@ -1105,7 +1147,7 @@ namespace util
          * @param m the matrix to read into
          * @return reference to the stream
          */
-        friend std::istream& operator>>(std::istream& istrm, matrix<T>& m)
+        friend std::istream& operator>>(std::istream& istrm, matrix<T, enableBoundsCheck>& m)
         {
             for (size_t y = 0; y < m.sizeY(); y++)
                 for (size_t x = 0; x < m.sizeX(); x++)
@@ -1124,7 +1166,7 @@ namespace util
          * @param m the matrix to write
          * @return reference to the stream
          */
-        friend std::ostream& operator<<(std::ostream& ostrm, const matrix<T>& m)
+        friend std::ostream& operator<<(std::ostream& ostrm, const matrix<T, enableBoundsCheck>& m)
         {
             for (size_t y = 0; y < m.sizeY(); y++)
             {
@@ -1162,7 +1204,6 @@ namespace util
                 return -1;
             if (k != (long long) (pivX))
             {
-
                 std::swap(row(k), row(pivX));
                 return k;
             }
@@ -1181,15 +1222,15 @@ namespace util
 
             std::stringstream ss;
             ss << location
-                << ": index ("
-                << x
-                << ","
-                << y
-                << ") is out of bounds ("
-                << lhs.sizeX()
-                << ","
-                << lhs.sizeY()
-                << ").";
+                    << ": index ("
+                    << x
+                    << ","
+                    << y
+                    << ") is out of bounds ("
+                    << lhs.sizeX()
+                    << ","
+                    << lhs.sizeY()
+                    << ").";
             throw matrix_error(ss.str());
         }
     }
