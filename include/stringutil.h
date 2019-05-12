@@ -1,14 +1,29 @@
-////////////////////////////////////////////////////////////////////////////////
-//
-// File Name:   stringutil.h
-// Description: string utility functions
-// Created on January 28, 2014, 12:40 PM
-// Author: Dieter Kybelksties
-//
-////////////////////////////////////////////////////////////////////////////////
+/*
+ * File Name:   stringutil.h
+ * Description: string utility functions
+ *
+ * Copyright (C) 2019 Dieter J Kybelksties
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+ *
+ * @date: 2014-01-28
+ * @author: Dieter J Kybelksties
+ */
 
-#ifndef NS_UTIL_STRINGUTIL_H
-#define	NS_UTIL_STRINGUTIL_H
+#ifndef NS_UTIL_STRINGUTIL_H_INCLUDED
+#define NS_UTIL_STRINGUTIL_H_INCLUDED
 
 #include <string>
 #include <iostream>
@@ -20,9 +35,9 @@
 #include <iterator>
 #include <algorithm>
 #include <ctime>    // for struct tm
-#include <tr1/unordered_set>
-#include <tr1/unordered_map>
-#include <tr1/functional>
+#include <unordered_set>
+#include <unordered_map>
+#include <functional>
 
 #if defined DO_TRACE_
 
@@ -44,6 +59,7 @@
 
 namespace util
 {
+
     enum NumberClass
     {
         NONE, ///< This is not a number (it is a free man!)
@@ -51,6 +67,7 @@ namespace util
         UINT, ///< An unsigned integer
         FLOAT ///< A floating point number
     };
+
     enum StripTrimMode
     {
         FRONT = 0x01, ///< Strip or trim the left-hand-side
@@ -62,7 +79,9 @@ namespace util
         ALL = FRONT | INSIDE | BACK ///< Strip or trim all occurences in the string
     };
 
-    /// Convert objects to a string, provided a ostream - \<\< operator is defined.
+    /**
+     * Convert objects to a string, provided a ostream - \<\< operator is defined.
+     */
     template <typename T_>
     inline std::string asString(const T_& v)
     {
@@ -71,9 +90,11 @@ namespace util
         return ss.str();
     }
 
-    /// Generic ostream - \<\< operator for vectors.
+    /**
+     * Generic ostream - \<\< operator for vectors.
+     */
     template<typename T_, typename Alloc_>
-    inline std::ostream& operator <<(std::ostream& os, const std::vector<T_, Alloc_>& vec)
+    inline std::ostream& operator<<(std::ostream& os, const std::vector<T_, Alloc_>& vec)
     {
         if (!vec.empty())
         {
@@ -86,9 +107,11 @@ namespace util
         return os;
     }
 
-    /// Generic ostream - \<\< operator for double ended queues.
+    /**
+     * Generic ostream - \<\< operator for double ended queues.
+     */
     template<typename T_, typename Alloc_>
-    inline std::ostream& operator <<(std::ostream& os, const std::deque<T_, Alloc_>& vec)
+    inline std::ostream& operator<<(std::ostream& os, const std::deque<T_, Alloc_>& vec)
     {
         if (!vec.empty())
         {
@@ -101,17 +124,17 @@ namespace util
         return os;
     }
 
-    /// Generic ostream - \<\< operator for unordered sets.
+    /**
+     * Generic ostream - \<\< operator for unordered sets.
+     */
     template<typename Value, typename Hash, typename Pred, typename Alloc>
-    inline std::ostream& operator <<(std::ostream& os,
-                                     const std::tr1::unordered_set<Value, Hash, Pred, Alloc>& vec)
+    inline std::ostream& operator<<(std::ostream& os,
+                                    const std::unordered_set<Value, Hash, Pred, Alloc>& vec)
     {
         if (!vec.empty())
         {
             os << "{~ ";
-            for (typename std::tr1::unordered_set<Value, Hash, Pred, Alloc>::const_iterator it = vec.begin();
-                 it != vec.end();
-                 it++)
+            for (auto it = vec.begin(); it != vec.end(); it++)
             {
                 os << *it << " ";
             }
@@ -122,25 +145,27 @@ namespace util
         return os;
     }
 
-    /// Generic ostream - \<\< operator for pairs.
+    /**
+     * Generic ostream - \<\< operator for pairs.
+     */
     template<typename T1_, typename T2_>
-    inline std::ostream& operator <<(std::ostream& os, const std::pair<T1_, T2_>& p)
+    inline std::ostream& operator<<(std::ostream& os, const std::pair<T1_, T2_>& p)
     {
         os << "(" << p.first << "->" << p.second << ")";
         return os;
     }
 
-    /// Generic ostream - \<\< operator for unordered maps.
+    /**
+     * Generic ostream - \<\< operator for unordered maps.
+     */
     template<typename Key, typename Value, typename Hash, typename Pred, typename Alloc>
-    inline std::ostream& operator <<(std::ostream& os,
-                                     const std::tr1::unordered_map<Key, Value, Hash, Pred, Alloc>& m)
+    inline std::ostream& operator<<(std::ostream& os,
+                                    const std::unordered_map<Key, Value, Hash, Pred, Alloc>& m)
     {
         if (!m.empty())
         {
             os << "{~ ";
-            for (typename std::tr1::unordered_map<Key, Value, Hash, Pred, Alloc>::const_iterator it = m.begin();
-                 it != m.end();
-                 it++)
+            for (auto it = m.begin(); it != m.end(); it++)
             {
                 os << *it << " ";
             }
@@ -151,16 +176,16 @@ namespace util
         return os;
     }
 
-    /// Generic ostream - \<\< operator for standard (ordered) maps.
+    /**
+     * Generic ostream - \<\< operator for standard (ordered) maps.
+     */
     template<typename T1_, typename T2_, typename Compare_, typename Alloc_>
-    inline std::ostream& operator <<(std::ostream& os, const std::map<T1_, T2_, Compare_, Alloc_>& m)
+    inline std::ostream& operator<<(std::ostream& os, const std::map<T1_, T2_, Compare_, Alloc_>& m)
     {
         if (!m.empty())
         {
             os << "[ ";
-            for (typename std::map<T1_, T2_, Compare_, Alloc_>::const_iterator it = m.begin();
-                 it != m.end();
-                 it++)
+            for (auto it = m.begin(); it != m.end(); it++)
             {
                 os << *it << " ";
             }
@@ -171,7 +196,9 @@ namespace util
         return os;
     }
 
-    /// Create a vector from a given set.
+    /**
+     * Create a vector from a given set.
+     */
     template<typename T_, typename Compare_, typename Alloc_>
     inline std::vector<T_, Alloc_> vectorFromSet(const std::set<T_, Compare_, Alloc_>& s)
     {
@@ -181,9 +208,11 @@ namespace util
         return reval;
     }
 
-    /// Generic ostream - \<\< operator for standard (ordered) set.
+    /**
+     * Generic ostream - \<\< operator for standard (ordered) set.
+     */
     template<typename T_, typename Compare_, typename Alloc_>
-    inline std::ostream& operator <<(std::ostream& os, const std::set<T_, Compare_, Alloc_>& s)
+    inline std::ostream& operator<<(std::ostream& os, const std::set<T_, Compare_, Alloc_>& s)
     {
         if (!s.empty())
         {
@@ -197,7 +226,9 @@ namespace util
         return os;
     }
 
-    /// Create a set from a given vector (will remove duplicates).
+    /**
+     * Create a set from a given vector (will remove duplicates).
+     */
     template<typename T_, typename Alloc_>
     inline std::set<T_> setFromVector(const std::vector<T_, Alloc_>& vec)
     {
@@ -207,19 +238,19 @@ namespace util
         return reval;
     }
 
-    /// Create a standard (ordered) set from a given unordered set.
+    /**
+     * Create a standard (ordered) set from a given unordered set.
+     */
     template<typename Value,
     typename Hash,
     typename Pred,
     typename Alloc>
-    inline std::set<Value> setFromUnordered(const std::tr1::unordered_set<Value, Hash, Pred, Alloc>& uSet)
+    inline std::set<Value> setFromUnordered(const std::unordered_set<Value, Hash, Pred, Alloc>& uSet)
     {
         std::set<Value> reval;
         if (!uSet.empty())
         {
-            for (typename std::tr1::unordered_set<Value, Hash, Pred, Alloc>::const_iterator it = uSet.begin();
-                 it != uSet.end();
-                 it++)
+            for (auto it = uSet.begin(); it != uSet.end(); it++)
             {
                 reval.insert(*it);
             }
@@ -227,7 +258,9 @@ namespace util
         return reval;
     }
 
-    /// Create an enclosed string copy of out-stream-able object.
+    /**
+     * Create an enclosed string copy of out-stream-able object.
+     */
     template <typename T_>
     inline std::string enclosed(const T_& v, const std::string& brace = "\"")
     {
@@ -236,7 +269,9 @@ namespace util
         return ss.str();
     }
 
-    /// Create a string copy of out-stream-able object enclosed by custom braces.
+    /**
+     * Create a string copy of out-stream-able object enclosed by custom braces.
+     */
     template <typename T_>
     inline std::string eclosed(const T_& v,
                                const std::string& leftBrace,
@@ -248,72 +283,99 @@ namespace util
         return ss.str();
     }
 
-    /// Create a string copy of out-stream-able object enclosed by quote(").
+    /**
+     * Create a string copy of out-stream-able object enclosed by quote(").
+     */
     template <typename T_>
     inline std::string quoted(const T_& v)
     {
         return enclosed(v, "\"");
     }
 
-    /// Create a string copy of out-stream-able object enclosed by single quote(').
+    /**
+     * Create a string copy of out-stream-able object enclosed by single quote(').
+     */
     template <typename T_>
     inline std::string squoted(const T_& v)
     {
         return enclosed(v, "'");
     }
 
-    /// Create a string copy of out-stream-able object enclosed by braces({ and }).
+    /**
+     * Create a string copy of out-stream-able object enclosed by braces({ and }).
+     */
     template <typename T_>
     inline std::string braced(const T_& v)
     {
         return enclosed(v, "{", "}");
     }
 
-    /// Create a string copy of out-stream-able object enclosed by brackets([ and ]).
+    /**
+     * Create a string copy of out-stream-able object enclosed by
+     *  brackets([ and ]).
+     */
     template <typename T_>
     inline std::string bracketed(const T_& v)
     {
         return enclosed(v, "[", "]");
     }
 
-    /// Create a string copy of out-stream-able object enclosed by angled braces(\< and \>).
+    /**
+     * Create a string copy of out-stream-able object enclosed by angled
+     *  braces(\< and \>).
+     */
     template <typename T_>
     inline std::string angled(const T_& v)
     {
         return enclosed(v, "<", ">");
     }
 
-    /// Create a string copy of out-stream-able object enclosed by round braces.
+    /**
+     * Create a string copy of out-stream-able object enclosed by round braces.
+     */
     template <typename T_>
     inline std::string roundBraced(const T_& v)
     {
         return enclosed(v, "(", ")");
     }
 
-    /// Character traits for case-insensitive string type.
-    /// Inherits all the functions that we don't need to override for
-    /// case-insensitivity.
+    /**
+     * Character traits for case-insensitive string type.
+     * Inherits all the functions that we don't need to override for
+     * case-insensitivity.
+     */
     struct ci_char_traits : public std::char_traits<char>
     {
-        /// Equality of two characters ignoring their case.
+
+        /**
+         * Equality of two characters ignoring their case.
+         */
         static bool eq(char c1, char c2)
         {
             return toupper(c1) == toupper(c2);
         }
-        /// Non-equality of two characters ignoring their case.
+
+        /**
+         * Non-equality of two characters ignoring their case.
+         */
         static bool ne(char c1, char c2)
         {
             return toupper(c1) != toupper(c2);
         }
-        /// Less-than of two characters ignoring their case.
+
+        /**
+         * Less-than of two characters ignoring their case.
+         */
         static bool lt(char c1, char c2)
         {
             return toupper(c1) < toupper(c2);
         }
 
-        /// Returns the 1-based index of the first different char. This index is
-        /// multiplied by -1, if s1 \< s2 and 0 if s1==s2 up to n-th char or if
-        /// the first character == '\0'
+        /**
+         * Returns the 1-based index of the first different char. This index is
+         * multiplied by -1, if s1 \< s2 and 0 if s1==s2 up to n-th char or if
+         * the first character == '\0'
+         */
         static int compare(const char* s1, const char* s2, size_t n)
         {
             if (n == 0)
@@ -331,7 +393,9 @@ namespace util
             return i == n ? 0 : lt(*s1, *s2) ? -i - 1 : eq(*s1, *s2) ? 0 : i + 1;
         }
 
-        /// Returns the position of char a in string s of length n.
+        /**
+         * Returns the position of char a in string s of length n.
+         */
         static const char* find(const char* s, int n, char a)
         {
             const char* reval = 0;
@@ -345,173 +409,301 @@ namespace util
         }
     };
 
-    typedef std::basic_string<char, ci_char_traits> ci_string; ///< Case-insensitive string.
+    /**
+     * Case-insensitive string.
+     */
+    typedef std::basic_string<char, ci_char_traits> ci_string;
 
-    /// Trim left and/or right outside of standard string.
-    void trim(std::string& v, const std::string& trimChars = "\t \r\n", StripTrimMode m = OUTSIDE);
-    /// Trim left and/or right outside of case insensitive string.
-    void trim(ci_string& v, const ci_string& trimChars = "\t \r\n", StripTrimMode m = OUTSIDE);
+    /**
+     * Trim left and/or right outside of standard string.
+     */
+    void trim(std::string& v,
+              const std::string& trimChars = "\t \r\n",
+              StripTrimMode m = OUTSIDE);
 
-    /// Trim left and/or right  and/or interior of standard string.
-    void strip(std::string& v, const std::string& stripChars = "\t \r\n", StripTrimMode m = ALL);
-    /// Trim left and/or right  and/or interior of case insensitive string.
-    void strip(ci_string& v, const ci_string& stripChars = "\t \r\n", StripTrimMode m = ALL);
+    /**
+     * Trim left and/or right outside of case insensitive string.
+     */
+    void trim(ci_string& v,
+              const ci_string& trimChars = "\t \r\n",
+              StripTrimMode m = OUTSIDE);
 
-    /// Replace occurrences of chars left and/or right  and/or interior of standard string with replacement char.
-    void replaceChar(std::string& v, const std::string& stripChars = "\t \r\n", char repl = ' ', StripTrimMode m = ALL);
-    /// Replace occurrences of chars left and/or right  and/or interior of case insensitive string with replacement char.
-    void replaceChar(ci_string& v, const ci_string& stripChars = "\t \r\n", char repl = ' ', StripTrimMode m = ALL);
+    /**
+     * Trim left and/or right  and/or interior of standard string.
+     */
+    void strip(std::string& v,
+               const std::string& stripChars = "\t \r\n",
+               StripTrimMode m = ALL);
 
-    /// Try to convert a string-representation into a bool-value.
+    /**
+     * Trim left and/or right  and/or interior of case insensitive string.
+     */
+    void strip(ci_string& v,
+               const ci_string& stripChars = "\t \r\n",
+               StripTrimMode m = ALL);
+
+    /**
+     * Replace occurrences of chars left and/or right  and/or interior of
+     *  standard string with replacement char.
+     */
+    void replaceChar(std::string& v,
+                     const std::string& stripChars = "\t \r\n",
+                     char repl = ' ', StripTrimMode m = ALL);
+
+    /**
+     * Replace occurrences of chars left and/or right  and/or interior of case
+     *  insensitive string with replacement char.
+     */
+    void replaceChar(ci_string& v,
+                     const ci_string& stripChars = "\t \r\n",
+                     char repl = ' ',
+                     StripTrimMode m = ALL);
+
+    /**
+     * Try to convert a string-representation into a bool-value.
+     */
     bool scanBoolString(const std::string& strVal, bool& result);
-    /// Try to convert a string-representation into a bool-value.
+
+    /**
+     * Try to convert a string-representation into a bool-value.
+     */
     bool scanBoolString(const ci_string& strVal, bool& result);
 
-    /// Shortcut to trim only left occurrences of trimChars.
+    /**
+     * Shortcut to trim only left occurrences of trimChars.
+     */
     inline void trimLeft(std::string& v, const std::string& trimChars = "\t \r\n")
     {
         return trim(v, trimChars, LEFT);
     }
-    /// Shortcut to strip only left occurrences of trimChars.
+
+    /**
+     * Shortcut to strip only left occurrences of trimChars.
+     */
     inline void trimLeft(ci_string& v, const ci_string& trimChars = "\t \r\n")
     {
         return trim(v, trimChars, LEFT);
     }
 
-    /// Generic ostream - \<\< operator for case-insensitive strings.
-    inline std::ostream& operator <<(std::ostream& os, const ci_string& str)
+    /**
+     * Generic ostream - \<\< operator for case-insensitive strings.
+     */
+    inline std::ostream& operator<<(std::ostream& os, const ci_string& str)
     {
         os << str.c_str();
         return os;
     }
 
-    /// Shortcut to trim only right occurrences of trimChars.
+    /**
+     * Shortcut to trim only right occurrences of trimChars.
+     */
     inline void trimRight(std::string& v, const std::string& trimChars = "\t \r\n")
     {
         return trim(v, trimChars, RIGHT);
     }
-    /// Shortcut to trim only right occurrences of trimChars.
+
+    /**
+     * Shortcut to trim only right occurrences of trimChars.
+     */
     inline void trimRight(ci_string& v, const ci_string& trimChars = "\t \r\n")
     {
         return trim(v, trimChars, RIGHT);
     }
 
-    /// Shortcut to strip only left occurrences of stripChars.
-    inline void stripLeft(std::string& v, const std::string& stripChars = "\t \r\n")
+    /**
+     * Shortcut to strip only left occurrences of stripChars.
+     */
+    inline void stripLeft(std::string& v,
+                          const std::string& stripChars = "\t \r\n")
     {
         return strip(v, stripChars, LEFT);
     }
-    /// Shortcut to strip only left occurrences of stripChars.
-    inline void stripLeft(ci_string& v, const ci_string& stripChars = "\t \r\n")
+
+    /**
+     * Shortcut to strip only left occurrences of stripChars.
+     */
+    inline void stripLeft(ci_string& v,
+                          const ci_string& stripChars = "\t \r\n")
     {
         return strip(v, stripChars, LEFT);
     }
-    /// Shortcut to strip only right occurrences of stripChars.
-    inline void stripRight(std::string& v, const std::string& stripChars = "\t \r\n")
+
+    /**
+     * Shortcut to strip only right occurrences of stripChars.
+     */
+    inline void stripRight(std::string& v,
+                           const std::string& stripChars = "\t \r\n")
     {
         return strip(v, stripChars, RIGHT);
     }
-    /// Shortcut to strip only right occurrences of stripChars.
-    inline void stripRight(ci_string& v, const ci_string& stripChars = "\t \r\n")
+
+    /**
+     * Shortcut to strip only right occurrences of stripChars.
+     */
+    inline void stripRight(ci_string& v,
+                           const ci_string& stripChars = "\t \r\n")
     {
         return strip(v, stripChars, RIGHT);
     }
 
-    /// Shortcut to replace only left occurrences of stripChars.
-    inline void replaceCharLeft(std::string& v, const std::string& stripChars = "\t \r\n", char repl = ' ')
-    {
-        replaceChar(v, stripChars, repl, LEFT);
-    }
-    /// Shortcut to replace only left occurrences of stripChars.
-    inline void replaceCharLeft(ci_string& v, const ci_string& stripChars = "\t \r\n", char repl = ' ')
+    /**
+     * Shortcut to replace only left occurrences of stripChars.
+     */
+    inline void replaceCharLeft(std::string& v,
+                                const std::string& stripChars = "\t \r\n",
+                                char repl = ' ')
     {
         replaceChar(v, stripChars, repl, LEFT);
     }
 
-    /// Shortcut to replace only right occurrences of stripChars.
-    inline void replaceCharRight(std::string& v, const std::string& stripChars = "\t \r\n", char repl = ' ')
+    /**
+     * Shortcut to replace only left occurrences of stripChars.
+     */
+    inline void replaceCharLeft(ci_string& v,
+                                const ci_string& stripChars = "\t \r\n",
+                                char repl = ' ')
     {
-        replaceChar(v, stripChars, repl, RIGHT);
+        replaceChar(v, stripChars, repl, LEFT);
     }
-    /// Shortcut to replace only right occurrences of stripChars.
-    inline void replaceCharRight(ci_string& v, const ci_string& stripChars = "\t \r\n", char repl = ' ')
+
+    /**
+     * Shortcut to replace only right occurrences of stripChars.
+     */
+    inline void replaceCharRight(std::string& v,
+                                 const std::string& stripChars = "\t \r\n",
+                                 char repl = ' ')
     {
         replaceChar(v, stripChars, repl, RIGHT);
     }
 
-    /// Create an all-lower-case copy of standard string.
+    /**
+     * Shortcut to replace only right occurrences of stripChars.
+     */
+    inline void replaceCharRight(ci_string& v,
+                                 const ci_string& stripChars = "\t \r\n",
+                                 char repl = ' ')
+    {
+        replaceChar(v, stripChars, repl, RIGHT);
+    }
+
+    /**
+     * Create an all-lower-case copy of standard string.
+     */
     inline std::string toLower(std::string str)
     {
         std::transform(str.begin(), str.end(), str.begin(), (char(*)(char))tolower);
         return str;
     }
 
-    /// Create an all-lower-case copy of case-insensitive string.
+    /**
+     * Create an all-lower-case copy of case-insensitive string.
+     */
     inline std::string toLower(ci_string str)
     {
         std::transform(str.begin(), str.end(), str.begin(), (char(*)(char))tolower);
         return str.c_str();
     }
 
-    /// Create an all-upper-case copy of standard string.
+    /**
+     * Create an all-upper-case copy of standard string.
+     */
     inline std::string toUpper(std::string str)
     {
         std::transform(str.begin(), str.end(), str.begin(), (char(*)(char))toupper);
         return str;
     }
 
-    /// Create an all-upper-case copy of case-insensitive string.
+    /**
+     * Create an all-upper-case copy of case-insensitive string.
+     */
     inline std::string toUpper(ci_string str)
     {
-        std::transform(str.begin(), str.end(), str.begin(), (char(*)(char))toupper);
+        std::transform(str.begin(),
+                       str.end(),
+                       str.begin(),
+                       (char(*)(char))toupper);
         return str.c_str();
     }
-    /// Split a string into a vector of strings using a char sep as separator.
-    std::vector<std::string> splitIntoVector(const std::string& str, char sep);
-    /// Split a string into a vector of strings using a char sep as separator.
-    std::vector<std::string> splitIntoVector(const std::string& str, const std::string& sep);
-    /// Split a case-insensitive string into a vector of case-insensitive using a char sep as separator.
-    std::vector<ci_string> splitIntoVector(const ci_string& str, char sep);
-    /// Split a case-insensitive string into a vector of case-insensitive using a char sep as separator.
-    std::vector<ci_string> splitIntoVector(const ci_string& str, const ci_string& sep);
 
-    /// Split a string into a set of strings using a char sep as separator.
+    /**
+     * Split a string into a vector of strings using a char sep as separator.
+     */
+    std::vector<std::string> splitIntoVector(const std::string& str, char sep);
+
+    /**
+     * Split a string into a vector of strings using a char sep as separator.
+     */
+    std::vector<std::string> splitIntoVector(const std::string& str,
+                                             const std::string& sep);
+
+    /**
+     * Split a case-insensitive string into a vector of case-insensitive using a
+     *  char sep as separator.
+     */
+    std::vector<ci_string> splitIntoVector(const ci_string& str, char sep);
+
+    /**
+     * Split a case-insensitive string into a vector of case-insensitive using a
+     *  char sep as separator.
+     */
+    std::vector<ci_string> splitIntoVector(const ci_string& str,
+                                           const ci_string& sep);
+
+    /**
+     * Split a string into a set of strings using a char sep as separator.
+     */
     std::set<std::string> splitIntoSet(const std::string& str, char sep);
-    /// Split a string into a set of strings using a char sep as separator.
-    std::set<std::string> splitIntoSet(const std::string& str, const std::string& sep);
-    /// Split a case-insensitive string into a set of strings using a char sep as separator.
+
+    /**
+     * Split a string into a set of strings using a char sep as separator.
+     */
+    std::set<std::string> splitIntoSet(const std::string& str,
+                                       const std::string& sep);
+
+    /**
+     * Split a case-insensitive string into a set of strings using a char sep as
+     *  separator.
+     */
     std::set<ci_string> splitIntoSet(const ci_string& str, char sep);
-    /// Split a case-insensitive string into a set of strings using a char sep as separator.
+
+    /**
+     * Split a case-insensitive string into a set of strings using a char sep as
+     * separator.
+     */
     std::set<ci_string> splitIntoSet(const ci_string& str, const ci_string& sep);
 
-    /// Classify a string into one of the classes NONE, INT, UINT, FLOAT.
-    /// invalid strings have class NONE
-    /// integral types INT or UINT
-    /// and valid floating point strings are FLOAT
-    /// this function is overridden to allow for case-(in-)sensitive strings
+    /**
+     * Classify a string into one of the classes NONE, INT, UINT, FLOAT.
+     * invalid strings have class NONE
+     * integral types INT or UINT
+     * and valid floating point strings are FLOAT
+     * this function is overridden to allow for case-(in-)sensitive strings
+     */
     NumberClass classifyNumberString(const std::string& str);
-    /// Case-insensitive version of NumberClass classifyNumberString(const std::string& str).
+
+    /**
+     * Case-insensitive version of NumberClass classifyNumberString(const std::string& str).
+     */
     NumberClass classifyNumberString(const ci_string& str);
 
 }; // namespace util
 
 namespace std
 {
-    namespace tr1
+    /// Override the standard hash function for case insensitive strings
+    /// to enable as elements in hash containers
+
+    template<>
+    struct hash<util::ci_string>
+    : public unary_function<util::ci_string, size_t>
     {
-        /// Override the standard hash function for case insensitive strings
-        /// to enable as elements in hash containers
-        template<>
-        struct hash<util::ci_string>
-        : public unary_function<util::ci_string, size_t>
+
+        std::size_t operator()(const util::ci_string& s) const
         {
-            std::size_t operator()(const util::ci_string& s) const
-            {
-                hash<string> hasher;
-                return hasher(toLower(s));
-            }
-        };
-    }
+            hash<string> hasher;
+            return hasher(toLower(s));
+        }
+    };
 }
-#endif	// NS_UTIL_STRINGUTIL_H
+#endif // NS_UTIL_STRINGUTIL_H_INCLUDED
 
