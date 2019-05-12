@@ -1,16 +1,30 @@
-////////////////////////////////////////////////////////////////////////////////
-//
-// File Name:   csvutil.cc
-// Description: comma separated value utility functions
-// Created on January 28, 2014, 12:40 PM
-// Author: Dieter Kybelksties
-//
-////////////////////////////////////////////////////////////////////////////////
+/*
+ * File Name:   csvutil.cc
+ * Description: comma separated value utility functions
+ *
+ * Copyright (C) 2019 Dieter J Kybelksties
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+ *
+ * @date: 2014-01-28
+ * @author: Dieter J Kybelksties
+ */
 
 #include <csvutil.h>
 
 using namespace std;
-using namespace std::tr1;
 using namespace boost;
 using namespace posix_time;
 using namespace gregorian;
@@ -18,25 +32,27 @@ using namespace gregorian;
 namespace util
 {
     const int CSVAnalyzer::xalloc_index = ios_base::xalloc();
+
     unordered_map<ci_string, std::string> typeAliases()
     {
-        std::tr1::unordered_map<ci_string, string> reval;
-        reval["b"] = reval["bool"] = reval["boolean"] = reval["truefalse"] = reval[typeid(VAR_BOOL).name()] = "bool";
-        reval["c"] = reval["char"] = reval["character"] = reval["letter"] = reval[typeid(VAR_CHAR).name()] = "char";
-        reval["i"] = reval["int"] = reval["integer"] = reval[typeid(VAR_INT).name()] = "int";
-        reval["u"] = reval["uint"] = reval["unsigned"] = reval["unsigned int"] = reval["ordinal"] = reval[typeid(VAR_UINT).name()] = "uint";
-        reval["f"] = reval["float"] = reval["floating point"] = reval["real"] = reval[typeid(VAR_FLOAT).name()] = "float";
-        reval["d"] = reval["date"] = reval[typeid(VAR_DATE).name()] = "date";
-        reval["s"] = reval["string"] = reval["text"] = reval[typeid(VAR_STRING).name()] = "string";
+        std::unordered_map<ci_string, string> reval;
+        reval["b"] = reval["bool"] = reval["boolean"] = reval["truefalse"] = reval[typeid (VAR_BOOL).name()] = "bool";
+        reval["c"] = reval["char"] = reval["character"] = reval["letter"] = reval[typeid (VAR_CHAR).name()] = "char";
+        reval["i"] = reval["int"] = reval["integer"] = reval[typeid (VAR_INT).name()] = "int";
+        reval["u"] = reval["uint"] = reval["unsigned"] = reval["unsigned int"] = reval["ordinal"] = reval[typeid (VAR_UINT).name()] = "uint";
+        reval["f"] = reval["float"] = reval["floating point"] = reval["real"] = reval[typeid (VAR_FLOAT).name()] = "float";
+        reval["d"] = reval["date"] = reval[typeid (VAR_DATE).name()] = "date";
+        reval["s"] = reval["string"] = reval["text"] = reval[typeid (VAR_STRING).name()] = "string";
         reval["e"] = reval["exp"] = reval["exponential"] = "exponential";
         reval["g"] = reval["gauss"] = reval["gaussian"] = reval["normal"] = reval["bell"] = "gaussian";
         return reval;
     }
     unordered_map<ci_string, std::string> aliasMap = typeAliases();
+
     CSVAnalyzer::CSVAnalyzer(const string& headerStr,
                              const string& typeStr,
                              const string& outSeparator)
-    : inpType_(initial)
+    : inpType_(rowInputType::initial)
     , outSeparator_(outSeparator)
     {
         if (!headerStr.empty())
@@ -44,11 +60,13 @@ namespace util
         if (!typeStr.empty())
             setTypes(typeStr);
     }
-    CSVAnalyzer& CSVAnalyzer::operator <<(rowInputType rowType)
+
+    CSVAnalyzer& CSVAnalyzer::operator<<(rowInputType rowType)
     {
         inpType_ = rowType;
         return *this;
     }
+
     bool CSVAnalyzer::splitLine(const string& str,
                                 vector<string>& result,
                                 const string& inSeparator)
@@ -60,6 +78,7 @@ namespace util
         }
         return result.size() > 0;
     }
+
     bool CSVAnalyzer::setHeaders(const string& headerString,
                                  bool replaceHeaders,
                                  const string& inSeparator)
@@ -92,9 +111,10 @@ namespace util
 
         return true;
     }
+
     bool CSVAnalyzer::resolveTypeAlias(string& type)
     {
-        std::tr1::unordered_map<ci_string, string>::iterator found = aliasMap.find(ci_string(type.c_str()));
+        std::unordered_map<ci_string, string>::iterator found = aliasMap.find(ci_string(type.c_str()));
         bool reval = false;
         if (found != aliasMap.end())
         {
@@ -104,6 +124,7 @@ namespace util
 
         return reval;
     }
+
     bool CSVAnalyzer::setTypes(const string& typeString,
                                const string& inSeparator)
     {
@@ -143,6 +164,7 @@ namespace util
 
         return true;
     }
+
     string CSVAnalyzer::guessType(const string& stringVal)
     {
         // treat 0 or 1 always as integers
@@ -187,6 +209,7 @@ namespace util
 
         return reval;
     }
+
     bool CSVAnalyzer::createDefaultHeader(const vector<string>& values)
     {
         string header = "";
@@ -194,6 +217,7 @@ namespace util
             header += "Column" + asString(i) + (i == values.size() - 1 ? "" : ",");
         return setHeaders(header);
     }
+
     bool CSVAnalyzer::createTypesFromValues(const vector<string>& values)
     {
         string types = "";
@@ -202,6 +226,7 @@ namespace util
 
         return setTypes(types);
     }
+
     bool CSVAnalyzer::setValues(const string& valueString,
                                 bool preserveRows,
                                 const string& inSeparator)
@@ -262,30 +287,37 @@ namespace util
 
         return true;
     }
+
     bool CSVAnalyzer::headerPresent() const
     {
         return data_.size() > 0 && data_[0].size() > 0;
     }
+
     bool CSVAnalyzer::typesPresent() const
     {
         return data_.size() > 0 && data_[0].size() > 1;
     }
+
     size_t CSVAnalyzer::columns() const
     {
         return data_.size();
     }
+
     size_t CSVAnalyzer::lines() const
     {
         return columns() > 0 && data_[0].size() > 2 ? data_[0].size() - 2 : 0;
     }
+
     string CSVAnalyzer::header(size_t col) const
     {
         return headerPresent() ? asString(data_[col][0]) : "";
     }
+
     string CSVAnalyzer::type(size_t col) const
     {
         return typesPresent() ? asString(data_[col][1]) : "";
     }
+
     void CSVAnalyzer::appendColumn(const string& header,
                                    const string& tp,
                                    const Var& defaultValue)
@@ -298,18 +330,20 @@ namespace util
         col[1] = ltp;
         data_.push_back(col);
     }
+
     Var CSVAnalyzer::getVar(size_t column, size_t index) const
     {
         if (column >= columns())
         {
-            throw index_error(index_error::col, column, columns() - 1);
+            throw index_error(index_error::idx_type::col, column, columns() - 1);
         }
         if (index >= lines())
         {
-            throw index_error(index_error::row, index, lines() - 1);
+            throw index_error(index_error::idx_type::row, index, lines() - 1);
         }
         return data_[column][index + 2];
     }
+
     Var CSVAnalyzer::getVar(const string& header, size_t index) const
     {
         HEADER_INDEX_CITER found = headerIndex_.find(header);
@@ -320,6 +354,7 @@ namespace util
         size_t column = found->second;
         return getVar(column, index);
     }
+
     vector<VAR_FLOAT> CSVAnalyzer::getFloatVector(size_t column) const
     {
         vector<VAR_FLOAT> reval;
@@ -332,6 +367,7 @@ namespace util
 
         return reval;
     }
+
     vector<VAR_FLOAT> CSVAnalyzer::getFloatVector(const std::string& header) const
     {
         HEADER_INDEX_CITER found = headerIndex_.find(header);
@@ -342,6 +378,7 @@ namespace util
         size_t column = found->second;
         return getFloatVector(column);
     }
+
     CSVAnalyzer::COLUMN_RANGE CSVAnalyzer::getRange(size_t column) const
     {
         COLUMN_RANGE reval;
@@ -352,22 +389,25 @@ namespace util
         }
         return reval;
     }
+
     CSVAnalyzer::COLUMN_TYPE_ITER CSVAnalyzer::begin(size_t column)
     {
         if (column >= columns())
         {
-            throw index_error(index_error::col, column, columns() - 1);
+            throw index_error(index_error::idx_type::col, column, columns() - 1);
         }
         return data_[column].begin();
     }
+
     CSVAnalyzer::COLUMN_TYPE_ITER CSVAnalyzer::end(size_t column)
     {
         if (column >= columns())
         {
-            throw index_error(index_error::col, column, columns() - 1);
+            throw index_error(index_error::idx_type::col, column, columns() - 1);
         }
         return data_[column].end();
     }
+
     CSVAnalyzer::COLUMN_TYPE_ITER CSVAnalyzer::begin(const string& header)
     {
         HEADER_INDEX_CITER found = headerIndex_.find(header);
@@ -377,6 +417,7 @@ namespace util
         }
         return begin(found->second);
     }
+
     CSVAnalyzer::COLUMN_TYPE_ITER CSVAnalyzer::end(const string& header)
     {
         HEADER_INDEX_CITER found = headerIndex_.find(header);
@@ -386,6 +427,7 @@ namespace util
         }
         return end(found->second);
     }
+
     CSVAnalyzer CSVAnalyzer::getSub(const vector<string>& headers) const
     {
         CSVAnalyzer reval;
@@ -404,6 +446,7 @@ namespace util
 
         return reval;
     }
+
     CSVAnalyzer CSVAnalyzer::getSub(const string& header0,
                                     const string& header1,
                                     const string& header2,
@@ -429,6 +472,7 @@ namespace util
         if (!header9.empty()) v.push_back(header9);
         return getSub(v);
     }
+
     CSVAnalyzer CSVAnalyzer::getSub(const vector<size_t>& columns) const
     {
         CSVAnalyzer reval;
@@ -443,6 +487,7 @@ namespace util
 
         return reval;
     }
+
     CSVAnalyzer CSVAnalyzer::getSub(const size_t column0,
                                     const size_t column1,
                                     const size_t column2,
@@ -468,6 +513,7 @@ namespace util
         if (column9 < columns()) v.push_back(column9);
         return getSub(v);
     }
+
     bool CSVAnalyzer::write(const string& filename,
                             const string& outDelimiter,
                             fileFormatType tp)
@@ -478,7 +524,7 @@ namespace util
         if (!ofs.is_open())
             throw fileopen_error(filename);
         string str;
-        if ((tp & hasHeader) == hasHeader)
+        if ((tp & fileFormatType::hasHeader) == fileFormatType::hasHeader)
         {
             for (size_t i = 0; i < columns(); i++)
             {
@@ -487,7 +533,7 @@ namespace util
             }
             ofs << endl;
         }
-        if ((tp & hasType) == hasType)
+        if ((tp & fileFormatType::hasType) == fileFormatType::hasType)
         {
             for (size_t i = 0; i < columns(); i++)
             {
@@ -508,6 +554,7 @@ namespace util
         }
         return reval;
     }
+
     bool CSVAnalyzer::read(const string& filename,
                            const string& inDelimiter,
                            fileFormatType tp)
@@ -518,12 +565,12 @@ namespace util
         if (!ifs.is_open())
             throw fileopen_error(filename);
         string str;
-        if ((tp & hasHeader) == hasHeader)
+        if ((tp & fileFormatType::hasHeader) == fileFormatType::hasHeader)
         {
             getline(ifs, str);
             setHeaders(str, true, inDelimiter);
         }
-        if ((tp & hasType) == hasType)
+        if ((tp & fileFormatType::hasType) == fileFormatType::hasType)
         {
             getline(ifs, str);
             setTypes(str, inDelimiter);
@@ -536,30 +583,33 @@ namespace util
 
         return reval;
     }
+
     bool CSVAnalyzer::empty() const
     {
         return lines() == 0;
     }
-    CSVAnalyzer& CSVAnalyzer::operator <<(const string& row)
+
+    CSVAnalyzer& CSVAnalyzer::operator<<(const string& row)
     {
-        if (inpType_ == 0)
-            inpType_ = newData;
-        if (inpType_ == newData)
+        if (inpType_ == rowInputType(0))
+            inpType_ = rowInputType::newData;
+        if (inpType_ == rowInputType::newData)
         {
             setValues(row, false);
-            inpType_ = appendData;
+            inpType_ = rowInputType::appendData;
         }
-        else if (inpType_ == appendData)
+        else if (inpType_ == rowInputType::appendData)
             setValues(row, true);
-        else if (inpType_ == newHeader)
+        else if (inpType_ == rowInputType::newHeader)
             setHeaders(row, true);
-        else if (inpType_ == replaceHeader)
+        else if (inpType_ == rowInputType::replaceHeader)
             setHeaders(row, false);
-        else if (inpType_ == newType)
+        else if (inpType_ == rowInputType::newType)
             setTypes(row);
 
         return *this;
     }
+
     void CSVAnalyzer::convert(size_t i, size_t row, const string& tp)
     {
         string value = asString(getVar(i, row));
@@ -580,6 +630,7 @@ namespace util
         else if (tp == CSV_COLUMN_TYPE_DATE)
             data_[i][row + 2] = scanAs<VAR_DATE> (value);
     }
+
     bool CSVAnalyzer::eraseColumn(size_t col)
     {
         if (col >= columns())
@@ -589,6 +640,7 @@ namespace util
         data_.erase(data_.begin() + col);
         return true;
     }
+
     bool CSVAnalyzer::eraseColumn(const string& header)
     {
         HEADER_INDEX_CITER found = headerIndex_.find(header);
@@ -599,12 +651,14 @@ namespace util
         size_t column = found->second;
         return eraseColumn(column);
     }
+
     ostream& operator<<(ostream& os, CSVAnalyzer::verbosityType vt)
     {
         os.iword(CSVAnalyzer::xalloc_index) = vt;
         return os;
     }
-    ostream& operator <<(ostream& os, const CSVAnalyzer& csv)
+
+    ostream& operator<<(ostream& os, const CSVAnalyzer& csv)
     {
         CSVAnalyzer::verbosityType vt =
                 (CSVAnalyzer::verbosityType)os.iword(CSVAnalyzer::xalloc_index);

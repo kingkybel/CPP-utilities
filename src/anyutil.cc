@@ -1,11 +1,26 @@
-////////////////////////////////////////////////////////////////////////////////
-//
-// File Name:   anyutil.cc
-// Description: boost::any utility functions
-// Created on January 28, 2014, 12:40 PM
-// Author: Dieter Kybelksties
-//
-////////////////////////////////////////////////////////////////////////////////
+/*
+ * File Name:   anyutil.cc
+ * Description: boost::any utility functions
+ *
+ * Copyright (C) 2019 Dieter J Kybelksties
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+ *
+ * @date: 2014-01-28
+ * @author: Dieter J Kybelksties
+ */
 
 #include <anyutil.h>
 
@@ -13,64 +28,80 @@ namespace util
 {
     using namespace std;
     const int Var::xalloc_index = ios_base::xalloc();
+
     Var::Var()
     : value_(boost::any())
     {
     }
+
     Var::Var(const VAR_BOOL& v)
     : value_(v)
     {
     }
+
     Var::Var(const VAR_CHAR& v)
     : value_(v)
     {
     }
+
     Var::Var(const VAR_INT& v)
     : value_(v)
     {
     }
+
     Var::Var(const VAR_UINT& v)
     : value_(v)
     {
     }
+
     Var::Var(const VAR_FLOAT& v)
     : value_(v)
     {
     }
+
     Var::Var(const VAR_DATE& v)
     : value_(v)
     {
     }
+
     Var::Var(const VAR_STRING& v)
     : value_(v)
     {
     }
+
     Var::Var(const Var& rhs)
     : value_(rhs.value_)
     {
     }
-    Var& Var::operator =(const Var& rhs)
+
+    Var& Var::operator=(const Var& rhs)
     {
         if (&rhs != this)
             value_ = rhs.value_;
         return *this;
     }
+
     const type_info& Var::type() const
     {
         return value_.type();
     }
+
     bool Var::empty() const
     {
         return value_.empty();
     }
+
     Var& Var::swap(Var& rhs)
     {
         value_.swap(rhs.value_);
+        return *this;
     }
+
     boost::any Var::value() const
     {
         return value_;
     }
+
     bool Var::contains(const Var& val) const
     {
         return containsT<VAR_CHAR>(*this, val) ||
@@ -80,7 +111,8 @@ namespace util
                 containsT<VAR_DATE>(*this, val) ||
                 *this == val;
     }
-    bool operator ==(const Var& lhs, const Var& rhs)
+
+    bool operator==(const Var& lhs, const Var& rhs)
     {
         return equalT<VAR_BOOL>(lhs, rhs) ||
                 equalT<VAR_CHAR>(lhs, rhs) ||
@@ -96,6 +128,7 @@ namespace util
                 equalT<VAR_DATE_INTERVAL>(lhs, rhs) ||
                 equalT<VAR_FLOAT_INTERVAL>(lhs, rhs);
     }
+
     bool operator<(const Var& lhs, const Var& rhs)
     {
         return lessT<VAR_BOOL>(lhs, rhs) ||
@@ -113,7 +146,8 @@ namespace util
                 lessT<VAR_FLOAT_INTERVAL>(lhs, rhs) ||
                 asString(lhs) < asString(rhs);
     }
-    bool operator <=(const Var& lhs, const Var& rhs)
+
+    bool operator<=(const Var& lhs, const Var& rhs)
     {
         return lessEqualT<VAR_BOOL>(lhs, rhs) ||
                 lessEqualT<VAR_CHAR>(lhs, rhs) ||
@@ -130,6 +164,7 @@ namespace util
                 lessEqualT<VAR_FLOAT_INTERVAL>(lhs, rhs) ||
                 asString(lhs) <= asString(rhs);
     }
+
     bool operator>(const Var& lhs, const Var& rhs)
     {
         return greaterT<VAR_BOOL>(lhs, rhs) ||
@@ -147,7 +182,8 @@ namespace util
                 greaterT<VAR_FLOAT_INTERVAL>(lhs, rhs) ||
                 asString(lhs) > asString(rhs);
     }
-    bool operator >=(const Var& lhs, const Var& rhs)
+
+    bool operator>=(const Var& lhs, const Var& rhs)
     {
         return greaterEqualT<VAR_BOOL>(lhs, rhs) ||
                 greaterEqualT<VAR_CHAR>(lhs, rhs) ||
@@ -164,12 +200,14 @@ namespace util
                 greaterEqualT<VAR_FLOAT_INTERVAL>(lhs, rhs) ||
                 asString(lhs) >= asString(rhs);
     }
+
     ostream& operator<<(ostream& os, Var::StreamMode sm)
     {
         os.iword(Var::xalloc_index) = sm;
         return os;
     }
-    ostream& operator <<(ostream& os, const Var& v)
+
+    ostream& operator<<(ostream& os, const Var& v)
     {
         Var::StreamMode sm = (Var::StreamMode)os.iword(Var::xalloc_index);
         if (sm == 0)
@@ -232,70 +270,84 @@ namespace util
             os << v.get<VAR_FLOAT_INTERVAL>();
         return os;
     }
+
     bool Equals::leftMatchesRight(const Var& lhs, const Var& rhs) const
     {
         return lhs == rhs;
     }
+
     string Equals::desc(const Var& v) const
     {
         stringstream ss;
         ss << "=" << v;
         return ss.str();
     }
+
     bool Less::leftMatchesRight(const Var& lhs, const Var& rhs) const
     {
         return lhs < rhs;
     }
+
     string Less::desc(const Var& v) const
     {
         stringstream ss;
         ss << "<" << v;
         return ss.str();
     }
+
     bool LessEqual::leftMatchesRight(const Var& lhs, const Var& rhs) const
     {
         return lhs <= rhs;
     }
+
     string LessEqual::desc(const Var& v) const
     {
         stringstream ss;
         ss << "<=" << v;
         return ss.str();
     }
+
     bool Greater::leftMatchesRight(const Var& lhs, const Var& rhs) const
     {
         return lhs > rhs;
     }
+
     string Greater::desc(const Var& v) const
     {
         stringstream ss;
         ss << ">" << v;
         return ss.str();
     }
+
     bool GreaterEqual::leftMatchesRight(const Var& lhs, const Var& rhs) const
     {
         return lhs >= rhs;
     }
+
     string GreaterEqual::desc(const Var& v) const
     {
         stringstream ss;
         ss << ">=" << v;
         return ss.str();
     }
+
     bool IsElementOf::leftMatchesRight(const Var& elem, const Var& itvl) const
     {
         return itvl.contains(elem);
     }
+
     string IsElementOf::desc(const Var& itvl) const
     {
         stringstream ss;
         ss << " in " << itvl;
         return ss.str();
     }
+
     bool PlaceHolderOp::leftMatchesRight(const Var& elem, const Var& itvl) const
     {
         return false;
     }
+
     string PlaceHolderOp::desc(const Var& itvl) const
     {
         stringstream ss;

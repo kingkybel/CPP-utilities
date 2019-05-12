@@ -1,11 +1,26 @@
-////////////////////////////////////////////////////////////////////////////////
-//
-// File Name:   dateutil.cc
-// Description: date utility functions
-// Created on January 24, 2014, 1:10 PM
-// Author: Dieter Kybelksties
-//
-////////////////////////////////////////////////////////////////////////////////
+/*
+ * File Name:   dateutil.cc
+ * Description: date utility functions
+ *
+ * Copyright (C) 2019 Dieter J Kybelksties
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+ *
+ * @date: 2014-01-28
+ * @author: Dieter J Kybelksties
+ */
 
 #include <sys/time.h>
 #include <stringutil.h>
@@ -20,9 +35,11 @@ namespace util
         using namespace boost::gregorian;
         vector<locale> formats = initDateFormats();
 
-        // boost POSIX library cannot scan string representations with single-digit
-        // month/day fields. This function adds leading 0s into the string.
-        // 3/8/1989 -> 03/08/1989
+        /*
+         *  boost POSIX library cannot scan string representations with single-digit
+         * month/day fields. This function adds leading 0s into the string.
+         * 3/8/1989 -> 03/08/1989
+         */
         string addLeadingZeros(const string& str)
         {
             string reval = "";
@@ -50,7 +67,9 @@ namespace util
             return reval;
         }
 
-        // convert a POSIX-time into a time_t representation
+        /*
+         *  convert a POSIX-time into a time_t representation
+         */
         time_t pt_to_time_t(const ptime& pt)
         {
             ptime timet_start(date(1970, 1, 1));
@@ -59,7 +78,9 @@ namespace util
 
         }
 
-        // check whether we got a time only formatted time-string
+        /*
+         *  check whether we got a time only formatted time-string
+         */
         inline bool isTimeOnly(const string& s)
         {
             // timeOnlyFormats are (s == "%H:%M:%S" || s == "%H:%M");
@@ -67,8 +88,10 @@ namespace util
                     (s.size() == 5 && s[2] == ':');
         }
 
-        // scans a string into a posix time representation using the configured 
-        // formats
+        /*
+         *  scans a string into a posix time representation using the configured
+         * formats
+         */
         ptime scanDate(const string& s)
         {
             ptime reval;
@@ -102,15 +125,18 @@ namespace util
         }
 
         // seconds elapsed since epoch to the time described by the string
+
         time_t seconds_from_epoch(const string& s)
         {
             return pt_to_time_t(scanDate(s));
         }
 
-        // iteration function: changes the case of all occurrences
-        // of the given format flag, if flag == 'b', all occurrences
-        // of %b in the format-string fmt are changed to %B, but
-        // occurrences of %B are unchanged
+        /*
+         *  iteration function: changes the case of all occurrences
+         * of the given format flag, if flag == 'b', all occurrences
+         * of %b in the format-string fmt are changed to %B, but
+         * occurrences of %B are unchanged
+         */
         string changeCaseOfFormatFlag(const string& fmt, char flag)
         {
             const string changeableFlags = "aAbByY";
@@ -131,28 +157,34 @@ namespace util
                     else
                         reval[pos + 1] = (char) tolower(reval[pos + 1]);
                 }
-            } while (pos != string::npos);
+            }
+            while (pos != string::npos);
+            return reval;
         }
+
         void addDateFormat(const string& fmt, vector<locale>& formatVec)
         {
             formatVec.push_back(locale(locale::classic(), new time_input_facet(fmt)));
         }
 
-        // create all the facets for the different date-formats we might come across
-        // this is a subset of the actually possible formats
-        // starting with a set of base-formats we "declinate" additional formats
-        // by switching parts from long to short representations
-        // some formats are ambiguous and can give wrong or no results like
-        // "%m/%d/%Y %H:%M:%S" and "%d/%m/%Y %H:%M:%S" one being the preferred
-        // format in the US the other one from Europe
-        // the string "02/05/2014 12:34:56" would resolve to the 5th February in US
-        // and the 2nd May in Europe
-        // the parameter pref defaults to PREFER_EUROPEAN_FORMAT
-        vector<locale> initDateFormats(AmbiguityResolution pref, vector<locale>& fmts)
+        /*
+         *  create all the facets for the different date-formats we might come
+         *  across this is a subset of the actually possible formats starting
+         * with a set of base-formats we "declinate" additional formats by
+         * switching parts from long to short representations some formats are
+         * ambiguous and can give wrong or no results like "%m/%d/%Y %H:%M:%S"
+         * and "%d/%m/%Y %H:%M:%S" one being the preferred format in the US the
+         * other one from Europe the string "02/05/2014 12:34:56" would resolve
+         * to the 5th February in US and the 2nd May in Europe the parameter
+         * pref defaults to European
+         */
+        vector<locale> initDateFormats(DateFormatPreference pref, vector<locale>& fmts)
         {
             resetDateFormats(fmts);
+
             struct FmtType
             {
+
                 FmtType(const string& fmt, bool american)
                 : fmt_(fmt)
                 , american_(american)
@@ -186,7 +218,7 @@ namespace util
             vector<string> disambiguatedFormats;
             for (size_t i = 0; i < sizeof (timeFormats) / sizeof (FmtType); i++)
             {
-                if (pref == PREFER_EUROPEAN_DATE_FORMAT)
+                if (pref == DateFormatPreference::European)
                 {
                     if (timeFormats[i].american_ == true)
                     {
@@ -238,15 +270,18 @@ namespace util
 
             return fmts;
         }
+
         void resetDateFormats(vector<locale>& fmts)
         {
             fmts.resize(0);
         }
+
         void imbueDateFormat(ostream& os, const string& fmt)
         {
             time_facet *facet = new time_facet(fmt.c_str());
             os.imbue(locale(os.getloc(), facet));
         }
+
         string dateString(const ptime& dt, const string& fmt)
         {
             stringstream ss;
@@ -254,10 +289,12 @@ namespace util
             ss << dt;
             return ss.str();
         }
+
         string timestamp(const string& fmt)
         {
             return dateString(toDate(-1, -1, -1, -1, -1, -1, -1), fmt);
         }
+
         ptime toDate(int y, int m, int d, int H, int M, int S, int ms)
         {
             ptime now = microsec_clock::local_time();
