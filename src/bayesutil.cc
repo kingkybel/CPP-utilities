@@ -532,8 +532,9 @@ namespace util
         return reval;
     }
 
-    /// Local helper class for recording node-names in breadth-first-order.
-
+    /**
+     * Local helper class for recording node-names in breadth-first-order.
+    */
     struct BreadthFirstEl
     {
         size_t numParents_;
