@@ -1,16 +1,32 @@
 /*
- * File:   type_bracket_map.h
- * Author: Dieter J Kybelksties
+ * File Name:   type_bracket_map.h
+ * Description: Brackets mapped per type for streaming output
+ * Copyright (C) 2019 Dieter J Kybelksties
  *
- * Created on May 2, 2019, 2:31 PM
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+ *
+ * @date: 2019-04-25
+ * @author: Dieter J Kybelksties
  */
 
-#ifndef TYPE_BRACKET_MAP_H
-#define	TYPE_BRACKET_MAP_H
+#ifndef NS_UTIL_TYPE_BRACKET_MAP_H_INCLUDED
+#define	NS_UTIL_TYPE_BRACKET_MAP_H_INCLUDED
 
 #include <typeinfo>
 #include <string>
-#include <tr1/unordered_map>
+#include <unordered_map>
 #include <brackets.h>
 namespace util
 {
@@ -18,7 +34,7 @@ namespace util
     class type_bracket_map
     {
     private:
-        std::tr1::unordered_map <std::string, Brackets> type2brackets;
+        std::unordered_map <std::string, Brackets> type2brackets;
         static type_bracket_map theInstance;
 
         type_bracket_map()
@@ -76,6 +92,7 @@ namespace util
         }
 
     };
-};
-#endif	// TYPE_BRACKET_MAP_H
+}; // namespace util
+
+#endif	// NS_UTIL_TYPE_BRACKET_MAP_H_INCLUDED
 
