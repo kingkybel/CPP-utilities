@@ -30,8 +30,9 @@ namespace util
     using namespace std;
     using namespace boost;
 
-    // Error handling for event lists with mutually exclusive events.
-
+    /**
+     *  Error handling for event lists with mutually exclusive events.
+     */
     eventlist_conflict_error::eventlist_conflict_error(
                                                        eventlist_conflict_error::conflict_type tp,
                                                        const EventList& e1)
@@ -52,8 +53,9 @@ namespace util
     {
     }
 
-    // Construct a boolean range (or not if haveBoolRange == false).
-
+    /**
+     *  Construct a boolean range (or not if haveBoolRange == false).
+     */
     EventValueRange::EventValueRange(bool haveBoolRange)
     : values_()
     , type_(discrete)
@@ -65,68 +67,84 @@ namespace util
         }
     }
 
-    // Construct a range of enumerated character values.
-
+    /**
+     *  Construct a range of enumerated character values.
+     */
     EventValueRange::EventValueRange(const set<VAR_CHAR>& values)
     : values_()
     , type_(discrete)
     {
-        for (auto it = values.begin(); it != values.end(); it++)
+        for (set<VAR_CHAR>::iterator it = values.begin();
+             it != values.end();
+             it++)
         {
             insert(*it);
         }
     }
 
-    // Construct a range of enumerated signed integer values.
-
+    /**
+     *  Construct a range of enumerated signed integer values.
+     */
     EventValueRange::EventValueRange(const set<VAR_INT>& values)
     : values_()
     , type_(discrete)
     {
-        for (auto it = values.begin(); it != values.end(); it++)
+        for (set<VAR_INT>::iterator it = values.begin();
+             it != values.end();
+             it++)
         {
             insert(*it);
         }
     }
 
-    // Construct a range of enumerated unsigned integer values.
-
+    /**
+     *  Construct a range of enumerated unsigned integer values.
+     */
     EventValueRange::EventValueRange(const set<VAR_UINT>& values)
     : values_()
     , type_(discrete)
     {
-        for (auto it = values.begin(); it != values.end(); it++)
+        for (set<VAR_UINT>::iterator it = values.begin();
+             it != values.end();
+             it++)
         {
             insert(*it);
         }
     }
 
-    // Construct a range of enumerated date values.
-
+    /**
+     *  Construct a range of enumerated date values.
+     */
     EventValueRange::EventValueRange(const set<VAR_DATE>& values)
     : values_()
     , type_(discrete)
     {
-        for (auto it = values.begin(); it != values.end(); it++)
+        for (set<VAR_DATE>::iterator it = values.begin();
+             it != values.end();
+             it++)
         {
             insert(*it);
         }
     }
 
-    // Construct a range of enumerated string values.
-
+    /**
+     *  Construct a range of enumerated string values.
+     */
     EventValueRange::EventValueRange(const set<VAR_STRING>& values)
     : values_()
     , type_(discrete)
     {
-        for (auto it = values.begin(); it != values.end(); it++)
+        for (set<VAR_STRING>::iterator it = values.begin();
+             it != values.end();
+             it++)
         {
             insert(*it);
         }
     }
 
-    // Construct a range of enumerated character values as an interval from lowest to highest.
-
+    /**
+     *  Construct a range of enumerated character values as an interval from lowest to highest.
+     */
     EventValueRange::EventValueRange(VAR_CHAR lowest, VAR_CHAR highest)
     : values_()
     , type_(discrete)
@@ -134,8 +152,9 @@ namespace util
         addRange(lowest, highest);
     }
 
-    // Construct a range of enumerated signed integer values as an interval from lowest to highest.
-
+    /**
+     *  Construct a range of enumerated signed integer values as an interval from lowest to highest.
+     */
     EventValueRange::EventValueRange(VAR_INT lowest, VAR_INT highest)
     : values_()
     , type_(discrete)
@@ -143,8 +162,9 @@ namespace util
         addRange(lowest, highest);
     }
 
-    // Construct a range of enumerated unsigned integer values as an interval from lowest to highest.
-
+    /**
+     *  Construct a range of enumerated unsigned integer values as an interval from lowest to highest.
+     */
     EventValueRange::EventValueRange(VAR_UINT lowest, VAR_UINT highest)
     : values_()
     , type_(discrete)
@@ -152,8 +172,9 @@ namespace util
         addRange(lowest, highest);
     }
 
-    // Construct a range of continuous uniform floating point values as an interval from lowest to highest.
-
+    /**
+     *  Construct a range of continuous uniform floating point values as an interval from lowest to highest.
+     */
     EventValueRange::EventValueRange(VAR_FLOAT lowest, VAR_FLOAT highest)
     : values_()
     , type_(float_uniform)
@@ -161,8 +182,9 @@ namespace util
         addRange(lowest, highest);
     }
 
-    /// Construct a range of continuous uniform floating point values as an interval.
-
+    /**
+     *  Construct a range of continuous uniform floating point values as an interval.
+     */
     EventValueRange::EventValueRange(VAR_FLOAT_INTERVAL interval)
     : values_()
     , type_(float_uniform)
@@ -170,8 +192,9 @@ namespace util
         addRange(interval.low_, interval.high_);
     }
 
-    /// Construct a range of continuous values for distribution-type.
-
+    /**
+     *  Construct a range of continuous for distribution-type.
+     */
     EventValueRange::EventValueRange(DistributionType tp)
     : values_()
     , type_(tp)
@@ -188,30 +211,36 @@ namespace util
         }
     }
 
-    /// Get the size of the range. Continuous ranges are always 0 or 2 (lowest,highest)
-
+    /**
+     *  Get the size of the range. Continuous ranges are always 0 or 2 (lowest,highest)
+     */
     size_t EventValueRange::size() const
     {
         return values_.size();
     }
 
-    /// Check whether the range is continuous
-
+    /**
+     *  Check whether the range is continuous
+     */
     bool EventValueRange::isContinuous() const
     {
         return type_ != discrete;
     }
 
-    /// Retrieve the type of distribution for this range.
+    /**
+     *  Retrieve the type of distribution for this range.
+     */
 
     EventValueRange::DistributionType EventValueRange::type() const
     {
         return type_;
     }
 
-    /// check whether any particular value is valid, i.e. it has been added to the
-    /// range previously or in case of float whether the value is in the interval
-
+    /**
+     *  check whether any particular value is valid, i.e. it has been added to
+     *  the range previously or in case of float whether the value is in the
+     *  interval
+     */
     bool EventValueRange::validValue(const Var& value) const
     {
         if (isContinuous())
@@ -223,7 +252,7 @@ namespace util
                 return true;
             if (values_.size() != 2)
                 throw event_range_error(f, values_.size());
-            auto it = values_.begin();
+            RANGEVALUE_SET_CITER it = values_.begin();
             VAR_FLOAT v1 = toNative<VAR_FLOAT>(*it);
             it++;
             VAR_FLOAT v2 = toNative<VAR_FLOAT>(*it);
@@ -232,8 +261,9 @@ namespace util
         return values_.find(value) != values_.end();
     }
 
-    // Add a value if the type is valid.
-
+    /**
+     *  Add a value if the type is valid.
+     */
     bool EventValueRange::add(const Var& val)
     {
         if (validType(val))
@@ -243,28 +273,33 @@ namespace util
         return true;
     }
 
-    // if no value has been added to the range yet then any Var is valid
-    // otherwise all have to be of the same type
-
+    /**
+     * if no value has been added to the range yet then any Var is valid
+     * otherwise all have to be of the same type
+     */
     bool EventValueRange::validType(const Var& value) const
     {
         return values_.empty() || (values_.begin()->type() == value.type());
     }
 
-    // create a set of events by conjugating the name with all possible
-    // values with the name. Helper for the creation of canonised (full)
-    // probability table
-
+    /**
+     * create a set of events by conjugating the name with all possible
+     * values with the name. Helper for the creation of canonised (full)
+     * probability table
+     */
     EVENT_SET EventValueRange::makeEventSet(const string& name) const
     {
         EVENT_SET reval;
-        for (auto it = values_.begin(); it != values_.end(); it++)
+        for (RANGEVALUE_SET_CITER it = values_.begin(); it != values_.end(); it++)
         {
             reval.insert(Event(name, *it, true));
         }
         return reval;
     }
 
+    /**
+     * Event value range streaming operator.
+     */
     ostream& operator<<(ostream& os, const EventValueRange& evr)
     {
         os << evr.values_;
@@ -280,8 +315,9 @@ namespace util
     IsElementOf Event::isElementOf;
     PlaceHolderOp Event::placeHolderOp;
 
-    // Construct empty Event. Default-operation: Placeholder - returns false.
-
+    /**
+     * Construct empty Event. Default-operation: Placeholder - returns false.
+     */
     Event::Event(Operation* op)
     : name_("")
     , value_()
@@ -290,8 +326,9 @@ namespace util
     {
     }
 
-    // Construct boolean Event. Default-operation: Equality.
-
+    /**
+     * Construct boolean Event. Default-operation: Equality.
+     */
     Event::Event(const string& name, VAR_BOOL b, Operation* op)
     : name_(name)
     , value_(b)
@@ -300,8 +337,9 @@ namespace util
     {
     }
 
-    // Construct character Event. Default-operation: Equality.
-
+    /**
+     * Construct character Event. Default-operation: Equality.
+     */
     Event::Event(const string& name, VAR_CHAR c, Operation* op)
     : name_(name)
     , value_(c)
@@ -414,8 +452,9 @@ namespace util
     {
     }
 
-    // extra dummy parameter dummyConfirm to allow Var as parameter
-
+    /**
+     * extra dummy parameter dummyConfirm to allow Var as parameter
+     */
     Event::Event(const string& name, const Var& a, bool dummyConfirm, Operation* op)
     : name_(name)
     , value_(a)
@@ -444,7 +483,6 @@ namespace util
         value_ = value;
         operation_ = op ? op : &Event::equals;
         isPlaceHolder_ = false;
-        return *this;
     }
 
     Event Event::placeholderEvent(const string& name)
@@ -554,7 +592,7 @@ namespace util
 
     EventList& EventList::operator&&(const EventList& el)
     {
-        for (auto it = el.cbegin(); it != el.cend(); it++)
+        for (EventList::EVENT_CONTAINER_CITER it = el.cbegin(); it != el.cend(); it++)
             * this && *it;
         return *this;
     }
@@ -569,15 +607,16 @@ namespace util
         return evts_.size();
     }
 
-    // two EventLists are notConflicting if their Events are pairwise notConflicting
-
+    /**
+     * two EventLists are notConflicting if their Events are pairwise notConflicting
+     */
     bool EventList::notConflicting(const EventList& eList) const
     {
         bool reval = true;
-        auto el1It = eList.cbegin();
+        EVENT_CONTAINER_CITER el1It = eList.cbegin();
         while (reval && el1It != eList.cend())
         {
-            auto el2It = cbegin();
+            EVENT_CONTAINER_CITER el2It = cbegin();
             while (reval && el2It != cend())
             {
                 if (!el1It->notConflicting(*el2It))
@@ -594,8 +633,8 @@ namespace util
     bool EventList::matches(const EventList& eList) const
     {
         bool reval = size() == eList.size();
-        auto itThis = cbegin();
-        auto itThat = eList.cbegin();
+        EVENT_CONTAINER_CITER itThis = cbegin();
+        EVENT_CONTAINER_CITER itThat = eList.cbegin();
         for (; reval && itThis != cend(); itThis++, itThat++)
         {
             reval &= itThis->matches(*itThat);
@@ -605,7 +644,7 @@ namespace util
 
     Event EventList::eventByName(const string& name) const
     {
-        for (auto it = cbegin(); it != cend(); it++)
+        for (EVENT_CONTAINER_CITER it = cbegin(); it != cend(); it++)
             if (it->name() == name)
                 return *it;
         return Event();
@@ -614,7 +653,7 @@ namespace util
     bool EventList::moveEvent(const string& name, EventList& el)
     {
         bool hasBeenMoved = false;
-        for (auto it = cbegin(); !hasBeenMoved && it != cend(); it++)
+        for (EVENT_CONTAINER_CITER it = cbegin(); !hasBeenMoved && it != cend(); it++)
             if (it->name() == name)
             {
                 el && *it;
@@ -627,7 +666,7 @@ namespace util
 
     bool EventList::hasEvent(const string& e) const
     {
-        for (auto it = evts_.begin(); it != evts_.end(); it++)
+        for (EVENT_CONTAINER_CITER it = evts_.begin(); it != evts_.end(); it++)
             if (it->name() == e)
                 return true;
         return false;
@@ -663,16 +702,17 @@ namespace util
         return lhs.evts_ == rhs.evts_;
     }
 
-    // check from left to right on the first difference we can decide < or >
-    // if there is no difference then the lists are equal one of the lists is
-    // wholly contained in the other. In that case the shorter list is "less"
-    // than the longer list
-
+    /**
+     * check from left to right on the first difference we can decide &lt; or &gt;
+     * if there is no difference then the lists are equal one of the lists is
+     * wholly contained in the other. In that case the shorter list is "less"
+     * than the longer list
+     */
     bool operator<(const EventList& lhs, const EventList& rhs)
     {
         bool reval = true;
-        auto itLhs = lhs.cbegin();
-        auto itRhs = rhs.cbegin();
+        EventList::EVENT_CONTAINER_CITER itLhs = lhs.cbegin();
+        EventList::EVENT_CONTAINER_CITER itRhs = rhs.cbegin();
         bool foundDiff = false;
         for (; itLhs != lhs.cend() && itRhs != rhs.cend(); itLhs++, itRhs++)
         {
@@ -702,7 +742,9 @@ namespace util
     {
         size_t i = 0;
         size_t maxIndex = eList.evts_.size() - 1;
-        for (auto it = eList.evts_.begin(); it != eList.evts_.end(); it++, i++)
+        for (set<Event>::const_iterator it = eList.evts_.begin();
+             it != eList.evts_.end();
+             it++, i++)
         {
             os << *it << (i < maxIndex ? ", " : "");
         }
@@ -792,16 +834,19 @@ namespace util
         return condList_;
     }
 
-    // TODO: this needs to change to cater for Intervals
-    // conditions relevant are filtered out and missing ones are entered as
-    // place-holders
-
+    /**
+     * @TODO: this needs to change to cater for Intervals
+     * conditions relevant are filtered out and missing ones are entered as
+     * place-holders
+     */
     CondEvent CondEvent::filterConditions(const set<string>& conds) const
     {
         EventList filteredConds;
         // first add all conditions that can be found in the filter-set (conds)
         // to the new filtered conditions
-        for (auto it = condList_.cbegin(); it != condList_.cend(); it++)
+        for (EventList::EVENT_CONTAINER_CITER it = condList_.cbegin();
+             it != condList_.cend();
+             it++)
         {
             if (conds.find(it->name()) != conds.end())
                 filteredConds && *it;
@@ -809,7 +854,9 @@ namespace util
 
         // then add all conditions that are not present in the CondEvent
         // as place-holders
-        for (auto nameIt = conds.begin(); nameIt != conds.end(); nameIt++)
+        for (set<string>::const_iterator nameIt = conds.begin();
+             nameIt != conds.end();
+             nameIt++)
         {
             if (!containsCondition(*nameIt))
                 filteredConds && Event::placeholderEvent(*nameIt);
@@ -826,7 +873,9 @@ namespace util
 
     bool CondEvent::containsCondition(const string& name) const
     {
-        for (auto it = condList_.cbegin(); it != condList_.cend(); it++)
+        for (EventList::EVENT_CONTAINER_CITER it = condList_.cbegin();
+             it != condList_.cend();
+             it++)
         {
             if (it->name() == name)
                 return true;
@@ -841,21 +890,24 @@ namespace util
         return reval;
     }
 
-    // one application of the chain rule
-    // iteratively use this to reduce probabilities to a list where all
-    // probabilities are of the form
-    // P(E|C1,C2,....,Cn) with E and C_i 1<= i <= n all single events
-    //
-    // P(A,B) = P(B|A)P(A)
-    // P(An,An-1,...,A1)=P(An|An-1,...,A1)P(An-1,...,A1)
-    // P(A4,A3,A2,A1)=P(A4|A3,A2,A1)P(A3|A2,A1)P(A2|A1)P(A1)
-    //
-    // P(A3,A2,A1|B1,B2,B3)=P(A1|A2,A3,B1,B2,B3)P(A2,A3,B1,B2,B3)
-    //
-    // precondition:
-    // - CondEvent list is empty *OR*
-    // - all but (possibly) the last are already of the required form
-
+    /**
+     * one application of the chain rule
+     * iteratively use this to reduce probabilities to a list where all
+     * probabilities are of the form
+     * P(E|C1,C2,....,Cn) with E and C_i 1&le; i &le; n all single events
+     * 
+     * P(A,B) = P(B|A)P(A)
+     * P(An,An-1,...,A1)=P(An|An-1,...,A1)P(An-1,...,A1)
+     * P(A4,A3,A2,A1)=P(A4|A3,A2,A1)P(A3|A2,A1)P(A2|A1)P(A1)
+     * 
+     * P(A3,A2,A1|B1,B2,B3)=P(A1|A2,A3,B1,B2,B3)P(A2,A3,B1,B2,B3)
+     * 
+     * precondition:
+     * <ul>
+     *  <li> CondEvent list is empty *OR*</li>
+     *  <li> all but (possibly) the last are already of the required form</li>
+     * </ul>
+     */
     bool CondEvent::chainRule(CondEvent::CONDEVENT_LIST& cel,
                               const string& name) const
     {
@@ -864,7 +916,7 @@ namespace util
         bool reval = true;
         EventList newEl;
         EventList newCond = cel.back().condList_;
-        for (auto it = cel.back().eList_.begin();
+        for (EVENT_SET_ITER it = cel.back().eList_.begin();
              cel.back().eList_.size() > 1 && it != cel.back().eList_.end();
              it++)
         {
@@ -889,7 +941,9 @@ namespace util
     {
         bool reval = true;
         cel.clear();
-        for (auto it = nameList.rbegin(); it != nameList.rend(); it++)
+        for (vector<string>::const_reverse_iterator it = nameList.rbegin();
+             it != nameList.rend();
+             it++)
         {
             chainRule(cel, *it);
         }
@@ -944,8 +998,6 @@ namespace util
         return reval;
     }
 
-    ////////////////////////////////////////////////////////////////////////////
-
     ProbabilityFunction::ProbabilityFunction(const VALUERANGES_TYPE& eventValueRanges,
                                              const VALUERANGES_TYPE& conditionValueRanges)
     : eventValueRanges_(eventValueRanges)
@@ -953,14 +1005,17 @@ namespace util
     {
     }
 
-    // TODO: this needs to change to cater for Intervals
-
+    /**
+     * @TODO: this needs to change to cater for Intervals
+     */
     bool ProbabilityFunction::possibleCondEvent(const CondEvent& ce, string& error) const
     {
         // check type and name of event and condition
-        for (auto evIt = ce.event().cbegin(); evIt != ce.event().cend(); evIt++)
+        for (EventList::EVENT_CONTAINER_CITER evIt = ce.event().cbegin();
+             evIt != ce.event().cend();
+             evIt++)
         {
-            auto found = eventValueRanges_.find(evIt->name());
+            VALUERANGES_TYPE_CITER found = eventValueRanges_.find(evIt->name());
             if (found == eventValueRanges_.end())
             {
                 error = "Event '" + evIt->name() + "' not a valid probability variable.";
@@ -976,11 +1031,11 @@ namespace util
                 return false;
             }
         }
-        for (auto condIt = ce.condition().cbegin();
+        for (EventList::EVENT_CONTAINER_CITER condIt = ce.condition().cbegin();
              condIt != ce.condition().cend();
              condIt++)
         {
-            auto found = conditionValueRanges_.find(condIt->name());
+            VALUERANGES_TYPE_CITER found = conditionValueRanges_.find(condIt->name());
             if (found == conditionValueRanges_.end())
             {
                 error = "p(" + asString(ce) + "): Condition '" + condIt->name()
@@ -1043,8 +1098,9 @@ namespace util
         return conditionValueRanges_.size();
     }
 
-    /// Default construct.
-
+    /**
+     * Default construct.
+     */
     UniformFloatFunction::UniformFloatFunction(VAR_FLOAT low,
                                                VAR_FLOAT high,
                                                const VALUERANGES_TYPE& conditionValueRanges)
@@ -1052,22 +1108,24 @@ namespace util
         param_[EventList()] = UNIF_PARAM(low, high);
     }
 
-    /// Clone a copy of this.
-
+    /**
+     * Clone a copy of this.
+     */
     ProbabilityFunction* UniformFloatFunction::clone() const
     {
         return new UniformFloatFunction(*this);
     }
 
-    /// Probability of a conditional event.
-
+    /**
+     * Probability of a conditional event.
+     */
     long double UniformFloatFunction::P(const CondEvent& ce) const
     {
         // ce.eventSize() has to be exactly 1, the event-type has to be float or
         // float-interval
         if (ce.eventSize() > 1)
             return 0.0L;
-        auto foundParam = param_.find(ce.condition());
+        UNIF_PARAM_TABLE_CITER foundParam = param_.find(ce.condition());
 
         if (foundParam != param_.end())
         {
@@ -1087,16 +1145,19 @@ namespace util
         return P(CondEvent(el));
     }
 
-    /// Reset the parameters of the probability function.
-
+    /**
+     * Reset the parameters of the probability function.
+     */
     void UniformFloatFunction::clear()
     {
         param_.clear();
     }
-    /// Train (estimate) the parameters of of the probability function.
-    /// Find minimal and maximal value of the sample and extend the interval
-    /// to +- (1/numValues).
 
+    /**
+     * Train (estimate) the parameters of of the probability function.
+     * Find minimal and maximal value of the sample and extend the interval
+     * to +- (1/numValues).
+     */
     bool UniformFloatFunction::train(CSVAnalyzer csv, bool isAccumulativeCSV)
     {
         bool reval = true;
@@ -1139,7 +1200,9 @@ namespace util
                     param_[ce.condition()].occurences += occurences;
                 }
             }
-            for (auto parIt = param_.begin(); parIt != param_.end(); parIt++)
+            for (UNIF_PARAM_TABLE_ITER parIt = param_.begin();
+                 parIt != param_.end();
+                 parIt++)
             {
                 parIt->second.low -= (1.0L / parIt->second.occurences);
                 parIt->second.high += (1.0L / parIt->second.occurences);
@@ -1149,11 +1212,14 @@ namespace util
         return reval;
     }
 
-    /// Generic ostream - \<\< operator for UniformFloatFunction.
-
+    /**
+     * Generic ostream - &lt;&lt; operator for UniformFloatFunction.
+     */
     ostream& operator<<(ostream& os, const UniformFloatFunction& d)
     {
-        for (auto it = d.param_.begin(); it != d.param_.end(); it++)
+        for (UniformFloatFunction::UNIF_PARAM_TABLE_CITER it = d.param_.begin();
+             it != d.param_.end();
+             it++)
         {
             if (!it->first.empty())
                 os << "For condition " << it->first << " ";
@@ -1161,31 +1227,32 @@ namespace util
         }
         return os;
     }
-
-
-    /// Default construct with expectation mu and variance sigma
-
+    /**
+     * Default construct with expectation mu and variance sigma
+*/
     GaussFunction::GaussFunction(long double mu, long double sigma)
     {
         param_[EventList()] = GAUSS_PARAM(mu, sigma);
     }
-
-    /// Reset the parameters mu and sigma to standard normal values.
-
+    
+    /**
+     * Reset the parameters mu and sigma to standard normal values.
+*/
     void GaussFunction::clear()
     {
         param_.clear();
     }
-
-    /// Probability of a conditional event.
-
+    
+    /**
+     * Probability of a conditional event.
+*/
     long double GaussFunction::P(const CondEvent& ce) const
     {
         // ce.eventSize() has to be exactly 1, the event-type has to be float or
         // float-interval
         if (ce.eventSize() > 1)
             return 0.0L;
-        auto foundParam = param_.find(ce.condition());
+        GAUSS_PARAM_TABLE_CITER foundParam = param_.find(ce.condition());
 
         if (foundParam != param_.end())
         {
@@ -1200,18 +1267,22 @@ namespace util
         }
         return 0.0L;
     }
-
-    /// Probability of an interval. Returns zero if the Event is not an interval-event.
-
+    
+    /**
+     * Probability of an interval. Returns zero if the Event is not an interval-event.
+*/
     long double GaussFunction::P(const EventList& el) const
     {
         return P(CondEvent(el));
     }
-
-    /// Estimate mu and sigma.
-    /// - mu ~ sum(x)/numberOf(x)
-    /// - sigma ~ sum((x-mu)^2)/numberOf(x)
-
+    
+    /**
+     * Estimate mu and sigma.
+     * <ul>
+     * <li>mu ~ sum(x)/numberOf(x)</li>
+     * <li>sigma ~ sum((x-mu)^2)/numberOf(x)</li>
+     * </ul>
+*/
     bool GaussFunction::train(CSVAnalyzer csv, bool isAccumulativeCSV)
     {
         bool reval = true;
@@ -1241,7 +1312,7 @@ namespace util
                     param_[ce.condition()].occurences += occurences;
                 }
             }
-            for (auto parIt = param_.begin();
+            for (GAUSS_PARAM_TABLE_ITER parIt = param_.begin();
                  parIt != param_.end();
                  parIt++)
             {
@@ -1260,7 +1331,9 @@ namespace util
                     param_[ce.condition()].sigma += (val - mu)*(val - mu) * occurences;
                 }
             }
-            for (auto parIt = param_.begin(); parIt != param_.end(); parIt++)
+            for (GAUSS_PARAM_TABLE_ITER parIt = param_.begin();
+                 parIt != param_.end();
+                 parIt++)
             {
                 parIt->second.sigma /= parIt->second.occurences;
             }
@@ -1269,55 +1342,59 @@ namespace util
         return reval;
     }
 
-    /// Retrieve mu.
-
+    /**
+     * Retrieve mu.
+*/
     long double GaussFunction::mu(const CondEvent& ce) const
     {
-        auto found = param_.find(ce.condition());
+        GAUSS_PARAM_TABLE_CITER found = param_.find(ce.condition());
         return found != param_.end() ? found->second.mu : 0.0L;
     }
 
-    /// Retrieve variance.
-
+    /**
+     * Retrieve variance.
+*/
     long double GaussFunction::sigma(const CondEvent& ce) const
     {
-        auto found = param_.find(ce.condition());
+        GAUSS_PARAM_TABLE_CITER found = param_.find(ce.condition());
         return found != param_.end() ? found->second.sigma : 0.0L;
     }
-
-    /// Generic ostream - \<\< operator for GaussFunction.
-
+    
+    /**
+     * Generic ostream - &lt;&lt; operator for GaussFunction.
+*/
     ostream& operator<<(ostream& os, const GaussFunction& d)
     {
-        for (auto it = d.param_.begin(); it != d.param_.end(); it++)
+        for (GaussFunction::GAUSS_PARAM_TABLE_CITER it = d.param_.begin();
+             it != d.param_.end();
+             it++)
         {
             if (!it->first.empty())
                 os << "For condition " << it->first << " ";
-            os << "Gauss-distributed with mu="
-                    << it->second.mu
-                    << " and sigma="
-                    << it->second.sigma
-                    << endl;
+            os << "Gauss-distributed with mu=" << it->second.mu << " and sigma=" << it->second.sigma << endl;
         }
         return os;
     }
-
-    /// Default create.
-
+    
+    /**
+     * Default create.
+*/
     ExponentialFunction::ExponentialFunction(VAR_FLOAT lambda)
     {
         param_[EventList()] = lambda;
     }
-
-    /// Reset the expectation to 1.0.
-
+    
+    /**
+     * Reset the expectation to 1.0.
+*/
     void ExponentialFunction::clear()
     {
         param_.clear();
     }
-
-    /// Probability of an interval. Returns zero if the Event is not an interval-event.
-
+    
+    /**
+     * Probability of an interval. Returns zero if the Event is not an interval-event.
+*/
     long double ExponentialFunction::P(const CondEvent& ce) const
     {
         // ce.eventSize() has to be exactly 1, the event-type has to be float or
@@ -1331,7 +1408,7 @@ namespace util
         if (safeItvl.high_ < 0.0L)
             safeItvl.high_ = 0.0L;
 
-        auto foundParam = param_.find(ce.condition());
+        EXP_PARAM_TABLE_CITER foundParam = param_.find(ce.condition());
         VAR_FLOAT lambda = foundParam != param_.end() ? foundParam->second.lambda : 1.0L;
         boost::math::exponential_distribution<VAR_FLOAT> ed(lambda);
         long double lowP = itvl.isLeftOpen() ? 0.0L : boost::math::cdf(ed, itvl.low_);
@@ -1339,18 +1416,20 @@ namespace util
 
         return highP - lowP;
     }
-
-    /// Delegate Probability from from EventList to avoid excessive casting.
-
+    
+    /**
+     * Delegate Probability from from EventList to avoid excessive casting.
+*/
     long double ExponentialFunction::P(const EventList& el) const
     {
         return P(CondEvent(el));
     }
-
-    /// Estimate lambda for first column (must be float). Last column might be
-    /// an accumulative column - all others are condition.
-    /// - lambda ~ sum(x)/numberOf(x)
-
+    
+    /**
+     * Estimate lambda for first column (must be float). Last column might be
+     * an accumulative column - all others are condition.
+     * - lambda ~ sum(x)/numberOf(x)
+*/
     bool ExponentialFunction::train(CSVAnalyzer csv, bool isAccumulativeCSV)
     {
         if (csv.columns() == 0)
@@ -1381,7 +1460,7 @@ namespace util
                     param_[ce.condition()].occurences += occurences;
                 }
             }
-            for (auto parIt = param_.begin();
+            for (EXP_PARAM_TABLE_ITER parIt = param_.begin();
                  parIt != param_.end();
                  parIt++)
             {
@@ -1391,28 +1470,33 @@ namespace util
 
         return reval;
     }
-
-    /// Retrieve the expectation lambda.
-
+    
+    /**
+     * Retrieve the expectation lambda.
+*/
     long double ExponentialFunction::lambda(const CondEvent& ce) const
     {
-        auto found = param_.find(ce.condition());
+        EXP_PARAM_TABLE_CITER found = param_.find(ce.condition());
         return found != param_.end() ? found->second.lambda : 0.0L;
     }
-
-    /// Get the point where the cdf == 1/2.
-    /// - P(0.0<&lt&= x \<= ln(2)/lambda_) = 0.5
-
+    
+    /**
+     * Get the point where the cdf == 1/2.
+     * P(0.0 &le; x &le; ln(2)/lambda_) = 0.5
+*/
     long double ExponentialFunction::ln2ByLambda(const CondEvent& ce) const
     {
         return ln_2 / lambda(ce);
     }
-
-    /// Generic ostream - \<\< operator for ExponentialFunction.
-
+   
+    /**
+     * Generic ostream - &lt;&lt; operator for ExponentialFunction.
+*/
     ostream& operator<<(ostream& os, const ExponentialFunction& d)
     {
-        for (auto it = d.param_.begin(); it != d.param_.end(); it++)
+        for (ExponentialFunction::EXP_PARAM_TABLE_CITER it = d.param_.begin();
+             it != d.param_.end();
+             it++)
         {
             if (!it->first.empty())
                 os << "For condition " << it->first << " ";
@@ -1421,9 +1505,7 @@ namespace util
         return os;
     }
 
-    ///
-
-    DiscreteProbability::DiscreteProbability(const VALUERANGES_TYPE& eventValueRanges,
+   DiscreteProbability::DiscreteProbability(const VALUERANGES_TYPE& eventValueRanges,
                                              const VALUERANGES_TYPE& conditionValueRanges)
     : ProbabilityFunction(eventValueRanges, conditionValueRanges)
     , isUniform_(false)
@@ -1445,7 +1527,7 @@ namespace util
             canonise();
         setUniform(true);
         long double prob = 1.0 / (long double) numberOfValues;
-        for (auto it = values_.begin(); it != values_.end(); it++)
+        for (PROB_TABLE_ITER it = values_.begin(); it != values_.end(); it++)
         {
             it->second = prob;
         }
@@ -1454,27 +1536,26 @@ namespace util
         return reval;
     }
 
-    //
-    // (1) Bayes formula
-    // =================
-    //
-    //           P(L|W)P(W)            P(L|W)P(W)
-    // P(W|L) = ------------ = -------------------------
-    //             P(L)         P(L|W)P(W) + P(L|M)P(M)
-    //
-    // (2) Chain rule of probability
-    // =============================
-    //
-    // P(A,B) = P(B|A)P(A)
-    // P(An,An-1,...,A1)=P(An|An-1,...,A1)P(An-1,...,A1)
-    // P(A4,A3,A2,A1)=P(A4|A3,A2,A1)P(A3|A2,A1)P(A2|A1)P(A1)
-    //
-    // (3) Total probability
-    // =====================
-    //
-    // P(A) = sum(P(A,B_i)) = sum(P(A|B_i)P(B_i)
-    //
-
+    /*
+     * (1) Bayes formula
+     * =================
+     * 
+     *            P(L|W)P(W)            P(L|W)P(W)
+     * P(W|L) = ------------ = -------------------------
+     *              P(L)         P(L|W)P(W) + P(L|M)P(M)
+     * 
+     * (2) Chain rule of probability
+     * =============================
+     * 
+     * P(A,B) = P(B|A)P(A)
+     * P(An,An-1,...,A1)=P(An|An-1,...,A1)P(An-1,...,A1)
+     * P(A4,A3,A2,A1)=P(A4|A3,A2,A1)P(A3|A2,A1)P(A2|A1)P(A1)
+     * 
+     * (3) Total probability
+     * =====================
+     * 
+     * P(A) = sum(P(A,B_i)) = sum(P(A|B_i)P(B_i)
+*/
     bool DiscreteProbability::normalise()
     {
         bool reval = true;
@@ -1488,12 +1569,12 @@ namespace util
             reval = canonise();
 
         ACCUMULATION_MAP sum;
-        for (auto it = values_.begin(); it != values_.end(); it++)
+        for (PROB_TABLE_ITER it = values_.begin(); it != values_.end(); it++)
         {
             if (it->second < 0.0L) // values *CAN* be > 1.0 until the probability is normalised
                 throw distribution_error(it->second);
 
-            auto acIt = sum.find(it->first.condition());
+            ACCUMULATION_MAP::iterator acIt = sum.find(it->first.condition());
             if (acIt == sum.end()) // initialise
             {
                 sum[it->first.condition()].number = 1.0L;
@@ -1505,7 +1586,7 @@ namespace util
                 acIt->second.sum += it->second;
             }
         }
-        for (auto it = values_.begin(); it != values_.end(); it++)
+        for (PROB_TABLE_ITER it = values_.begin(); it != values_.end(); it++)
         {
             if (sum[it->first.condition()].sum == 0.0L) // make uniform
                 it->second = 1.0L / (long double) (sum[it->first.condition()].number);
@@ -1522,9 +1603,11 @@ namespace util
                 bool isCond,
                 size_t module)
     {
-        auto evIt = ev.begin();
+        EVENT_SET_ITER evIt = ev.begin();
         size_t count = 0;
-        for (auto vIt = condEvents.begin(); vIt != condEvents.end(); vIt++)
+        for (vector<CondEvent>::iterator vIt = condEvents.begin();
+             vIt != condEvents.end();
+             vIt++)
         {
             if (isCond)
                 *vIt || *evIt;
@@ -1551,14 +1634,14 @@ namespace util
             throw distribution_error("need at least one event with non-empty"
                                      " value-range to canonise discrete distribution.");
 
-        for (auto eRangeIt = eventValueRanges_.begin();
+        for (VALUERANGES_TYPE_CITER eRangeIt = eventValueRanges_.begin();
              eRangeIt != eventValueRanges_.end();
              eRangeIt++)
         {
             numCondEvents *= eRangeIt->second.size();
         }
 
-        for (auto cRangeIt = conditionValueRanges_.begin();
+        for (VALUERANGES_TYPE_CITER cRangeIt = conditionValueRanges_.begin();
              cRangeIt != conditionValueRanges_.end();
              cRangeIt++)
         {
@@ -1567,7 +1650,7 @@ namespace util
         condEvents.resize(numCondEvents);
 
         size_t module = 1;
-        for (auto eRangeIt = eventValueRanges_.begin();
+        for (VALUERANGES_TYPE_CITER eRangeIt = eventValueRanges_.begin();
              eRangeIt != eventValueRanges_.end();
              eRangeIt++)
         {
@@ -1576,7 +1659,7 @@ namespace util
             module *= eSet.size();
         }
 
-        for (auto cRangeIt = conditionValueRanges_.begin();
+        for (VALUERANGES_TYPE_CITER cRangeIt = conditionValueRanges_.begin();
              cRangeIt != conditionValueRanges_.end();
              cRangeIt++)
         {
@@ -1585,7 +1668,9 @@ namespace util
             module *= eSet.size();
         }
 
-        for (auto ceIt = condEvents.begin(); ceIt != condEvents.end(); ceIt++)
+        for (vector<CondEvent>::const_iterator ceIt = condEvents.begin();
+             ceIt != condEvents.end();
+             ceIt++)
         {
             if (values_.find(*ceIt) == values_.end())
                 values_[*ceIt] = 0.0L;
@@ -1598,14 +1683,14 @@ namespace util
     {
         bool reval = !empty();
         ACCUMULATION_MAP sum;
-        for (auto it = values_.begin(); reval && it != values_.end(); it++)
+        for (PROB_TABLE_CITER it = values_.begin(); reval && it != values_.end(); it++)
         {
             if (it->second < 0.0L) // values *CAN* be > 1.0 until the probability is normalised
                 reval = false;
 
             sum[it->first.condition()].sum += it->second;
         }
-        auto it = sum.begin();
+        ACCUMULATION_MAP::const_iterator it = sum.begin();
         while (reval && it != sum.end())
         {
             if (!withinTolerance(it->second.sum, 1.0L))
@@ -1638,17 +1723,18 @@ namespace util
         if (!possibleCondEvent(ce, error))
             throw distribution_error(error);
 
-        auto found = values_.find(ce);
+        PROB_TABLE_CITER found = values_.find(ce);
         if (found == values_.end())
             return 0.0L;
         return found->second;
     }
 
-    /// lastEventIndex is the last column that is not a condition
-    /// if lastEventIndex ==  x  columns x+1, x+2, x+3, ... are conditions
-    /// if isAccumulativeCSV is true, then last column contains a float
-    /// probability value >= 0.0
-
+    /**
+     * lastEventIndex is the last column that is not a condition
+     * if lastEventIndex ==  x  columns x+1, x+2, x+3, ... are conditions
+     * if isAccumulativeCSV is true, then last column contains a float
+     * probability value >= 0.0
+*/
     bool DiscreteProbability::train(CSVAnalyzer csv, bool isAccumulativeCSV)
     {
         if (csv.columns() == 0)
@@ -1678,9 +1764,10 @@ namespace util
         return reval;
     }
 
-    /// Use the values (obtained by training) to update the ranges the variables
-    /// can assume. Don't remove any existing values.
-
+    /**
+     * Use the values (obtained by training) to update the ranges the variables
+     * can assume. Don't remove any existing values.
+*/
     void DiscreteProbability::updateValueRangesFromValues_(bool clearFirst)
     {
         if (clearFirst)
@@ -1688,9 +1775,9 @@ namespace util
             conditionValueRanges_.clear();
             eventValueRanges_.clear();
         }
-        for (auto it = values_.begin(); it != values_.end(); it++)
+        for (PROB_TABLE_ITER it = values_.begin(); it != values_.end(); it++)
         {
-            auto condIt = it->first.condition().cbegin();
+            EventList::EVENT_CONTAINER_CITER condIt = it->first.condition().cbegin();
             while (condIt != it->first.condition().cend())
             {
                 addValidValueToRange(conditionValueRanges_,
@@ -1700,7 +1787,7 @@ namespace util
                 condIt++;
             }
 
-            auto evtIt = it->first.event().cbegin();
+            EventList::EVENT_CONTAINER_CITER evtIt = it->first.event().cbegin();
             while (evtIt != it->first.event().cend())
             {
                 addValidValueToRange(eventValueRanges_,
@@ -1715,20 +1802,22 @@ namespace util
     ostream& operator<<(ostream& os, const DiscreteProbability& d)
     {
         os << "Event value ranges:" << endl;
-        for (auto evIt = d.eventValueRanges_.begin();
+        for (VALUERANGES_TYPE_CITER evIt = d.eventValueRanges_.begin();
              evIt != d.eventValueRanges_.end();
              evIt++)
         {
             os << "\t" << evIt->first << ": " << evIt->second << endl;
         }
         os << "Condition value ranges:" << endl;
-        for (auto cIt = d.conditionValueRanges_.begin();
+        for (VALUERANGES_TYPE_CITER cIt = d.conditionValueRanges_.begin();
              cIt != d.conditionValueRanges_.end();
              cIt++)
         {
             os << "\t" << cIt->first << ": " << cIt->second << endl;
         }
-        for (auto it = d.values_.begin(); it != d.values_.end(); it++)
+        for (DiscreteProbability::PROB_TABLE_CITER it = d.values_.begin();
+             it != d.values_.end();
+             it++)
         {
             os << "P(" << it->first << ")=" << it->second << endl;
         }
