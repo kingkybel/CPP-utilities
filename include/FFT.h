@@ -21,16 +21,20 @@
  * @author: Dieter J Kybelksties
  */
 
-#if !defined(NS_UTIL_FFT_H_INCLUDED)
-#define NS_UTIL_FFT_H_INCLUDED
-namespace util
-{
 #include <cmath>
 #include <complex>
 #include <vector>
 #include <iterator>
 #include <algorithm>
 #include <assert.h>
+#include <boost/math/constants/constants.hpp>
+#include "contants.h"
+
+#if !defined(NS_UTIL_FFT_H_INCLUDED)
+#define NS_UTIL_FFT_H_INCLUDED
+
+namespace util
+{
 
     class FFT
     {
@@ -49,35 +53,40 @@ namespace util
     public:
 
         /**
-         *  Number of points must be a power of 2
+         * Default constructor.
+         * @param logOfNumOfPoints number of points must be a power of 2, so we
+         *                         pass the log_2(numPoints) and calculate it
+         * @param sampleRate the rate at which the input will be sampled
+         * @param calibrate whether or not to calibrate on a 1kHz wave
          */
-        FFT(INTTYPE numOfPoints = 1024,
+        FFT(INTTYPE logOfNumOfPoints = 10,
             INTTYPE sampleRate = 1024,
             bool calibrate = false)
-        : numOfPoints_(numOfPoints)
+        : logOfPoints_(logOfNumOfPoints)
+        , numOfPoints_(powTwo[logOfNumOfPoints])
         , sampleRate_(sampleRate)
         {
             tapeOfDoubles_.resize(numOfPoints_);
             if (calibrate)
             {
                 // 1 kHz calibration wave
-                for (int i = 0; i < numOfPoints_; i++)
-                    tapeOfDoubles_[i] = 1600.0 * sin(2 * PI * 1000.0 * i / sampleRate_);
+                for (INTTYPE i = 0; i < numOfPoints_; i++)
+                    tapeOfDoubles_[i] = 1600.0L * sin(2 * PI * 1000.0L * i / sampleRate_);
             }
             else
             {
                 for (INTTYPE i = 0; i < numOfPoints_; i++)
-                    tapeOfDoubles_[i] = 0;
+                    tapeOfDoubles_[i] = FLOATTYPE(0);
             }
             sqrtOfPoints_ = sqrt((double) numOfPoints_);
-            // calculate binary log
-            logOfPoints_ = 0;
-            numOfPoints--;
-            while (numOfPoints != 0)
-            {
-                numOfPoints >>= 1;
-                logOfPoints_++;
-            }
+            //            // calculate binary log
+            //            logOfPoints_ = 0;
+            //            numOfPoints--;
+            //            while (numOfPoints != 0)
+            //            {
+            //                numOfPoints >>= 1;
+            //                logOfPoints_++;
+            //            }
 
             bitReverseVector_.resize(numOfPoints_);
             transformedComplexVector_.resize(numOfPoints_);
@@ -88,7 +97,7 @@ namespace util
             {
                 (complexExpontials_[l]).resize(numOfPoints_);
 
-                for (i = 0; i < numOfPoints_; i++)
+                for (INTTYPE i = 0; i < numOfPoints_; i++)
                 {
                     FLOATTYPE re = cos(2. * PI * i / _2_l);
                     FLOATTYPE im = -sin(2. * PI * i / _2_l);
@@ -117,7 +126,6 @@ namespace util
         }
 
         FFT(const FFT& lhs) = default;
-
         FFT& operator=(const FFT& lhs) = default;
 
         INTTYPE numberOfPoints() const
@@ -172,7 +180,7 @@ namespace util
             }
         }
 
-        void CopyIn(FLOATVECTOR sampleVector)
+        void loadFloatVector(FLOATVECTOR sampleVector)
         {
             INTTYPE cSample = sampleVector.size();
             if (cSample > numOfPoints_)
@@ -182,7 +190,7 @@ namespace util
             auto middle = start + cSample;
             auto end = tapeOfDoubles_.end();
 
-            // make space for cSample samples at the end of tape
+            // make space for samples at the end of the tape
             // shifting previous samples towards the beginning
             std::rotate(start, middle, end);
 
@@ -257,4 +265,5 @@ namespace util
         FLOATVECTOR tapeOfDoubles_; // recording tape
     };
 }; // namespace util
+
 #endif // !defined(NS_UTIL_FFT_H_INCLUDED)
