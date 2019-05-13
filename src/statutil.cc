@@ -483,6 +483,7 @@ namespace util
         value_ = value;
         operation_ = op ? op : &Event::equals;
         isPlaceHolder_ = false;
+        return *this;
     }
 
     Event Event::placeholderEvent(const string& name)
@@ -895,13 +896,13 @@ namespace util
      * iteratively use this to reduce probabilities to a list where all
      * probabilities are of the form
      * P(E|C1,C2,....,Cn) with E and C_i 1&le; i &le; n all single events
-     * 
+     *
      * P(A,B) = P(B|A)P(A)
      * P(An,An-1,...,A1)=P(An|An-1,...,A1)P(An-1,...,A1)
      * P(A4,A3,A2,A1)=P(A4|A3,A2,A1)P(A3|A2,A1)P(A2|A1)P(A1)
-     * 
+     *
      * P(A3,A2,A1|B1,B2,B3)=P(A1|A2,A3,B1,B2,B3)P(A2,A3,B1,B2,B3)
-     * 
+     *
      * precondition:
      * <ul>
      *  <li> CondEvent list is empty *OR*</li>
@@ -916,7 +917,7 @@ namespace util
         bool reval = true;
         EventList newEl;
         EventList newCond = cel.back().condList_;
-        for (EVENT_SET_ITER it = cel.back().eList_.begin();
+        for (auto it = cel.back().eList_.begin();
              cel.back().eList_.size() > 1 && it != cel.back().eList_.end();
              it++)
         {
@@ -1227,25 +1228,26 @@ namespace util
         }
         return os;
     }
+
     /**
      * Default construct with expectation mu and variance sigma
-*/
+     */
     GaussFunction::GaussFunction(long double mu, long double sigma)
     {
         param_[EventList()] = GAUSS_PARAM(mu, sigma);
     }
-    
+
     /**
      * Reset the parameters mu and sigma to standard normal values.
-*/
+     */
     void GaussFunction::clear()
     {
         param_.clear();
     }
-    
+
     /**
      * Probability of a conditional event.
-*/
+     */
     long double GaussFunction::P(const CondEvent& ce) const
     {
         // ce.eventSize() has to be exactly 1, the event-type has to be float or
@@ -1267,22 +1269,22 @@ namespace util
         }
         return 0.0L;
     }
-    
+
     /**
      * Probability of an interval. Returns zero if the Event is not an interval-event.
-*/
+     */
     long double GaussFunction::P(const EventList& el) const
     {
         return P(CondEvent(el));
     }
-    
+
     /**
      * Estimate mu and sigma.
      * <ul>
      * <li>mu ~ sum(x)/numberOf(x)</li>
      * <li>sigma ~ sum((x-mu)^2)/numberOf(x)</li>
      * </ul>
-*/
+     */
     bool GaussFunction::train(CSVAnalyzer csv, bool isAccumulativeCSV)
     {
         bool reval = true;
@@ -1344,7 +1346,7 @@ namespace util
 
     /**
      * Retrieve mu.
-*/
+     */
     long double GaussFunction::mu(const CondEvent& ce) const
     {
         GAUSS_PARAM_TABLE_CITER found = param_.find(ce.condition());
@@ -1353,16 +1355,16 @@ namespace util
 
     /**
      * Retrieve variance.
-*/
+     */
     long double GaussFunction::sigma(const CondEvent& ce) const
     {
         GAUSS_PARAM_TABLE_CITER found = param_.find(ce.condition());
         return found != param_.end() ? found->second.sigma : 0.0L;
     }
-    
+
     /**
      * Generic ostream - &lt;&lt; operator for GaussFunction.
-*/
+     */
     ostream& operator<<(ostream& os, const GaussFunction& d)
     {
         for (GaussFunction::GAUSS_PARAM_TABLE_CITER it = d.param_.begin();
@@ -1375,26 +1377,26 @@ namespace util
         }
         return os;
     }
-    
+
     /**
      * Default create.
-*/
+     */
     ExponentialFunction::ExponentialFunction(VAR_FLOAT lambda)
     {
         param_[EventList()] = lambda;
     }
-    
+
     /**
      * Reset the expectation to 1.0.
-*/
+     */
     void ExponentialFunction::clear()
     {
         param_.clear();
     }
-    
+
     /**
      * Probability of an interval. Returns zero if the Event is not an interval-event.
-*/
+     */
     long double ExponentialFunction::P(const CondEvent& ce) const
     {
         // ce.eventSize() has to be exactly 1, the event-type has to be float or
@@ -1416,20 +1418,20 @@ namespace util
 
         return highP - lowP;
     }
-    
+
     /**
      * Delegate Probability from from EventList to avoid excessive casting.
-*/
+     */
     long double ExponentialFunction::P(const EventList& el) const
     {
         return P(CondEvent(el));
     }
-    
+
     /**
      * Estimate lambda for first column (must be float). Last column might be
      * an accumulative column - all others are condition.
      * - lambda ~ sum(x)/numberOf(x)
-*/
+     */
     bool ExponentialFunction::train(CSVAnalyzer csv, bool isAccumulativeCSV)
     {
         if (csv.columns() == 0)
@@ -1470,28 +1472,28 @@ namespace util
 
         return reval;
     }
-    
+
     /**
      * Retrieve the expectation lambda.
-*/
+     */
     long double ExponentialFunction::lambda(const CondEvent& ce) const
     {
         EXP_PARAM_TABLE_CITER found = param_.find(ce.condition());
         return found != param_.end() ? found->second.lambda : 0.0L;
     }
-    
+
     /**
      * Get the point where the cdf == 1/2.
      * P(0.0 &le; x &le; ln(2)/lambda_) = 0.5
-*/
+     */
     long double ExponentialFunction::ln2ByLambda(const CondEvent& ce) const
     {
         return ln_2 / lambda(ce);
     }
-   
+
     /**
      * Generic ostream - &lt;&lt; operator for ExponentialFunction.
-*/
+     */
     ostream& operator<<(ostream& os, const ExponentialFunction& d)
     {
         for (ExponentialFunction::EXP_PARAM_TABLE_CITER it = d.param_.begin();
@@ -1505,7 +1507,7 @@ namespace util
         return os;
     }
 
-   DiscreteProbability::DiscreteProbability(const VALUERANGES_TYPE& eventValueRanges,
+    DiscreteProbability::DiscreteProbability(const VALUERANGES_TYPE& eventValueRanges,
                                              const VALUERANGES_TYPE& conditionValueRanges)
     : ProbabilityFunction(eventValueRanges, conditionValueRanges)
     , isUniform_(false)
@@ -1539,23 +1541,23 @@ namespace util
     /*
      * (1) Bayes formula
      * =================
-     * 
+     *
      *            P(L|W)P(W)            P(L|W)P(W)
      * P(W|L) = ------------ = -------------------------
      *              P(L)         P(L|W)P(W) + P(L|M)P(M)
-     * 
+     *
      * (2) Chain rule of probability
      * =============================
-     * 
+     *
      * P(A,B) = P(B|A)P(A)
      * P(An,An-1,...,A1)=P(An|An-1,...,A1)P(An-1,...,A1)
      * P(A4,A3,A2,A1)=P(A4|A3,A2,A1)P(A3|A2,A1)P(A2|A1)P(A1)
-     * 
+     *
      * (3) Total probability
      * =====================
-     * 
+     *
      * P(A) = sum(P(A,B_i)) = sum(P(A|B_i)P(B_i)
-*/
+     */
     bool DiscreteProbability::normalise()
     {
         bool reval = true;
@@ -1603,7 +1605,7 @@ namespace util
                 bool isCond,
                 size_t module)
     {
-        EVENT_SET_ITER evIt = ev.begin();
+        auto evIt = ev.begin();
         size_t count = 0;
         for (vector<CondEvent>::iterator vIt = condEvents.begin();
              vIt != condEvents.end();
@@ -1734,7 +1736,7 @@ namespace util
      * if lastEventIndex ==  x  columns x+1, x+2, x+3, ... are conditions
      * if isAccumulativeCSV is true, then last column contains a float
      * probability value >= 0.0
-*/
+     */
     bool DiscreteProbability::train(CSVAnalyzer csv, bool isAccumulativeCSV)
     {
         if (csv.columns() == 0)
@@ -1767,7 +1769,7 @@ namespace util
     /**
      * Use the values (obtained by training) to update the ranges the variables
      * can assume. Don't remove any existing values.
-*/
+     */
     void DiscreteProbability::updateValueRangesFromValues_(bool clearFirst)
     {
         if (clearFirst)
