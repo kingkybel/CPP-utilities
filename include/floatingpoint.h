@@ -155,12 +155,12 @@ namespace util
     };
 
     /**
-     * Generic ostream - \<\< operator for decimal_mode.
+     * Generic ostream - &lh;&lt; operator for decimal_mode.
      */
     std::ostream& operator<<(std::ostream& os, const decimal_mode& dm);
 
     /**
-     * Generic ostream - \<\< operator for decimal_record.
+     * Generic ostream - &lh;&lt; operator for decimal_record.
      */
     std::ostream& operator<<(std::ostream& os, const decimal_record& dr);
 

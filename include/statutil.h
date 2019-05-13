@@ -49,7 +49,7 @@ namespace util
     struct event_range_error : public std::logic_error
     {
 
-        enum rangeType
+        enum rangeType : byte
         {
             exponential_range, ///< Outside the range of the exponential function [0..oo)
             gaussian_range, ///< Outside the range of the gaussian function (-oo..oo)
@@ -106,7 +106,7 @@ namespace util
     struct eventlist_conflict_error : public std::logic_error
     {
 
-        enum conflict_type
+        enum conflict_type : byte
         {
             evt, ///< Event list conflicts with itself
             cond, ///< condition list conflicts with itself
@@ -122,7 +122,7 @@ namespace util
     struct distribution_error : public std::logic_error
     {
 
-        enum type
+        enum type : byte
         {
             empty_uniform, empty_normalise, empty_canonise
         };
@@ -148,11 +148,13 @@ namespace util
     };
 
     /**
-     * Tag one statistical Event.
+     * Formalize one statistical Event.
      * Consists of the name of the event, a match-operation and a match-value.
-     * - x <= 10
-     * - x in [-3.1415, 3.1415]
-     *  - y == "1st Jan 2014"
+     * <ul>
+     * <li>x &le; 10</li>
+     * <li>x in [-3.1415, 3.1415]</li>
+     *  <li>y == "1st Jan 2014"</li>
+     * </ul>
      */
     class Event
     {
@@ -166,97 +168,166 @@ namespace util
         static PlaceHolderOp placeHolderOp; ///< Default Placeholder operation
 
         /**
-         * Construct empty Event. Default-operation: Placeholder - returns false.
+         * Default construct empty Event.
+         *
+         * @param op Default-operation: Placeholder - returns false
          */
         Event(Operation* op = &placeHolderOp);
 
         /**
-         * Construct boolean Event. Default-operation: Equality.
+         * Construct boolean Event.
+         *
+         * @param name event name
+         * @param b boolean value
+         * @param op operation, default: Equality.
          */
         Event(const std::string& name, VAR_BOOL b, Operation* op = &equals);
 
         /**
-         * Construct character Event. Default-operation: Equality.
+         * Construct character Event.
+         *
+         * @param name event name
+         * @param c character value
+         * @param op operation, default: Equality.
          */
         Event(const std::string& name, VAR_CHAR c, Operation* op = &equals);
 
         /**
-         * Construct signed integer Event. Default-operation: Equality.
+         * Construct signed integer Event.
+         *
+         * @param name event name
+         * @param i integral value
+         * @param op operation, default: Equality.
          */
         Event(const std::string& name, VAR_INT i, Operation* op = &equals);
 
         /**
-         * Construct unsigned integer Event. Default-operation: Equality.
+         * Construct unsigned integer Event.
+         *
+         * @param name event name
+         * @param u unsigned integral value
+         * @param op operation, default: Equality.
          */
         Event(const std::string& name, VAR_UINT u, Operation* op = &equals);
 
         /**
-         * Construct signed integer Event. Default-operation: Equality.
+         * Construct floating point Event.
+         *
+         * @param name event name
+         * @param f floating point value
+         * @param op operation, default: Equality.
          */
         Event(const std::string& name, VAR_FLOAT f, Operation* op = &equals);
 
         /**
-         * Construct date Event. Default-operation: Equality.
+         * Construct date Event.
+         *
+         * @param name event name
+         * @param d date value
+         * @param op operation, default: Equality.
          */
         Event(const std::string& name, VAR_DATE d, Operation* op = &equals);
 
         /**
-         * Construct string Event. Default-operation: Equality.
+         * Construct string Event.
+         *
+         * @param name event name
+         * @param s string value
+         * @param op operation, default: Equality.
          */
         Event(const std::string& name, VAR_STRING s, Operation* op = &equals);
 
         /**
-         * Construct boolean interval Event. Default-operation: Containment.
+         * Construct boolean interval Event.
+         *
+         * @param name event name
+         * @param bi boolean interval value
+         * @param op operation, default: Equality.
          */
-        Event(const std::string& name, VAR_BOOL_INTERVAL c, Operation* op = &isElementOf);
+        Event(const std::string& name, VAR_BOOL_INTERVAL bi, Operation* op = &isElementOf);
 
         /**
-         * Construct character interval Event. Default-operation: Containment.
+         * Construct character interval Event.
+         *
+         * @param name event name
+         * @param ci character interval value
+         * @param op operation, default: Containment.
          */
-        Event(const std::string& name, VAR_CHAR_INTERVAL c, Operation* op = &isElementOf);
+        Event(const std::string& name, VAR_CHAR_INTERVAL ci, Operation* op = &isElementOf);
 
         /**
-         * Construct signed integer interval Event. Default-operation: Containment.
+         * Construct signed integer interval Event.
+         *
+         * @param name event name
+         * @param ii integer interval value
+         * @param op operation, default: Containment.
          */
-        Event(const std::string& name, VAR_INT_INTERVAL i, Operation* op = &isElementOf);
+        Event(const std::string& name, VAR_INT_INTERVAL ii, Operation* op = &isElementOf);
 
         /**
-         * Construct unsigned integer interval Event. Default-operation: Containment.
+         * Construct unsigned integer interval Event.
+         *
+         * @param name event name
+         * @param ui unsigned integer interval value
+         * @param op operation, default: Containment.
          */
-        Event(const std::string& name, VAR_UINT_INTERVAL u, Operation* op = &isElementOf);
+        Event(const std::string& name, VAR_UINT_INTERVAL ui, Operation* op = &isElementOf);
 
         /**
-         * Construct floating point interval Event. Default-operation: Containment.
+         * Construct floating point interval Event.
+         *
+         * @param name event name
+         * @param fi floating point interval value
+         * @param op operation, default: Containment..
          */
-        Event(const std::string& name, VAR_FLOAT_INTERVAL f, Operation* op = &isElementOf);
+        Event(const std::string& name, VAR_FLOAT_INTERVAL fi, Operation* op = &isElementOf);
 
         /**
-         * Construct date interval Event. Default-operation: Containment.
+         * Construct date interval Event.
+         *
+         * @param name event name
+         * @param di date interval value
+         * @param op operation, default: Containment.
          */
-        Event(const std::string& name, VAR_DATE_INTERVAL d, Operation* op = &isElementOf);
+        Event(const std::string& name, VAR_DATE_INTERVAL di, Operation* op = &isElementOf);
 
         /**
-         * Construct character-string interval Event. Default-operation: Equality.
+         * Construct character-string interval Event.
+         *
+         * @param name event name
+         * @param si string interval value
+         * @param op operation, default: Equality.
          */
-        Event(const std::string& name, const char* s, Operation* op = &equals);
+        Event(const std::string& name, const char* si, Operation* op = &equals);
 
         /**
-         * Construct Var-type Event. Default-operation: Equality. Needed to ensure only valid types are used.
+         * Construct Var-type Event.
+         * @param name event name
+         * @param a variant
+         * @param dummyConfirm Needed to ensure only valid types are used.
+         * @param op operation, default: Equality.
          */
         Event(const std::string& name, const Var& a, bool dummyConfirm, Operation* op = &equals);
 
         /**
          * Copy-construct Event.
+         * @param rhs right-hand side
          */
         Event(const Event& rhs);
 
         /**
          * Assign Event.
+         * @param rhs right-hand side
          */
         Event& operator=(const Event& rhs);
 
         /**
          * Change Event - parameters name/value/operation.
+         *
+         * @param name new name
+         * @param value new value
+         * @param op new operation
+         * @return the modified *this
          */
         Event& operator()(const std::string& name = "",
                           const Var& value = Var(),
@@ -265,16 +336,21 @@ namespace util
 
         /**
          * Explicitly create an empty (placeholder) Event.
+         *
+         * @param name new name
+         * @return the place holder
          */
         static Event placeholderEvent(const std::string& name);
 
         /**
          * Check whether this Event is a placeholder.
+         * @return true if so, false otherwise
          */
         bool isPlaceholder() const;
 
         /**
          * Check whether all the parameters are undefined
+         * @return true if so, false otherwise
          */
         bool empty() const;
 
@@ -285,16 +361,20 @@ namespace util
          * P(Rain=strong | Rain>strong)
          * but not conflicting
          * P(Rain=strong | Rain=strong)
+         * @param e the event to check against
+         * @return true if *this and e do not conflict, false otherwise
          */
         bool notConflicting(const Event& e) const;
 
         /**
          * Retrieve the name only.
+         * @return the name
          */
         std::string name() const;
 
         /**
          * Retrieve the value as template-type T_.
+         * @return the native value
          */
         template <typename T_>
         T_ value() const
@@ -305,6 +385,7 @@ namespace util
         /**
          * Retrieve the value as interval of template-type T_.
          * If the value is indeed a single value, then return a single value interval.
+         * @return the type-T_ - interval
          */
         template <typename T_ >
         Interval<T_> interval() const
@@ -322,32 +403,45 @@ namespace util
 
         /**
          * Retrieve the value as variant.
+         * @return the value as variant
          */
         Var varValue() const;
 
         /**
          * Check whether an Event matches this event considering the name/value/operation.
+         * @param e the event to match against
+         * @return true if e matches *this, false otherwise
          */
         bool matches(const Event & e) const;
 
 
         /**
          * Propagate the operation description to the users of this.
+         * @return the operation description
          */
         std::string opDesc() const;
 
         /**
-         * Enable associative containers.
+         * Equality operation needed to enable associative containers.
+         * @param lhs left hand side
+         * @param rhs right hand side
+         * @return true if equal, false otherwise
          */
         friend bool operator==(const Event& lhs, const Event & rhs);
 
         /**
-         * Enable associative containers.
+         * Less than operation needed to enable associative containers.
+         * @param lhs left hand side
+         * @param rhs right hand side
+         * @return true if equal, false otherwise
          */
         friend bool operator<(const Event& lhs, const Event & rhs);
 
         /**
-         * Generic ostream - \<\< operator for Events.
+         * Generic ostream - &lt;&lt; operator for Events.
+         * @param os the out-stream
+         * @param the right-hand-side event
+         * @return the modified stream
          */
         friend std::ostream& operator<<(std::ostream& os, const Event & rhs);
     private:
@@ -358,8 +452,6 @@ namespace util
     };
 
     typedef std::set<Event> EVENT_SET;
-    typedef EVENT_SET::iterator EVENT_SET_ITER;
-    typedef EVENT_SET::const_iterator EVENT_SET_CITER;
 
     /**
      * The range that the value of an an Event can assume.
@@ -378,76 +470,97 @@ namespace util
             exponential ///< exponential distribution on the positive float range
         };
         typedef std::set<Var> RANGEVALUE_SET;
-        typedef RANGEVALUE_SET::iterator RANGEVALUE_SET_ITER;
-        typedef RANGEVALUE_SET::const_iterator RANGEVALUE_SET_CITER;
 
         /**
-         * Construct a boolean range (or not if haveBoolRange == false).
+         * Default construct a boolean range (or not if haveBoolRange == false).
+         * @param haveBoolRange whter or not a boolean range should be created
          */
         explicit EventValueRange(bool haveBoolRange = false);
 
         /**
          * Construct a range of enumerated character values.
+         * @param values the set of characters to initialize the range
          */
         EventValueRange(const std::set<VAR_CHAR>& values);
 
         /**
          * Construct a range of enumerated signed integer values.
+         * @param values the set of integrals to initialize the range
          */
         EventValueRange(const std::set<VAR_INT>& values);
 
         /**
          * Construct a range of enumerated unsigned integer values.
+         * @param values the set of unsigned integrals to initialize the range
          */
         EventValueRange(const std::set<VAR_UINT>& values);
 
         /**
          * Construct a range of enumerated floating point values.
+         * @param values the set of floating point to initialize the range
          */
         EventValueRange(const std::set<VAR_FLOAT>& values);
 
         /**
          * Construct a range of enumerated date values.
+         * @param values the set of dates to initialize the range
          */
         EventValueRange(const std::set<VAR_DATE>& values);
 
         /**
          * Construct a range of enumerated string values.
+         * @param values the set of strings to initialize the range
          */
         EventValueRange(const std::set<VAR_STRING>& values);
 
         /**
-         * Construct a range of enumerated character values as an interval from lowest to highest.
+         * Construct a range of enumerated character values as an interval from
+         * lowest to highest.
+         * @param lowest lowest character of the range
+         * @param highest highest character of the range
          */
         EventValueRange(VAR_CHAR lowest, VAR_CHAR highest);
 
         /**
-         * Construct a range of enumerated signed integer values as an interval from lowest to highest.
+         * Construct a range of enumerated signed integer values as an interval
+         * lowest to highest.
+         * @param lowest lowest integer of the range
+         * @param highest highest integer of the range
          */
         EventValueRange(VAR_INT lowest, VAR_INT highest);
 
         /**
-         * Construct a range of enumerated unsigned integer values as an interval from lowest to highest.
+         * Construct a range of enumerated unsigned integer values as an interval
+         * lowest to highest.
+         * @param lowest lowest unsigned integer of the range
+         * @param highest highest unsigned integer of the range
          */
         EventValueRange(VAR_UINT lowest, VAR_UINT highest);
 
         /**
-         * Construct a range of continuous uniform floating point values as an interval from lowest to highest.
+         * Construct a range of continuous uniform floating point values as an
+         * interval lowest to highest.
+         * @param lowest lowest unsigned integer of the range
+         * @param highest highest unsigned integer of the range
          */
         EventValueRange(VAR_FLOAT lowest, VAR_FLOAT highest);
 
         /**
-         * Construct a range of continuous uniform floating point values as an interval.
+         * Construct a range of continuous uniform floating point values as an
+         * interval.
+         * @param interval the floating point interval
          */
         EventValueRange(VAR_FLOAT_INTERVAL interval);
 
         /**
          * Construct a range of continuous for distribution-type.
+         * @param tp the type of distribution which defines the range implicitly
          */
         EventValueRange(DistributionType tp);
 
         /**
          * Check whether the range is empty.
+         * @return true if so, false otherwise
          */
         bool empty() const
         {
@@ -455,14 +568,13 @@ namespace util
         }
 
         /**
-         *  Populate the enumerated range from a set.
+         * Populate the enumerated range from a set.
+         * @param values a set of values to add to the range
          */
         template<typename T_>
         void setValues(const std::set<T_>& values)
         {
-            for (typename std::set<T_>::const_iterator it = values.begin();
-                 it != values.end();
-                 it++)
+            for (auto it = values.begin(); it != values.end(); it++)
             {
                 values_.insert(Var(*it));
             }
@@ -470,11 +582,17 @@ namespace util
 
         /**
          * Add a value if the type is valid.
+         * @param val a potential new value, if type is ok
+         * @return true, if value was added, false otherwise
          */
         bool add(const Var& val);
 
         /**
          * Add a range of values to the range.
+         * @param lowest lowest T_ value
+         * @param highest highest T_ value
+         * true if all value of between lowest and highest were added, false
+         *       otherwise
          */
         template<typename T_>
         bool addRange(T_ lowest, T_ highest)
@@ -489,7 +607,12 @@ namespace util
         }
 
         /**
-         * Add a range of values to the range specialised for floating point (continuous) range.
+         * Add a range of values to the range specialised for floating point
+         * (continuous) range.
+         * @param lowest lowest floating point value
+         * @param highest highest floating point value
+         * true if all value of between lowest and highest were added, false
+         *       otherwise
          */
         bool addRange(VAR_FLOAT lowest, VAR_FLOAT highest)
         {
@@ -504,22 +627,28 @@ namespace util
         }
 
         /**
-         * Get the size of the range. Continuous ranges are always 0 or 2 (lowest,highest))
+         * Get the size of the range. Continuous ranges are always 0 or 2
+         * (lowest,highest)
+         * @return the size of the range
          */
         size_t size() const;
 
         /**
          * Check whether the range is continuous
+         * @return true, if so, false otherwise
          */
         bool isContinuous() const;
 
         /**
          * Retrieve the type of distribution for this range.
+         * @return the type of distribution
          */
         DistributionType type() const;
 
         /**
          * Check whether a value is in range.
+         * @param value the value to check
+         * @return true if so, false otherwise
          */
         bool validValue(const Var& value) const;
 
@@ -527,18 +656,25 @@ namespace util
          * Check whether a value has the correct type for this range.
          * If no value has been added to the range yet then any Var is valid
          * otherwise all have to be of the same type.
+         * @param value the value to check
+         * @return true if so, false otherwise
          */
         bool validType(const Var& value) const;
 
         /**
          * Create a list of Events Event(name,x) where x is in the range
          * by conjugating the name with all possible values.
-         *  Helper for the creation of canonised (full) probability table.
+         * Helper for the creation of canonised (full) probability table.
+         * @param name name of the new event
+         * @return the created list of events
          */
         EVENT_SET makeEventSet(const std::string& name) const;
 
         /**
-         * Generic ostream - \<\< operator for EventValueRange.
+         * Generic ostream - &lt;&lt; operator for EventValueRange.
+         * @param os the ostream
+         * @param evr the event value range to write on the stream
+         * @return the modified stream
          */
         friend std::ostream& operator<<(std::ostream& os, const EventValueRange& evr);
     private:
@@ -546,6 +682,8 @@ namespace util
         /**
          * Template helper to ensure only Var's of the same type can be inserted
          * into the collection.
+         * @param v the value to insert
+         * @return true, it insertion successful, false otherwise
          */
         template<typename T_>
         bool insert(const T_& v)
@@ -565,7 +703,7 @@ namespace util
 
     /**
      * Tag for a list of statistical Events (Event_1 and Event_2 and ...).
-     * This enables statistical expressions like P(E1=e1,E2\<e2,...)
+     * This enables statistical expressions like P(E1=e1,E2 &lt; e2,...)
      */
     class EventList
     {
@@ -574,115 +712,270 @@ namespace util
         typedef EVENT_CONTAINER::iterator EVENT_CONTAINER_ITER;
         typedef EVENT_CONTAINER::const_iterator EVENT_CONTAINER_CITER;
 
-        /// Construct empty event-list.
+        /**
+         * Default onstruct empty event-list.
+         */
         EventList();
-        /// Construct a one-element event-list (if Event is not empty).
+        typedef EVENT_CONTAINER::const_iterator EVENT_CONTAINER_CITER;
+
+        /**
+         * Construct a one-element event-list (if Event is not empty).
+         */
         EventList(const Event& e);
-        /// Copy construct an EventList.
+        typedef EVENT_CONTAINER::const_iterator EVENT_CONTAINER_CITER;
+
+        /**
+         * Copy construct an EventList.
+         */
         EventList(const EventList& rhs);
-        /// Assign the right-hand-side to this.
+        typedef EVENT_CONTAINER::const_iterator EVENT_CONTAINER_CITER;
+
+        /**
+         * Assign the right-hand-side to this.
+         */
         EventList& operator=(const EventList& rhs);
-        /// Append a single Event to the this.
+        typedef EVENT_CONTAINER::const_iterator EVENT_CONTAINER_CITER;
+
+        /**
+         * Append a single Event to the this.
+         */
         EventList& operator&&(const Event& e);
-        /// Append a list of Events to this.
+        typedef EVENT_CONTAINER::const_iterator EVENT_CONTAINER_CITER;
+
+        /**
+         * Append a list of Events to this.
+         */
         EventList& operator&&(const EventList& el);
-        /// Check for emptiness.
+        typedef EVENT_CONTAINER::const_iterator EVENT_CONTAINER_CITER;
+
+        /**
+         * Check for emptiness.
+         */
         bool empty() const;
-        /// Get the number of Events in the list.
+        typedef EVENT_CONTAINER::const_iterator EVENT_CONTAINER_CITER;
+
+        /**
+         * Get the number of Events in the list.
+         */
         size_t size() const;
-        /// Check whether two lists are not conflicting (using the Event-definition of conflict).
+        typedef EVENT_CONTAINER::const_iterator EVENT_CONTAINER_CITER;
+
+        /**
+         * Check whether two lists are not conflicting (using the Event-definition of conflict).
+         */
         bool notConflicting(const EventList& eList) const;
-        /// Check whether this list matches the other EventList.
+        typedef EVENT_CONTAINER::const_iterator EVENT_CONTAINER_CITER;
+
+        /**
+         * Check whether this list matches the other EventList.
+         */
         bool matches(const EventList& eList) const;
-        /// Retrieve an event from this list by name.
+        typedef EVENT_CONTAINER::const_iterator EVENT_CONTAINER_CITER;
+
+        /**
+         * Retrieve an event from this list by name.
+         */
         Event eventByName(const std::string& name) const;
-        /// Move name-specified event from this list to the other.
+        typedef EVENT_CONTAINER::const_iterator EVENT_CONTAINER_CITER;
+
+        /**
+         * Move name-specified event from this list to the other.
+         */
         bool moveEvent(const std::string& name, EventList& el);
-        /// Check whether an event named name is in this list.
+        typedef EVENT_CONTAINER::const_iterator EVENT_CONTAINER_CITER;
+
+        /**
+         * Check whether an event named name is in this list.
+         */
         bool hasEvent(const std::string& e) const;
+        typedef EVENT_CONTAINER::const_iterator EVENT_CONTAINER_CITER;
 
-        /// Iterator pointing to the start of the list of events.
+        /**
+         * Iterator pointing to the start of the list of events.
+         */
         EVENT_CONTAINER_ITER begin();
-        /// Iterator pointing to the start of the list of events (constant version).
-        EVENT_CONTAINER_CITER cbegin() const;
-        /// Iterator pointing to the end of the list of events.
-        EVENT_CONTAINER_ITER end();
-        /// Iterator pointing to the end of the list of events (constant version).
-        EVENT_CONTAINER_CITER cend() const;
+        typedef EVENT_CONTAINER::const_iterator EVENT_CONTAINER_CITER;
 
-        /// Remove the Event pointed to by the iterator from this list.
+        /**
+         * Iterator pointing to the start of the list of events (constant version).
+         */
+        EVENT_CONTAINER_CITER cbegin() const;
+        typedef EVENT_CONTAINER::const_iterator EVENT_CONTAINER_CITER;
+
+        /**
+         * terator pointing to the end of the list of events.
+         */
+        EVENT_CONTAINER_ITER end();
+        typedef EVENT_CONTAINER::const_iterator EVENT_CONTAINER_CITER;
+
+        /**
+         * Iterator pointing to the end of the list of events (constant version).
+         */
+        EVENT_CONTAINER_CITER cend() const;
+        typedef EVENT_CONTAINER::const_iterator EVENT_CONTAINER_CITER;
+
+        /**
+         * Remove the Event pointed to by the iterator from this list.
+         */
         void erase(EVENT_CONTAINER_ITER it);
-        /// Enable associative containers.
+        typedef EVENT_CONTAINER::const_iterator EVENT_CONTAINER_CITER;
+
+        /**
+         * Enable associative containers.
+         */
         friend bool operator==(const EventList& lhs, const EventList& rhs);
-        /// Enable associative containers.
+        typedef EVENT_CONTAINER::const_iterator EVENT_CONTAINER_CITER;
+
+        /**
+         * Enable associative containers.
+         */
         friend bool operator<(const EventList& lhs, const EventList& rhs);
-        /// Generic ostream - \<\< operator for EventList.
+        typedef EVENT_CONTAINER::const_iterator EVENT_CONTAINER_CITER;
+
+        /**
+         * Generic ostream - &lh;&lt; operator for EventList.
+         */
         friend std::ostream& operator<<(std::ostream&, const EventList& eList);
 
     private:
         EVENT_CONTAINER evts_; ///< Ordered list of Events.
     };
 
-    /// Global operator that creates an EventList from two Events.
+    /**
+     * Global operator that creates an EventList from two Events.
+     * @praram lhs left-hand-side
+     * @praram rhs right-hand-side
+     * @return the newly created list of events
+     */
     EventList operator&&(const Event& lhs, const Event& rhs);
 
-    /// Tag for a list of statistical conditional Events.
-    /// This enables statistical expressions like P(E1=e1,E2\<e2|E3\>e3,E4 in [0..11])
-
+    /**
+     * Tag for a list of statistical conditional Events.
+     * his enables statistical expressions like P(E1=e1,E2\<e2|E3\>e3,E4 in [0..11])
+     */
     class CondEvent
     {
     public:
         typedef std::deque<CondEvent> CONDEVENT_LIST;
         typedef CONDEVENT_LIST::iterator CONDEVENT_LIST_ITER;
         typedef CONDEVENT_LIST::const_iterator CONDEVENT_LIST_CITER;
-        /// Construct from two event-lists: first for the event, second for the condition.
+
+        /**
+         * Default construct from two event-lists: first for the event, second
+         *  for the condition.
+         *
+         * @param e an event list
+         * @param cond a condition list
+         */
         CondEvent(const EventList& e = EventList(), const EventList& cond = EventList());
-        /// Construct from a csv-object, more precisely from the column- headers and types.
+
+        /**
+         * Construct from a csv-object, more precisely from the column- headers and types.
+         * 
+         */
         CondEvent(const CSVAnalyzer& csv,
                   size_t row = 0,
                   size_t lastEventIndex = 0,
                   bool isAccumulativeCSV = false);
-        /// Copy-construct CondEvent.
+
+        /**
+         * Copy-construct CondEvent.
+         */
         CondEvent(const CondEvent& rhs);
-        /// Assign right-hand-side to this.
+
+        /**
+         * Assign right-hand-side to this.
+         */
         CondEvent& operator=(const CondEvent& rhs);
-        /// Check for emptyness.
+
+        /**
+         * Check for emptyness.
+         */
         bool empty() const;
-        /// Retrieve the number of events (not conditions) in this CondEvent.
+
+        /**
+         * Retrieve the number of events (not conditions) in this CondEvent.
+         */
         size_t eventSize() const;
-        /// Retrieve the number of conditions (not events) in this CondEvent.
+
+        /**
+         * Retrieve the number of conditions (not events) in this CondEvent.
+         */
         size_t conditionSize() const;
-        /// Retrieve the event-part.
+
+        /**
+         * Retrieve the event-part.
+         */
         const EventList& event() const;
-        /// retrieve the condition-part.
+
+        /**
+         * retrieve the condition-part.
+         */
         const EventList& condition() const;
-        /// Filter out conditions with names in the list conds.
+
+        /**
+         * Filter out conditions with names in the list conds.
+         */
         CondEvent filterConditions(const std::set<std::string>& conds) const;
-        /// Check whether the right-hand-side is a match to this.
+
+        /**
+         * Check whether the right-hand-side is a match to this.
+         */
         bool isMatch(const CondEvent& ce) const;
-        /// Check whether the condition-part contains an event named name.
+
+        /**
+         * Check whether the condition-part contains an event named name.
+         */
         bool containsCondition(const std::string& name) const;
-        /// Apply the chain rule of probability. Result in referenced parameter.
-        bool chainRule(CONDEVENT_LIST& cel, const std::string& name) const;
-        /// Apply the chain rule of probability. Result in referenced parameter.
+
+        /**
+         * Apply the chain rule of probability. Result in referenced parameter.
+            bool chainRule(CONDEVENT_LIST& cel, const std::string& name) const;
+
+        /**
+         * Apply the chain rule of probability. Result in referenced parameter.
+         */
         bool chainRule(CONDEVENT_LIST& cel, const std::vector<std::string>& nameList) const;
-        /// Append an event to event-part.
+
+        /**
+         * Append an event to event-part.
+         */
         CondEvent& operator&&(const Event& el);
-        /// append an event to the condition-part.
+
+        /**
+         * append an event to the condition-part.
+         */
         CondEvent& operator||(const Event& el);
-        /// Check whether the event-part contains an Event named name.
+
+        /**
+         * Check whether the event-part contains an Event named name.
+         */
         bool hasEvent(const std::string& el) const;
-        /// Check whether the condition-part contains an Event named name.
+
+        /**
+         * Check whether the condition-part contains an Event named name.
+         */
         bool hasCondition(const std::string& el) const;
 
-        /// Enable associative containers.
+        /**
+         * Enable associative containers.
+         */
         friend bool operator==(const CondEvent& lhs, const CondEvent& rhs);
-        /// Enable associative containers.
+
+        /**
+         * Enable associative containers.
+         */
         friend bool operator<(const CondEvent& lhs, const CondEvent& rhs);
-        /// Generic ostream - \<\< operator for CondEvent.
+
+        /**
+         * Generic ostream - &lh;&lt; operator for CondEvent.
+         */
         friend std::ostream& operator<<(std::ostream&, const CondEvent& eList);
     protected:
-        /// Retrieve the condition named name.
+
+        /**
+         * Retrieve the condition named name.
+         */
         Event* getCondition(const std::string& name) const;
 
 
@@ -789,7 +1082,7 @@ namespace util
         bool train(CSVAnalyzer csv, bool isAccumulativeCSV = false);
         UNIF_PARAM_TABLE param_; ///< Maps conditions to min-max-values.
 
-        /// Generic ostream - \<\< operator for UniformFloatFunction.
+        /// Generic ostream - &lh;&lt; operator for UniformFloatFunction.
         friend std::ostream& operator<<(std::ostream& os, const UniformFloatFunction& d);
 
     };
@@ -842,7 +1135,7 @@ namespace util
         /// Retrieve variance.
         long double sigma(const CondEvent& ce = CondEvent()) const;
 
-        /// Generic ostream - \<\< operator for GaussFunction.
+        /// Generic ostream - &lh;&lt; operator for GaussFunction.
         friend std::ostream& operator<<(std::ostream& os, const GaussFunction& d);
 
     private:
@@ -899,7 +1192,7 @@ namespace util
         /// - P(0.0\<= x \<= ln(2)/lambda_) = 0.5
         long double ln2ByLambda(const CondEvent& ce = CondEvent()) const;
 
-        /// Generic ostream - \<\< operator for ExponentialFunction.
+        /// Generic ostream - &lh;&lt; operator for ExponentialFunction.
         friend std::ostream& operator<<(std::ostream& os, const ExponentialFunction& d);
 
     private:
@@ -965,7 +1258,7 @@ namespace util
         /// - if lastEventIndex ==  x  columns x+1, x+2, x+3, ... are conditions
         virtual bool train(CSVAnalyzer csv, bool isAccumulativeCSV = false);
 
-        /// Generic ostream - \<\< operator for DiscreteProbability.
+        /// Generic ostream - &lh;&lt; operator for DiscreteProbability.
         friend std::ostream& operator<<(std::ostream& os, const DiscreteProbability& d);
         ///
 

@@ -560,7 +560,7 @@ namespace util
     }
 
     /**
-     * Generic ostream - \<\< operator for Interval's.
+     * Generic ostream - &lh;&lt; operator for Interval's.
      */
     template<typename T_>
     std::ostream& operator<<(std::ostream& os, const Interval<T_>& itvl)

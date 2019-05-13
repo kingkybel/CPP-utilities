@@ -183,7 +183,7 @@ namespace util
         friend bool operator!=(const Node& lhs, const Node& rhs);
 
         /**
-         *  Generic ostream - \<\< operator for Node.
+         *  Generic ostream - &lh;&lt; operator for Node.
          */
         friend std::ostream& operator<<(std::ostream& os, const Node& node);
 
@@ -407,7 +407,7 @@ namespace util
         CondEvent bayesBallAlgorithm(const CondEvent& ce, EventList& irrelevant) const;
 
         /**
-         * Generic ostream - \<\< operator for BayesNet.
+         * Generic ostream - &lh;&lt; operator for BayesNet.
          */
         friend std::ostream& operator<<(std::ostream & os, const BayesNet& bn);
 
