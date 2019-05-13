@@ -175,9 +175,9 @@ namespace util
         bool contains(const T_& v) const
         {
             return rangeType_ == whole ||
-                (rangeType_ == leftOpen && v <= high_) ||
-                (rangeType_ == rightOpen && v >= low_) ||
-                (v >= low_ && v <= high_);
+                    (rangeType_ == leftOpen && v <= high_) ||
+                    (rangeType_ == rightOpen && v >= low_) ||
+                    (v >= low_ && v <= high_);
 
         }
 
@@ -203,10 +203,10 @@ namespace util
         bool isSubIntervalOf(const Interval& itvl) const
         {
             return itvl.rangeType_ == whole ||
-                (itvl.rangeType_ == leftOpen && (rangeType_ == leftOpen || rangeType_ == closed) && high_ <= itvl.high_) ||
-                (itvl.rangeType_ == rightOpen && (rangeType_ == rightOpen || rangeType_ == closed) && low_ >= itvl.low_) ||
-                (itvl.rangeType_ == closed && rangeType_ == closed && low_ >= itvl.low_ && high_ <= itvl.high_)
-                ;
+                    (itvl.rangeType_ == leftOpen && (rangeType_ == leftOpen || rangeType_ == closed) && high_ <= itvl.high_) ||
+                    (itvl.rangeType_ == rightOpen && (rangeType_ == rightOpen || rangeType_ == closed) && low_ >= itvl.low_) ||
+                    (itvl.rangeType_ == closed && rangeType_ == closed && low_ >= itvl.low_ && high_ <= itvl.high_)
+                    ;
         }
 
         template<typename T1_, typename T2_>
@@ -295,7 +295,7 @@ namespace util
          *  Check whether the value has the native type.
          */
         template<typename T_>
-        bool friend isA(const Var& v)
+        friend bool isA(const Var& v)
         {
             return v.type() == typeid (T_);
         }
@@ -331,8 +331,8 @@ namespace util
         friend bool equalT(const Var& lhs, const Var& rhs)
         {
             return lhs.type() == rhs.type() &&
-                isA<T_>(lhs) &&
-                lhs.get<T_>() == rhs.get<T_>();
+                    isA<T_>(lhs) &&
+                    lhs.get<T_>() == rhs.get<T_>();
         }
 
         /**
@@ -532,8 +532,8 @@ namespace util
             typename Interval<T1_>::type lTp = lhs.rangeType_;
             typename Interval<T1_>::type rTp = rhs.rangeType_;
             return lTp < rTp ||
-                (lTp == rTp && lhs.low_ < rhs.low_) ||
-                (lTp == rTp && lhs.low_ == rhs.low_ && lhs.high_ < rhs.high_);
+                    (lTp == rTp && lhs.low_ < rhs.low_) ||
+                    (lTp == rTp && lhs.low_ == rhs.low_ && lhs.high_ < rhs.high_);
         }
         return std::string(typeid (lhs).name()) < std::string(typeid (rhs).name());
     }
@@ -545,9 +545,9 @@ namespace util
     bool operator==(const Interval<T1_>& lhs, const Interval<T2_>& rhs)
     {
         return typeid (lhs) == typeid (rhs) &&
-            lhs.rangeType_ == rhs.rangeType_ &&
-            lhs.low_ == rhs.low_ &&
-            lhs.high_ == rhs.high_;
+                lhs.rangeType_ == rhs.rangeType_ &&
+                lhs.low_ == rhs.low_ &&
+                lhs.high_ == rhs.high_;
     }
 
     /**
@@ -671,7 +671,6 @@ namespace util
 
 
 }; // namespace util
-
 
 #endif // NS_UTIL_ANYUTIL_H_INCLUDED
 
