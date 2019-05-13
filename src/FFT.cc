@@ -22,6 +22,8 @@
  */
 
 #include "FFT.h"
-
-FFT::BASETYPE FFT::PI = 2.0 * asin(1.0L);
+namespace util
+{
+    FFT::FLOATTYPE FFT::PI = boost::math::constants::pi<FLOATTYPE>();
+};
 
