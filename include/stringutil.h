@@ -682,7 +682,8 @@ namespace util
     NumberClass classifyNumberString(const std::string& str);
 
     /**
-     * Case-insensitive version of NumberClass classifyNumberString(const std::string& str).
+     * Case-insensitive version of NumberClass
+     * classifyNumberString(const std::string& str).
      */
     NumberClass classifyNumberString(const ci_string& str);
 
@@ -701,9 +702,10 @@ namespace std
         std::size_t operator()(const util::ci_string& s) const
         {
             hash<string> hasher;
-            return hasher(toLower(s));
+            return hasher(util::toLower(s));
         }
     };
-}
+}; // namespace std
+
 #endif // NS_UTIL_STRINGUTIL_H_INCLUDED
 
