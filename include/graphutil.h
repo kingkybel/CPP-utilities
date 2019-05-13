@@ -404,7 +404,7 @@ namespace util
         {
             auto found = node2index_.find(checkNode);
             return found == node2index_.end() ? 0 :
-                (size_t) in_degree(found->second, graph_);
+                    (size_t) in_degree(found->second, graph_);
         }
 
         /**
@@ -729,13 +729,13 @@ namespace util
         {
             NodeT_ v = dag.graph_[*vi];
             os << "Node: " << v << std::endl
-                << "\tchildren: " << dag.childrenNodes(v) << std::endl
-                << "\tparents : " << dag.parentNodes(v) << std::endl
-                ;
+                    << "\tchildren: " << dag.childrenNodes(v) << std::endl
+                    << "\tparents : " << dag.parentNodes(v) << std::endl
+                    ;
         }
         return os;
     }
-};
+}; //namespace util
 
 #endif // NS_UTIL_GRAPHUTIL_H_INCLUDED
 
