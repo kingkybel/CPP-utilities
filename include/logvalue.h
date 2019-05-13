@@ -1,12 +1,28 @@
 /*
- * File:   logvalue.h
- * Author: Dieter J Kybelksties
+ * File Name:   logvalue.h
+ * Description: double values transformed into logarithmic domain
+ * Copyright (C) 2019 Dieter J Kybelksties
  *
- * Created on April 30, 2019, 9:22 AM
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+ *
+ * @date: 2019-04-25
+ * @author: Dieter J Kybelksties
  */
 
-#ifndef LOGVALUE_H_INCLUDED
-#define	LOGVALUE_H_INCLUDED
+#ifndef NS_UTIL_LOGVALUE_H_INCLUDED
+#define	NS_UTIL_LOGVALUE_H_INCLUDED
 
 #include <cmath>
 #include <ostream>
@@ -17,22 +33,26 @@ namespace util
     {
     private:
         long double val;
+        bool isPositive_;
     public:
 
-        logVal(long double logDomainVal)
+        logVal(long double logDomainVal, bool isPositive = true)
         : val(logDomainVal)
+        , isPositive_(isPositive)
         {
 
         }
 
         static logVal fromReal(long double realDomainVal)
         {
-            return log(realDomainVal);
+            return realDomainVal >= 0.0 ?
+                    log(realDomainVal) :
+                    logVal(-realDomainVal, false);
         }
 
         const long double toReal() const
         {
-            return exp(val);
+            return isPositive_ ? exp(val) : -exp(val);
         }
 
         /**
@@ -57,7 +77,8 @@ namespace util
          */
         friend logVal operator*(const logVal& lhs, const logVal& rhs)
         {
-            return (lhs.val == -INFINITY) || (rhs.val == -INFINITY) ? -INFINITY :
+            return (lhs.val == -INFINITY) || (rhs.val == -INFINITY) ?
+                    -INFINITY :
                     (lhs.val + rhs.val);
         }
 
@@ -69,12 +90,13 @@ namespace util
          */
         friend std::ostream& operator<<(std::ostream& os, const logVal& val)
         {
-            os << val.val;
+            os << (val.isPositive_ ? "" : "-") << val.val;
             return os;
         }
 
 
     };
-};
-#endif	// LOGVALUE_H_INCLUDED
+}; // namespace util
+
+#endif	// NS_UTIL_LOGVALUE_H_INCLUDED
 
