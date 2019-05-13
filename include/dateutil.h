@@ -130,9 +130,9 @@ namespace util
     inline bool valid(const bt::ptime& pt)
     {
         return !pt.is_infinity() &&
-            !pt.is_not_a_date_time() &&
-            pt.date().year() >= 1900 &&
-            pt.date().year() <= 2200;
+                !pt.is_not_a_date_time() &&
+                pt.date().year() >= 1900 &&
+                pt.date().year() <= 2200;
     }
 }; // namespace util
 
