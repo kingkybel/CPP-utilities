@@ -132,7 +132,7 @@ namespace util
         }
 
         /*
-         *  iteration function: changes the case of all occurrences
+         * iteration function: changes the case of all occurrences
          * of the given format flag, if flag == 'b', all occurrences
          * of %b in the format-string fmt are changed to %B, but
          * occurrences of %B are unchanged
@@ -157,8 +157,8 @@ namespace util
                     else
                         reval[pos + 1] = (char) tolower(reval[pos + 1]);
                 }
-            }
-            while (pos != string::npos);
+            } while (pos != string::npos);
+            
             return reval;
         }
 
@@ -168,8 +168,8 @@ namespace util
         }
 
         /*
-         *  create all the facets for the different date-formats we might come
-         *  across this is a subset of the actually possible formats starting
+         * create all the facets for the different date-formats we might come
+         * across this is a subset of the actually possible formats starting
          * with a set of base-formats we "declinate" additional formats by
          * switching parts from long to short representations some formats are
          * ambiguous and can give wrong or no results like "%m/%d/%Y %H:%M:%S"
