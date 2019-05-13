@@ -409,26 +409,23 @@ namespace util
                                        asString(rhs.sizeY()) +
                                        ".");
             }
-            return true;
         }
 
-        static bool assertNotZero(T c, const std::string& location)
+        static void assertNotZero(T c, const std::string& location)
         {
             if (c == (T) 0)
                 throw matrix_error(location +
                                    ": scalar " +
                                    asString(c) +
                                    "must not be 0(Zero).");
-            return true;
         }
 
-        static bool assertSquare(const matrix<T, enableBoundsCheck>& lhs,
+        static void assertSquare(const matrix<T, enableBoundsCheck>& lhs,
                                  const std::string& location)
         {
             if (!lhs.isSquare())
                 throw matrix_error(location +
                                    ": operation only defined for square matrices.");
-            return true;
         }
 
         /**
@@ -789,7 +786,7 @@ namespace util
 
             // initialize the return matrix as the unit-matrix of sizeX
             matrix<T, enableBoundsCheck> reval =
-                matrix<T, enableBoundsCheck>::scalar(sizeX(), T(1.0));
+                    matrix<T, enableBoundsCheck>::scalar(sizeX(), T(1.0));
 
             for (k = 0; k < sizeX(); k++)
             {
@@ -1219,15 +1216,15 @@ namespace util
 
             std::stringstream ss;
             ss << location
-                << ": index ("
-                << x
-                << ","
-                << y
-                << ") is out of bounds ("
-                << lhs.sizeX()
-                << ","
-                << lhs.sizeY()
-                << ").";
+                    << ": index ("
+                    << x
+                    << ","
+                    << y
+                    << ") is out of bounds ("
+                    << lhs.sizeX()
+                    << ","
+                    << lhs.sizeY()
+                    << ").";
             throw matrix_error(ss.str());
         }
     }
@@ -1240,6 +1237,6 @@ namespace util
     {
     }
 
-}
+}; // namespace util
 
-#endif //NS_UTIL_MATRIX_H_INCLUDED
+#endif // NS_UTIL_MATRIX_H_INCLUDED
