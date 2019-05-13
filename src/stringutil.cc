@@ -33,12 +33,13 @@ using namespace boost::assign;
 
 namespace util
 {
-    // try to classify a string into one of the classes NONE, INT, UINT, FLOAT
-    // invalid strings have class NONE
-    // integral types INT or UINT
-    // and valid floating point strings are FLOAT
-    // this function is template'd to allow for case-(in-)sensitive strings
-
+    /**
+     * try to classify a string into one of the classes NONE, INT, UINT, FLOAT
+     * invalid strings have class NONE
+     * integral types INT or UINT
+     * and valid floating point strings are FLOAT
+     * this function is template'd to allow for case-(in-)sensitive strings
+     */
     template<typename T_>
     NumberClass classifyNumberStringT(const T_& str)
     {
@@ -64,44 +65,46 @@ namespace util
                 return INT;
         }
     }
-
+    
     NumberClass classifyNumberString(const string& str)
     {
         return classifyNumberStringT(str);
     }
-
+    
     NumberClass classifyNumberString(const ci_string& str)
     {
         return classifyNumberStringT(str);
     }
 
-    // try to scan a string representation of a boolean by most common values
-    // like True, on/Off/...
-
+    /**
+     * ry to scan a string representation of a boolean by most common values
+     * like True, on/Off/...
+     */
     template<typename T_>
     bool scanBoolStringT(const T_& strVal, bool& result)
     {
-        const static map<ci_string, bool> VALID_BOOL =
-                map_list_of("true", true)("t", true)("yes", true)("y", true)("1", true)("on", true)
-                ("false", false)("f", false)("no", false)("n", false)("0", false)("off", false);
-        map<ci_string, bool>::const_iterator found = VALID_BOOL.find(ci_string(strVal.c_str()));
-        result = found != VALID_BOOL.end() ? found->second : false;
+        const static map<ci_string,bool> VALID_BOOL =
+            map_list_of("true",true)("t",true)("yes",true)("y",true)("1",true)("on",true)
+                ("false",false)("f",false)("no",false)("n",false)("0",false)("off",false);
+        map<ci_string,bool>::const_iterator found = VALID_BOOL.find(ci_string(strVal.c_str()));
+        result = found != VALID_BOOL.end()?found->second:false;
         return found != VALID_BOOL.end();
     }
-
+    
     bool scanBoolString(const string& strVal, bool& result)
     {
         return scanBoolStringT(strVal, result);
     }
-
+    
     bool scanBoolString(const util::ci_string& strVal, bool& result)
     {
         return scanBoolStringT(strVal, result);
     }
 
-    // removes all occurrences of stripChars in a string
-    // strip "__<a_><bc>__" of trimChars="_<>" would result in abc
-
+    /**
+     * removes all occurrences of stripChars in a string
+     * strip "__<a_><bc>__" of trimChars="_<>" would result in abc
+     */
     template<typename T_>
     void stripT(T_& v, const T_& stripChars, StripTrimMode m)
     {
@@ -126,40 +129,40 @@ namespace util
         }
         v = reval;
     }
-
+    
     void strip(string& v, const string& stripChars, StripTrimMode m)
     {
         return stripT(v, stripChars, m);
     }
-
+    
     void strip(ci_string& v, const ci_string& stripChars, StripTrimMode m)
     {
         return stripT(v, stripChars, m);
     }
 
-    // removes chars from the front and back of a string
-    // intended for whitespace, but can be used to remove any set of trimChars
-    // trim "__<abc>__" of trimChars="_<>" would result in abc
-
+    /**
+     * removes chars from the front and back of a string
+     * intended for whitespace, but can be used to remove any set of trimChars
+     * trim "__<abc>__" of trimChars="_<>" would result in abc
+     */
     template<typename T_>
     void trimT(T_& v, const T_& trimChars, StripTrimMode m)
     {
         stripT(v, trimChars, (StripTrimMode) ((m & FRONT) | (m & BACK)));
     }
-
     void trim(string& v, const string& trimChars, StripTrimMode m)
     {
         return trimT(v, trimChars, m);
     }
-
     void trim(ci_string& v, const ci_string& trimChars, StripTrimMode m)
     {
         return trimT(v, trimChars, m);
     }
 
-    // replaces all occurrences of replChars in a string with a repl char
-    // replaceChar "__<a_><bc>__" of replChars="_<>",'#' would result in ###a###bc###
-
+    /**
+     * replaces all occurrences of replChars in a string with a repl char
+     * eplaceChar "__<a_><bc>__" of replChars="_<>",'#' would result in ###a###bc###
+     */
     template<typename T_>
     void replaceCharT(T_& v, const T_& replChars, char repl, StripTrimMode m)
     {
@@ -171,8 +174,7 @@ namespace util
             return;
         }
         size_t firstNonReplChar = 0;
-        while (firstNonReplChar < v.size() &&
-               replChars.find(v[firstNonReplChar]) != T_::npos)
+        while (firstNonReplChar < v.size() && replChars.find(v[firstNonReplChar]) != T_::npos)
         {
             if ((m & FRONT) == FRONT)
             {
@@ -202,25 +204,20 @@ namespace util
             insideNonReplChar++;
         }
     }
-
-    void replaceChar(string& v,
-                     const string& replChars,
-                     char repl,
-                     StripTrimMode m)
+    
+    void replaceChar(string& v, const string& replChars, char repl, StripTrimMode m)
+    {
+        return replaceCharT(v, replChars, repl, m);
+    }
+    
+    void replaceChar(ci_string& v, const ci_string& replChars, char repl, StripTrimMode m)
     {
         return replaceCharT(v, replChars, repl, m);
     }
 
-    void replaceChar(ci_string& v,
-                     const ci_string& replChars,
-                     char repl,
-                     StripTrimMode m)
-    {
-        return replaceCharT(v, replChars, repl, m);
-    }
-
-    // splits a string into a vector of strings using a char sep as separator
-
+    /** 
+     * splits a string into a vector of strings using a char sep as separator
+     */
     template<typename T_>
     vector<T_> splitIntoVectorT(const T_& str, char sep)
     {
@@ -245,20 +242,21 @@ namespace util
 
         return results;
     }
-
+    
     vector<string> splitIntoVector(const string& str, char sep)
     {
         return splitIntoVectorT(str, sep);
     }
-
+    
     vector<ci_string> splitIntoVector(const ci_string& str, char sep)
     {
         return splitIntoVectorT(str, sep);
     }
 
-    // splits a string into a vector of strings using any one of the chars
-    // in sep as separator
-
+    /**
+     * splits a string into a vector of strings using any one of the chars
+     * in sep as separator
+     */
     template<typename T_>
     vector<T_> splitIntoVectorT(const T_& str, const T_& sep)
     {
@@ -283,19 +281,20 @@ namespace util
 
         return results;
     }
-
+    
     vector<string> splitIntoVector(const string& str, const string& sep)
     {
         return splitIntoVectorT(str, sep);
     }
-
+    
     vector<ci_string> splitIntoVector(const ci_string& str, const ci_string& sep)
     {
         return splitIntoVectorT(str, sep);
     }
 
-    // splits a string into a set of strings using a char sep as separator
-
+    /**
+     * splits a string into a set of strings using a char sep as separator
+     */
     template<typename T_>
     set<T_> splitIntoSetT(const T_& str, char sep)
     {
@@ -320,20 +319,21 @@ namespace util
 
         return results;
     }
-
+    
     set<string> splitIntoSet(const string& str, char sep)
     {
         return splitIntoSetT(str, sep);
     }
-
+    
     set<ci_string> splitIntoSet(const ci_string& str, char sep)
     {
         return splitIntoSetT(str, sep);
     }
 
-    // splits a string into a set of strings using any one of the chars
-    // in sep as separator
-
+    /**
+     * splits a string into a set of strings using any one of the chars
+     * in sep as separator
+     */
     template<typename T_>
     set<T_> splitIntoSetT(const T_& str, const T_& sep)
     {
@@ -358,12 +358,12 @@ namespace util
 
         return results;
     }
-
+    
     set<string> splitIntoSet(const string& str, const string& sep)
     {
         return splitIntoSetT(str, sep);
     }
-
+    
     set<ci_string> splitIntoSet(const ci_string& str, const ci_string& sep)
     {
         return splitIntoSetT(str, sep);
