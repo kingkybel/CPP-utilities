@@ -666,6 +666,5 @@ namespace util
 
 }; // namespace util
 
-
 #endif // NS_UTIL_CSVUTIL_H_INCLUDED
 
