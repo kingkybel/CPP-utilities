@@ -1116,6 +1116,7 @@ namespace util
         }
     };
 
-};
-#endif
+}; // namepace util
+
+#endif //NS_UTIL_GRID_H_INCLUDED
 
