@@ -24,7 +24,6 @@
 #include <cmath>
 #include <complex>
 #include <vector>
-#include <iterator>
 #include <algorithm>
 #include <assert.h>
 #include <boost/math/constants/constants.hpp>
