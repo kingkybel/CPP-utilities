@@ -559,7 +559,7 @@ namespace util
                 dims_.x() = nNewSizeX;
                 dims_.y() = nNewSizeY;
 
-                DATA_CONTAINER::iterator iter = data_.begin();
+                auto iter = data_.begin();
                 while (iter != data_.end())
                 {
                     if ((iter->first).x() >= dims_.x() || (iter->first).y() >= dims_.y())
@@ -610,7 +610,7 @@ namespace util
                     fillPercentage = 0.0;
                 cout << "\telements different from default value:" << fillPercentage << "%" << endl;
             }
-            DATA_CONTAINER::iterator iter = data_.begin();
+            auto iter = data_.begin();
             if ((mode | DisplayMode::Full) == DisplayMode::Full)
             {
                 index_pair runner;
@@ -690,7 +690,7 @@ namespace util
            cout << "x - iter" << endl;
            for(size_t x = 0; x<getSizeX(); x++)
            {
-               INDEXSETMAP::iterator setIter = m_yIndices.find(x);
+               auto setIter = m_yIndices.find(x);
 
                // if we have any indices with (x,...)
                if(setIter != m_yIndices.end())
@@ -709,7 +709,7 @@ namespace util
            cout << "y - iter" << endl;
            for(size_t y = 0; y<getSizeY(); y++)
            {
-               INDEXSETMAP::iterator setIter = m_xIndices.find(y);
+               auto setIter = m_xIndices.find(y);
 
                // if we have any indices with (x,...)
                if(setIter != m_xIndices.end())
