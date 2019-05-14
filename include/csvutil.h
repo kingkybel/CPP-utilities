@@ -177,15 +177,8 @@ namespace util
         typedef std::deque<Var> COLUMN_TYPE;
         typedef COLUMN_TYPE::iterator COLUMN_TYPE_ITER;
         typedef std::deque<COLUMN_TYPE> CSV_TYPE;
-        typedef CSV_TYPE::iterator CSV_TYPE_ITER;
-
         typedef std::map<std::string, size_t> HEADER_INDEX;
-        typedef HEADER_INDEX::iterator HEADER_INDEX_ITER;
-        typedef HEADER_INDEX::const_iterator HEADER_INDEX_CITER;
-
         typedef std::set<Var> COLUMN_RANGE;
-        typedef COLUMN_RANGE::iterator COLUMN_RANGE_ITER;
-        typedef COLUMN_RANGE::const_iterator COLUMN_RANGE_CITER;
 
         /**
          * Output configuration for CSVs
@@ -403,7 +396,7 @@ namespace util
         template <typename T_>
         T_ get(const std::string& header, size_t line) const
         {
-            HEADER_INDEX_CITER found = headerIndex_.find(header);
+            auto found = headerIndex_.find(header);
             if (found == headerIndex_.end())
             {
                 throw index_error("No column named '" + header + "' in csv");
@@ -631,7 +624,7 @@ namespace util
         friend std::ostream& operator<<(std::ostream& os, CSVAnalyzer::verbosityType vt);
 
         /**
-         * Generic ostream - &lh;&lt; operator for CSVAnalyzer.
+         * Generic ostream - \<\< operator for CSVAnalyzer.
          */
         friend std::ostream& operator<<(std::ostream& os, const CSVAnalyzer& err);
 
@@ -649,7 +642,7 @@ namespace util
     std::ostream& operator<<(std::ostream& os, CSVAnalyzer::verbosityType vt);
 
     /**
-     * Generic ostream - &lh;&lt; operator for CSVAnalyzer.
+     * Generic ostream - \<\< operator for CSVAnalyzer.
      */
     std::ostream& operator<<(std::ostream& os, const CSVAnalyzer& csv);
 
