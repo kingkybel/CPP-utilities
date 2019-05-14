@@ -74,7 +74,7 @@ namespace util
     : values_()
     , type_(discrete)
     {
-        for (set<VAR_CHAR>::iterator it = values.begin();
+        for (auto it = values.begin();
              it != values.end();
              it++)
         {
@@ -89,9 +89,7 @@ namespace util
     : values_()
     , type_(discrete)
     {
-        for (set<VAR_INT>::iterator it = values.begin();
-             it != values.end();
-             it++)
+        for (auto it = values.begin(); it != values.end(); it++)
         {
             insert(*it);
         }
@@ -104,9 +102,7 @@ namespace util
     : values_()
     , type_(discrete)
     {
-        for (set<VAR_UINT>::iterator it = values.begin();
-             it != values.end();
-             it++)
+        for (auto it = values.begin(); it != values.end(); it++)
         {
             insert(*it);
         }
@@ -119,9 +115,7 @@ namespace util
     : values_()
     , type_(discrete)
     {
-        for (set<VAR_DATE>::iterator it = values.begin();
-             it != values.end();
-             it++)
+        for (auto it = values.begin(); it != values.end(); it++)
         {
             insert(*it);
         }
@@ -134,9 +128,7 @@ namespace util
     : values_()
     , type_(discrete)
     {
-        for (set<VAR_STRING>::iterator it = values.begin();
-             it != values.end();
-             it++)
+        for (auto it = values.begin(); it != values.end(); it++)
         {
             insert(*it);
         }
@@ -252,7 +244,7 @@ namespace util
                 return true;
             if (values_.size() != 2)
                 throw event_range_error(f, values_.size());
-            RANGEVALUE_SET_CITER it = values_.begin();
+            auto it = values_.begin();
             VAR_FLOAT v1 = toNative<VAR_FLOAT>(*it);
             it++;
             VAR_FLOAT v2 = toNative<VAR_FLOAT>(*it);
@@ -290,7 +282,7 @@ namespace util
     EVENT_SET EventValueRange::makeEventSet(const string& name) const
     {
         EVENT_SET reval;
-        for (RANGEVALUE_SET_CITER it = values_.begin(); it != values_.end(); it++)
+        for (auto it = values_.begin(); it != values_.end(); it++)
         {
             reval.insert(Event(name, *it, true));
         }
@@ -306,7 +298,7 @@ namespace util
         return os;
     }
 
-    // static member initialisation
+    // static member initialization
     Equals Event::equals;
     Less Event::less;
     LessEqual Event::lessEqual;
@@ -462,7 +454,8 @@ namespace util
     , isPlaceHolder_(false)
     {
         if (!dummyConfirm)
-            throw event_error("Event can only be created if third parameter is set to true!");
+            throw event_error("Event can only be created if dummy confirm "
+                    "parameter is set to true!");
     }
 
     Event& Event::operator=(const Event& rhs)
@@ -593,7 +586,7 @@ namespace util
 
     EventList& EventList::operator&&(const EventList& el)
     {
-        for (EventList::EVENT_CONTAINER_CITER it = el.cbegin(); it != el.cend(); it++)
+        for (auto it = el.cbegin(); it != el.cend(); it++)
             * this && *it;
         return *this;
     }
@@ -614,10 +607,10 @@ namespace util
     bool EventList::notConflicting(const EventList& eList) const
     {
         bool reval = true;
-        EVENT_CONTAINER_CITER el1It = eList.cbegin();
+        auto el1It = eList.cbegin();
         while (reval && el1It != eList.cend())
         {
-            EVENT_CONTAINER_CITER el2It = cbegin();
+            auto el2It = cbegin();
             while (reval && el2It != cend())
             {
                 if (!el1It->notConflicting(*el2It))
@@ -634,8 +627,8 @@ namespace util
     bool EventList::matches(const EventList& eList) const
     {
         bool reval = size() == eList.size();
-        EVENT_CONTAINER_CITER itThis = cbegin();
-        EVENT_CONTAINER_CITER itThat = eList.cbegin();
+        auto itThis = cbegin();
+        auto itThat = eList.cbegin();
         for (; reval && itThis != cend(); itThis++, itThat++)
         {
             reval &= itThis->matches(*itThat);
@@ -645,7 +638,7 @@ namespace util
 
     Event EventList::eventByName(const string& name) const
     {
-        for (EVENT_CONTAINER_CITER it = cbegin(); it != cend(); it++)
+        for (auto it = cbegin(); it != cend(); it++)
             if (it->name() == name)
                 return *it;
         return Event();
@@ -654,7 +647,7 @@ namespace util
     bool EventList::moveEvent(const string& name, EventList& el)
     {
         bool hasBeenMoved = false;
-        for (EVENT_CONTAINER_CITER it = cbegin(); !hasBeenMoved && it != cend(); it++)
+        for (auto it = cbegin(); !hasBeenMoved && it != cend(); it++)
             if (it->name() == name)
             {
                 el && *it;
@@ -667,7 +660,7 @@ namespace util
 
     bool EventList::hasEvent(const string& e) const
     {
-        for (EVENT_CONTAINER_CITER it = evts_.begin(); it != evts_.end(); it++)
+        for (auto it = evts_.begin(); it != evts_.end(); it++)
             if (it->name() == e)
                 return true;
         return false;
@@ -712,8 +705,8 @@ namespace util
     bool operator<(const EventList& lhs, const EventList& rhs)
     {
         bool reval = true;
-        EventList::EVENT_CONTAINER_CITER itLhs = lhs.cbegin();
-        EventList::EVENT_CONTAINER_CITER itRhs = rhs.cbegin();
+        auto itLhs = lhs.cbegin();
+        auto itRhs = rhs.cbegin();
         bool foundDiff = false;
         for (; itLhs != lhs.cend() && itRhs != rhs.cend(); itLhs++, itRhs++)
         {
@@ -743,9 +736,7 @@ namespace util
     {
         size_t i = 0;
         size_t maxIndex = eList.evts_.size() - 1;
-        for (set<Event>::const_iterator it = eList.evts_.begin();
-             it != eList.evts_.end();
-             it++, i++)
+        for (auto it = eList.evts_.begin(); it != eList.evts_.end(); it++, i++)
         {
             os << *it << (i < maxIndex ? ", " : "");
         }
@@ -845,9 +836,7 @@ namespace util
         EventList filteredConds;
         // first add all conditions that can be found in the filter-set (conds)
         // to the new filtered conditions
-        for (EventList::EVENT_CONTAINER_CITER it = condList_.cbegin();
-             it != condList_.cend();
-             it++)
+        for (auto it = condList_.cbegin(); it != condList_.cend(); it++)
         {
             if (conds.find(it->name()) != conds.end())
                 filteredConds && *it;
@@ -855,9 +844,7 @@ namespace util
 
         // then add all conditions that are not present in the CondEvent
         // as place-holders
-        for (set<string>::const_iterator nameIt = conds.begin();
-             nameIt != conds.end();
-             nameIt++)
+        for (auto nameIt = conds.begin(); nameIt != conds.end(); nameIt++)
         {
             if (!containsCondition(*nameIt))
                 filteredConds && Event::placeholderEvent(*nameIt);
@@ -874,21 +861,12 @@ namespace util
 
     bool CondEvent::containsCondition(const string& name) const
     {
-        for (EventList::EVENT_CONTAINER_CITER it = condList_.cbegin();
-             it != condList_.cend();
-             it++)
+        for (auto it = condList_.cbegin(); it != condList_.cend(); it++)
         {
             if (it->name() == name)
                 return true;
         }
         return false;
-    }
-
-    Event* CondEvent::getCondition(const string& name) const
-    {
-        Event* reval = 0;
-
-        return reval;
     }
 
     /**
@@ -942,9 +920,7 @@ namespace util
     {
         bool reval = true;
         cel.clear();
-        for (vector<string>::const_reverse_iterator it = nameList.rbegin();
-             it != nameList.rend();
-             it++)
+        for (auto it = nameList.rbegin(); it != nameList.rend(); it++)
         {
             chainRule(cel, *it);
         }
@@ -964,14 +940,14 @@ namespace util
         return *this;
     }
 
-    bool CondEvent::hasEvent(const string& el) const
+    bool CondEvent::hasEvent(const string& name) const
     {
-        return eList_.hasEvent(el);
+        return eList_.hasEvent(name);
     }
 
-    bool CondEvent::hasCondition(const string& el) const
+    bool CondEvent::hasCondition(const string& name) const
     {
-        return condList_.hasEvent(el);
+        return condList_.hasEvent(name);
     }
 
     bool operator==(const CondEvent& lhs, const CondEvent& rhs)
@@ -985,11 +961,11 @@ namespace util
                 (lhs.condList_ == rhs.condList_ && lhs.eList_ < rhs.eList_);
     }
 
-    ostream& operator<<(ostream& os, const CondEvent& c)
+    ostream& operator<<(ostream& os, const CondEvent& ce)
     {
-        os << c.eList_;
-        if (!c.condList_.empty())
-            os << " | " << c.condList_;
+        os << ce.eList_;
+        if (!ce.condList_.empty())
+            os << " | " << ce.condList_;
         return os;
     }
 
@@ -1012,11 +988,9 @@ namespace util
     bool ProbabilityFunction::possibleCondEvent(const CondEvent& ce, string& error) const
     {
         // check type and name of event and condition
-        for (EventList::EVENT_CONTAINER_CITER evIt = ce.event().cbegin();
-             evIt != ce.event().cend();
-             evIt++)
+        for (auto evIt = ce.event().cbegin(); evIt != ce.event().cend(); evIt++)
         {
-            VALUERANGES_TYPE_CITER found = eventValueRanges_.find(evIt->name());
+            auto found = eventValueRanges_.find(evIt->name());
             if (found == eventValueRanges_.end())
             {
                 error = "Event '" + evIt->name() + "' not a valid probability variable.";
@@ -1032,11 +1006,11 @@ namespace util
                 return false;
             }
         }
-        for (EventList::EVENT_CONTAINER_CITER condIt = ce.condition().cbegin();
+        for (auto condIt = ce.condition().cbegin();
              condIt != ce.condition().cend();
              condIt++)
         {
-            VALUERANGES_TYPE_CITER found = conditionValueRanges_.find(condIt->name());
+            auto found = conditionValueRanges_.find(condIt->name());
             if (found == conditionValueRanges_.end())
             {
                 error = "p(" + asString(ce) + "): Condition '" + condIt->name()
@@ -1126,7 +1100,7 @@ namespace util
         // float-interval
         if (ce.eventSize() > 1)
             return 0.0L;
-        UNIF_PARAM_TABLE_CITER foundParam = param_.find(ce.condition());
+        auto foundParam = param_.find(ce.condition());
 
         if (foundParam != param_.end())
         {
@@ -1201,9 +1175,7 @@ namespace util
                     param_[ce.condition()].occurences += occurences;
                 }
             }
-            for (UNIF_PARAM_TABLE_ITER parIt = param_.begin();
-                 parIt != param_.end();
-                 parIt++)
+            for (auto parIt = param_.begin(); parIt != param_.end(); parIt++)
             {
                 parIt->second.low -= (1.0L / parIt->second.occurences);
                 parIt->second.high += (1.0L / parIt->second.occurences);
@@ -1216,15 +1188,13 @@ namespace util
     /**
      * Generic ostream - &lt;&lt; operator for UniformFloatFunction.
      */
-    ostream& operator<<(ostream& os, const UniformFloatFunction& d)
+    ostream& operator<<(ostream& os, const UniformFloatFunction& uff)
     {
-        for (UniformFloatFunction::UNIF_PARAM_TABLE_CITER it = d.param_.begin();
-             it != d.param_.end();
-             it++)
+        for (auto it = uff.param_.begin(); it != uff.param_.end(); it++)
         {
             if (!it->first.empty())
                 os << "For condition " << it->first << " ";
-            os << "Uninform on [" << it->second.low << "," << it->second.high << "]" << endl;
+            os << "Uniform on [" << it->second.low << "," << it->second.high << "]" << endl;
         }
         return os;
     }
@@ -1254,7 +1224,7 @@ namespace util
         // float-interval
         if (ce.eventSize() > 1)
             return 0.0L;
-        GAUSS_PARAM_TABLE_CITER foundParam = param_.find(ce.condition());
+        auto foundParam = param_.find(ce.condition());
 
         if (foundParam != param_.end())
         {
@@ -1314,9 +1284,7 @@ namespace util
                     param_[ce.condition()].occurences += occurences;
                 }
             }
-            for (GAUSS_PARAM_TABLE_ITER parIt = param_.begin();
-                 parIt != param_.end();
-                 parIt++)
+            for (auto parIt = param_.begin(); parIt != param_.end(); parIt++)
             {
                 parIt->second.mu /= parIt->second.occurences;
                 parIt->second.sigma = 0.0L; // reset to 0 just to make sure
@@ -1333,7 +1301,7 @@ namespace util
                     param_[ce.condition()].sigma += (val - mu)*(val - mu) * occurences;
                 }
             }
-            for (GAUSS_PARAM_TABLE_ITER parIt = param_.begin();
+            for (auto parIt = param_.begin();
                  parIt != param_.end();
                  parIt++)
             {
@@ -1349,7 +1317,7 @@ namespace util
      */
     long double GaussFunction::mu(const CondEvent& ce) const
     {
-        GAUSS_PARAM_TABLE_CITER found = param_.find(ce.condition());
+        auto found = param_.find(ce.condition());
         return found != param_.end() ? found->second.mu : 0.0L;
     }
 
@@ -1358,7 +1326,7 @@ namespace util
      */
     long double GaussFunction::sigma(const CondEvent& ce) const
     {
-        GAUSS_PARAM_TABLE_CITER found = param_.find(ce.condition());
+        auto found = param_.find(ce.condition());
         return found != param_.end() ? found->second.sigma : 0.0L;
     }
 
@@ -1367,9 +1335,7 @@ namespace util
      */
     ostream& operator<<(ostream& os, const GaussFunction& d)
     {
-        for (GaussFunction::GAUSS_PARAM_TABLE_CITER it = d.param_.begin();
-             it != d.param_.end();
-             it++)
+        for (auto it = d.param_.begin(); it != d.param_.end(); it++)
         {
             if (!it->first.empty())
                 os << "For condition " << it->first << " ";
@@ -1410,7 +1376,7 @@ namespace util
         if (safeItvl.high_ < 0.0L)
             safeItvl.high_ = 0.0L;
 
-        EXP_PARAM_TABLE_CITER foundParam = param_.find(ce.condition());
+        auto foundParam = param_.find(ce.condition());
         VAR_FLOAT lambda = foundParam != param_.end() ? foundParam->second.lambda : 1.0L;
         boost::math::exponential_distribution<VAR_FLOAT> ed(lambda);
         long double lowP = itvl.isLeftOpen() ? 0.0L : boost::math::cdf(ed, itvl.low_);
@@ -1462,9 +1428,7 @@ namespace util
                     param_[ce.condition()].occurences += occurences;
                 }
             }
-            for (EXP_PARAM_TABLE_ITER parIt = param_.begin();
-                 parIt != param_.end();
-                 parIt++)
+            for (auto parIt = param_.begin(); parIt != param_.end(); parIt++)
             {
                 parIt->second.lambda /= parIt->second.occurences;
             }
@@ -1478,7 +1442,7 @@ namespace util
      */
     long double ExponentialFunction::lambda(const CondEvent& ce) const
     {
-        EXP_PARAM_TABLE_CITER found = param_.find(ce.condition());
+        auto found = param_.find(ce.condition());
         return found != param_.end() ? found->second.lambda : 0.0L;
     }
 
@@ -1496,9 +1460,7 @@ namespace util
      */
     ostream& operator<<(ostream& os, const ExponentialFunction& d)
     {
-        for (ExponentialFunction::EXP_PARAM_TABLE_CITER it = d.param_.begin();
-             it != d.param_.end();
-             it++)
+        for (auto it = d.param_.begin(); it != d.param_.end(); it++)
         {
             if (!it->first.empty())
                 os << "For condition " << it->first << " ";
@@ -1529,7 +1491,7 @@ namespace util
             canonise();
         setUniform(true);
         long double prob = 1.0 / (long double) numberOfValues;
-        for (PROB_TABLE_ITER it = values_.begin(); it != values_.end(); it++)
+        for (auto it = values_.begin(); it != values_.end(); it++)
         {
             it->second = prob;
         }
@@ -1571,12 +1533,12 @@ namespace util
             reval = canonise();
 
         ACCUMULATION_MAP sum;
-        for (PROB_TABLE_ITER it = values_.begin(); it != values_.end(); it++)
+        for (auto it = values_.begin(); it != values_.end(); it++)
         {
             if (it->second < 0.0L) // values *CAN* be > 1.0 until the probability is normalised
                 throw distribution_error(it->second);
 
-            ACCUMULATION_MAP::iterator acIt = sum.find(it->first.condition());
+            auto acIt = sum.find(it->first.condition());
             if (acIt == sum.end()) // initialise
             {
                 sum[it->first.condition()].number = 1.0L;
@@ -1588,7 +1550,7 @@ namespace util
                 acIt->second.sum += it->second;
             }
         }
-        for (PROB_TABLE_ITER it = values_.begin(); it != values_.end(); it++)
+        for (auto it = values_.begin(); it != values_.end(); it++)
         {
             if (sum[it->first.condition()].sum == 0.0L) // make uniform
                 it->second = 1.0L / (long double) (sum[it->first.condition()].number);
@@ -1607,9 +1569,7 @@ namespace util
     {
         auto evIt = ev.begin();
         size_t count = 0;
-        for (vector<CondEvent>::iterator vIt = condEvents.begin();
-             vIt != condEvents.end();
-             vIt++)
+        for (auto vIt = condEvents.begin(); vIt != condEvents.end(); vIt++)
         {
             if (isCond)
                 *vIt || *evIt;
@@ -1636,14 +1596,14 @@ namespace util
             throw distribution_error("need at least one event with non-empty"
                                      " value-range to canonise discrete distribution.");
 
-        for (VALUERANGES_TYPE_CITER eRangeIt = eventValueRanges_.begin();
+        for (auto eRangeIt = eventValueRanges_.begin();
              eRangeIt != eventValueRanges_.end();
              eRangeIt++)
         {
             numCondEvents *= eRangeIt->second.size();
         }
 
-        for (VALUERANGES_TYPE_CITER cRangeIt = conditionValueRanges_.begin();
+        for (auto cRangeIt = conditionValueRanges_.begin();
              cRangeIt != conditionValueRanges_.end();
              cRangeIt++)
         {
@@ -1652,7 +1612,7 @@ namespace util
         condEvents.resize(numCondEvents);
 
         size_t module = 1;
-        for (VALUERANGES_TYPE_CITER eRangeIt = eventValueRanges_.begin();
+        for (auto eRangeIt = eventValueRanges_.begin();
              eRangeIt != eventValueRanges_.end();
              eRangeIt++)
         {
@@ -1661,7 +1621,7 @@ namespace util
             module *= eSet.size();
         }
 
-        for (VALUERANGES_TYPE_CITER cRangeIt = conditionValueRanges_.begin();
+        for (auto cRangeIt = conditionValueRanges_.begin();
              cRangeIt != conditionValueRanges_.end();
              cRangeIt++)
         {
@@ -1670,9 +1630,7 @@ namespace util
             module *= eSet.size();
         }
 
-        for (vector<CondEvent>::const_iterator ceIt = condEvents.begin();
-             ceIt != condEvents.end();
-             ceIt++)
+        for (auto ceIt = condEvents.begin(); ceIt != condEvents.end(); ceIt++)
         {
             if (values_.find(*ceIt) == values_.end())
                 values_[*ceIt] = 0.0L;
@@ -1685,14 +1643,14 @@ namespace util
     {
         bool reval = !empty();
         ACCUMULATION_MAP sum;
-        for (PROB_TABLE_CITER it = values_.begin(); reval && it != values_.end(); it++)
+        for (auto it = values_.begin(); reval && it != values_.end(); it++)
         {
             if (it->second < 0.0L) // values *CAN* be > 1.0 until the probability is normalised
                 reval = false;
 
             sum[it->first.condition()].sum += it->second;
         }
-        ACCUMULATION_MAP::const_iterator it = sum.begin();
+        auto it = sum.begin();
         while (reval && it != sum.end())
         {
             if (!withinTolerance(it->second.sum, 1.0L))
@@ -1725,7 +1683,7 @@ namespace util
         if (!possibleCondEvent(ce, error))
             throw distribution_error(error);
 
-        PROB_TABLE_CITER found = values_.find(ce);
+        auto found = values_.find(ce);
         if (found == values_.end())
             return 0.0L;
         return found->second;
@@ -1777,9 +1735,9 @@ namespace util
             conditionValueRanges_.clear();
             eventValueRanges_.clear();
         }
-        for (PROB_TABLE_ITER it = values_.begin(); it != values_.end(); it++)
+        for (auto it = values_.begin(); it != values_.end(); it++)
         {
-            EventList::EVENT_CONTAINER_CITER condIt = it->first.condition().cbegin();
+            auto condIt = it->first.condition().cbegin();
             while (condIt != it->first.condition().cend())
             {
                 addValidValueToRange(conditionValueRanges_,
@@ -1789,7 +1747,7 @@ namespace util
                 condIt++;
             }
 
-            EventList::EVENT_CONTAINER_CITER evtIt = it->first.event().cbegin();
+            auto evtIt = it->first.event().cbegin();
             while (evtIt != it->first.event().cend())
             {
                 addValidValueToRange(eventValueRanges_,
@@ -1804,22 +1762,20 @@ namespace util
     ostream& operator<<(ostream& os, const DiscreteProbability& d)
     {
         os << "Event value ranges:" << endl;
-        for (VALUERANGES_TYPE_CITER evIt = d.eventValueRanges_.begin();
+        for (auto evIt = d.eventValueRanges_.begin();
              evIt != d.eventValueRanges_.end();
              evIt++)
         {
             os << "\t" << evIt->first << ": " << evIt->second << endl;
         }
         os << "Condition value ranges:" << endl;
-        for (VALUERANGES_TYPE_CITER cIt = d.conditionValueRanges_.begin();
+        for (auto cIt = d.conditionValueRanges_.begin();
              cIt != d.conditionValueRanges_.end();
              cIt++)
         {
             os << "\t" << cIt->first << ": " << cIt->second << endl;
         }
-        for (DiscreteProbability::PROB_TABLE_CITER it = d.values_.begin();
-             it != d.values_.end();
-             it++)
+        for (auto it = d.values_.begin(); it != d.values_.end(); it++)
         {
             os << "P(" << it->first << ")=" << it->second << endl;
         }
