@@ -49,7 +49,7 @@ namespace util
     struct event_range_error : public std::logic_error
     {
 
-        enum rangeType : byte
+        enum rangeType
         {
             exponential_range, ///< Outside the range of the exponential function [0..oo)
             gaussian_range, ///< Outside the range of the gaussian function (-oo..oo)
@@ -106,7 +106,7 @@ namespace util
     struct eventlist_conflict_error : public std::logic_error
     {
 
-        enum conflict_type : byte
+        enum conflict_type
         {
             evt, ///< Event list conflicts with itself
             cond, ///< condition list conflicts with itself
@@ -122,7 +122,7 @@ namespace util
     struct distribution_error : public std::logic_error
     {
 
-        enum type : byte
+        enum type
         {
             empty_uniform, empty_normalise, empty_canonise
         };
@@ -713,127 +713,120 @@ namespace util
         typedef EVENT_CONTAINER::const_iterator EVENT_CONTAINER_CITER;
 
         /**
-         * Default onstruct empty event-list.
+         * Default construct empty event-list.
          */
         EventList();
-        typedef EVENT_CONTAINER::const_iterator EVENT_CONTAINER_CITER;
 
         /**
          * Construct a one-element event-list (if Event is not empty).
+         * @param e an event
          */
         EventList(const Event& e);
-        typedef EVENT_CONTAINER::const_iterator EVENT_CONTAINER_CITER;
 
         /**
          * Copy construct an EventList.
+         * @param rhs the right-hand-side event
          */
         EventList(const EventList& rhs);
-        typedef EVENT_CONTAINER::const_iterator EVENT_CONTAINER_CITER;
 
         /**
          * Assign the right-hand-side to this.
+         * @param rhs the right-hand-side event
+         * @return the modified Event-list
          */
         EventList& operator=(const EventList& rhs);
-        typedef EVENT_CONTAINER::const_iterator EVENT_CONTAINER_CITER;
 
         /**
          * Append a single Event to the this.
+         * @param e an event
+         * @return the modified Event-list
          */
         EventList& operator&&(const Event& e);
-        typedef EVENT_CONTAINER::const_iterator EVENT_CONTAINER_CITER;
 
         /**
          * Append a list of Events to this.
+         * @param el an event list
+         * @return the modified Event-list
          */
         EventList& operator&&(const EventList& el);
-        typedef EVENT_CONTAINER::const_iterator EVENT_CONTAINER_CITER;
 
         /**
          * Check for emptiness.
          */
         bool empty() const;
-        typedef EVENT_CONTAINER::const_iterator EVENT_CONTAINER_CITER;
+
 
         /**
          * Get the number of Events in the list.
          */
         size_t size() const;
-        typedef EVENT_CONTAINER::const_iterator EVENT_CONTAINER_CITER;
 
         /**
          * Check whether two lists are not conflicting (using the Event-definition of conflict).
          */
         bool notConflicting(const EventList& eList) const;
-        typedef EVENT_CONTAINER::const_iterator EVENT_CONTAINER_CITER;
+
 
         /**
          * Check whether this list matches the other EventList.
          */
         bool matches(const EventList& eList) const;
-        typedef EVENT_CONTAINER::const_iterator EVENT_CONTAINER_CITER;
 
         /**
          * Retrieve an event from this list by name.
          */
         Event eventByName(const std::string& name) const;
-        typedef EVENT_CONTAINER::const_iterator EVENT_CONTAINER_CITER;
 
         /**
          * Move name-specified event from this list to the other.
          */
         bool moveEvent(const std::string& name, EventList& el);
-        typedef EVENT_CONTAINER::const_iterator EVENT_CONTAINER_CITER;
 
         /**
          * Check whether an event named name is in this list.
          */
         bool hasEvent(const std::string& e) const;
-        typedef EVENT_CONTAINER::const_iterator EVENT_CONTAINER_CITER;
 
         /**
          * Iterator pointing to the start of the list of events.
          */
         EVENT_CONTAINER_ITER begin();
-        typedef EVENT_CONTAINER::const_iterator EVENT_CONTAINER_CITER;
 
         /**
          * Iterator pointing to the start of the list of events (constant version).
          */
         EVENT_CONTAINER_CITER cbegin() const;
-        typedef EVENT_CONTAINER::const_iterator EVENT_CONTAINER_CITER;
 
         /**
-         * terator pointing to the end of the list of events.
+         * Iterator pointing to the end of the list of events.
          */
         EVENT_CONTAINER_ITER end();
-        typedef EVENT_CONTAINER::const_iterator EVENT_CONTAINER_CITER;
 
         /**
          * Iterator pointing to the end of the list of events (constant version).
          */
         EVENT_CONTAINER_CITER cend() const;
-        typedef EVENT_CONTAINER::const_iterator EVENT_CONTAINER_CITER;
 
         /**
          * Remove the Event pointed to by the iterator from this list.
          */
         void erase(EVENT_CONTAINER_ITER it);
-        typedef EVENT_CONTAINER::const_iterator EVENT_CONTAINER_CITER;
 
         /**
          * Enable associative containers.
          */
         friend bool operator==(const EventList& lhs, const EventList& rhs);
-        typedef EVENT_CONTAINER::const_iterator EVENT_CONTAINER_CITER;
 
         /**
          * Enable associative containers.
          */
         friend bool operator<(const EventList& lhs, const EventList& rhs);
-        typedef EVENT_CONTAINER::const_iterator EVENT_CONTAINER_CITER;
 
         /**
-         * Generic ostream - &lh;&lt; operator for EventList.
+         * Generic ostream - &lt;&lt; operator for EventList.
+         * @param os the ostream
+         * @param evr the event list to write on the stream
+         * @return the modified stream
          */
         friend std::ostream& operator<<(std::ostream&, const EventList& eList);
 
@@ -862,7 +855,7 @@ namespace util
 
         /**
          * Default construct from two event-lists: first for the event, second
-         *  for the condition.
+         * for the condition.
          *
          * @param e an event list
          * @param cond a condition list
@@ -870,8 +863,15 @@ namespace util
         CondEvent(const EventList& e = EventList(), const EventList& cond = EventList());
 
         /**
-         * Construct from a csv-object, more precisely from the column- headers and types.
-         * 
+         * Construct from a csv-object, more precisely from the column- headers
+         * and types. The events and conditions (P(events-list|condition-list)
+         * are separated by the last eventIndex, Condition list can be empty.
+         *
+         * @param csv a csv-reader
+         * @param row header row index
+         * @param lastEventIndex last column index that describes events
+         * @param isAccumulativeCSV if isAccummulative id true, then the last
+         *                          column are probability-values
          */
         CondEvent(const CSVAnalyzer& csv,
                   size_t row = 0,
@@ -880,162 +880,299 @@ namespace util
 
         /**
          * Copy-construct CondEvent.
+         * @param rhs right-hand-side condition event
          */
         CondEvent(const CondEvent& rhs);
 
         /**
          * Assign right-hand-side to this.
+         * @param rhs right-hand-side condition event
          */
         CondEvent& operator=(const CondEvent& rhs);
 
         /**
-         * Check for emptyness.
+         * Check for emptiness.
+         * @return true is empty, false otherwise
          */
         bool empty() const;
 
         /**
          * Retrieve the number of events (not conditions) in this CondEvent.
+         * @return the number of events
          */
         size_t eventSize() const;
 
         /**
          * Retrieve the number of conditions (not events) in this CondEvent.
+         * @return the number of conditions
          */
         size_t conditionSize() const;
 
         /**
          * Retrieve the event-part.
+         * @return the events list
          */
         const EventList& event() const;
 
         /**
          * retrieve the condition-part.
+         * @return the condition list
          */
         const EventList& condition() const;
 
         /**
-         * Filter out conditions with names in the list conds.
+         * Filter out conditions with names in the list "conds".
+         * @param conds the list of conditions to filter out
+         * @return the filtered condition event
          */
         CondEvent filterConditions(const std::set<std::string>& conds) const;
 
         /**
          * Check whether the right-hand-side is a match to this.
+         * @param ce the condition event to match against
+         * @return true if matching, false otherwise
          */
         bool isMatch(const CondEvent& ce) const;
 
         /**
          * Check whether the condition-part contains an event named name.
+         * @param name the event name to check
+         * @return true if a condition of this name is contained, false else
          */
         bool containsCondition(const std::string& name) const;
 
         /**
          * Apply the chain rule of probability. Result in referenced parameter.
-            bool chainRule(CONDEVENT_LIST& cel, const std::string& name) const;
+         * one application of the chain rule
+         * iteratively use this to reduce probabilities to a list where all
+         * probabilities are of the form
+         * P(E|C1,C2,....,Cn) with E and C_i 1&le; i &le; n all single events
+         *
+         * P(A,B) = P(B|A)P(A)
+         * P(An,An-1,...,A1)=P(An|An-1,...,A1)P(An-1,...,A1)
+         * P(A4,A3,A2,A1)=P(A4|A3,A2,A1)P(A3|A2,A1)P(A2|A1)P(A1)
+         *
+         * P(A3,A2,A1|B1,B2,B3)=P(A1|A2,A3,B1,B2,B3)P(A2,A3,B1,B2,B3)
+         *
+         * precondition:
+         * <ul>
+         *  <li> CondEvent list is empty *OR*</li>
+         *  <li> all but (possibly) the last are already of the required form</li>
+         * </ul>
+         *
+         * @param cel the result of the application of the chain-rule
+         * @param name the name of the event for which to apply the chain rul
+         * @return true if success, false otherwise
+         */
+        bool chainRule(CONDEVENT_LIST& cel, const std::string& name) const;
 
         /**
          * Apply the chain rule of probability. Result in referenced parameter.
+         * one application of the chain rule
+         * iteratively use this to reduce probabilities to a list where all
+         * probabilities are of the form
+         * P(E|C1,C2,....,Cn) with E and C_i 1&le; i &le; n all single events
+         *
+         * P(A,B) = P(B|A)P(A)
+         * P(An,An-1,...,A1)=P(An|An-1,...,A1)P(An-1,...,A1)
+         * P(A4,A3,A2,A1)=P(A4|A3,A2,A1)P(A3|A2,A1)P(A2|A1)P(A1)
+         *
+         * P(A3,A2,A1|B1,B2,B3)=P(A1|A2,A3,B1,B2,B3)P(A2,A3,B1,B2,B3)
+         *
+         * precondition:
+         * <ul>
+         *  <li> CondEvent list is empty *OR*</li>
+         *  <li> all but (possibly) the last are already of the required form</li>
+         * </ul>
+         *
+         * @param cel the result of the application of the chain-rule
+         * @param nameList the names of  events for which to apply the chain rule
+         * @return true if success, false otherwise
          */
         bool chainRule(CONDEVENT_LIST& cel, const std::vector<std::string>& nameList) const;
 
         /**
          * Append an event to event-part.
+         * @param el the event to append
+         * @return the new condition event
          */
         CondEvent& operator&&(const Event& el);
 
         /**
-         * append an event to the condition-part.
+         * Append an event to the condition-part.
+         * @param el the condition to append
+         * @return the new condition event
          */
         CondEvent& operator||(const Event& el);
 
         /**
          * Check whether the event-part contains an Event named name.
+         * @param name the name of the event to check
+         * @return true, if the events contain it, false otherwise
          */
-        bool hasEvent(const std::string& el) const;
+        bool hasEvent(const std::string& name) const;
 
         /**
          * Check whether the condition-part contains an Event named name.
+         * @param name the name of the condition to check
+         * @return true, if the conditions contain it, false otherwise
          */
-        bool hasCondition(const std::string& el) const;
+        bool hasCondition(const std::string& name) const;
 
         /**
-         * Enable associative containers.
+         * Equality operator. Needed in order to to enable associative containers.
+         * @param lhs left-hand-side condition event
+         * @param rhs right-hand-side condition event
+         * @return true if equal, false otherwise
          */
         friend bool operator==(const CondEvent& lhs, const CondEvent& rhs);
 
         /**
-         * Enable associative containers.
+         * Less-than operator. Needed in order to to enable associative containers.
+         * @param lhs left-hand-side condition event
+         * @param rhs right-hand-side condition event
+         * @return true if lhs less than rhs, false otherwise
          */
         friend bool operator<(const CondEvent& lhs, const CondEvent& rhs);
 
         /**
          * Generic ostream - &lh;&lt; operator for CondEvent.
+         * @param os the output stream
+         * @param ce the condition event to stream
+         * @return the modified stream
          */
-        friend std::ostream& operator<<(std::ostream&, const CondEvent& eList);
+        friend std::ostream& operator<<(std::ostream& os, const CondEvent& ce);
     protected:
-
-        /**
-         * Retrieve the condition named name.
-         */
-        Event* getCondition(const std::string& name) const;
-
 
     private:
         EventList eList_; ///< List of Events interpreted as events.
         EventList condList_; ///< List of Events interpreted as conditions.
     };
 
-    /// Global operator that creates a Condition Event from two EventLists.
+    /**
+     * Global operator that creates a Condition Event from two EventLists.
+     * @param lhs left-hand-side event list
+     * @param rhs right-hand-side event list
+     * @return condition event ( P(lhs | rhs) )
+     */
     CondEvent operator||(const EventList& lhs, const EventList& rhs);
 
     const static long double e = exp(1.0L); ///< Base of the natural logarithm.
     const static long double ln_2 = log(2.0L); ///< Natural logarithm of 2.
 
     typedef std::map<std::string, EventValueRange> VALUERANGES_TYPE;
-    typedef VALUERANGES_TYPE::iterator VALUERANGES_TYPE_ITER;
-    typedef VALUERANGES_TYPE::const_iterator VALUERANGES_TYPE_CITER;
 
-    /// Abstract base class for floating point probability functions.
-
+    /**
+     * Abstract base class for floating point probability functions.
+     */
     struct ProbabilityFunction
     {
-        /// Default construct.
+        /**
+         * Default construct.
+         * @param eventValueRanges ranges for the events
+         * @param conditionValueRanges ranges for the conditions
+         */
         ProbabilityFunction(const VALUERANGES_TYPE& eventValueRanges = VALUERANGES_TYPE(),
                             const VALUERANGES_TYPE& conditionValueRanges = VALUERANGES_TYPE());
 
-        /// Clone a copy of this.
+        /**
+         * Clone a copy of this.
+         * @return a pointer to the clone
+         */
         virtual ProbabilityFunction* clone() const = 0;
-        /// Check whether a condition-event is compatible with this probability function.
-        bool possibleCondEvent(const CondEvent& ce, std::string& error) const;
-        /// Probability of a conditional event.
-        virtual long double P(const CondEvent& ce) const = 0;
-        /// Delegate Probability from EventList to avoid excessive casting.
-        virtual long double P(const EventList& el) const = 0;
-        /// Does the function satisfy probability requirements?
 
+        /**
+         * Check whether a condition-event is compatible with this probability
+         * function.
+         * @param ce the condition event to check
+         * @param error a reference that will be populated by error-message if needed
+         * @return true, if compatible, false otherwise
+         */
+        bool possibleCondEvent(const CondEvent& ce, std::string& error) const;
+
+        /**
+         * Probability of a conditional event.
+         * @param ce the condition event for which to calculate the probability
+         * @return the probability
+         */
+        virtual long double P(const CondEvent& ce) const = 0;
+
+        /**
+         * Delegate Probability from EventList to avoid excessive casting.
+         * @param el the event-list for which to calculate the probability
+         * @return the probability
+         */
+        virtual long double P(const EventList& el) const = 0;
+
+        /**
+         * Does the function satisfy probability requirements?
+         * @return true, if so, false otherwise
+         */
         virtual bool isDistribution() const
         {
             return true;
         }
-        /// Reset the parameters of the probability function.
+
+        /**
+         * Reset the parameters of the probability function.
+         */
         virtual void clear() = 0;
-        /// Train (estimate) the parameters of of the probability function.
+
+        /**
+         * Train (estimate) the parameters of of the probability function.
+         * @param csv a csv-analyzer to use as input
+         * @param isAccumulativeCSV if true, then there is a column with
+         *                          probabilities
+         * @return success
+         */
         virtual bool train(CSVAnalyzer csv,
                            bool isAccumulativeCSV = false) = 0;
 
-        /// Add a Variant-value to the range of possible event-values.
+
+        /**
+         * Add a Variant-value to the range of possible event-values.
+         * @param name event name
+         * @param val value to be added to the range
+         * @return success
+         */
         bool addValueToEventRange(const std::string& name, const Var& val);
-        /// Add a Variant-value to the range of possible condition-values.
+
+        /**
+         * Add a Variant-value to the range of possible condition-values.
+         * @param name condition name
+         * @param val value to be added to the range
+         * @return success
+         */
+
         bool addValueToConditionRange(const std::string& name, const Var& val);
 
     protected:
-        /// Get the index up to which we interpret as event-Events (as opposed to
-        /// condition-Events). Needed when we have a list like we get it from a csv.
+
+        /**
+         * Get the index up to which we interpret as event-Events (as opposed to
+         * condition-Events). Needed when we have a list like we get it from a csv.
+         * @return the last event index
+         */
         size_t getLastEventIndex() const;
-        /// Number of Conditions. Use in combination with getLastEventIndex() to
-        /// split a yet un-discriminated list into event and condition parts.
+
+        /**
+         * Number of Conditions. Use in combination with getLastEventIndex() to
+         * split a yet un-discriminated list into event and condition parts.
+         * @return the number of conditions
+         */
         size_t getNumberOfConditions() const;
-        /// Add a value to a range (either event or condition). Vets against
-        /// nonsensical inserts.
+
+        /**
+         * Add a value to a range (either event or condition). Checks validity
+         * in order to guard against nonsensical inserts.
+         * event-events and condition-events need must not be mutually exclusive.
+         *
+         * @param range a range of values
+         * @param range_ortho a disjunct (orthogonal) range of values
+         * @param name event name
+         * @param value event value
+         * @return success
+         */
         bool addValidValueToRange(VALUERANGES_TYPE& range,
                                   VALUERANGES_TYPE& range_ortho,
                                   const std::string& name,
@@ -1044,13 +1181,16 @@ namespace util
         VALUERANGES_TYPE conditionValueRanges_; ///< Map of ranges for conditions.
     };
 
-    /// Uniform probability function (on real domain).
-
+    /**
+     * Uniform probability function on real (floating point) domain.
+     */
     class UniformFloatFunction : public ProbabilityFunction
     {
     public:
-        /// Storage for a set of parameters for a Uniform function (min/max).
 
+        /**
+         * Storage for a set of parameters for a Uniform function (min/max).
+         */
         struct UNIF_PARAM
         {
 
@@ -1063,40 +1203,83 @@ namespace util
             long double low, high, occurences;
         };
         typedef std::map<EventList, UNIF_PARAM> UNIF_PARAM_TABLE;
-        typedef UNIF_PARAM_TABLE::iterator UNIF_PARAM_TABLE_ITER;
-        typedef UNIF_PARAM_TABLE::const_iterator UNIF_PARAM_TABLE_CITER;
-        /// Default construct.
+
+        /**
+         * Default construct.
+         * @param minVal minimal value of the range
+         * @param maxVal maximal value of the range
+         * @param conditionValueRanges ranges for the conditional events
+         */
         UniformFloatFunction(VAR_FLOAT minVal = 0.0L,
                              VAR_FLOAT maxVal = 1.0L,
                              const VALUERANGES_TYPE& conditionValueRanges = VALUERANGES_TYPE());
 
-        /// Clone a copy of this.
+        /**
+         * Clone a copy of this.
+         * @return a pointer to the clone
+         */
         ProbabilityFunction* clone() const;
-        /// Probability of an interval. Returns zero if the Event is not an interval-event.
+
+        /**
+         * Probability of an interval. Returns zero if the Event is not an
+         * interval-event.
+         * @param ce the condition event to check
+         * @return the probability
+         */
         long double P(const CondEvent& ce) const;
-        /// Delegate Probability from EventList to avoid excessive casting.
+
+        /**
+         * Delegate Probability from EventList to avoid excessive casting if we
+         * are interested in an unconditional joint probability.
+         * @param ce the condition event to check
+         * @return the probability
+         */
         long double P(const EventList& el) const;
-        /// Reset the parameters of the probability function.
+
+        /**
+         * Reset the parameters of the probability function.
+         */
         void clear();
-        /// Train (estimate) the parameters of of the probability function.
+
+        /**
+         * Train (estimate) the parameters of of the probability function.
+         * @param csv csv-analyzer as input
+         * @param isAccumulativeCSV if true then has an already accumulated
+         *                           probability column
+         * @return success
+         */
         bool train(CSVAnalyzer csv, bool isAccumulativeCSV = false);
         UNIF_PARAM_TABLE param_; ///< Maps conditions to min-max-values.
 
-        /// Generic ostream - &lh;&lt; operator for UniformFloatFunction.
-        friend std::ostream& operator<<(std::ostream& os, const UniformFloatFunction& d);
+        /**
+         * Generic ostream - &lh;&lt; operator for UniformFloatFunction.
+         * @param os the output stream
+         * @param uff the uniform float function to stream
+         * @return the modified out-stream
+         */
+        friend std::ostream& operator<<(std::ostream& os,
+                                        const UniformFloatFunction& uff);
 
     };
 
-    /// Gaussian bell curve probability function.
-
+    /**
+     * Gaussian bell curve probability function.
+     */
     class GaussFunction : public ProbabilityFunction
     {
     public:
-        /// Storage for a set of parameters for a Gaussian function.
 
+        /**
+         * Storage for a set of parameters for a Gaussian function.
+         */
         struct GAUSS_PARAM
         {
 
+            /**
+             * Default construct.
+             * @param m mu
+             * @param s sigma
+             */
             GAUSS_PARAM(VAR_FLOAT m = 0.0L, VAR_FLOAT s = 0.0L)
             : mu(m)
             , sigma(s)
@@ -1106,49 +1289,91 @@ namespace util
             long double mu, sigma, occurences;
         };
         typedef std::map<EventList, GAUSS_PARAM> GAUSS_PARAM_TABLE;
-        typedef GAUSS_PARAM_TABLE::iterator GAUSS_PARAM_TABLE_ITER;
-        typedef GAUSS_PARAM_TABLE::const_iterator GAUSS_PARAM_TABLE_CITER;
 
-        /// Default construct with expectation mu and variance sigma
+        /**
+         * Default construct.
+         * @param mu expectation
+         * @param sigma variance
+         */
         GaussFunction(long double mu = 0.0L, long double sigma = 1.0L);
 
-        /// Clone a copy of this.
-
+        /**
+         * Clone a copy of this.
+         * @return a pointer to the clone
+         */
         ProbabilityFunction* clone() const
         {
             return new GaussFunction(*this);
         }
-        /// Reset the parameters mu and sigma to standard normal values.
+
+        /**
+         * Reset the parameters mu and sigma to standard normal values.
+         */
         void clear();
-        /// Probability of an interval. Returns zero if the Event is not an interval-event.
+
+        /**
+         * Probability of an interval. Returns zero if the Event is not an
+         * interval-event.
+         * @param ce the condition event to check
+         * @return the probability
+         */
         long double P(const CondEvent& ce) const;
-        /// Delegate Probability from EventList to avoid excessive casting.
+
+        /**
+         * Delegate Probability from EventList to avoid excessive casting if we
+         * are interested in an unconditional joint probability.
+         * @param ce the condition event to check
+         * @return the probability
+         */
         long double P(const EventList& el) const;
 
-        /// Estimate mu and sigma.
-        /// - mu ~ sum(x)/numberOf(x)
-        /// - sigma ~ sum((x-mu)^2\)/numberOf(x)
+        /**
+         * Estimate mu and sigma.
+         * - mu ~ sum(x)/numberOf(x)
+         * - sigma ~ sum((x-mu)^2\)/numberOf(x)
+         * @param csv csv-analyzer as input
+         * @param isAccumulativeCSV if true then has an already accumulated
+         *                           probability column
+         * @return success
+         */
         bool train(CSVAnalyzer csv, bool isAccumulativeCSV);
 
-        /// Retrieve mu.
+        /**
+         * Retrieve expectation mu.
+         * @param ce the condition event for which to get the expectation
+         * @return expectation
+         */
         long double mu(const CondEvent& ce = CondEvent()) const;
-        /// Retrieve variance.
+
+        /**
+         * Retrieve variance.
+         * @param ce the condition event for which to get the variance
+         * @return variance
+         */
         long double sigma(const CondEvent& ce = CondEvent()) const;
 
-        /// Generic ostream - &lh;&lt; operator for GaussFunction.
-        friend std::ostream& operator<<(std::ostream& os, const GaussFunction& d);
+        /**
+         * Generic ostream - &lh;&lt; operator for GaussFunction.
+         * @param os the output stream
+         * @param gf the gauss function to stream
+         * @return the modified out-stream
+         */
+        friend std::ostream& operator<<(std::ostream& os, const GaussFunction& gf);
 
     private:
         GAUSS_PARAM_TABLE param_; ///< Maps conditions to Gauss-parameters.
     };
 
-    /// Exponential probability function.
-
+    /**
+     * Exponential probability function.
+     */
     class ExponentialFunction : public ProbabilityFunction
     {
     public:
-        /// Storage for a set of parameters for an exponential function.
 
+        /**
+         * Storage for a set of parameters for an exponential function.
+         */
         struct EXP_PARAM
         {
 
@@ -1161,51 +1386,87 @@ namespace util
             long double occurences;
         };
         typedef std::map<EventList, EXP_PARAM> EXP_PARAM_TABLE;
-        typedef EXP_PARAM_TABLE::iterator EXP_PARAM_TABLE_ITER;
-        typedef EXP_PARAM_TABLE::const_iterator EXP_PARAM_TABLE_CITER;
 
-        /// Default construct with expectation lambda.
+        /**
+         * Default construct.
+         * @param lambda expectation
+         */
         ExponentialFunction(VAR_FLOAT lambda = 1.0L);
 
-        /// Clone a copy of this.
-
+        /**
+         * Clone a copy of this.
+         * @return a pointer to the clone
+         */
         ProbabilityFunction* clone() const
         {
             return new ExponentialFunction(*this);
         }
-        /// Reset the expectation to 1.0.
+
+        /**
+         * Reset the expectation to 1.0.
+         */
         void clear();
-        /// Probability of an interval. Returns zero if the Event is not an interval-event.
+
+        /**
+         * Probability of an interval. Returns zero if the Event is not an
+         * interval-event.
+         * @param ce the condition event to check
+         * @return the probability
+         */
         long double P(const CondEvent& ce) const;
 
-        /// Delegate Probability from EventList to avoid excessive casting.
+        /**
+         * Delegate Probability from EventList to avoid excessive casting if we
+         * are interested in an unconditional joint probability.
+         * @param ce the condition event to check
+         * @return the probability
+         */
         long double P(const EventList& el) const;
 
-        /// Estimate lambda for first column (must be float). Last column might be
-        /// an accumulative column - all others are condition.
-        /// - lambda ~ sum(x)/numberOf(x)
+        /**
+         * Estimate lambda for first column (must be float). Last column might be
+         * an accumulative column - all others are condition.
+         * - lambda ~ sum(x)/numberOf(x)
+         * @param csv csv-analyzer as input
+         * @param isAccumulativeCSV if true then has an already accumulated
+         *                           probability column
+         * @return success
+         */
         bool train(CSVAnalyzer csv, bool isAccumulativeCSV);
-        /// Retrieve the expectation lambda.
+
+        /**
+         * Retrieve the expectation lambda.
+         */
         long double lambda(const CondEvent& ce = CondEvent()) const;
 
-        /// Get the point where the cdf == 1/2.
-        /// - P(0.0\<= x \<= ln(2)/lambda_) = 0.5
+        /**
+         * Get the point where the cdf == 1/2.
+         * P(0.0) &le; x &le; ln(2)/lambda_) = 0.5
+         */
         long double ln2ByLambda(const CondEvent& ce = CondEvent()) const;
 
-        /// Generic ostream - &lh;&lt; operator for ExponentialFunction.
+        /**
+         * Generic ostream - &lh;&lt; operator for ExponentialFunction.
+         * @param os the output stream
+         * @param gf the exponential function to stream
+         * @return the modified out-stream
+         */
         friend std::ostream& operator<<(std::ostream& os, const ExponentialFunction& d);
 
     private:
         EXP_PARAM_TABLE param_; ///< Maps conditions to Exponential-parameters.
     };
 
-    /// Helper for accumulation of discrete probability table.
-    /// Keeps track of how many values n where used to create sum s.
-
+    /**
+     * Helper for accumulation of discrete probability table.
+     * Keeps track of how many values n where used to create sum s.
+     */
     struct ACCUMULATION_DATA
     {
-        /// Construct with initial sum = 0.0 and number = 0
 
+        /**
+         * Construct with initial sum = 0.0 and number = 0
+         */
         ACCUMULATION_DATA(long double s = 0L, long double n = 0L)
         : sum(s)
         , number(n)
@@ -1215,85 +1476,151 @@ namespace util
     };
     typedef std::map<EventList, ACCUMULATION_DATA> ACCUMULATION_MAP;
 
-    /// Discrete probability function that enumerates value-probability-pairs.
-
+    /**
+     * Discrete probability function that enumerates value-probability-pairs.
+     */
     class DiscreteProbability : public ProbabilityFunction
     {
     public:
         typedef std::map<CondEvent, long double> PROB_TABLE;
-        typedef PROB_TABLE::iterator PROB_TABLE_ITER;
-        typedef PROB_TABLE::const_iterator PROB_TABLE_CITER;
 
-        /// Default construct using event and condition value ranges.
+        /**
+         * Default construct.
+         * @param eventValueRanges ranges for the events
+         * @param conditionValueRanges ranges for the conditions
+         */
         DiscreteProbability(const VALUERANGES_TYPE& eventValueRanges = VALUERANGES_TYPE(),
                             const VALUERANGES_TYPE& conditionValueRanges = VALUERANGES_TYPE());
-        /// Clone a copy of this.
+
+        /**
+         * Clone a copy of this.
+         * @return a pointer to the clone
+         */
         ProbabilityFunction* clone() const;
 
-        /// Set an equal probability for every event-value.
+        /**
+         * Set an equal probability for every event-value.
+         * @return success
+         */
         bool makeUniform();
-        /// Make sure that probability values add up to 1.0 .
+
+        /**
+         * Make sure that probability values add up to 1.0 .
+         * @return success
+         */
         bool normalise();
-        /// Add probability values for all possible event-value combinations.
+
+        /**
+         * Add probability values for all possible event-value combinations.
+         * @return success
+         */
         bool canonise();
-        /// Check whether the probabilities add up to 1.0 .
+
+        /**
+         * Check whether the probabilities add up to 1.0.
+         * @return true if so, false otherwise
+         */
         bool isDistribution() const;
-        /// Reset the distribution.
+
+        /**
+         * Reset the distribution.
+         */
         void clear();
-        /// Check whether the distribution is empty.
+
+        /**
+         * Check whether the distribution is empty.
+         * @return true if so, false otherwise
+         */
         bool empty() const;
 
-        /// Probability of an interval. Returns probability of single value if
-        /// interval is single value.
+        /**
+         * Probability of an conditional event.
+         * @param ce the condition event to check
+         * @return the probability
+         */
         virtual long double P(const CondEvent& ce) const;
-        /// Delegate Probability from EventList to avoid excessive casting.
 
+        /**
+         * Delegate Probability from EventList to avoid excessive casting if we
+         * are interested in an unconditional joint probability.
+         * @param ce the condition event to check
+         * @return the probability
+         */
         long double P(const EventList& el) const
         {
             return P(CondEvent(el));
         }
 
-        /// Estimate the probability function using a csv.
-        /// - lastEventIndex is the last column that is not a condition
-        /// - if lastEventIndex ==  x  columns x+1, x+2, x+3, ... are conditions
+        /**
+         * Estimate the probability function using a csv.
+         * - lastEventIndex is the last column that is not a condition
+         * - if lastEventIndex ==  x  columns x+1, x+2, x+3, ... are conditions
+         * @param csv csv-analyzer as input
+         * @param isAccumulativeCSV if true then has an already accumulated
+         *                           probability column
+         * @return success
+         */
         virtual bool train(CSVAnalyzer csv, bool isAccumulativeCSV = false);
 
-        /// Generic ostream - &lh;&lt; operator for DiscreteProbability.
+        /**
+         * Generic ostream - &lh;&lt; operator for DiscreteProbability.
+         * @param os the output stream
+         * @param gf the discrete function to stream
+         * @return the modified out-stream
+         */
         friend std::ostream& operator<<(std::ostream& os, const DiscreteProbability& d);
-        ///
 
+        /**
+         * Reset the distribution.
+         */
         void resetDistribution()
         {
             isUniform_ = false;
             hasBeenModified_ = false;
             clear();
         }
-        /// Return true if the distribution values have uniform probability.
 
+        /**
+         * Return true if the distribution values have uniform probability.
+         * @return true if so, false otherwise
+         */
         bool isUniform() const
         {
             return isUniform_;
         }
-        /// Check whether the distribution table has been modified.
 
+        /**
+         * Check whether the distribution table has been modified.
+         * @return true if so, false otherwise
+         */
         bool isModified() const
         {
             return hasBeenModified_;
         }
 
     protected:
-        /// Use the values (obtained by training) to update the ranges the variables
-        /// can assume. Don't remove any existing values.
-        void updateValueRangesFromValues_(bool clearFirst = false);
-        /// Set the distribution to uniform. Don't update the table values.
 
+        /**
+         * Use the values (obtained by training) to update the ranges the
+         * variables can assume. Don't remove any existing values.
+         * @param clearFirst if thro then reset range first
+         */
+        void updateValueRangesFromValues_(bool clearFirst = false);
+
+        /**
+         * Set the distribution to uniform. Don't update the table values.
+         * @param uni set to uniform (true) or not (false)
+         */
         void setUniform(bool uni)
         {
             isUniform_ = uni;
         }
-        /// Set the state to modified to indicate to users that normalisation
-        /// has to happen before probability calculations can take place.
 
+        /**
+         * Set the state to modified to indicate to users that normalization
+         * has to happen before probability calculations can take place.
+         * @param mod set to modified (true) or not (false)
+         */
         void setModified(bool mod) const
         {
             hasBeenModified_ = mod;
