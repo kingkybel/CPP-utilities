@@ -114,7 +114,7 @@ namespace util
 
     bool CSVAnalyzer::resolveTypeAlias(string& type)
     {
-        std::unordered_map<ci_string, string>::iterator found = aliasMap.find(ci_string(type.c_str()));
+        auto found = aliasMap.find(ci_string(type.c_str()));
         bool reval = false;
         if (found != aliasMap.end())
         {
@@ -346,7 +346,7 @@ namespace util
 
     Var CSVAnalyzer::getVar(const string& header, size_t index) const
     {
-        HEADER_INDEX_CITER found = headerIndex_.find(header);
+        auto found = headerIndex_.find(header);
         if (found == headerIndex_.end())
         {
             throw index_error(header);
@@ -370,7 +370,7 @@ namespace util
 
     vector<VAR_FLOAT> CSVAnalyzer::getFloatVector(const std::string& header) const
     {
-        HEADER_INDEX_CITER found = headerIndex_.find(header);
+        auto found = headerIndex_.find(header);
         if (found == headerIndex_.end())
         {
             throw index_error(header);
@@ -410,7 +410,7 @@ namespace util
 
     CSVAnalyzer::COLUMN_TYPE_ITER CSVAnalyzer::begin(const string& header)
     {
-        HEADER_INDEX_CITER found = headerIndex_.find(header);
+        auto found = headerIndex_.find(header);
         if (found == headerIndex_.end())
         {
             throw index_error(header);
@@ -420,7 +420,7 @@ namespace util
 
     CSVAnalyzer::COLUMN_TYPE_ITER CSVAnalyzer::end(const string& header)
     {
-        HEADER_INDEX_CITER found = headerIndex_.find(header);
+        auto found = headerIndex_.find(header);
         if (found == headerIndex_.end())
         {
             throw index_error(header);
@@ -432,11 +432,9 @@ namespace util
     {
         CSVAnalyzer reval;
         size_t index = 0;
-        for (vector<string>::const_iterator it = headers.begin();
-             it != headers.end();
-             it++)
+        for (auto it = headers.begin(); it != headers.end(); it++)
         {
-            HEADER_INDEX_CITER found = headerIndex_.find(*it);
+            auto found = headerIndex_.find(*it);
             if (found != headerIndex_.end())
             {
                 reval.data_.push_back(data_[found->second]);
@@ -477,9 +475,7 @@ namespace util
     {
         CSVAnalyzer reval;
         size_t index = 0;
-        for (vector<size_t>::const_iterator it = columns.begin();
-             it != columns.end();
-             it++)
+        for (auto it = columns.begin(); it != columns.end(); it++)
         {
             reval.data_.push_back(data_[*it]);
             reval.headerIndex_[header(*it)] = index++;
@@ -643,7 +639,7 @@ namespace util
 
     bool CSVAnalyzer::eraseColumn(const string& header)
     {
-        HEADER_INDEX_CITER found = headerIndex_.find(header);
+        auto found = headerIndex_.find(header);
         if (found == headerIndex_.end())
         {
             return false;
