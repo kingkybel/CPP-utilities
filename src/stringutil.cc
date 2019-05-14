@@ -86,7 +86,7 @@ namespace util
         const static map<ci_string,bool> VALID_BOOL =
             map_list_of("true",true)("t",true)("yes",true)("y",true)("1",true)("on",true)
                 ("false",false)("f",false)("no",false)("n",false)("0",false)("off",false);
-        map<ci_string,bool>::const_iterator found = VALID_BOOL.find(ci_string(strVal.c_str()));
+        auto found = VALID_BOOL.find(ci_string(strVal.c_str()));
         result = found != VALID_BOOL.end()?found->second:false;
         return found != VALID_BOOL.end();
     }
