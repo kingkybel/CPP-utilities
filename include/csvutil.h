@@ -624,7 +624,7 @@ namespace util
         friend std::ostream& operator<<(std::ostream& os, CSVAnalyzer::verbosityType vt);
 
         /**
-         * Generic ostream - \<\< operator for CSVAnalyzer.
+         * Generic ostream - &lt;&lt; operator for CSVAnalyzer.
          */
         friend std::ostream& operator<<(std::ostream& os, const CSVAnalyzer& err);
 
@@ -642,7 +642,7 @@ namespace util
     std::ostream& operator<<(std::ostream& os, CSVAnalyzer::verbosityType vt);
 
     /**
-     * Generic ostream - \<\< operator for CSVAnalyzer.
+     * Generic ostream - &lt;&lt; operator for CSVAnalyzer.
      */
     std::ostream& operator<<(std::ostream& os, const CSVAnalyzer& csv);
 
