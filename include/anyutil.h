@@ -52,8 +52,13 @@ namespace util
     struct cast_error : public std::logic_error
     {
 
-        cast_error(const std::string& type1, const std::string& type2)
-        : std::logic_error("Cannot any_cast " + type1 + " to " + type2)
+        /**
+         * Construct given the incompatible type-names,
+         * @param from type to cast from
+         * @param to type to cast to
+         */
+        cast_error(const std::string& from, const std::string& to)
+        : std::logic_error("Cannot any_cast " + from + " to " + to)
         {
         }
     };
@@ -64,6 +69,10 @@ namespace util
     struct boolstr_error : public std::logic_error
     {
 
+        /**
+         * Construct with the string that cannot be scanned into a boolean value.
+         * @param boolstr the failing string
+         */
         boolstr_error(const std::string& boolstr)
         : std::logic_error("Cannot scan '" + boolstr + "' into valid bool")
         {
@@ -79,7 +88,11 @@ namespace util
     typedef std::string VAR_STRING; ///< The only character-string type allowed in Var-variants.
 
     /**
-     *  Helper to check that two floating point values are within tolerance of each other.
+     * Helper to check that two floating point values are within tolerance of each other.
+     * @param v1 value1
+     * @param v2 value2
+     * @param tolerance a permissable deviation between v1 and v2
+     *
      */
     inline bool withinTolerance(VAR_FLOAT v1, VAR_FLOAT v2, VAR_FLOAT tolerance = 1e-18L)
     {
@@ -87,7 +100,8 @@ namespace util
     }
 
     /**
-     *  Minimal (range) value for allowable Var-types.
+     * Minimal (range) value for allowable Var-types.
+     * @return the minimal value for the template type T_
      */
     template <typename T_>
     inline T_ minVal()
@@ -96,7 +110,8 @@ namespace util
     }
 
     /**
-     *  Maximal (range) value for allowable Var-types.
+     * Maximal (range) value for allowable Var-types.
+     * @return the maximal value for the template type T_
      */
     template <typename T_>
     inline T_ maxVal()
@@ -105,7 +120,8 @@ namespace util
     }
 
     /**
-     *  Minimal (range) value specialised for dates.
+     * Minimal (range) value specialised for dates.
+     * @return the minimal value for the date
      */
     template <>
     inline VAR_DATE minVal<VAR_DATE>()
@@ -114,7 +130,8 @@ namespace util
     }
 
     /**
-     *  Maximal (range) value specialised for dates.
+     * Maximal (range) value specialised for dates.
+     * @return the maximal value for the date
      */
     template <>
     inline VAR_DATE maxVal<VAR_DATE>()
@@ -132,81 +149,146 @@ namespace util
     struct Interval
     {
 
-        enum type
+        enum type : char
         {
-            whole, ///< the entire possible interval, e.g. [0..max(unsigned long)]
-            leftOpen, ///< From the minimal possible value to a specified maximum
-            closed, ///< minimum and maximum specified
-            rightOpen ///< minimum specified to the maximal possible maximal value
+            /**
+             * minimum and maximum specified
+             */
+            closed = 0x00,
+            /**
+             * From the minimal possible value to a specified maximum
+             */
+            leftFull = 0x01,
+            /**
+             * minimum specified to the maximal possible maximal value
+             */
+            rightFull = 0x02,
+            /**
+             * the entire possible interval, e.g. [0..max(unsigned long)]
+             */
+            full = leftFull | rightFull,
+            /**
+             * include the left corner
+             */
+            leftInclusive = 0x04,
+            /**
+             * include the right corner
+             */
+            rightInclusive = 0x08,
+            /**
+             * include both corners
+             */
+            allInclusive = leftInclusive | rightInclusive
         };
 
         /**
-         *  Whole range open interval.
+         * Default construct.
+         *  Full-range interval including left and right borders.
          */
         Interval()
         : low_()
         , high_()
-        , rangeType_(whole)
+        , rangeType_(full | allInclusive)
         {
         }
 
         /**
-         *  Half open interval.
+         * Construct a half-open interval.
+         * @param v the value ant the NOT open side
+         * @param below if true, then interval will be left-open, else right-open
+         * @param inclusivity can be used to include/exclude left or right borders
          */
-        Interval(const T_& v, bool below)
+        Interval(const T_& v, bool below, type inclusivity = allInclusive)
         : low_(below ? T_() : v)
         , high_(below ? v : T_())
-        , rangeType_(below ? leftOpen : rightOpen)
+        , rangeType_(below ? leftFull : rightFull)
         {
+            rangeType_ |= (inclusivity & allInclusive);
         }
 
-        /// Closed interval.
-
-        Interval(const T_& v1, const T_& v2)
+        /**
+         * Construct a closed interval [v1,v2].
+         * @param v1 one of the interval borders
+         * @param v2 the other one of the interval borders
+         * @param inclusivity can be used to include/exclude left or right borders
+         */
+        Interval(const T_& v1, const T_& v2, type inclusivity = allInclusive)
         : low_(v1<v2 ? v1 : v2)
         , high_(v1<v2 ? v2 : v1)
         , rangeType_(closed)
         {
+            rangeType_ |= (inclusivity & allInclusive);
         }
 
         /**
-         *  Check whether the interval contains value v.
+         * Check whether the interval contains value v.
+         * @param v value to check
+         * @return true if v is contained in the interval, false otherwise
          */
         bool contains(const T_& v) const
         {
-            return rangeType_ == whole ||
-                    (rangeType_ == leftOpen && v <= high_) ||
-                    (rangeType_ == rightOpen && v >= low_) ||
-                    (v >= low_ && v <= high_);
+            return rangeType_ ==
+                    (full | allInclusive) ||
+                    (isLeftFull() && (isLeftInclusive() ? v <= high_ : v < high_)) ||
+                    (isRightFull() && (isRightInclusive() ? v >= low_ : v > low_)) ||
+                    ((isLeftInclusive() ? v >= low_ : v > low_) &&
+                     (isRightInclusive() ? v <= high_ : v < high_));
 
         }
 
         /**
-         *  Check whether the interval is left open.
+         * Check whether the interval is left full.
+         * @return true if so, false otherwise
          */
-        bool isLeftOpen() const
+        bool isLeftFull() const
         {
-            return rangeType_ == leftOpen || rangeType_ == whole;
+            return (rangeType_ & leftFull) == leftFull;
         }
 
         /**
-         *  Check whether the interval is right open.
+         * Check whether the interval is right full.
+         * @return true if so, false otherwise
          */
-        bool isRightOpen() const
+        bool isRightFull() const
         {
-            return rangeType_ == rightOpen || rangeType_ == whole;
+            return (rangeType_ & rightFull) == rightFull;
         }
 
         /**
-         *  Check whether the interval is wholly included in this interval.
+         * Check whether the interval includes the left border.
+         * @return true if so, false otherwise
          */
-        bool isSubIntervalOf(const Interval& itvl) const
+        bool isLeftInclusive() const
         {
-            return itvl.rangeType_ == whole ||
-                    (itvl.rangeType_ == leftOpen && (rangeType_ == leftOpen || rangeType_ == closed) && high_ <= itvl.high_) ||
-                    (itvl.rangeType_ == rightOpen && (rangeType_ == rightOpen || rangeType_ == closed) && low_ >= itvl.low_) ||
-                    (itvl.rangeType_ == closed && rangeType_ == closed && low_ >= itvl.low_ && high_ <= itvl.high_)
-                    ;
+            return (rangeType_ & leftInclusive) == leftInclusive;
+        }
+
+        /**
+         * Check whether the interval includes the right border.
+         * @return true if so, false otherwise
+         */
+        bool isRightInclusive() const
+        {
+            return (rangeType_ & rightInclusive) == rightInclusive;
+        }
+
+        /**
+         * Check whether the interval is wholly included in this interval.
+         * @param rhs the interval to check
+         * @return true if the given interval is fully covered in this interval,
+         *         false otherwise
+         */
+        bool isSubIntervalOf(const Interval& rhs) const
+        {
+            //            return rhs.rangeType_ == full ||
+            //                    (rhs.rangeType_ == leftFull && (rangeType_ == leftFull || rangeType_ == closed) && high_ <= rhs.high_) ||
+            //                    (rhs.rangeType_ == rightFull && (rangeType_ == rightFull || rangeType_ == closed) && low_ >= rhs.low_) ||
+            //                    (rhs.rangeType_ == closed && rangeType_ == closed && low_ >= rhs.low_ && high_ <= rhs.high_)
+            //                    ;
+            return (isLeftInclusive() && contains(rhs.low_) ||
+                    !isLeftInclusive() && rhs.low_ >= low_) &&
+                    (isRightInclusive() && contains(rhs.high_) ||
+                     !isRightInclusive() && rhs.high_ <= high_);
         }
 
         template<typename T1_, typename T2_>
@@ -218,7 +300,7 @@ namespace util
         template<typename TT_>
         friend std::ostream& operator<<(std::ostream& os, const Interval<TT_>& itvl);
 
-        type rangeType_;
+        char rangeType_;
         T_ low_; ///< Minimal value
         T_ high_; ///< Maximal value
     };
@@ -529,8 +611,8 @@ namespace util
     {
         if (typeid (lhs) == typeid (rhs))
         {
-            typename Interval<T1_>::type lTp = lhs.rangeType_;
-            typename Interval<T1_>::type rTp = rhs.rangeType_;
+            auto lTp = lhs.rangeType_;
+            auto rTp = rhs.rangeType_;
             return lTp < rTp ||
                     (lTp == rTp && lhs.low_ < rhs.low_) ||
                     (lTp == rTp && lhs.low_ == rhs.low_ && lhs.high_ < rhs.high_);
@@ -560,7 +642,7 @@ namespace util
     }
 
     /**
-     * Generic ostream - &lh;&lt; operator for Interval's.
+     * Generic ostream - &lt;&lt; operator for Interval's.
      */
     template<typename T_>
     std::ostream& operator<<(std::ostream& os, const Interval<T_>& itvl)
@@ -568,23 +650,26 @@ namespace util
         Var::StreamMode sm = (Var::StreamMode)os.iword(Var::xalloc_index);
         if (sm == 0)
             sm = Var::standard;
-        bool leftOpen = itvl.rangeType_ == Interval<T_>::whole || itvl.rangeType_ == Interval<T_>::leftOpen;
-        bool rightOpen = itvl.rangeType_ == Interval<T_>::whole || itvl.rangeType_ == Interval<T_>::rightOpen;
+        bool leftFull = itvl.isLeftFull();
+        bool rightFull = itvl.isRightFull();
+        bool leftOpen = !itvl.isLeftInclusive();
+        bool rightOpen = !itvl.isRightInclusive();
+
         char left = (sm & Var::round_open_itvl) == Var::round_open_itvl && leftOpen ? '(' : '[';
         char right = (sm & Var::round_open_itvl) == Var::round_open_itvl && rightOpen ? ')' : ']';
 
         bool symbolic = (sm & Var::symbolic_open_itvl) == Var::symbolic_open_itvl;
         os << left;
-        if (symbolic && leftOpen)
+        if (symbolic && leftFull)
             os << "-oo";
-        else if (leftOpen)
+        else if (leftFull)
             os << minVal<T_> ();
         else
             os << itvl.low_;
         os << ", ";
-        if (symbolic && rightOpen)
+        if (symbolic && rightFull)
             os << "+oo";
-        else if (rightOpen)
+        else if (rightFull)
             os << maxVal<T_>();
         else
             os << itvl.high_;
