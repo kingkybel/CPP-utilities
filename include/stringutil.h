@@ -80,7 +80,7 @@ namespace util
     };
 
     /**
-     * Convert objects to a string, provided a ostream - &lh;&lt; operator is defined.
+     * Convert objects to a string, provided a ostream - &lt;&lt; operator is defined.
      */
     template <typename T_>
     inline std::string asString(const T_& v)
@@ -91,7 +91,7 @@ namespace util
     }
 
     /**
-     * Generic ostream - &lh;&lt; operator for vectors.
+     * Generic ostream - &lt;&lt; operator for vectors.
      */
     template<typename T_, typename Alloc_>
     inline std::ostream& operator<<(std::ostream& os, const std::vector<T_, Alloc_>& vec)
@@ -108,7 +108,7 @@ namespace util
     }
 
     /**
-     * Generic ostream - &lh;&lt; operator for double ended queues.
+     * Generic ostream - &lt;&lt; operator for double ended queues.
      */
     template<typename T_, typename Alloc_>
     inline std::ostream& operator<<(std::ostream& os, const std::deque<T_, Alloc_>& vec)
@@ -125,7 +125,7 @@ namespace util
     }
 
     /**
-     * Generic ostream - &lh;&lt; operator for unordered sets.
+     * Generic ostream - &lt;&lt; operator for unordered sets.
      */
     template<typename Value, typename Hash, typename Pred, typename Alloc>
     inline std::ostream& operator<<(std::ostream& os,
@@ -146,7 +146,7 @@ namespace util
     }
 
     /**
-     * Generic ostream - &lh;&lt; operator for pairs.
+     * Generic ostream - &lt;&lt; operator for pairs.
      */
     template<typename T1_, typename T2_>
     inline std::ostream& operator<<(std::ostream& os, const std::pair<T1_, T2_>& p)
@@ -156,7 +156,7 @@ namespace util
     }
 
     /**
-     * Generic ostream - &lh;&lt; operator for unordered maps.
+     * Generic ostream - &lt;&lt; operator for unordered maps.
      */
     template<typename Key, typename Value, typename Hash, typename Pred, typename Alloc>
     inline std::ostream& operator<<(std::ostream& os,
@@ -177,7 +177,7 @@ namespace util
     }
 
     /**
-     * Generic ostream - &lh;&lt; operator for standard (ordered) maps.
+     * Generic ostream - &lt;&lt; operator for standard (ordered) maps.
      */
     template<typename T1_, typename T2_, typename Compare_, typename Alloc_>
     inline std::ostream& operator<<(std::ostream& os, const std::map<T1_, T2_, Compare_, Alloc_>& m)
@@ -209,7 +209,7 @@ namespace util
     }
 
     /**
-     * Generic ostream - &lh;&lt; operator for standard (ordered) set.
+     * Generic ostream - &lt;&lt; operator for standard (ordered) set.
      */
     template<typename T_, typename Compare_, typename Alloc_>
     inline std::ostream& operator<<(std::ostream& os, const std::set<T_, Compare_, Alloc_>& s)
@@ -486,7 +486,7 @@ namespace util
     }
 
     /**
-     * Generic ostream - &lh;&lt; operator for case-insensitive strings.
+     * Generic ostream - &lt;&lt; operator for case-insensitive strings.
      */
     inline std::ostream& operator<<(std::ostream& os, const ci_string& str)
     {
@@ -691,9 +691,11 @@ namespace util
 
 namespace std
 {
-    /// Override the standard hash function for case insensitive strings
-    /// to enable as elements in hash containers
 
+    /**
+     * Override the standard hash function for case insensitive strings to
+     * enable as elements in hash containers
+     */
     template<>
     struct hash<util::ci_string>
     : public unary_function<util::ci_string, size_t>
