@@ -90,7 +90,7 @@ namespace util
     };
 
     /**
-     * Generic ostream - &lh;&lt; operator for UndirEdge.
+     * Generic ostream - &lt;&lt; operator for UndirEdge.
      */
     inline std::ostream& operator<<(std::ostream& os, const UndirEdge& u)
     {
@@ -218,7 +218,7 @@ namespace util
         }
 
         /**
-         * Generic ostream - &lh;&lt; operator for PODNode.
+         * Generic ostream - &lt;&lt; operator for PODNode.
          */
         friend std::ostream& operator<<(std::ostream& os, const PODNode<T_>& n)
         {
@@ -259,7 +259,7 @@ namespace util
     };
 
     /**
-     * Generic ostream - &lh;&lt; operator for EdgeDescriptor.
+     * Generic ostream - &lt;&lt; operator for EdgeDescriptor.
      */
     template<typename NodeT_, typename EdgeT_>
     std::ostream& operator<<(std::ostream& os,
@@ -715,7 +715,7 @@ namespace util
     };
 
     /**
-     * Generic ostream - &lh;&lt; operator for DirectedAcylicGraph.
+     * Generic ostream - &lt;&lt; operator for DirectedAcylicGraph.
      */
     template<typename NodeT_, typename EdgeT_>
     std::ostream& operator<<(std::ostream& os,
