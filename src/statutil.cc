@@ -74,9 +74,7 @@ namespace util
     : values_()
     , type_(discrete)
     {
-        for (auto it = values.begin();
-             it != values.end();
-             it++)
+        for (auto it = values.begin(); it != values.end(); it++)
         {
             insert(*it);
         }
@@ -181,7 +179,7 @@ namespace util
     : values_()
     , type_(float_uniform)
     {
-        addRange(interval.low_, interval.high_);
+        addRange(interval.left(), interval.right());
     }
 
     /**
@@ -195,12 +193,12 @@ namespace util
         {
             VAR_FLOAT_INTERVAL interval(0.0L,
                                         IntervalType({util::rightFull, ~rightInclusive}));
-            addRange(interval.low_, interval.high_);
+            addRange(interval.left(), interval.right());
         }
         else if (tp == gaussian)
         {
             VAR_FLOAT_INTERVAL interval;
-            addRange(interval.low_, interval.high_);
+            addRange(interval.left(), interval.right());
         }
     }
 
@@ -1108,8 +1106,8 @@ namespace util
             VAR_FLOAT low = foundParam->second.low;
             VAR_FLOAT high = foundParam->second.high;
             Interval<VAR_FLOAT> itvl = ce.event().cbegin()->interval<VAR_FLOAT>();
-            long double lowP = itvl.isLeftFull() ? foundParam->second.low : itvl.low_;
-            long double highP = itvl.isRightFull() ? foundParam->second.high : itvl.high_;
+            long double lowP = itvl.isLeftFull() ? foundParam->second.low : itvl.left();
+            long double highP = itvl.isRightFull() ? foundParam->second.high : itvl.right();
 
             return (highP - lowP) / (foundParam->second.high - foundParam->second.low);
         }
@@ -1233,8 +1231,8 @@ namespace util
             VAR_FLOAT sigma = foundParam->second.sigma;
             boost::math::normal_distribution<VAR_FLOAT> nd(mu, sigma);
             Interval<VAR_FLOAT> itvl = ce.event().cbegin()->interval<VAR_FLOAT>();
-            long double lowP = itvl.isLeftFull() ? 0.0L : boost::math::cdf(nd, itvl.low_);
-            long double highP = itvl.isRightFull() ? 1.0L : boost::math::cdf(nd, itvl.high_);
+            long double lowP = itvl.isLeftFull() ? 0.0L : boost::math::cdf(nd, itvl.left());
+            long double highP = itvl.isRightFull() ? 1.0L : boost::math::cdf(nd, itvl.right());
 
             return highP - lowP;
         }
@@ -1371,17 +1369,12 @@ namespace util
         if (ce.eventSize() > 1)
             return 0.0L;
         Interval<VAR_FLOAT> itvl = ce.event().cbegin()->interval<VAR_FLOAT>();
-        Interval<VAR_FLOAT> safeItvl(itvl);
-        if (safeItvl.low_ < 0.0L)
-            safeItvl.low_ = 0.0L;
-        if (safeItvl.high_ < 0.0L)
-            safeItvl.high_ = 0.0L;
 
         auto foundParam = param_.find(ce.condition());
         VAR_FLOAT lambda = foundParam != param_.end() ? foundParam->second.lambda : 1.0L;
         boost::math::exponential_distribution<VAR_FLOAT> ed(lambda);
-        long double lowP = itvl.isLeftFull() ? 0.0L : boost::math::cdf(ed, itvl.low_);
-        long double highP = itvl.isRightFull() ? 1.0L : boost::math::cdf(ed, itvl.high_);
+        long double lowP = itvl.isLeftFull() ? 0.0L : boost::math::cdf(ed, itvl.left());
+        long double highP = itvl.isRightFull() ? 1.0L : boost::math::cdf(ed, itvl.right());
 
         return highP - lowP;
     }
