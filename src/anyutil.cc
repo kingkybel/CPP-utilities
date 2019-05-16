@@ -203,7 +203,47 @@ namespace util
 
     ostream& operator<<(ostream& os, Var::StreamMode sm)
     {
-        os.iword(Var::xalloc_index) = sm;
+        //            reset = 0x0000, ///< reset the stream configuration to empty
+        //            quoted_char = 0x0001, ///< enclose characters in single quotes
+        //            hex_char = 0x0002, ///< display characters in hexadecimal representation
+        //            quoted_string = 0x0004, ///< enclose strings in double quotes
+        //            quoted_date = 0x0008, ///< enclose dates in double quotes
+        //            alpha_bool = 0x0010, ///< display booleans as true and false
+        //            short_float = 0x0020, ///< display floating point values in a short format
+        //            long_float = 0x0040, ///< display floating point values in a longer format
+        //            scientific_float = 0x0080, ///< display floating point values in scientific format
+        //            round_open_brace = 0x0100, ///< indicate open intervals with round braces
+        //            symbolic_full = 0x0200, ///< indicate full interval with symbolic infinity "oo"
+        //
+        //            pure = alpha_bool | hex_char | scientific_float, ///< simple scannable format combination
+        //            standard = alpha_bool | short_float | round_open_brace, ///< standard format combination
+        //            safe = quoted_char | hex_char | quoted_string | quoted_date | alpha_bool | scientific_float ///< more complex combination
+
+        if (sm == Var::reset || sm == Var::standard)
+        {
+            os.iword(Var::xalloc_index) = Var::standard;
+        }
+        else if (sm == Var::pure || sm == Var::safe)
+        {
+            os.iword(Var::xalloc_index) = sm;
+        }
+        else if ((sm & Var::scientific_float) == Var::scientific_float)
+        {
+            os.iword(Var::xalloc_index) = sm & ~Var::long_float & ~Var::short_float;
+        }
+        else if ((sm & Var::long_float) == Var::long_float)
+        {
+            os.iword(Var::xalloc_index) = sm & ~Var::short_float & ~Var::scientific_float;
+        }
+        else if ((sm & Var::short_float) == Var::short_float)
+        {
+            os.iword(Var::xalloc_index) = sm & ~Var::long_float & ~Var::scientific_float;
+        }
+        else
+        {
+            // add a feature
+            os.iword(Var::xalloc_index) |= sm;
+        }
         return os;
     }
 
@@ -222,7 +262,7 @@ namespace util
         else if (isA<VAR_CHAR>(v))
         {
             if ((sm & Var::hex_char) == Var::hex_char)
-                os << hex;
+                os << hex << v.get<VAR_CHAR>();
             if ((sm & Var::quoted_char) == Var::quoted_char)
                 os << squoted(v.get<VAR_CHAR>());
             else
