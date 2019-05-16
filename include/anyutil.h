@@ -237,11 +237,12 @@ namespace util
          */
         Interval(const T_& v,
                  IntervalType borderType = IntervalType({rightFull, ~rightInclusive}))
-        : low_(borderType.isLeftFull() ? T_() : v)
-        , high_(borderType.isRightFull() ? v : T_())
+        : low_(borderType.isLeftFull() ? minVal<T_>() : v)
+        , high_(borderType.isRightFull() ? v : maxVal<T_>())
         , rangeType_(borderType)
         {
-
+            std::string dummy = verboseAsString();
+            std::cout << dummy << std::endl;
         }
 
         /**
@@ -258,6 +259,16 @@ namespace util
         {
         }
 
+        T_ left() const
+        {
+            return isLeftFull() ? minVal<T_>() : low_;
+        }
+
+        T_ right() const
+        {
+            return isRightFull() ? maxVal<T_>() : high_;
+        }
+
         /**
          * Check whether the interval contains value v.
          * @param v value to check
@@ -266,10 +277,10 @@ namespace util
         bool contains(const T_& v) const
         {
             return (rangeType_.isFull() && rangeType_.isAllInclusive()) ||
-                    (isLeftFull() && (isLeftInclusive() ? v <= high_ : v < high_)) ||
-                    (isRightFull() && (isRightInclusive() ? v >= low_ : v > low_)) ||
-                    ((isLeftInclusive() ? v >= low_ : v > low_) &&
-                     (isRightInclusive() ? v <= high_ : v < high_));
+                (isLeftFull() && (isLeftInclusive() ? v <= high_ : v < high_)) ||
+                (isRightFull() && (isRightInclusive() ? v >= low_ : v > low_)) ||
+                ((isLeftInclusive() ? v >= low_ : v > low_) &&
+                 (isRightInclusive() ? v <= high_ : v < high_));
 
         }
 
@@ -337,10 +348,19 @@ namespace util
         {
             return (isLeftInclusive() && contains(rhs.low_) ||
                     !isLeftInclusive() && rhs.low_ >= low_) &&
-                    (isRightInclusive() && contains(rhs.high_) ||
-                     !isRightInclusive() && rhs.high_ <= high_);
+                (isRightInclusive() && contains(rhs.high_) ||
+                 !isRightInclusive() && rhs.high_ <= high_);
         }
 
+        std::string verboseAsString() const
+        {
+            std::string reval = "";
+            reval += (isLeftInclusive()) ? "leftInclusive[ " : "leftOpen (";
+            reval += isLeftFull() ? "leftFull '-" + asString(minVal<T_>()) + "' " : "leftMin '" + asString(low_) + "' ";
+            reval += isRightFull() ? "rightFull '-" + asString(maxVal<T_>()) + "' " : "rightMax '" + asString(high_) + "' ";
+            reval += (isRightInclusive()) ? "] rightInclusive " : ") rightOpen";
+            return reval;
+        }
         template<typename T1_, typename T2_>
         friend inline bool operator<(const Interval<T1_>& lhs, const Interval<T2_>& rhs);
 
@@ -349,7 +369,7 @@ namespace util
 
         template<typename TT_>
         friend std::ostream& operator<<(std::ostream& os, const Interval<TT_>& itvl);
-
+    private:
         IntervalType rangeType_;
         T_ low_; ///< Minimal value
         T_ high_; ///< Maximal value
@@ -435,7 +455,6 @@ namespace util
         {
             if (!isA<T_ > (*this))
             {
-
                 throw cast_error(type().name(), typeid (T_).name());
             }
             return boost::any_cast<T_>(value_);
@@ -446,7 +465,6 @@ namespace util
          */
         friend bool sameType(const Var& v1, const Var& v2)
         {
-
             return v1.type() == v2.type();
         }
 
@@ -459,10 +477,9 @@ namespace util
         template<typename T_>
         friend bool equalT(const Var& lhs, const Var& rhs)
         {
-
             return lhs.type() == rhs.type() &&
-                    isA<T_>(lhs) &&
-                    lhs.get<T_>() == rhs.get<T_>();
+                isA<T_>(lhs) &&
+                lhs.get<T_>() == rhs.get<T_>();
         }
 
         /**
@@ -475,7 +492,6 @@ namespace util
         template <typename T_>
         friend bool lessT(const Var& lhs, const Var& rhs)
         {
-
             if (lhs.type() == typeid (T_) && rhs.type() == typeid (T_))
                 return (lhs.get<T_>() < rhs.get<T_>());
             return false;
@@ -487,7 +503,6 @@ namespace util
         template <typename T_>
         friend bool lessEqualT(const Var& lhs, const Var& rhs)
         {
-
             if (lhs.type() == typeid (T_) && rhs.type() == typeid (T_))
                 return (lhs.get<T_>() <= rhs.get<T_>());
             return false;
@@ -499,7 +514,6 @@ namespace util
         template <typename T_>
         friend bool greaterT(const Var& lhs, const Var& rhs)
         {
-
             if (lhs.type() == typeid (T_) && rhs.type() == typeid (T_))
                 return (lhs.get<T_>() > rhs.get<T_>());
             return false;
@@ -511,7 +525,6 @@ namespace util
         template <typename T_>
         friend bool greaterEqualT(const Var& lhs, const Var& rhs)
         {
-
             if (lhs.type() == typeid (T_) && rhs.type() == typeid (T_))
                 return (lhs.get<T_>() >= rhs.get<T_>());
             return false;
@@ -523,7 +536,6 @@ namespace util
         template <typename T_>
         friend bool containsT(const Var& lhsInterval, const Var& rhs)
         {
-
             if (lhsInterval.type() != typeid (Interval<T_>) || rhs.type() != typeid (T_))
                 return false;
             Interval<T_> itvl = boost::any_cast<Interval<T_> >(lhsInterval.value());
@@ -668,8 +680,8 @@ namespace util
             auto lTp = lhs.rangeType_;
             auto rTp = rhs.rangeType_;
             return lTp < rTp ||
-                    (lTp == rTp && lhs.low_ < rhs.low_) ||
-                    (lTp == rTp && lhs.low_ == rhs.low_ && lhs.high_ < rhs.high_);
+                (lTp == rTp && lhs.low_ < rhs.low_) ||
+                (lTp == rTp && lhs.low_ == rhs.low_ && lhs.high_ < rhs.high_);
         }
         return std::string(typeid (lhs).name()) < std::string(typeid (rhs).name());
     }
@@ -682,9 +694,9 @@ namespace util
     {
 
         return typeid (lhs) == typeid (rhs) &&
-                lhs.rangeType_ == rhs.rangeType_ &&
-                lhs.low_ == rhs.low_ &&
-                lhs.high_ == rhs.high_;
+            lhs.rangeType_ == rhs.rangeType_ &&
+            lhs.low_ == rhs.low_ &&
+            lhs.high_ == rhs.high_;
     }
 
     /**
@@ -703,6 +715,7 @@ namespace util
     template<typename T_>
     std::ostream& operator<<(std::ostream& os, const Interval<T_>& itvl)
     {
+        std::string dummy = itvl.verboseAsString();
         Var::StreamMode sm = (Var::StreamMode)os.iword(Var::xalloc_index);
         if (sm == 0)
             sm = Var::standard;
