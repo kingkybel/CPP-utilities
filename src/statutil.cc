@@ -193,7 +193,8 @@ namespace util
     {
         if (tp == exponential)
         {
-            VAR_FLOAT_INTERVAL interval(0.0L, ABOVE);
+            VAR_FLOAT_INTERVAL interval(0.0L,
+                                        IntervalType({util::rightFull, ~rightInclusive}));
             addRange(interval.low_, interval.high_);
         }
         else if (tp == gaussian)
@@ -455,7 +456,7 @@ namespace util
     {
         if (!dummyConfirm)
             throw event_error("Event can only be created if dummy confirm "
-                    "parameter is set to true!");
+                              "parameter is set to true!");
     }
 
     Event& Event::operator=(const Event& rhs)
@@ -1107,8 +1108,8 @@ namespace util
             VAR_FLOAT low = foundParam->second.low;
             VAR_FLOAT high = foundParam->second.high;
             Interval<VAR_FLOAT> itvl = ce.event().cbegin()->interval<VAR_FLOAT>();
-            long double lowP = itvl.isLeftOpen() ? foundParam->second.low : itvl.low_;
-            long double highP = itvl.isRightOpen() ? foundParam->second.high : itvl.high_;
+            long double lowP = itvl.isLeftFull() ? foundParam->second.low : itvl.low_;
+            long double highP = itvl.isRightFull() ? foundParam->second.high : itvl.high_;
 
             return (highP - lowP) / (foundParam->second.high - foundParam->second.low);
         }
@@ -1232,8 +1233,8 @@ namespace util
             VAR_FLOAT sigma = foundParam->second.sigma;
             boost::math::normal_distribution<VAR_FLOAT> nd(mu, sigma);
             Interval<VAR_FLOAT> itvl = ce.event().cbegin()->interval<VAR_FLOAT>();
-            long double lowP = itvl.isLeftOpen() ? 0.0L : boost::math::cdf(nd, itvl.low_);
-            long double highP = itvl.isRightOpen() ? 1.0L : boost::math::cdf(nd, itvl.high_);
+            long double lowP = itvl.isLeftFull() ? 0.0L : boost::math::cdf(nd, itvl.low_);
+            long double highP = itvl.isRightFull() ? 1.0L : boost::math::cdf(nd, itvl.high_);
 
             return highP - lowP;
         }
@@ -1379,8 +1380,8 @@ namespace util
         auto foundParam = param_.find(ce.condition());
         VAR_FLOAT lambda = foundParam != param_.end() ? foundParam->second.lambda : 1.0L;
         boost::math::exponential_distribution<VAR_FLOAT> ed(lambda);
-        long double lowP = itvl.isLeftOpen() ? 0.0L : boost::math::cdf(ed, itvl.low_);
-        long double highP = itvl.isRightOpen() ? 1.0L : boost::math::cdf(ed, itvl.high_);
+        long double lowP = itvl.isLeftFull() ? 0.0L : boost::math::cdf(ed, itvl.low_);
+        long double highP = itvl.isRightFull() ? 1.0L : boost::math::cdf(ed, itvl.high_);
 
         return highP - lowP;
     }
