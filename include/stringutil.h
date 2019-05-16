@@ -444,7 +444,7 @@ namespace util
 
     /**
      * Replace occurrences of chars left and/or right  and/or interior of
-     *  standard string with replacement char.
+     * standard string with replacement char.
      */
     void replaceChar(std::string& v,
                      const std::string& stripChars = "\t \r\n",
