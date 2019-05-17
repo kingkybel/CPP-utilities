@@ -218,32 +218,39 @@ namespace util
         //            pure = alpha_bool | hex_char | scientific_float, ///< simple scannable format combination
         //            standard = alpha_bool | short_float | round_open_brace, ///< standard format combination
         //            safe = quoted_char | hex_char | quoted_string | quoted_date | alpha_bool | scientific_float ///< more complex combination
+        if (os.iword(Var::xalloc_index) == 0)
+        {
+            os.iword(Var::xalloc_index) = Var::standard;
+        }
 
         if (sm == Var::reset || sm == Var::standard)
         {
             os.iword(Var::xalloc_index) = Var::standard;
+            return os;
         }
         else if (sm == Var::pure || sm == Var::safe)
         {
             os.iword(Var::xalloc_index) = sm;
+            return os;
         }
-        else if ((sm & Var::scientific_float) == Var::scientific_float)
+
+        int smInt = sm;
+        if ((sm & Var::scientific_float) == Var::scientific_float)
         {
-            os.iword(Var::xalloc_index) = sm & ~Var::long_float & ~Var::short_float;
+            smInt &= ~Var::long_float;
+            smInt &= ~Var::short_float;
+            os.iword(Var::xalloc_index) |= smInt;
         }
         else if ((sm & Var::long_float) == Var::long_float)
         {
-            os.iword(Var::xalloc_index) = sm & ~Var::short_float & ~Var::scientific_float;
-        }
-        else if ((sm & Var::short_float) == Var::short_float)
-        {
-            os.iword(Var::xalloc_index) = sm & ~Var::long_float & ~Var::scientific_float;
+            smInt &= ~Var::short_float;
+            os.iword(Var::xalloc_index) |= smInt;
         }
         else
         {
-            // add a feature
             os.iword(Var::xalloc_index) |= sm;
         }
+
         return os;
     }
 
