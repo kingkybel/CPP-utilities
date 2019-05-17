@@ -140,63 +140,138 @@ namespace util
         return VAR_DATE(boost::posix_time::max_date_time);
     }
 
-    enum intervalTag : char
+    enum class borderType
     {
-        /** minimum and maximum specified */
-        closed = 0x00,
-        /** From the minimal possible value to a specified maximum */
-        leftFull = 0x01,
-        /** minimum specified to the maximal possible maximal value */
-        rightFull = 0x02,
-        /** the entire possible interval, e.g. [0..max(unsigned long)] */
-        full = leftFull | rightFull,
+        /** a non-infinite minimum specified */
+        finiteMin = (unsigned char) 0x01,
+        /** a non-infinite maximum specified */
+        finiteMax = (unsigned char) 0x02,
+        /** both minimum and maximum are finite */
+        finite = finiteMin | finiteMax,
         /** include the left corner */
-        leftInclusive = 0x04,
+        leftClosed = (unsigned char) 0x04,
         /** include the right corner */
-        rightInclusive = 0x08,
+        rightClosed = (unsigned char) 0x08,
         /** include both corners */
-        allInclusive = leftInclusive | rightInclusive
+        closed = leftClosed | rightClosed,
+
+        // complements
+        infiniteMin = ~finiteMin,
+        infiniteMax = ~finiteMax,
+        infinite = infiniteMin | infiniteMax,
+        leftOpen = ~leftClosed,
+        rightOpen = ~rightClosed,
+        open = leftOpen | rightOpen
     };
+
+    inline unsigned char operator&(const borderType& lhs, const borderType& rhs)
+    {
+        return (unsigned char) lhs & (unsigned char) lhs;
+    }
+
+    inline unsigned char operator|(const borderType& lhs, const borderType& rhs)
+    {
+        return (unsigned char) lhs | (unsigned char) lhs;
+    }
+
+    inline unsigned char operator<(const borderType& lhs, const borderType& rhs)
+    {
+        return (unsigned char) lhs < (unsigned char) lhs;
+    }
+
+    static const borderType finiteMin = borderType::finiteMin;
+    static const borderType finiteMax = borderType::finiteMax;
+    static const borderType finite = borderType::finite;
+    static const borderType leftClosed = borderType::leftClosed;
+    static const borderType rightClosed = borderType::rightClosed;
+    static const borderType closed = borderType::closed;
+
+    static const borderType infiniteMin = borderType::infiniteMin;
+    static const borderType infiniteMax = borderType::infiniteMax;
+    static const borderType infinite = borderType::infinite;
+    static const borderType leftOpen = borderType::leftOpen;
+    static const borderType rightOpen = borderType::rightOpen;
+    static const borderType open = borderType::open;
 
     struct IntervalType
     {
 
-        IntervalType(std::initializer_list<char> l =
-                     std::initializer_list<char>({closed, allInclusive}))
+        IntervalType(std::initializer_list<borderType> l =
+                     std::initializer_list<borderType>({closed, finite}))
         : traits_(0)
         {
             for (auto it = l.begin(); it != l.end();)
-                traits_ |= *it++;
+            {
+                if (*it == finiteMin ||
+                    *it == finiteMax ||
+                    *it == finite ||
+                    *it == leftClosed ||
+                    *it == rightClosed ||
+                    *it == closed)
+                    traits_ |= (unsigned char) *it++;
+                else
+                    traits_ &= (unsigned char) *it++;
+            }
         }
 
-        bool isLeftFull() const
+        bool isLeftFinite() const
         {
-            return traits_ & leftFull == leftFull;
+            return (traits_ & (unsigned char) finiteMin) == (unsigned char) finiteMin;
         }
 
-        bool isRightFull() const
+        bool isLeftInfinite() const
         {
-            return traits_ & leftFull == leftFull;
+            return !isLeftFinite();
         }
 
-        bool isFull() const
+        bool isRightFinite() const
         {
-            return isLeftFull() && isRightFull();
+            return (traits_ & (unsigned char) finiteMax) == (unsigned char) finiteMax;
         }
 
-        bool isLeftInclusive() const
+        bool isRightInfinite() const
         {
-            return (traits_ & leftInclusive) == leftInclusive;
+            return !isRightFinite();
         }
 
-        bool isRightInclusive() const
+        bool isInfinite() const
         {
-            return (traits_ & rightInclusive) == rightInclusive;
+            return isLeftInfinite() && isRightInfinite();
         }
 
-        bool isAllInclusive() const
+        bool isFinite() const
         {
-            return isLeftInclusive() && isRightInclusive();
+            return !isInfinite();
+        }
+
+        bool isLeftClosed() const
+        {
+            return (traits_ & (unsigned char) leftClosed) == (unsigned char) leftClosed;
+        }
+
+        bool isRightClosed() const
+        {
+            return (traits_ & (unsigned char) rightClosed) == (unsigned char) rightClosed;
+        }
+
+        bool isClosed() const
+        {
+            return isLeftClosed() && isRightClosed();
+        }
+
+        bool isLeftOpen() const
+        {
+            return !isLeftClosed();
+        }
+
+        bool isRightOpen() const
+        {
+            return !isRightClosed();
+        }
+
+        bool isOpen() const
+        {
+            return !isClosed();
         }
 
         friend bool operator==(const IntervalType& lhs, const IntervalType& rhs)
@@ -208,41 +283,72 @@ namespace util
         {
             return lhs.traits_ < rhs.traits_;
         }
-    private:
-        char traits_;
+    protected:
+        unsigned char traits_;
     };
 
     /**
      *  Numeric/date intervals than can be half- or fully- open or closed.
      */
     template<typename T_>
-    struct Interval
+    struct Interval : public IntervalType
     {
 
         /**
-         * Default construct.
-         *  Full-range interval including left and right borders.
+         * Default construct a left-or right- finite interval interval.
+         * tags finiteMin and infiniteMax in this context mean the same: the
+         * interval is infinite on the right side and finite on the left. Conversely
+         * the tags infiniteMin and  finiteMax mean that the
+         * interval is finite on the right side and infinite on the left.
+         * right/left Open/Closed flags can be added. Any inconsistencies are made
+         * consistent
+         * @param v the value at the finite side, if it defaults to the minimal
+         *          value for the parameter type T_, then the interval will be
+         *          the entire domain (-oo..+oo)
+         * @param l must contain at least one of the tags
+         * <ul>
+         * <li> finiteMin </li>
+         * <li> infiniteMax </li>
+         * <li> finiteMax </li>
+         * <li> infiniteMin </li>
+         * </ul>
          */
-        Interval()
-        : low_()
-        , high_()
-        , rangeType_({full, allInclusive})
+        Interval(const T_& v = minVal<T_>(),
+                 std::initializer_list<borderType> l =
+                 std::initializer_list<borderType>({finiteMin, leftClosed}))
+        : IntervalType(l)
+        , low_(isLeftFinite() ? v : minVal<T_>())
+        , high_(isLeftFinite() ? maxVal<T_>() : v)
         {
-        }
-
-        /**
-         * Construct a half-open interval.
-         * @param v the value ant the NOT open side
-         * @param bordertype default to right-full, right open (infinity)
-         */
-        Interval(const T_& v,
-                 IntervalType borderType = IntervalType({rightFull, ~rightInclusive}))
-        : low_(borderType.isLeftFull() ? minVal<T_>() : v)
-        , high_(borderType.isRightFull() ? v : maxVal<T_>())
-        , rangeType_(borderType)
-        {
-            std::string dummy = verboseAsString();
-            std::cout << dummy << std::endl;
+            bool defaultedToMinimum = v == minVal<T_>();
+            bool lFin = isLeftFinite();
+            bool lClsd = isLeftClosed();
+            bool rClsd = isRightClosed();
+            traits_ = 0x00;
+            if (defaultedToMinimum)
+            {
+                low_ = minVal<T_>();
+                high_ = maxVal<T_>();
+            }
+            else
+            {
+                if (lFin)
+                {
+                    traits_ |= (unsigned char) finiteMin;
+                }
+                else
+                {
+                    traits_ |= (unsigned char) finiteMax;
+                }
+                if (lClsd)
+                {
+                    traits_ |= (unsigned char) leftClosed;
+                }
+                if (rClsd)
+                {
+                    traits_ |= (unsigned char) rightClosed;
+                }
+            }
         }
 
         /**
@@ -251,22 +357,26 @@ namespace util
          * @param v2 the other one of the interval borders
          * @param inclusivity can be used to include/exclude left or right borders
          */
-        Interval(const T_& v1, const T_& v2,
-                 IntervalType borderType = IntervalType({closed, allInclusive}))
-        : low_(v1<v2 ? v1 : v2)
+        Interval(const T_& v1,
+                 const T_& v2,
+                 std::initializer_list<borderType> l =
+                 std::initializer_list<borderType>({closed, finite}))
+        : IntervalType(l)
+        , low_(v1<v2 ? v1 : v2)
         , high_(v1<v2 ? v2 : v1)
-        , rangeType_(borderType)
         {
         }
 
         T_ left() const
         {
-            return isLeftFull() ? minVal<T_>() : low_;
+
+            return Interval<T_>::isLeftInfinite() ? minVal<T_>() : low_;
         }
 
         T_ right() const
         {
-            return isRightFull() ? maxVal<T_>() : high_;
+
+            return Interval<T_>::isRightInfinite() ? maxVal<T_>() : high_;
         }
 
         /**
@@ -276,66 +386,13 @@ namespace util
          */
         bool contains(const T_& v) const
         {
-            return (rangeType_.isFull() && rangeType_.isAllInclusive()) ||
-                (isLeftFull() && (isLeftInclusive() ? v <= high_ : v < high_)) ||
-                (isRightFull() && (isRightInclusive() ? v >= low_ : v > low_)) ||
-                ((isLeftInclusive() ? v >= low_ : v > low_) &&
-                 (isRightInclusive() ? v <= high_ : v < high_));
 
-        }
+            return (isInfinite() && isClosed()) ||
+                    (Interval<T_>::isLeftInfinite() && (Interval<T_>::isLeftClosed() ? v <= high_ : v < high_)) ||
+                    (Interval<T_>::isRightInfinite() && (Interval<T_>::isRightClosed() ? v >= low_ : v > low_)) ||
+                    ((Interval<T_>::isLeftClosed() ? v >= low_ : v > low_) &&
+                     (Interval<T_>::isRightClosed() ? v <= high_ : v < high_));
 
-        /**
-         * Check whether the interval is left full.
-         * @return true if so, false otherwise
-         */
-        bool isLeftFull() const
-        {
-            return rangeType_.isLeftFull();
-        }
-
-        /**
-         * Check whether the interval is right full.
-         * @return true if so, false otherwise
-         */
-        bool isRightFull() const
-        {
-            return rangeType_.isRightFull();
-        }
-
-        /**
-         * Check whether the interval is right full.
-         * @return true if so, false otherwise
-         */
-        bool isFull() const
-        {
-            return rangeType_.isFull();
-        }
-
-        /**
-         * Check whether the interval includes the left border.
-         * @return true if so, false otherwise
-         */
-        bool isLeftInclusive() const
-        {
-            return rangeType_.isLeftInclusive();
-        }
-
-        /**
-         * Check whether the interval includes the right border.
-         * @return true if so, false otherwise
-         */
-        bool isRightInclusive() const
-        {
-            return rangeType_.isRightInclusive();
-        }
-
-        /**
-         * Check whether the interval includes the right border.
-         * @return true if so, false otherwise
-         */
-        bool isAllInclusive() const
-        {
-            return rangeType_.isAllInclusive();
         }
 
         /**
@@ -346,19 +403,21 @@ namespace util
          */
         bool isSubIntervalOf(const Interval& rhs) const
         {
-            return (isLeftInclusive() && contains(rhs.low_) ||
-                    !isLeftInclusive() && rhs.low_ >= low_) &&
-                (isRightInclusive() && contains(rhs.high_) ||
-                 !isRightInclusive() && rhs.high_ <= high_);
+
+            return (isLeftClosed() && contains(rhs.low_) ||
+                    !isLeftClosed() && rhs.low_ >= low_) &&
+                    (isRightClosed() && contains(rhs.high_) ||
+                     !isRightClosed() && rhs.high_ <= high_);
         }
 
         std::string verboseAsString() const
         {
+
             std::string reval = "";
-            reval += (isLeftInclusive()) ? "leftInclusive[ " : "leftOpen (";
-            reval += isLeftFull() ? "leftFull '-" + asString(minVal<T_>()) + "' " : "leftMin '" + asString(low_) + "' ";
-            reval += isRightFull() ? "rightFull '-" + asString(maxVal<T_>()) + "' " : "rightMax '" + asString(high_) + "' ";
-            reval += (isRightInclusive()) ? "] rightInclusive " : ") rightOpen";
+            reval += (isLeftClosed()) ? "leftClosed[ " : "leftOpen (";
+            reval += isLeftInfinite() ? "leftInf '" + asString(minVal<T_>()) + "' " : "leftMin '" + asString(low_) + "' ";
+            reval += isRightInfinite() ? "rightInf '-" + asString(maxVal<T_>()) + "' " : "rightMax '" + asString(high_) + "' ";
+            reval += (isRightClosed()) ? "] rightClosed " : ") rightOpen";
             return reval;
         }
         template<typename T1_, typename T2_>
@@ -370,7 +429,6 @@ namespace util
         template<typename TT_>
         friend std::ostream& operator<<(std::ostream& os, const Interval<TT_>& itvl);
     private:
-        IntervalType rangeType_;
         T_ low_; ///< Minimal value
         T_ high_; ///< Maximal value
     };
@@ -391,7 +449,7 @@ namespace util
     {
     public:
 
-        enum StreamMode
+        enum StreamMode : int
         {
             reset = 0x0000, ///< reset the stream configuration to empty
             quoted_char = 0x0001, ///< enclose characters in single quotes
@@ -455,6 +513,7 @@ namespace util
         {
             if (!isA<T_ > (*this))
             {
+
                 throw cast_error(type().name(), typeid (T_).name());
             }
             return boost::any_cast<T_>(value_);
@@ -465,6 +524,7 @@ namespace util
          */
         friend bool sameType(const Var& v1, const Var& v2)
         {
+
             return v1.type() == v2.type();
         }
 
@@ -477,9 +537,10 @@ namespace util
         template<typename T_>
         friend bool equalT(const Var& lhs, const Var& rhs)
         {
+
             return lhs.type() == rhs.type() &&
-                isA<T_>(lhs) &&
-                lhs.get<T_>() == rhs.get<T_>();
+                    isA<T_>(lhs) &&
+                    lhs.get<T_>() == rhs.get<T_>();
         }
 
         /**
@@ -487,55 +548,75 @@ namespace util
          * associative containers.
          * The other comparison functions only will be used to transcend their
          * native type's operators.
-         * Helper template for definition of global operator \<.
+         * Helper template for definition of global operator &lt;.
+         * @param lhs left-hand-side of the comparison
+         * @param rhs right-hand-side of the comparison
+         * @return if lhs is less than rhs, false otherwise
          */
         template <typename T_>
         friend bool lessT(const Var& lhs, const Var& rhs)
         {
+
             if (lhs.type() == typeid (T_) && rhs.type() == typeid (T_))
                 return (lhs.get<T_>() < rhs.get<T_>());
             return false;
         }
 
         /**
-         *  Helper template for definition of global operator \<=.
+         * Helper template for definition of global operator &le;.
+         * @param lhs left-hand-side of the comparison
+         * @param rhs right-hand-side of the comparison
+         * @return if lhs is less/equal than rhs, false otherwise
          */
         template <typename T_>
         friend bool lessEqualT(const Var& lhs, const Var& rhs)
         {
+
             if (lhs.type() == typeid (T_) && rhs.type() == typeid (T_))
                 return (lhs.get<T_>() <= rhs.get<T_>());
             return false;
         }
 
         /**
-         *  Helper template for definition of global operator \>.
+         * Helper template for definition of global operator &gt;.
+         * @param lhs left-hand-side of the comparison
+         * @param rhs right-hand-side of the comparison
+         * @return if lhs is greater than rhs, false otherwise
          */
         template <typename T_>
         friend bool greaterT(const Var& lhs, const Var& rhs)
         {
+
             if (lhs.type() == typeid (T_) && rhs.type() == typeid (T_))
                 return (lhs.get<T_>() > rhs.get<T_>());
             return false;
         }
 
         /**
-         *  Helper template for definition of global operator \<=.
+         * Helper template for definition of global operator &ge;.
+         * @param lhs left-hand-side of the comparison
+         * @param rhs right-hand-side of the comparison
+         * @return if lhs is greater/equal than rhs, false otherwise
          */
         template <typename T_>
         friend bool greaterEqualT(const Var& lhs, const Var& rhs)
         {
+
             if (lhs.type() == typeid (T_) && rhs.type() == typeid (T_))
                 return (lhs.get<T_>() >= rhs.get<T_>());
             return false;
         }
 
         /**
-         *  Helper template for definition of global containment check.
+         * Helper template for definition of global containment check.
+         * @param lhs left-hand-side of the comparison
+         * @param rhs right-hand-side of the comparison
+         * @return if lhs contains rhs, false otherwise
          */
         template <typename T_>
         friend bool containsT(const Var& lhsInterval, const Var& rhs)
         {
+
             if (lhsInterval.type() != typeid (Interval<T_>) || rhs.type() != typeid (T_))
                 return false;
             Interval<T_> itvl = boost::any_cast<Interval<T_> >(lhsInterval.value());
@@ -545,39 +626,77 @@ namespace util
         /**
          * Check whether an Interval - Variant contains a value.
          * Non-Interval variants are treated as Intervals containing only one value.
+         * @param val value to check
+         * @return if this contains val, false otherwise
          */
         bool contains(const Var& val) const;
 
         /**
-         * Transcend to native type operator.
+         * Variant equality.
+         * Transcends to native type operator.
+         * @param lhs left-hand-side of the comparison
+         * @param rhs right-hand-side of the comparison
+         * @return if lhs is equal to rhs, false otherwise
          */
         friend bool operator==(const Var& lhs, const Var& rhs);
+
         /**
-         * Transcend to native type operator.
+         * Variant less than.
+         * Transcends to native type operator.
+         * @param lhs left-hand-side of the comparison
+         * @param rhs right-hand-side of the comparison
+         * @return if lhs is less than rhs, false otherwise
          */
         friend bool operator<(const Var& lhs, const Var& rhs);
+
         /**
-         * Transcend to native type operator.
+         * Variant less/equality.
+         * Transcends to native type operator.
+         * @param lhs left-hand-side of the comparison
+         * @param rhs right-hand-side of the comparison
+         * @return if lhs is less/equal to rhs, false otherwise
          */
         friend bool operator<=(const Var& lhs, const Var& rhs);
+
         /**
-         * Transcend to native type operator.
+         * Variant greater.
+         * Transcends to native type operator.
+         * @param lhs left-hand-side of the comparison
+         * @param rhs right-hand-side of the comparison
+         * @return if lhs is greater than rhs, false otherwise
          */
         friend bool operator>(const Var& lhs, const Var& rhs);
+
         /**
-         * Transcend to native type operator.
+         * Variant greater/equality.
+         * Transcends to native type operator.
+         * @param lhs left-hand-side of the comparison
+         * @param rhs right-hand-side of the comparison
+         * @return if lhs is greater/equal than rhs, false otherwise
          */
         friend bool operator>=(const Var& lhs, const Var& rhs);
+
         /**
-         * Transcend to native type operator.
+         * Out-stream operator for variant stream modifiers.
+         * @param os the ostream for output
+         * @param sm the modifier
+         * @return the modified stream
          */
         friend std::ostream& operator<<(std::ostream& os, Var::StreamMode sm);
+
         /**
-         * Transcend to native type operator.
+         * Out-stream operator for variants.
+         * @param os the ostream for output
+         * @param v the variant to output
+         * @return the modified stream
          */
         friend std::ostream& operator<<(std::ostream& os, const Var& v);
+
         /**
-         * Transcend to native type operator.
+         * Out-stream operator for intervals.
+         * @param os the ostream for output
+         * @param itvl the interval to output
+         * @return the modified stream
          */
         template<typename TT_>
         friend std::ostream& operator<<(std::ostream& os, const Interval<TT_>& itvl);
@@ -593,14 +712,22 @@ namespace util
     struct Operation
     {
         /**
-         *  Check whether the left hand Var matches the right hand side.
+         * Check whether the left hand Var matches the right hand side.
          * This operation is not symmetric:
-         *  - operator is taken from right-hand side
-         *  - < , <=, >, >= follow natural definition
+         * <ul>
+         * <li>operator is taken from right-hand side</li>
+         * <li>&lt; , &le;, &gt;, &ge; follow natural definition</li>
+         * </ul>
+         * @param lhs left-hand-side of comparison
+         * @param rhs right-hand-side of comparison
+         * @return true if left matches right, false otherwise
          */
         virtual bool leftMatchesRight(const Var& lhs, const Var& rhs) const = 0;
+
         /**
-         *  Provide a description of the operation for stream-operators.
+         * Provide a description of the operation for stream-operators.
+         * @param v the variant to get a description for
+         * @return a string description of v
          */
         virtual std::string desc(const Var& v) const = 0;
     };
@@ -669,7 +796,12 @@ namespace util
     };
 
     /**
-     *  Enable Intervals as elements of associative containers.
+     * Less than operator for intervals in order to enable Intervals as elements
+     * of associative containers.
+     *
+     * @param lhs left-hand-side of comparison
+     * @param rhs right-hand-side of comparison
+     * @return true if lhs less than rhs, false otherwise
      */
     template<typename T1_, typename T2_>
     bool operator<(const Interval<T1_>& lhs, const Interval<T2_>& rhs)
@@ -677,30 +809,40 @@ namespace util
         if (typeid (lhs) == typeid (rhs))
         {
 
-            auto lTp = lhs.rangeType_;
-            auto rTp = rhs.rangeType_;
+            auto lTp = lhs.traits_;
+            auto rTp = rhs.traits_;
             return lTp < rTp ||
-                (lTp == rTp && lhs.low_ < rhs.low_) ||
-                (lTp == rTp && lhs.low_ == rhs.low_ && lhs.high_ < rhs.high_);
+                    (lTp == rTp && lhs.low_ < rhs.low_) ||
+                    (lTp == rTp && lhs.low_ == rhs.low_ && lhs.high_ < rhs.high_);
         }
         return std::string(typeid (lhs).name()) < std::string(typeid (rhs).name());
     }
 
     /**
-     * Enable Intervals as elements of associative containers.
+     * Equality operator for intervals in order to enable Intervals as elements
+     * of associative containers.
+     *
+     * @param lhs left-hand-side of comparison
+     * @param rhs right-hand-side of comparison
+     * @return true if lhs equal to rhs, false otherwise
      */
     template<typename T1_, typename T2_>
     bool operator==(const Interval<T1_>& lhs, const Interval<T2_>& rhs)
     {
 
         return typeid (lhs) == typeid (rhs) &&
-            lhs.rangeType_ == rhs.rangeType_ &&
-            lhs.low_ == rhs.low_ &&
-            lhs.high_ == rhs.high_;
+                (IntervalType) lhs == (IntervalType) rhs &&
+                lhs.low_ == rhs.low_ &&
+                lhs.high_ == rhs.high_;
     }
 
     /**
-     * Enable Intervals as elements of associative containers.
+     * Inequality operator for intervals in order to enable Intervals as elements
+     * of associative containers.
+     *
+     * @param lhs left-hand-side of comparison
+     * @param rhs right-hand-side of comparison
+     * @return true if lhs not equal to rhs, false otherwise
      */
     template<typename T1_, typename T2_>
     bool operator!=(const Interval<T1_>& lhs, const Interval<T2_>& rhs)
@@ -710,35 +852,37 @@ namespace util
     }
 
     /**
-     * Generic ostream - &lt;&lt; operator for Interval's.
+     * Generic Out-stream - &lt;&lt; operator for Interval's.
+     * @param os the ostream for output
+     * @param itvl the interval to output
+     * @return the modified stream
      */
     template<typename T_>
     std::ostream& operator<<(std::ostream& os, const Interval<T_>& itvl)
     {
-        std::string dummy = itvl.verboseAsString();
         Var::StreamMode sm = (Var::StreamMode)os.iword(Var::xalloc_index);
         if (sm == 0)
             sm = Var::standard;
-        bool leftFull = itvl.isLeftFull();
-        bool rightFull = itvl.isRightFull();
-        bool leftOpen = !itvl.isLeftInclusive();
-        bool rightOpen = !itvl.isRightInclusive();
+        bool leftInf = itvl.isLeftInfinite();
+        bool rightInf = itvl.isRightInfinite();
+        bool leftOpen = itvl.isLeftOpen();
+        bool rightOpen = itvl.isRightOpen();
 
         char left = (sm & Var::round_open_brace) == Var::round_open_brace && leftOpen ? '(' : '[';
         char right = (sm & Var::round_open_brace) == Var::round_open_brace && rightOpen ? ')' : ']';
 
         bool symbolic = (sm & Var::symbolic_full) == Var::symbolic_full;
         os << left;
-        if (symbolic && leftFull)
+        if (symbolic && leftInf)
             os << "-∞";
-        else if (leftFull)
+        else if (leftInf)
             os << minVal<T_> ();
         else
             os << itvl.low_;
         os << ", ";
-        if (symbolic && rightFull)
+        if (symbolic && rightInf)
             os << "+∞";
-        else if (rightFull)
+        else if (rightInf)
             os << maxVal<T_>();
 
         else
@@ -749,7 +893,8 @@ namespace util
     }
 
     /**
-     *  Scan a string and convert to the template-type.
+     * Scan a string and convert to the template-type.
+     *
      */
     template <typename T_>
     inline T_ scanAs(const VAR_STRING& strVal)
