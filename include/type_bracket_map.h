@@ -22,7 +22,7 @@
  */
 
 #ifndef NS_UTIL_TYPE_BRACKET_MAP_H_INCLUDED
-#define	NS_UTIL_TYPE_BRACKET_MAP_H_INCLUDED
+#define NS_UTIL_TYPE_BRACKET_MAP_H_INCLUDED
 
 #include <typeinfo>
 #include <string>
@@ -39,18 +39,23 @@ namespace util
 
         type_bracket_map()
         {
-
         }
+
     public:
 
-        bool empty()
+        bool empty() const
         {
             return type2brackets.empty();
         }
 
-        void initialize()
+        void clear()
         {
             type2brackets.erase(type2brackets.begin(), type2brackets.end());
+        }
+
+        void initialize()
+        {
+            clear();
             type2brackets["none"] = Brackets(Brackets::NONE);
             type2brackets["vector"] = Brackets(Brackets::CHEFRON);
             type2brackets["deque"] = Brackets("(*", " < ", "*)");
@@ -59,6 +64,8 @@ namespace util
             type2brackets["unordered_map"] = Brackets("{~", " ", "~}");
             type2brackets["map"] = Brackets(Brackets::BRACKET);
             type2brackets["set"] = Brackets(Brackets::BRACE);
+            type2brackets["string"] = Brackets(Brackets::DOUBLEQUOTES);
+            type2brackets["char"] = Brackets(Brackets::SINGLEQUOTES);
         }
 
         static type_bracket_map& instance()
@@ -94,5 +101,5 @@ namespace util
     };
 }; // namespace util
 
-#endif	// NS_UTIL_TYPE_BRACKET_MAP_H_INCLUDED
+#endif // NS_UTIL_TYPE_BRACKET_MAP_H_INCLUDED
 

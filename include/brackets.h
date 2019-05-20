@@ -23,7 +23,7 @@
  */
 
 #ifndef NS_UTIL_BRACKETS_H_INCLUDED
-#define	NS_UTIL_BRACKETS_H_INCLUDED
+#define NS_UTIL_BRACKETS_H_INCLUDED
 
 #include <string>
 namespace util
@@ -79,8 +79,16 @@ namespace util
              */
             WINDOWSPATH,
             /**
+             * Singles quotes "\'".
+             */,
+            SINGLEQUOTES,
+            /**
+             * Double quotes "\"".
+             */,
+            DOUBLEQUOTES,
+            /**
              * user defined brackets.
-             */
+             */,
             USER
         };
 
@@ -100,6 +108,8 @@ namespace util
                 type == BACKSLASH ? "\\" :
                 type == UNIXPATH ? "/" :
                 type == WINDOWSPATH ? ":\\" :
+                type == SINGLEQUOTES ? "\'" :
+                type == DOUBLEQUOTES ? "\"" :
                 "")
         , inner_(type == NONE ? " " :
                  type == BRACE ? "," :
@@ -111,6 +121,8 @@ namespace util
                  type == BACKSLASH ? "\\" :
                  type == UNIXPATH ? "/" :
                  type == WINDOWSPATH ? "\\" :
+                 type == SINGLEQUOTES ? "" :
+                 type == DOUBLEQUOTES ? "" :
                  "")
         , right_(type == NONE ? "" :
                  type == BRACE ? "}" :
@@ -122,6 +134,8 @@ namespace util
                  type == BACKSLASH ? "\\" :
                  type == UNIXPATH ? "" :
                  type == WINDOWSPATH ? "" :
+                 type == SINGLEQUOTES ? "\'" :
+                 type == DOUBLEQUOTES ? "\"" :
                  "")
         {
         }
@@ -188,5 +202,5 @@ namespace util
     };
 }; // namespace util
 
-#endif	// NS_UTIL_BRACKETS_H_INCLUDED
+#endif // NS_UTIL_BRACKETS_H_INCLUDED
 

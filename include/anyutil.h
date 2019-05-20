@@ -34,6 +34,7 @@
 #include <boost/date_time.hpp>
 #include <dateutil.h> // gregorian dates/posix time/...
 #include <cmath>
+#include <limits>
 #include <initializer_list>
 
 namespace util
@@ -107,7 +108,7 @@ namespace util
     template <typename T_>
     inline T_ minVal()
     {
-        return std::numeric_limits<T_>::min();
+        return std::numeric_limits<T_>::lowest();
     }
 
     /**
@@ -196,21 +197,26 @@ namespace util
     struct IntervalType
     {
 
+        void setFlag(const borderType& bt)
+        {
+            if (bt == finiteMin ||
+                bt == finiteMax ||
+                bt == finite ||
+                bt == leftClosed ||
+                bt == rightClosed ||
+                bt == closed)
+                traits_ |= (unsigned char) bt;
+            else
+                traits_ &= (unsigned char) bt;
+        }
+
         IntervalType(std::initializer_list<borderType> l =
                      std::initializer_list<borderType>({closed, finite}))
         : traits_(0)
         {
-            for (auto it = l.begin(); it != l.end();)
+            for (auto it = l.begin(); it != l.end(); it++)
             {
-                if (*it == finiteMin ||
-                    *it == finiteMax ||
-                    *it == finite ||
-                    *it == leftClosed ||
-                    *it == rightClosed ||
-                    *it == closed)
-                    traits_ |= (unsigned char) *it++;
-                else
-                    traits_ &= (unsigned char) *it++;
+                setFlag(*it);
             }
         }
 
@@ -305,49 +311,99 @@ namespace util
          * @param v the value at the finite side, if it defaults to the minimal
          *          value for the parameter type T_, then the interval will be
          *          the entire domain (-oo..+oo)
-         * @param l must contain at least one of the tags
+         * @param l should contain at least one of the tags
          * <ul>
          * <li> finiteMin </li>
          * <li> infiniteMax </li>
          * <li> finiteMax </li>
          * <li> infiniteMin </li>
-         * </ul>
+         * </ul> If none is provided "infiniteMax is assumed. if no open/close
+         * tag is provided then the finite border will be closed, the infinite
+         * will be open. The tag "finite" will be ignored as it doesn't make sense
+         * in this context.
          */
         Interval(const T_& v = minVal<T_>(),
                  std::initializer_list<borderType> l =
                  std::initializer_list<borderType>({finiteMin, leftClosed}))
-        : IntervalType(l)
-        , low_(isLeftFinite() ? v : minVal<T_>())
-        , high_(isLeftFinite() ? maxVal<T_>() : v)
+        : IntervalType()
         {
-            bool defaultedToMinimum = v == minVal<T_>();
-            bool lFin = isLeftFinite();
-            bool lClsd = isLeftClosed();
-            bool rClsd = isRightClosed();
-            traits_ = 0x00;
-            if (defaultedToMinimum)
+            bool leftBoundaryIsMinimum = v == minVal<T_>();
+            if (leftBoundaryIsMinimum) // use whole domain
             {
                 low_ = minVal<T_>();
                 high_ = maxVal<T_>();
             }
             else
             {
-                if (lFin)
+                bool foundInfiniteMin = false;
+                bool foundInfiniteMax = false;
+                bool foundLeftClosed = false;
+                bool foundRightClosed = false;
+                bool leftOpenClosedSpecified = false;
+                bool rightOpenClosedSpecified = false;
+
+                unsigned char newTraits_ = 0x00;
+                for (auto it = l.begin(); it != l.end(); it++)
                 {
-                    traits_ |= (unsigned char) finiteMin;
+                    switch (*it)
+                    {
+                        case infiniteMin:
+                        case finiteMax:
+                            foundInfiniteMin = true;
+                            break;
+                        case infiniteMax:
+                        case finiteMin:
+                            foundInfiniteMax = true;
+                            break;
+                        case finite:
+                            // ignore
+                            break;
+                        case leftClosed:
+                            foundLeftClosed = true;
+                            leftOpenClosedSpecified = true;
+                            break;
+                        case rightClosed:
+                            foundRightClosed = true;
+                            rightOpenClosedSpecified = true;
+                        case closed:
+                            foundLeftClosed = true;
+                            foundRightClosed = true;
+                            rightOpenClosedSpecified = true;
+                            leftOpenClosedSpecified = true;
+                            break;
+                        case leftOpen:
+                            foundLeftClosed = false;
+                            leftOpenClosedSpecified = true;
+                            break;
+                        case rightOpen:
+                            foundRightClosed = false;
+                            rightOpenClosedSpecified = true;
+                        case open:
+                            foundLeftClosed = false;
+                            foundRightClosed = false;
+                            leftOpenClosedSpecified = true;
+                            break;
+                    }
+                }
+
+                traits_ = 0x00;
+                if ((!foundInfiniteMax && !foundInfiniteMin) || foundInfiniteMax)
+                {
+                    setFlag(finiteMin);
+                    setFlag(infiniteMax);
                 }
                 else
                 {
-                    traits_ |= (unsigned char) finiteMax;
+                    setFlag(infiniteMin);
+                    setFlag(finiteMax);
                 }
-                if (lClsd)
-                {
-                    traits_ |= (unsigned char) leftClosed;
-                }
-                if (rClsd)
-                {
-                    traits_ |= (unsigned char) rightClosed;
-                }
+                if (foundLeftClosed || !leftOpenClosedSpecified)
+                    setFlag(leftClosed);
+                if (foundRightClosed || !rightOpenClosedSpecified)
+                    setFlag(rightClosed);
+
+                low_ = (isLeftFinite() ? v : minVal<T_>());
+                high_ = (isLeftFinite() ? maxVal<T_>() : v);
             }
         }
 
@@ -362,8 +418,8 @@ namespace util
                  std::initializer_list<borderType> l =
                  std::initializer_list<borderType>({closed, finite}))
         : IntervalType(l)
-        , low_(v1<v2 ? v1 : v2)
-        , high_(v1<v2 ? v2 : v1)
+        , low_(v1 < v2 ? v1 : v2)
+        , high_(v1 < v2 ? v2 : v1)
         {
         }
 
@@ -384,14 +440,14 @@ namespace util
          * @param v value to check
          * @return true if v is contained in the interval, false otherwise
          */
-        bool contains(const T_& v) const
+        bool contains(const T_ & v) const
         {
-
-            return (isInfinite() && isClosed()) ||
-                    (Interval<T_>::isLeftInfinite() && (Interval<T_>::isLeftClosed() ? v <= high_ : v < high_)) ||
-                    (Interval<T_>::isRightInfinite() && (Interval<T_>::isRightClosed() ? v >= low_ : v > low_)) ||
-                    ((Interval<T_>::isLeftClosed() ? v >= low_ : v > low_) &&
-                     (Interval<T_>::isRightClosed() ? v <= high_ : v < high_));
+            /* [-∞,-∞],  (-∞,-∞)                              */
+            /* [-∞,high], [-∞,high), (-∞,high], (-∞,high)     */
+            /* [low,+∞],  [low,+∞),  (low,+∞],  (low,+∞)      */
+            /* [low,high], [low,high), (low,high], (low,high) */
+            return (isLeftClosed() ? low_ <= v : low_ < v) &&
+                (isRightClosed() ? v <= high_ : v < high_);
 
         }
 
@@ -401,13 +457,21 @@ namespace util
          * @return true if the given interval is fully covered in this interval,
          *         false otherwise
          */
-        bool isSubIntervalOf(const Interval& rhs) const
+        bool isSubIntervalOf(const Interval & rhs) const
         {
+            //            std::cout << std::boolalpha
+            //                << rhs
+            //                << "rhs.contains("
+            //                << low_
+            //                << ")="
+            //                << rhs.contains(low_)
+            //                << " rhs.contains("
+            //                << high_
+            //                << ")="
+            //                << rhs.contains(high_)
+            //                << std::endl;
 
-            return (isLeftClosed() && contains(rhs.low_) ||
-                    !isLeftClosed() && rhs.low_ >= low_) &&
-                    (isRightClosed() && contains(rhs.high_) ||
-                     !isRightClosed() && rhs.high_ <= high_);
+            return rhs.contains(low_) && rhs.contains(high_);
         }
 
         std::string verboseAsString() const
@@ -461,7 +525,7 @@ namespace util
             long_float = 0x0040, ///< display floating point values in a longer format
             scientific_float = 0x0080, ///< display floating point values in scientific format
             round_open_brace = 0x0100, ///< indicate open intervals with round braces
-            symbolic_full = 0x0200, ///< indicate full interval with symbolic infinity "oo"
+            symbolic_infinity = 0x0200, ///< indicate full interval with symbolic infinity "oo"
 
             pure = alpha_bool | hex_char | scientific_float, ///< simple scannable format combination
             standard = alpha_bool | short_float | round_open_brace, ///< standard format combination
@@ -539,8 +603,8 @@ namespace util
         {
 
             return lhs.type() == rhs.type() &&
-                    isA<T_>(lhs) &&
-                    lhs.get<T_>() == rhs.get<T_>();
+                isA<T_>(lhs) &&
+                lhs.get<T_>() == rhs.get<T_>();
         }
 
         /**
@@ -812,8 +876,8 @@ namespace util
             auto lTp = lhs.traits_;
             auto rTp = rhs.traits_;
             return lTp < rTp ||
-                    (lTp == rTp && lhs.low_ < rhs.low_) ||
-                    (lTp == rTp && lhs.low_ == rhs.low_ && lhs.high_ < rhs.high_);
+                (lTp == rTp && lhs.low_ < rhs.low_) ||
+                (lTp == rTp && lhs.low_ == rhs.low_ && lhs.high_ < rhs.high_);
         }
         return std::string(typeid (lhs).name()) < std::string(typeid (rhs).name());
     }
@@ -831,9 +895,9 @@ namespace util
     {
 
         return typeid (lhs) == typeid (rhs) &&
-                (IntervalType) lhs == (IntervalType) rhs &&
-                lhs.low_ == rhs.low_ &&
-                lhs.high_ == rhs.high_;
+            (IntervalType) lhs == (IntervalType) rhs &&
+            lhs.low_ == rhs.low_ &&
+            lhs.high_ == rhs.high_;
     }
 
     /**
@@ -871,7 +935,7 @@ namespace util
         char left = (sm & Var::round_open_brace) == Var::round_open_brace && leftOpen ? '(' : '[';
         char right = (sm & Var::round_open_brace) == Var::round_open_brace && rightOpen ? ')' : ']';
 
-        bool symbolic = (sm & Var::symbolic_full) == Var::symbolic_full;
+        bool symbolic = (sm & Var::symbolic_infinity) == Var::symbolic_infinity;
         os << left;
         if (symbolic && leftInf)
             os << "-∞";
