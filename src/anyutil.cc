@@ -234,17 +234,17 @@ namespace util
             return os;
         }
 
-        int smInt = sm;
+        long smLong = os.iword(Var::xalloc_index);
         if ((sm & Var::scientific_float) == Var::scientific_float)
         {
-            smInt &= ~Var::long_float;
-            smInt &= ~Var::short_float;
-            os.iword(Var::xalloc_index) |= smInt;
+            smLong &= ~Var::long_float;
+            smLong &= ~Var::short_float;
+            os.iword(Var::xalloc_index) |= smLong;
         }
         else if ((sm & Var::long_float) == Var::long_float)
         {
-            smInt &= ~Var::short_float;
-            os.iword(Var::xalloc_index) |= smInt;
+            smLong &= ~Var::short_float;
+            os.iword(Var::xalloc_index) |= smLong;
         }
         else
         {
