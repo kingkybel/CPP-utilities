@@ -80,15 +80,15 @@ namespace util
             WINDOWSPATH,
             /**
              * Singles quotes "\'".
-             */,
+             */
             SINGLEQUOTES,
             /**
              * Double quotes "\"".
-             */,
+             */
             DOUBLEQUOTES,
             /**
              * user defined brackets.
-             */,
+             */
             USER
         };
 
