@@ -42,7 +42,7 @@ namespace util
     class Var;
     template<typename T_> bool isA(const Var& v);
     template <typename T_> bool containsT(const Var& lhsInterval, const Var& rhs);
-    template<typename T_> bool equalT(const Var& lhs, const Var& rhs);
+    template <typename T_> bool equalT(const Var& lhs, const Var& rhs);
     template <typename T_> bool lessT(const Var& lhs, const Var& rhs);
     template <typename T_> bool lessEqualT(const Var& lhs, const Var& rhs);
     template <typename T_> bool greaterT(const Var& lhs, const Var& rhs);
@@ -108,7 +108,11 @@ namespace util
     template <typename T_>
     inline T_ minVal()
     {
+#if defined(__GXX_EXPERIMENTAL_CXX0X) || __cplusplus >= 201103L
         return std::numeric_limits<T_>::lowest();
+#else
+        return std::numeric_limits<T_>::min();
+#endif
     }
 
     /**
@@ -447,7 +451,7 @@ namespace util
             /* [low,+∞],  [low,+∞),  (low,+∞],  (low,+∞)      */
             /* [low,high], [low,high), (low,high], (low,high) */
             return (isLeftClosed() ? low_ <= v : low_ < v) &&
-                (isRightClosed() ? v <= high_ : v < high_);
+                    (isRightClosed() ? v <= high_ : v < high_);
 
         }
 
@@ -513,7 +517,7 @@ namespace util
     {
     public:
 
-        enum StreamMode : int
+        enum StreamMode : long
         {
             reset = 0x0000, ///< reset the stream configuration to empty
             quoted_char = 0x0001, ///< enclose characters in single quotes
@@ -603,8 +607,8 @@ namespace util
         {
 
             return lhs.type() == rhs.type() &&
-                isA<T_>(lhs) &&
-                lhs.get<T_>() == rhs.get<T_>();
+                    isA<T_>(lhs) &&
+                    lhs.get<T_>() == rhs.get<T_>();
         }
 
         /**
@@ -876,8 +880,8 @@ namespace util
             auto lTp = lhs.traits_;
             auto rTp = rhs.traits_;
             return lTp < rTp ||
-                (lTp == rTp && lhs.low_ < rhs.low_) ||
-                (lTp == rTp && lhs.low_ == rhs.low_ && lhs.high_ < rhs.high_);
+                    (lTp == rTp && lhs.low_ < rhs.low_) ||
+                    (lTp == rTp && lhs.low_ == rhs.low_ && lhs.high_ < rhs.high_);
         }
         return std::string(typeid (lhs).name()) < std::string(typeid (rhs).name());
     }
@@ -895,9 +899,9 @@ namespace util
     {
 
         return typeid (lhs) == typeid (rhs) &&
-            (IntervalType) lhs == (IntervalType) rhs &&
-            lhs.low_ == rhs.low_ &&
-            lhs.high_ == rhs.high_;
+                (IntervalType) lhs == (IntervalType) rhs &&
+                lhs.low_ == rhs.low_ &&
+                lhs.high_ == rhs.high_;
     }
 
     /**
