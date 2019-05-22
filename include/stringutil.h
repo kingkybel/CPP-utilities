@@ -38,6 +38,7 @@
 #include <unordered_set>
 #include <unordered_map>
 #include <functional>
+#include "iosutil.h"
 
 #if defined DO_TRACE_
 
@@ -86,6 +87,7 @@ namespace util
     inline std::string asString(const T_& v)
     {
         std::stringstream ss;
+        streamModeHandler smh(ss);
         ss << v;
         return ss.str();
     }
