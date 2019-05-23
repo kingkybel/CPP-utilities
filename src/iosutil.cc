@@ -24,5 +24,47 @@
 #include "iosutil.h"
 namespace util
 {
-    std::map<std::ostream*, size_t> streamModeHandler::ref_count;
+    std::map<std::ostream*, std::pair<size_t, std::ios::fmtflags> > streamModeHandler::ref_count;
+    long streamModeHandler::mode = util::none_set;
+    long streamModeHandler::aggregate = 0;
+    long streamModeHandler::complement = util::all_set;
+    long streamModeHandler::alternative = 0;
+
+    streamModeHandler::streamModeHandler(std::ostream& ostr)
+    : os(ostr)
+    {
+        if (ref_count[&os].first == 0)
+        {
+            // save the current state of the given stream
+            ref_count[&os].second = os.flags();
+        }
+        ++(ref_count[&os].first);
+
+        // first get the aggregate as a basis
+        long aggMode = aggregate;
+
+        // remove all from aggregated mode that are flagged as removed
+        aggMode &= complement;
+
+        // add all explicitly set stream-mode flags
+        aggMode |= mode;
+
+        // then get alternatives
+        stream_mode_alternatives altMode = (stream_mode_alternatives) alternative;
+        TRACE1((long) altMode);
+
+        if (altMode == scientific_float)
+        {
+            os << floatFmt();
+        }
+        else if (altMode == long_float)
+        {
+            os << floatFmt(10, 10);
+        }
+        else if (altMode == short_float)
+        {
+            os << floatFmt(10, 10);
+        }
+
+    }
 };
