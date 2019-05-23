@@ -29,8 +29,43 @@
 #include <ios>
 #include <map>
 
+#ifndef DO_TRACE_
+#define DO_TRACE_
+#endif
+#include "traceutil.h"
+
 namespace util
 {
+
+    struct streamModeHandler
+    {
+        static std::map<std::ostream*, std::pair<size_t, std::ios::fmtflags> > ref_count;
+        static long mode;
+        static long aggregate;
+        static long alternative;
+        static long complement;
+        std::ostream& os;
+
+        explicit streamModeHandler(std::ostream& ostr);
+        streamModeHandler(const streamModeHandler&) = delete;
+        streamModeHandler& operator=(const streamModeHandler&) = delete;
+        streamModeHandler(const streamModeHandler&&) = delete;
+        streamModeHandler& operator=(const streamModeHandler&&) = delete;
+
+        ~streamModeHandler()
+        {
+            if (os != 0)
+            {
+                ref_count[&os].first--;
+                if (ref_count[&os].first == 0)
+                {
+                    // restore the state of the stream from the backup location
+                    os.flags(ref_count[&os].second);
+                }
+            }
+        }
+
+    };
 
     /**
      * Enumeration of stream modes that modify the display of certain values
@@ -72,11 +107,10 @@ namespace util
      */
     enum stream_mode_alternatives : long
     {
-        reset_float = 0x0000, ///< dreset the floating point display to system default
         short_float = 0x0001, ///< display floating point values in a short format
         long_float = 0x0002, ///< display floating point values in a longer format
-        scientific_float = 0x0003 ///< display floating point values in scientific format
-
+        scientific_float = 0x0004, ///< display floating point values in scientific format
+        mask_float = (short_float | long_float | scientific_float)
     };
     const static int stream_mode_alternatives_xalloc_index = std::ios_base::xalloc();
 
@@ -95,27 +129,33 @@ namespace util
 
     inline std::ostream& operator<<(std::ostream& os, stream_mode sm)
     {
-        os.iword(util::stream_mode_xalloc_index) |= sm;
+        TRACE1(util::streamModeHandler::mode);
+        util::streamModeHandler::mode |= sm;
+        TRACE1(util::streamModeHandler::mode);
         return os;
     }
 
     inline std::ostream& operator<<(std::ostream& os, stream_mode_complement sm)
     {
-        os.iword(util::stream_mode_complement_xalloc_index) &= sm;
+        TRACE1(util::streamModeHandler::complement);
+        util::streamModeHandler::complement &= sm;
+        TRACE1(util::streamModeHandler::complement);
         return os;
     }
 
     inline std::ostream& operator<<(std::ostream& os, stream_mode_alternatives sm)
     {
-        long x = (long) sm;
-        std::cout << "stream_mode_alternatives=" << x << std::endl;
-        os.iword(util::stream_mode_alternatives_xalloc_index) = sm;
+        TRACE1(util::streamModeHandler::alternative);
+        util::streamModeHandler::alternative = (long) sm;
+        TRACE1(util::streamModeHandler::alternative);
         return os;
     }
 
     inline std::ostream& operator<<(std::ostream& os, stream_mode_aggregate sm)
     {
-        os.iword(util::stream_mode_aggregate_xalloc_index) = sm;
+        TRACE1(util::streamModeHandler::aggregate);
+        util::streamModeHandler::aggregate = sm;
+        TRACE1(util::streamModeHandler::aggregate);
         return os;
     }
 
@@ -154,10 +194,15 @@ namespace util
 
     inline std::ostream& operator<<(std::ostream& os, const floatFmt& fmt)
     {
+        TRACE1(fmt.isScientific_)
         if (fmt.isScientific_)
+        {
             os << std::ios::scientific;
+        }
         else
         {
+            TRACE1(fmt.fill_);
+            TRACE1(fmt.width_);
             os.fill(fmt.fill_);
             os.width(fmt.width_);
             if (fmt.isFixed_)
@@ -165,74 +210,6 @@ namespace util
         }
         return os;
     }
-
-    struct streamModeHandler
-    {
-        static std::map<std::ostream*, size_t> ref_count;
-        std::ostream& os;
-
-        streamModeHandler(std::ostream& ostr)
-        : os(ostr)
-        {
-            std::ios::fmtflags ff(std::ios::fmtflags(0));
-            if (ref_count[&os] == 0)
-            {
-                // initialize
-
-                // reset the current flags on the stream and save the previous state in
-                // the backup location
-                os.iword(util::backup_fmtflags_xalloc_index) = os.flags(ff);
-
-            }
-            std::cout << "streamModeHandler- ff=" << ff << " stored=" << os.iword(util::backup_fmtflags_xalloc_index) << std::endl;
-            ++(ref_count[&os]);
-
-            // first get the aggregate as a basis
-            long aggMode = os.iword(stream_mode_aggregate_xalloc_index);
-
-            // remove all from aggregated mode that are flagged as removed
-            aggMode &= os.iword(stream_mode_complement_xalloc_index);
-
-            // add all set stream-mode flags
-            aggMode |= os.iword(stream_mode_xalloc_index);
-
-
-            // then get alternatives
-            stream_mode_alternatives altMode = (stream_mode_alternatives) os.iword(stream_mode_alternatives_xalloc_index);
-            if (altMode == scientific_float)
-            {
-                os << floatFmt();
-            }
-            if (altMode == long_float)
-            {
-                os << floatFmt(10, 10);
-            }
-            if (altMode == short_float)
-            {
-                os << floatFmt(10, 10);
-            }
-
-        }
-        streamModeHandler(const streamModeHandler&) = delete;
-        streamModeHandler& operator=(const streamModeHandler&) = delete;
-        streamModeHandler(const streamModeHandler&&) = delete;
-        streamModeHandler& operator=(const streamModeHandler&&) = delete;
-
-        ~streamModeHandler()
-        {
-            if (os != 0)
-            {
-                ref_count[&os]--;
-                std::cout << "~streamModeHandler() ref=" << ref_count[&os] << std::endl;
-                if (ref_count[&os] == 0)
-                {
-                    // restore the state of the stream from the backup location
-                    os.flags((std::ios::fmtflags)os.iword(util::backup_fmtflags_xalloc_index));
-                }
-            }
-        }
-
-    };
 
 };
 
