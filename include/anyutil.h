@@ -545,6 +545,18 @@ namespace util
         Var(const VAR_FLOAT& v); ///< Construct floating point variant.
         Var(const VAR_DATE& v); ///< Construct date variant.
 
+        // disambiguation constructors
+
+        Var(const unsigned char& v);
+        Var(const short& v);
+        Var(const unsigned short& v);
+        Var(const int& v);
+        Var(const unsigned int& v);
+        Var(const long& v);
+        Var(const unsigned long& v);
+        Var(const float& v);
+        Var(const double& v);
+
         /**
          *  Construct an T_-type interval variant.
          */
