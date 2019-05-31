@@ -44,26 +44,20 @@ namespace util
         static long aggregate;
         static long alternative;
         static long complement;
-        std::ostream& os;
 
-        explicit streamModeHandler(std::ostream& ostr);
+        streamModeHandler() = default;
         streamModeHandler(const streamModeHandler&) = delete;
         streamModeHandler& operator=(const streamModeHandler&) = delete;
         streamModeHandler(const streamModeHandler&&) = delete;
         streamModeHandler& operator=(const streamModeHandler&&) = delete;
+        ~streamModeHandler() = default;
 
-        ~streamModeHandler()
+        friend streamModeHandler& operator<<(streamModeHandler& lhs, const streamModeHandler& rhs)
         {
-            if (os != 0)
-            {
-                ref_count[&os].first--;
-                if (ref_count[&os].first == 0)
-                {
-                    // restore the state of the stream from the backup location
-                    os.flags(ref_count[&os].second);
-                }
-            }
+            return lhs;
         }
+        std::ostream& apply(std::ostream& os);
+        std::ostream& reset(std::ostream& os);
 
     };
 
@@ -176,7 +170,7 @@ namespace util
         floatFmt(size_t width,
                  size_t precision = 5,
                  char fill = '0',
-                 bool isFixed = false)
+                 bool isFixed = true)
         : width_(width)
         , precision_(precision)
         , fill_(fill)
