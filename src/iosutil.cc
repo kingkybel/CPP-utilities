@@ -1,5 +1,5 @@
 /*
- * File Name:   iosutil.h
+ * File Name:   iosutil.cc
  * Description: IO stream configuration
  *
  * Copyright (C) 2019 Dieter J Kybelksties
@@ -30,8 +30,7 @@ namespace util
     long streamModeHandler::complement = util::all_set;
     long streamModeHandler::alternative = 0;
 
-    streamModeHandler::streamModeHandler(std::ostream& ostr)
-    : os(ostr)
+    std::ostream& streamModeHandler::apply(std::ostream& os)
     {
         if (ref_count[&os].first == 0)
         {
@@ -65,6 +64,19 @@ namespace util
         {
             os << floatFmt(10, 10);
         }
+        return os;
+    }
 
+    std::ostream& streamModeHandler::reset(std::ostream& os)
+    {
+        if (os != 0)
+        {
+            ref_count[&os].first--;
+            if (ref_count[&os].first == 0)
+            {
+                // restore the state of the stream from the backup location
+                os.flags(ref_count[&os].second);
+            }
+        }
     }
 };
