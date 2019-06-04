@@ -22,34 +22,81 @@
  * @author: Dieter J Kybelksties
  */
 #include "iosutil.h"
+#include <utility>
+
+#if !defined(__GXX_EXPERIMENTAL_CXX0X) || __cplusplus >= 201103L
+namespace std
+{
+
+    template<class T, class U = T>
+    T exchange(T& obj, U&& new_value)
+    {
+        T old_value = std::move(obj);
+        obj = std::forward<U>(new_value);
+        return old_value;
+    }
+}
+#endif
+
 namespace util
 {
-    std::map<std::ostream*, std::pair<size_t, std::ios::fmtflags> > streamModeHandler::ref_count;
-    long streamModeHandler::mode = util::none_set;
-    long streamModeHandler::aggregate = 0;
-    long streamModeHandler::complement = util::all_set;
-    long streamModeHandler::alternative = 0;
+    std::map<std::ostream*, std::pair<size_t, std::ios::fmtflags> > streamModeHandler::restore_map;
+    const int streamModeHandler::mode_xindex = std::ios_base::xalloc();
+    const int streamModeHandler::aggregate_xindex = std::ios_base::xalloc();
+    const int streamModeHandler::alternative_xindex = std::ios_base::xalloc();
+    const int streamModeHandler::complement_xindex = std::ios_base::xalloc();
+    const int streamModeHandler::stream_mode_xindex = std::ios_base::xalloc();
+
+    streamModeHandler::streamModeHandler(long mode /*= none_set*/,
+                                         long aggregate /* = 0*/,
+                                         long alternative /* = all_set*/,
+                                         long complement /* = 0*/
+                                         )
+    : mode_(mode)
+    , aggregate_(aggregate)
+    , alternative_(alternative)
+    , complement_(complement)
+    {
+
+    }
+
+    streamModeHandler::streamModeHandler(streamModeHandler&& rhs)
+    : mode_(std::exchange(rhs.mode_, util::none_set))
+    , aggregate_(std::exchange(rhs.aggregate_, 0))
+    , alternative_(std::exchange(rhs.alternative_, util::all_set))
+    , complement_(std::exchange(rhs.complement_, 0))
+    {
+
+    }
+
+    streamModeHandler& streamModeHandler::operator=(streamModeHandler&& rhs)
+    {
+        mode_ = std::exchange(rhs.mode_, util::none_set);
+        aggregate_ = std::exchange(rhs.aggregate_, 0);
+        alternative_ = std::exchange(rhs.alternative_, util::all_set);
+        complement_ = std::exchange(rhs.complement_, 0);
+    }
 
     std::ostream& streamModeHandler::apply(std::ostream& os)
     {
-        if (ref_count[&os].first == 0)
+        if (restore_map[&os].first == 0)
         {
             // save the current state of the given stream
-            ref_count[&os].second = os.flags();
+            restore_map[&os].second = os.flags();
         }
-        ++(ref_count[&os].first);
+        ++(restore_map[&os].first);
 
         // first get the aggregate as a basis
-        long aggMode = aggregate;
+        long aggMode = aggregate_;
 
         // remove all from aggregated mode that are flagged as removed
-        aggMode &= complement;
+        aggMode &= complement_;
 
         // add all explicitly set stream-mode flags
-        aggMode |= mode;
+        aggMode |= mode_;
 
         // then get alternatives
-        stream_mode_alternatives altMode = (stream_mode_alternatives) alternative;
+        stream_mode_alternatives altMode = (stream_mode_alternatives) alternative_;
         TRACE1((long) altMode);
 
         if (altMode == scientific_float)
@@ -71,11 +118,11 @@ namespace util
     {
         if (os != 0)
         {
-            ref_count[&os].first--;
-            if (ref_count[&os].first == 0)
+            restore_map[&os].first--;
+            if (restore_map[&os].first == 0)
             {
                 // restore the state of the stream from the backup location
-                os.flags(ref_count[&os].second);
+                os.flags(restore_map[&os].second);
             }
         }
     }
