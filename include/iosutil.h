@@ -37,30 +37,6 @@
 namespace util
 {
 
-    struct streamModeHandler
-    {
-        static std::map<std::ostream*, std::pair<size_t, std::ios::fmtflags> > ref_count;
-        static long mode;
-        static long aggregate;
-        static long alternative;
-        static long complement;
-
-        streamModeHandler() = default;
-        streamModeHandler(const streamModeHandler&) = delete;
-        streamModeHandler& operator=(const streamModeHandler&) = delete;
-        streamModeHandler(const streamModeHandler&&) = delete;
-        streamModeHandler& operator=(const streamModeHandler&&) = delete;
-        ~streamModeHandler() = default;
-
-        friend streamModeHandler& operator<<(streamModeHandler& lhs, const streamModeHandler& rhs)
-        {
-            return lhs;
-        }
-        std::ostream& apply(std::ostream& os);
-        std::ostream& reset(std::ostream& os);
-
-    };
-
     /**
      * Enumeration of stream modes that modify the display of certain values
      * in the util-library.
@@ -121,35 +97,61 @@ namespace util
     };
     const static int stream_mode_aggregate_xalloc_index = std::ios_base::xalloc();
 
+    struct streamModeHandler
+    {
+        static std::map<std::ostream*, std::pair<size_t, std::ios::fmtflags> > restore_map;
+        const static int mode_xindex;
+        const static int aggregate_xindex;
+        const static int alternative_xindex;
+        const static int complement_xindex;
+        const static int stream_mode_xindex;
+
+        long mode_;
+        long aggregate_;
+        long alternative_;
+        long complement_;
+
+        streamModeHandler(long mode = util::none_set,
+                          long aggregate = 0,
+                          long alternative = util::all_set,
+                          long complement = 0
+                          );
+        streamModeHandler(const streamModeHandler&) = default;
+        streamModeHandler& operator=(const streamModeHandler& rhs) = default;
+        streamModeHandler(streamModeHandler&& rhs);
+        streamModeHandler& operator=(streamModeHandler&& rhs);
+        ~streamModeHandler() = default;
+
+        friend streamModeHandler& operator<<(streamModeHandler& lhs, const streamModeHandler& rhs)
+        {
+            return lhs;
+        }
+        std::ostream& apply(std::ostream& os);
+        std::ostream& reset(std::ostream& os);
+
+    };
+
     inline std::ostream& operator<<(std::ostream& os, stream_mode sm)
     {
-        TRACE1(util::streamModeHandler::mode);
-        util::streamModeHandler::mode |= sm;
-        TRACE1(util::streamModeHandler::mode);
+        //        util::streamModeHandler::mode_ |= sm;
         return os;
     }
 
     inline std::ostream& operator<<(std::ostream& os, stream_mode_complement sm)
     {
-        TRACE1(util::streamModeHandler::complement);
-        util::streamModeHandler::complement &= sm;
-        TRACE1(util::streamModeHandler::complement);
+        //      util::streamModeHandler::complement_ &= sm;
         return os;
     }
 
     inline std::ostream& operator<<(std::ostream& os, stream_mode_alternatives sm)
     {
-        TRACE1(util::streamModeHandler::alternative);
-        util::streamModeHandler::alternative = (long) sm;
-        TRACE1(util::streamModeHandler::alternative);
+        //      util::streamModeHandler::alternative_ = (long) sm;
         return os;
     }
 
     inline std::ostream& operator<<(std::ostream& os, stream_mode_aggregate sm)
     {
-        TRACE1(util::streamModeHandler::aggregate);
-        util::streamModeHandler::aggregate = sm;
-        TRACE1(util::streamModeHandler::aggregate);
+        //    util::streamModeHandler::aggregate_ = sm;
         return os;
     }
 
