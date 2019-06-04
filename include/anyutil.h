@@ -440,23 +440,28 @@ namespace util
         }
 
         /**
-         * Check whether the interval contains value v.
+         * Check whether the interval contains value v. Values exactly on one
+         * of the borders of the interval are contained in the interval if and
+         * only if the border in question is closed.
+         *
          * @param v value to check
          * @return true if v is contained in the interval, false otherwise
          */
         bool contains(const T_ & v) const
         {
-            /* [-∞,-∞],  (-∞,-∞)                              */
-            /* [-∞,high], [-∞,high), (-∞,high], (-∞,high)     */
-            /* [low,+∞],  [low,+∞),  (low,+∞],  (low,+∞)      */
-            /* [low,high], [low,high), (low,high], (low,high) */
+            // [-∞,-∞],  (-∞,-∞)
+            // [-∞,high], [-∞,high), (-∞,high], (-∞,high)
+            // [low,+∞],  [low,+∞),  (low,+∞],  (low,+∞)
+            // [low,high], [low,high), (low,high], (low,high)
             return (isLeftClosed() ? low_ <= v : low_ < v) &&
                     (isRightClosed() ? v <= high_ : v < high_);
 
         }
 
         /**
-         * Check whether the interval is wholly included in this interval.
+         * Check whether the interval is wholly included in this interval. This
+         * is exactly then the case when both borders of the right-hand-side are
+         * contained in this interval.
          * @param rhs the interval to check
          * @return true if the given interval is fully covered in this interval,
          *         false otherwise
