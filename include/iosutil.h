@@ -97,7 +97,7 @@ namespace util
     };
     const static int stream_mode_aggregate_xalloc_index = std::ios_base::xalloc();
 
-    struct streamModeHandler
+    struct streamConfig
     {
         static std::map<std::ostream*, std::pair<size_t, std::ios::fmtflags> > restore_map;
         const static int mode_xindex;
@@ -111,21 +111,65 @@ namespace util
         long alternative_;
         long complement_;
 
-        streamModeHandler(long mode = util::none_set,
-                          long aggregate = 0,
-                          long alternative = util::all_set,
-                          long complement = 0
-                          );
-        streamModeHandler(const streamModeHandler&) = default;
-        streamModeHandler& operator=(const streamModeHandler& rhs) = default;
-        streamModeHandler(streamModeHandler&& rhs);
-        streamModeHandler& operator=(streamModeHandler&& rhs);
-        ~streamModeHandler() = default;
+        std::ostream* pOs_;
 
-        friend streamModeHandler& operator<<(streamModeHandler& lhs, const streamModeHandler& rhs)
+        streamConfig(std::ostream* pOs = 0,
+                     long mode = util::none_set,
+                     long aggregate = 0,
+                     long alternative = util::all_set,
+                     long complement = 0
+                     );
+        streamConfig(const streamConfig&) = default;
+        streamConfig& operator=(const streamConfig& rhs) = default;
+        streamConfig(streamConfig&& rhs);
+        streamConfig& operator=(streamConfig&& rhs);
+        ~streamConfig();
+
+        friend streamConfig& operator<<(streamConfig& lhs, const streamConfig& rhs)
         {
             return lhs;
         }
+
+        void set(stream_mode mode)
+        {
+            mode_ |= mode;
+        }
+
+        void unset(stream_mode mode)
+        {
+            mode_ &= ~((long) mode);
+        }
+
+        void set(stream_mode_aggregate mode)
+        {
+            aggregate_ = mode;
+        }
+
+        void unset(stream_mode_aggregate mode)
+        {
+            aggregate_ &= ~((long) mode);
+        }
+
+        void set(stream_mode_alternatives mode)
+        {
+            alternative_ = mode;
+        }
+
+        void unset(stream_mode_alternatives mode)
+        {
+            alternative_ &= ~((long) mode);
+        }
+
+        void set(stream_mode_complement mode)
+        {
+            complement_ = mode;
+        }
+
+        void unset(stream_mode_complement mode)
+        {
+            complement_ &= ~((long) mode);
+        }
+
         std::ostream& apply(std::ostream& os);
         std::ostream& reset(std::ostream& os);
 
@@ -139,7 +183,7 @@ namespace util
 
     inline std::ostream& operator<<(std::ostream& os, stream_mode_complement sm)
     {
-        //      util::streamModeHandler::complement_ &= sm;
+        //      util::streamConfig::complement_ &= sm;
         return os;
     }
 
@@ -165,7 +209,11 @@ namespace util
     {
 
         floatFmt()
-        : isScientific_(true)
+        : width_(0)
+        , precision_(0)
+        , fill_(0)
+        , isFixed_(false)
+        , isScientific_(true)
         {
         }
 
