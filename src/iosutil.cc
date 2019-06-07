@@ -40,28 +40,38 @@ namespace std
 
 namespace util
 {
-    std::map<std::ostream*, std::pair<size_t, std::ios::fmtflags> > streamModeHandler::restore_map;
-    const int streamModeHandler::mode_xindex = std::ios_base::xalloc();
-    const int streamModeHandler::aggregate_xindex = std::ios_base::xalloc();
-    const int streamModeHandler::alternative_xindex = std::ios_base::xalloc();
-    const int streamModeHandler::complement_xindex = std::ios_base::xalloc();
-    const int streamModeHandler::stream_mode_xindex = std::ios_base::xalloc();
+    std::map<std::ostream*, std::pair<size_t, std::ios::fmtflags> > streamConfig::restore_map;
+    const int streamConfig::mode_xindex = std::ios_base::xalloc();
+    const int streamConfig::aggregate_xindex = std::ios_base::xalloc();
+    const int streamConfig::alternative_xindex = std::ios_base::xalloc();
+    const int streamConfig::complement_xindex = std::ios_base::xalloc();
+    const int streamConfig::stream_mode_xindex = std::ios_base::xalloc();
 
-    streamModeHandler::streamModeHandler(long mode /*= none_set*/,
-                                         long aggregate /* = 0*/,
-                                         long alternative /* = all_set*/,
-                                         long complement /* = 0*/
-                                         )
-    : mode_(mode)
+    streamConfig::streamConfig(std::ostream* pOs /*= 0*/,
+                               long mode /*= none_set*/,
+                               long aggregate /* = 0*/,
+                               long alternative /* = all_set*/,
+                               long complement /* = 0*/
+                               )
+    : pOs_(pOs)
+    , mode_(mode)
     , aggregate_(aggregate)
     , alternative_(alternative)
     , complement_(complement)
     {
-
+        if (pOs_ != 0)
+            apply(*pOs);
     }
 
-    streamModeHandler::streamModeHandler(streamModeHandler&& rhs)
-    : mode_(std::exchange(rhs.mode_, util::none_set))
+    streamConfig::~streamConfig()
+    {
+        if (pOs_ != 0)
+            reset(pOs_);
+    }
+
+    streamConfig::streamConfig(streamConfig&& rhs)
+    : pOs_(std::exchange(rhs.pOs_, 0))
+    , mode_(std::exchange(rhs.mode_, util::none_set))
     , aggregate_(std::exchange(rhs.aggregate_, 0))
     , alternative_(std::exchange(rhs.alternative_, util::all_set))
     , complement_(std::exchange(rhs.complement_, 0))
@@ -69,15 +79,16 @@ namespace util
 
     }
 
-    streamModeHandler& streamModeHandler::operator=(streamModeHandler&& rhs)
+    streamConfig& streamConfig::operator=(streamConfig&& rhs)
     {
+        pOs_ = std::exchange(rhs.pOs_, 0);
         mode_ = std::exchange(rhs.mode_, util::none_set);
         aggregate_ = std::exchange(rhs.aggregate_, 0);
         alternative_ = std::exchange(rhs.alternative_, util::all_set);
         complement_ = std::exchange(rhs.complement_, 0);
     }
 
-    std::ostream& streamModeHandler::apply(std::ostream& os)
+    std::ostream& streamConfig::apply(std::ostream& os)
     {
         if (restore_map[&os].first == 0)
         {
@@ -114,7 +125,7 @@ namespace util
         return os;
     }
 
-    std::ostream& streamModeHandler::reset(std::ostream& os)
+    std::ostream& streamConfig::reset(std::ostream& os)
     {
         if (os != 0)
         {
