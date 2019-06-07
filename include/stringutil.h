@@ -73,8 +73,29 @@ namespace util
     inline std::string asString(const T_& v)
     {
         std::stringstream ss;
-        streamModeHandler smh(ss);
         ss << v;
+        return ss.str();
+    }
+
+    /**
+     * Convert objects to a hex string.
+     */
+    template <typename T_>
+    inline std::string hexString(const T_& v)
+    {
+        std::stringstream ss;
+        ss << std::hex << "0x" << (long long) v;
+        return ss.str();
+    }
+
+    /**
+     * Convert objects to a string, provided a ostream - &lt;&lt; operator is defined.
+     */
+    template <typename T_>
+    inline std::string asString(const T_& v, streamConfig smh)
+    {
+        std::stringstream ss;
+        ss << smh.apply(ss) << v << smh.reset(ss);
         return ss.str();
     }
 
