@@ -77,7 +77,7 @@ namespace util
                 for (INTTYPE i = 0; i < numOfPoints_; i++)
                     tapeOfDoubles_[i] = FLOATTYPE(0);
             }
-            sqrtOfPoints_ = sqrt((double) numOfPoints_);
+            sqrtOfPoints_ = sqrt((FLOATTYPE) numOfPoints_);
             //            // calculate binary log
             //            logOfPoints_ = 0;
             //            numOfPoints--;
@@ -259,7 +259,7 @@ namespace util
         INTTYPE logOfPoints_;
         FLOATTYPE sqrtOfPoints_;
         INTVECTOR bitReverseVector_; // bit reverse vector
-        COMPLEXVECTOR transformedComplexVector_; // in-place fft array
+        COMPLEXVECTOR transformedComplexVector_; // in-place FFT array
         COMPLEXMATRIX complexExpontials_; // exponentials
         FLOATVECTOR tapeOfDoubles_; // recording tape
     };
