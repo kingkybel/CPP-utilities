@@ -40,7 +40,7 @@
 namespace util
 {
     class Var;
-    template<typename T_> bool isA(const Var& v);
+    template <typename T_> bool isA(const Var& v);
     template <typename T_> bool containsT(const Var& lhsInterval, const Var& rhs);
     template <typename T_> bool equalT(const Var& lhs, const Var& rhs);
     template <typename T_> bool lessT(const Var& lhs, const Var& rhs);
@@ -563,7 +563,8 @@ namespace util
         Var(const double& v);
 
         /**
-         *  Construct an T_-type interval variant.
+         * Construct an T_-type interval variant.
+         * @param itvl an interval of type T_
          */
         template<typename T_>
         Var(const Interval<T_>& itvl)
@@ -571,17 +572,54 @@ namespace util
         {
         }
 
-        Var(const VAR_STRING& v); ///< Construct string variant.
-        Var(const Var& rhs); ///< Copy-construct a variant.
-        Var& operator=(const Var& rhs); ///< Assign a variant.
-
-        const std::type_info& type() const; ///< Get the typeid of the contained value.
-        bool empty() const; ///< Check whether the variant is empty.
-        Var& swap(Var& rhs); ///< Swap this variant with the rhs- variant.
-        boost::any value() const; ///< get the contained values as boost::any.
+        /**
+         * Construct string variant.
+         * @param v string-value
+         */
+        Var(const VAR_STRING& v);
 
         /**
-         *  Check whether the value has the native type.
+         * Copy-construct a variant.
+         * @param rhs the right-hand-side variant
+         */
+        Var(const Var& rhs);
+
+        /**
+         * Assignment operator for variants.
+         * @param rhs the right-hand-side variant
+         * @return reference to *this
+         */
+        Var& operator=(const Var& rhs);
+
+        /**
+         * Get the typeid of the contained value.
+         * @return  the type-ID of the contained value
+         */
+        const std::type_info& type() const;
+
+        /**
+         * Check whether the variant is empty.
+         * @return true if so, false otherwise
+         */
+        bool empty() const;
+
+        /**
+         * Swap this variant with the rhs- variant.
+         * @param rhs the right-hand-side variant
+         * @return a reference to the original value
+         */
+        Var& swap(Var& rhs);
+
+        /**
+         * Get the contained values as boost::any.
+         * @return boost::any wrapped value of this variant
+         */
+        boost::any value() const;
+
+        /**
+         * Check whether the value has the native type.
+         * @param v variant value to check against type T_
+         * @return true is v has type T_, false otherwise
          */
         template<typename T_>
         friend bool isA(const Var& v)
@@ -591,7 +629,8 @@ namespace util
         }
 
         /**
-         *  Get the value as the native type.
+         * Get the value as the native type.
+         * @return the value of the variant
          */
         template <typename T_>
         T_ get() const
@@ -605,19 +644,23 @@ namespace util
         }
 
         /**
-         * Check whether two vars have the same native type.
+         * Check whether two variants have the same native type.
+         * @param lhs left-hand-side of the comparison
+         * @param rhs right-hand-side of the comparison
+         * @return true if lhs and rhs have the same type, false otherwise
          */
-        friend bool sameType(const Var& v1, const Var& v2)
+        friend bool sameType(const Var& lhs, const Var& rhs)
         {
 
-            return v1.type() == v2.type();
+            return lhs.type() == rhs.type();
         }
 
         /**
          * Template equalT is needed to ensure that Var's can be put in
          * associative containers.
-         * The other comparison functions only will be used to transcend their
-         * native type's operators.
+         * @param lhs left-hand-side of the comparison
+         * @param rhs right-hand-side of the comparison
+         * @return if lhs is equal to rhs, false otherwise
          */
         template<typename T_>
         friend bool equalT(const Var& lhs, const Var& rhs)
@@ -631,8 +674,6 @@ namespace util
         /**
          * Template lessT is needed to ensure that Var's can be put in
          * associative containers.
-         * The other comparison functions only will be used to transcend their
-         * native type's operators.
          * Helper template for definition of global operator &lt;.
          * @param lhs left-hand-side of the comparison
          * @param rhs right-hand-side of the comparison
@@ -979,7 +1020,8 @@ namespace util
 
     /**
      * Scan a string and convert to the template-type.
-     *
+     * @param strVal string representation of a value
+     * @return the value as parsed from the string, undefined if not parseable
      */
     template <typename T_>
     inline T_ scanAs(const VAR_STRING& strVal)
@@ -993,7 +1035,10 @@ namespace util
     }
 
     /**
-     * scan a string and convert to the template-type specialised for bool.
+     * Scan a string and convert to the template-type specialised for bool.
+     * @param strVal string representation of a value
+     * @return the value as parsed from the string
+     * @throws boolstr_error if string cannot be parsed as boolean
      */
     template <>
     inline VAR_BOOL scanAs<VAR_BOOL>(const VAR_STRING& strVal)
@@ -1001,44 +1046,48 @@ namespace util
         VAR_BOOL reval = false;
         if (!scanBoolString(strVal, reval))
         {
-
             throw boolstr_error(strVal);
         }
         return reval;
     }
 
     /**
-     * scan a string and convert to the template-type specialised for string.
+     * Scan a string and convert to the template-type specialised for string.
+     * @param strVal string representation of a value
+     * @return the same value
      */
     template <>
     inline VAR_STRING scanAs<VAR_STRING>(const VAR_STRING& strVal)
     {
-
         return strVal;
     }
 
     /**
      * Scan a string and convert to the template-type specialised for date.
+     * @param strVal string representation of a date
+     * @return the date, None scannable dates will be defaulted
      */
     template <>
     inline VAR_DATE scanAs<VAR_DATE>(const VAR_STRING& strVal)
     {
-
         return datescan::scanDate((std::string)strVal);
     }
 
     /**
      * Create a Var from any type using the most appropriate constructor.
+     * @param v a native value
+     * @return the value wrapped in a variant
      */
     template <typename T_>
     Var asVar(const T_ v)
     {
-
         return Var(v);
     }
 
     /**
      * Create a Var from a string using the template type constructor.
+     * @param strVal string representation of a value
+     * @return a variant of type T_
      */
     template<typename T_>
     inline Var scanAsVar(const VAR_STRING& strVal)
@@ -1049,6 +1098,9 @@ namespace util
 
     /**
      * Convert a Var to its native (underlying) type if possible.
+     * @param v the variant to convert
+     * @return the native value as type T_
+     * @throws cast_error if  conversion to type T- is not possible
      */
     template<typename T_>
     T_ toNative(const Var& v)
