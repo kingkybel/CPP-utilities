@@ -371,30 +371,28 @@ namespace util
     ostream& operator<<(ostream& os, const Var& v)
     {
         std::ios::fmtflags backup = os.flags();
-        util::streamConfig sm = (util::streamConfig)os.iword(
-                                                             util::streamConfig::stream_mode_xindex);
-        if (sm == 0)
-            sm = util::standard;
+        streamManip* pSM = (streamManip*) os.pword(streamManip::streamManip_xindex);
+        const streamManip& sm = (pSM == 0) ? streamManip(&os) : *pSM;
 
         if (isA<VAR_BOOL>(v))
         {
-            if ((sm & util::alpha_bool) == util::alpha_bool)
+            if (sm.isSet(util::alpha_bool))
                 os << boolalpha;
             os << v.get<VAR_BOOL>();
         }
         else if (isA<VAR_CHAR>(v))
         {
-            bool isHex = (sm & util::hex_char) == util::hex_char;
-            if ((sm & util::squoted_char) == util::squoted_char)
+            bool isHex = sm.isSet(util::hex_char);
+            if (sm.isSet(util::squoted_char))
                 if (isHex)
                     os << squoted(hexString(v.get<VAR_CHAR>()));
                 else
                     os << squoted(v.get<VAR_CHAR>());
-            else if ((sm & util::dquoted_char) == util::dquoted_char)
+            else if (sm.isSet(util::dquoted_char))
                 if (isHex)
-                    os << dquoted(hexString(v.get<VAR_CHAR>()));
+                    os << quoted(hexString(v.get<VAR_CHAR>()));
                 else
-                    os << dquoted(v.get<VAR_CHAR>());
+                    os << quoted(v.get<VAR_CHAR>());
             else
                 os << v.get<VAR_CHAR>();
         }
@@ -404,24 +402,28 @@ namespace util
             os << v.get<VAR_UINT> ();
         else if (isA<VAR_FLOAT>(v))
         {
-            if ((sm & util::short_float) == util::short_float)
+            if (sm.isSet(util::short_float))
                 os << fixed << setprecision(5);
-            else if ((sm & util::long_float) == util::long_float)
+            else if (sm.isSet(util::long_float))
                 os << fixed << setprecision(20);
-            else if ((sm & util::scientific_float) == util::scientific_float)
+            else if (sm.isSet(util::scientific_float))
                 os << scientific << setprecision(20);
             os << v.get<VAR_FLOAT>();
         }
         else if (isA<VAR_STRING> (v))
         {
-            if ((sm & util::quoted_string) == util::quoted_string)
+            if (sm.isSet(util::squoted_string))
+                os << squoted(v.get<VAR_STRING>());
+            if (sm.isSet(util::dquoted_string))
                 os << quoted(v.get<VAR_STRING>());
             else
                 os << v.get<VAR_STRING>();
         }
         else if (isA<VAR_DATE>(v))
         {
-            if ((sm & util::quoted_date) == util::quoted_date)
+            if (sm.isSet(util::squoted_date))
+                os << squoted(v.get<VAR_DATE>());
+            if (sm.isSet(util::dquoted_date))
                 os << quoted(v.get<VAR_DATE>());
             else
                 os << v.get<VAR_DATE>();
