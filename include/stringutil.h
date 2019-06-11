@@ -84,18 +84,21 @@ namespace util
     inline std::string hexString(const T_& v)
     {
         std::stringstream ss;
-        ss << std::hex << "0x" << (long long) v;
+        ss << std::hex << std::ios_base::basefield << (long long) v;
         return ss.str();
     }
 
     /**
      * Convert objects to a string, provided a ostream - &lt;&lt; operator is defined.
      */
+
     template <typename T_>
-    inline std::string asString(const T_& v, streamConfig smh)
+    inline std::string asString(const T_& v, const streamManip& sm)
     {
         std::stringstream ss;
-        ss << smh.apply(ss) << v << smh.reset(ss);
+        sm.apply(ss);
+        ss << v;
+        sm.reset(ss);
         return ss.str();
     }
 
