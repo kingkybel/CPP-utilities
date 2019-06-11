@@ -28,6 +28,7 @@
 #include <iomanip>
 #include <ios>
 #include <map>
+#include <typeinfo>
 
 #ifndef DO_TRACE_
 #define DO_TRACE_
@@ -43,14 +44,17 @@ namespace util
      */
     enum stream_mode : long
     {
-        none_set = 0x0000, ///< no flags set
-        squoted_char = 0x0001, ///< enclose characters in single quotes
-        hex_char = 0x0002, ///< display characters in hexadecimal representation
-        dquoted_string = 0x0004, ///< enclose strings in double quotes
-        dquoted_date = 0x0008, ///< enclose dates in double quotes
-        alpha_bool = 0x0010, ///< display booleans as true and false
-        round_open_brace = 0x0100, ///< indicate open intervals with round braces
-        symbolic_infinity = 0x0200, ///< indicate full interval with symbolic infinity "oo"
+        none_set = 0L, ///< no flags set
+        squoted_char = 1L << 0, ///< enclose characters in single quotes
+        dquoted_char = 1L << 1, ///< enclose characters in double quotes
+        hex_char = 1L << 2, ///< display characters in hexadecimal representation
+        squoted_string = 1L << 3, ///< enclose strings in double quotes
+        dquoted_string = 1L << 4, ///< enclose strings in double quotes
+        squoted_date = 1L << 5, ///< enclose dates in double quotes
+        dquoted_date = 1L << 6, ///< enclose dates in double quotes
+        alpha_bool = 1L << 7, ///< display booleans as true and false
+        round_open_brace = 1L << 8, ///< indicate open intervals with round braces
+        symbolic_infinity = 1L << 9, ///< indicate full interval with symbolic infinity "oo"
     };
     const static int stream_mode_xalloc_index = std::ios_base::xalloc();
 
@@ -61,10 +65,13 @@ namespace util
     enum stream_mode_complement : long
     {
         all_set = ~none_set, //< all flags set
-        no_quoted_char = ~squoted_char, ///< don't enclose characters in single quotes
+        no_squoted_char = ~squoted_char, ///< don't enclose characters in single quotes
+        no_dquoted_char = ~dquoted_char, ///< don't enclose characters in double quotes
         no_hex_char = ~hex_char, ///< don't display characters in hexadecimal representation
-        no_quoted_string = ~dquoted_string, ///< don't enclose strings in double quotes
-        no_quoted_date = ~dquoted_date, ///< don't enclose dates in double quotes
+        no_squoted_string = ~squoted_string, ///< don't enclose strings in single quotes
+        no_dquoted_string = ~dquoted_string, ///< don't enclose strings in double quotes
+        no_squoted_date = ~squoted_date, ///< don't enclose dates in single quotes
+        no_dquoted_date = ~dquoted_date, ///< don't enclose dates in double quotes
         no_alpha_bool = ~alpha_bool, ///< don't display booleans as true and false
         no_round_open_brace = ~round_open_brace, ///< don't indicate open intervals with round braces
         no_symbolic_infinity = ~symbolic_infinity, ///< don't indicate full interval with symbolic infinity "oo"
@@ -97,35 +104,49 @@ namespace util
     };
     const static int stream_mode_aggregate_xalloc_index = std::ios_base::xalloc();
 
-    struct streamConfig
+    class streamManip
     {
-        static std::map<std::ostream*, std::pair<size_t, std::ios::fmtflags> > restore_map;
-        const static int mode_xindex;
-        const static int aggregate_xindex;
-        const static int alternative_xindex;
-        const static int complement_xindex;
-        const static int stream_mode_xindex;
-
         long mode_;
         long aggregate_;
         long alternative_;
         long complement_;
 
         std::ostream* pOs_;
+    public:
+        static std::map<std::ostream*, std::pair<size_t, std::ios::fmtflags> > restore_map;
+        const static int mode_xindex;
+        const static int aggregate_xindex;
+        const static int alternative_xindex;
+        const static int complement_xindex;
+        const static int streamManip_xindex;
 
-        streamConfig(std::ostream* pOs = 0,
-                     long mode = util::none_set,
-                     long aggregate = 0,
-                     long alternative = util::all_set,
-                     long complement = 0
-                     );
-        streamConfig(const streamConfig&) = default;
-        streamConfig& operator=(const streamConfig& rhs) = default;
-        streamConfig(streamConfig&& rhs);
-        streamConfig& operator=(streamConfig&& rhs);
-        ~streamConfig();
+        streamManip(std::ostream* pOs = 0,
+                    long mode = util::none_set,
+                    long aggregate = 0,
+                    long alternative = util::all_set,
+                    long complement = 0
+                    );
+        streamManip(const streamManip&) = default;
+        streamManip& operator=(const streamManip& rhs) = default;
+        streamManip(streamManip&& rhs);
+        streamManip& operator=(streamManip&& rhs);
+        ~streamManip();
 
-        friend streamConfig& operator<<(streamConfig& lhs, const streamConfig& rhs)
+        template<typename T_>
+        bool isSet(T_ flag) const
+        {
+            if (typeid (T_) == typeid (stream_mode))
+                return (mode_ & flag) == flag;
+            if (typeid (T_) == typeid (stream_mode_aggregate))
+                return (aggregate_ & flag) == flag;
+            if (typeid (T_) == typeid (stream_mode_alternatives))
+                return (alternative_ & flag) == flag;
+            if (typeid (T_) == typeid (stream_mode_complement))
+                return (complement_ & flag) == flag;
+            return false;
+        }
+
+        friend streamManip& operator<<(streamManip& lhs, const streamManip& rhs)
         {
             return lhs;
         }
@@ -170,8 +191,8 @@ namespace util
             complement_ &= ~((long) mode);
         }
 
-        std::ostream& apply(std::ostream& os);
-        std::ostream& reset(std::ostream& os);
+        std::ostream& apply(std::ostream& os) const;
+        std::ostream& reset(std::ostream& os) const;
 
     };
 
@@ -196,6 +217,15 @@ namespace util
     inline std::ostream& operator<<(std::ostream& os, stream_mode_aggregate sm)
     {
         //    util::streamModeHandler::aggregate_ = sm;
+        return os;
+    }
+
+    inline std::ostream& operator<<(std::ostream& os, const streamManip& sc)
+    {
+        streamManip* pSC = new streamManip(sc);
+        streamManip* old = (streamManip*) os.pword(streamManip::streamManip_xindex);
+        delete(old);
+        os.pword(streamManip::streamManip_xindex) = pSC;
         return os;
     }
 
@@ -238,15 +268,12 @@ namespace util
 
     inline std::ostream& operator<<(std::ostream& os, const floatFmt& fmt)
     {
-        TRACE1(fmt.isScientific_)
         if (fmt.isScientific_)
         {
             os << std::ios::scientific;
         }
         else
         {
-            TRACE1(fmt.fill_);
-            TRACE1(fmt.width_);
             os.fill(fmt.fill_);
             os.width(fmt.width_);
             if (fmt.isFixed_)
