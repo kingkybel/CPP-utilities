@@ -29,6 +29,7 @@
 #include <ios>
 #include <map>
 #include <typeinfo>
+#include <boost/date_time.hpp>
 
 #ifndef DO_TRACE_
 #define DO_TRACE_
@@ -146,11 +147,6 @@ namespace util
             return false;
         }
 
-        friend streamManip& operator<<(streamManip& lhs, const streamManip& rhs)
-        {
-            return lhs;
-        }
-
         void set(stream_mode mode)
         {
             mode_ |= mode;
@@ -189,6 +185,96 @@ namespace util
         void unset(stream_mode_complement mode)
         {
             complement_ &= ~((long) mode);
+        }
+
+        template <typename T_>
+        std::ostream& stream(std::ostream& os, const T_& v)
+        {
+            if (std::is_arithmetic<T_>::value ||
+                typeid (T_) == typeid (std::string))
+            {
+                std::ios::fmtflags backup = os.flags();
+                streamManip* pSM = (streamManip*) os.pword(streamManip::streamManip_xindex);
+                const streamManip& sm = (pSM == 0) ? streamManip(&os) : *pSM;
+                if (std::is_arithmetic<T_>::value)
+                {
+                    std::ios::fmtflags backup = os.flags();
+                    streamManip* pSM = (streamManip*) os.pword(streamManip::streamManip_xindex);
+                    const streamManip& sm = (pSM == 0) ? streamManip(&os) : *pSM;
+
+                    if (typeid (T_) == typeid (bool))
+                    {
+                        if (sm.isSet(util::alpha_bool))
+                            os << std::boolalpha;
+                        os << v;
+                    }
+                    else if (typeid (T_) == typeid (char) ||
+                             typeid (T_) == typeid (unsigned char))
+                    {
+                        bool isHex = sm.isSet(util::hex_char);
+                        if (sm.isSet(util::squoted_char))
+                            if (isHex)
+                                os << squoted(hexString(v));
+                            else
+                                os << squoted(v);
+                        else if (sm.isSet(util::dquoted_char))
+                            if (isHex)
+                                os << quoted(hexString(v));
+                            else
+                                os << quoted(v);
+                        else
+                            os << v;
+                    }
+                    else if (typeid (T_) == typeid (int) ||
+                             typeid (T_) == typeid (unsigned int) ||
+                             typeid (T_) == typeid (short) ||
+                             typeid (T_) == typeid (unsigned short) ||
+                             typeid (T_) == typeid (long) ||
+                             typeid (T_) == typeid (unsigned long) ||
+                             typeid (T_) == typeid (long long) ||
+                             typeid (T_) == typeid (unsigned long long))
+                    {
+                        os << v;
+                    }
+                    else if (typeid (T_) == typeid (float) ||
+                             typeid (T_) == typeid (double) ||
+                             typeid (T_) == typeid (long double))
+                    {
+                        if (sm.isSet(util::short_float))
+                            os << std::fixed << std::setprecision(5);
+                        else if (sm.isSet(util::long_float))
+                            os << std::fixed << std::setprecision(20);
+                        else if (sm.isSet(util::scientific_float))
+                            os << std::scientific << std::setprecision(20);
+                        os << v;
+                    }
+
+                    else if (typeid (T_) == typeid (std::string))
+                    {
+                        if (sm.isSet(util::squoted_string))
+                            os << squoted(v);
+                        if (sm.isSet(util::dquoted_string))
+                            os << quoted(v);
+                        else
+                            os << v;
+                    }
+                    else if (typeid (T_) == typeid (boost::posix_time::ptime))
+                    {
+                        if (sm.isSet(util::squoted_date))
+                            os << squoted(v);
+                        if (sm.isSet(util::dquoted_date))
+                            os << quoted(v);
+                        else
+                            os << v;
+                    }
+
+                    os.flags(backup);
+                }
+            }
+            else
+                os << v;
+
+            return os;
         }
 
         std::ostream& apply(std::ostream& os) const;
@@ -235,11 +321,59 @@ namespace util
      */
     const static int backup_fmtflags_xalloc_index = std::ios_base::xalloc();
 
-    struct floatFmt
+    template<typename T_>
+    struct fmtHex
     {
+        T_ c_;
+        size_t w_;
+        bool upper_;
+        bool has0x_;
 
-        floatFmt()
-        : width_(0)
+        fmtHex(T_ c, int w = -1, bool upper = false, bool has0x = true)
+        : c_(c)
+        , w_(w < 0 ? sizeof (T_)*2 : w)
+        , upper_(upper)
+        , has0x_(has0x)
+        {
+        }
+
+        friend inline std::ostream& operator<<(std::ostream& os, const fmtHex<T_>& fh)
+        {
+            if (std::is_integral<T_>::value || std::is_pointer<T_>::value)
+            {
+                TRACE1(fh.c_);
+                TRACE1(typeid (fh.c_).name());
+                auto oldFmt = os.flags();
+                //                os << (fh.has0x_ ? "0x" : "")
+                //                        << std::hex
+                //                        << std::setw(fh.w_)
+                //                        << (fh.upper_ ? std::uppercase : std::nouppercase)
+                //                        << std::setfill('0')
+                //                        << (long long) fh.c_;
+                os.flags(oldFmt);
+            }
+            else
+                os << fh.c_;
+            return os;
+        }
+
+    };
+
+    template<typename T_>
+    class fmtFloat
+    {
+        T_ v_;
+        size_t width_;
+        size_t precision_;
+        char fill_;
+        bool isFixed_;
+        bool isScientific_;
+
+    public:
+
+        fmtFloat(T_ v)
+        : v_(v)
+        , width_(0)
         , precision_(0)
         , fill_(0)
         , isFixed_(false)
@@ -247,11 +381,13 @@ namespace util
         {
         }
 
-        floatFmt(size_t width,
+        fmtFloat(T_ v,
+                 size_t width,
                  size_t precision = 5,
                  char fill = '0',
                  bool isFixed = true)
-        : width_(width)
+        : v_(v)
+        , width_(width)
         , precision_(precision)
         , fill_(fill)
         , isFixed_(isFixed)
@@ -259,28 +395,33 @@ namespace util
         {
         }
 
-        size_t width_;
-        size_t precision_;
-        char fill_;
-        bool isFixed_;
-        bool isScientific_;
-    };
+        friend inline std::ostream& operator<<(std::ostream& os, const fmtFloat& ff)
+        {
+            if (std::is_integral<T_>::value ||
+                std::is_floating_point<T_>::value)
+            {
+                auto oldFmt = os.flags();
+                if (ff.isScientific_)
+                {
+                    os << std::scientific;
+                }
+                else
+                {
+                    os.fill(ff.fill_);
+                    os.width(ff.width_);
+                    if (ff.isFixed_)
+                        os << std::fixed;
+                }
+                os << (long double) ff.v_;
+                os.flags(oldFmt);
+            }
+            else
+                os << ff.v_;
 
-    inline std::ostream& operator<<(std::ostream& os, const floatFmt& fmt)
-    {
-        if (fmt.isScientific_)
-        {
-            os << std::ios::scientific;
+            return os;
         }
-        else
-        {
-            os.fill(fmt.fill_);
-            os.width(fmt.width_);
-            if (fmt.isFixed_)
-                os << std::fixed;
-        }
-        return os;
-    }
+
+    };
 
 };
 
