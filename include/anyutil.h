@@ -522,25 +522,25 @@ namespace util
     {
     public:
 
-        enum StreamMode : long
-        {
-            reset = 0x0000, ///< reset the stream configuration to empty
-            quoted_char = 0x0001, ///< enclose characters in single quotes
-            hex_char = 0x0002, ///< display characters in hexadecimal representation
-            quoted_string = 0x0004, ///< enclose strings in double quotes
-            quoted_date = 0x0008, ///< enclose dates in double quotes
-            alpha_bool = 0x0010, ///< display booleans as true and false
-            short_float = 0x0020, ///< display floating point values in a short format
-            long_float = 0x0040, ///< display floating point values in a longer format
-            scientific_float = 0x0080, ///< display floating point values in scientific format
-            round_open_brace = 0x0100, ///< indicate open intervals with round braces
-            symbolic_infinity = 0x0200, ///< indicate full interval with symbolic infinity "oo"
-
-            pure = alpha_bool | hex_char | scientific_float, ///< simple scannable format combination
-            standard = alpha_bool | short_float | round_open_brace, ///< standard format combination
-            safe = quoted_char | hex_char | quoted_string | quoted_date | alpha_bool | scientific_float ///< more complex combination
-        };
-
+        //        enum StreamMode : long
+        //        {
+        //            reset = 0x0000, ///< reset the stream configuration to empty
+        //            quoted_char = 0x0001, ///< enclose characters in single quotes
+        //            hex_char = 0x0002, ///< display characters in hexadecimal representation
+        //            quoted_string = 0x0004, ///< enclose strings in double quotes
+        //            quoted_date = 0x0008, ///< enclose dates in double quotes
+        //            alpha_bool = 0x0010, ///< display booleans as true and false
+        //            short_float = 0x0020, ///< display floating point values in a short format
+        //            long_float = 0x0040, ///< display floating point values in a longer format
+        //            scientific_float = 0x0080, ///< display floating point values in scientific format
+        //            round_open_brace = 0x0100, ///< indicate open intervals with round braces
+        //            symbolic_infinity = 0x0200, ///< indicate full interval with symbolic infinity "oo"
+        //
+        //            pure = alpha_bool | hex_char | scientific_float, ///< simple scannable format combination
+        //            standard = alpha_bool | short_float | round_open_brace, ///< standard format combination
+        //            safe = quoted_char | hex_char | quoted_string | quoted_date | alpha_bool | scientific_float ///< more complex combination
+        //        };
+        //
 
         Var(); ///< Construct empty variant.
         Var(const VAR_BOOL& v); ///< Construct boolean variant.
@@ -802,14 +802,14 @@ namespace util
          */
         friend bool operator>=(const Var& lhs, const Var& rhs);
 
-        /**
-         * Out-stream operator for variant stream modifiers.
-         * @param os the ostream for output
-         * @param sm the modifier
-         * @return the modified stream
-         */
-        friend std::ostream& operator<<(std::ostream& os, Var::StreamMode sm);
-
+        //        /**
+        //         * Out-stream operator for variant stream modifiers.
+        //         * @param os the ostream for output
+        //         * @param sm the modifier
+        //         * @return the modified stream
+        //         */
+        //        friend std::ostream& operator<<(std::ostream& os, Var::StreamMode sm);
+        //
         /**
          * Out-stream operator for variants.
          * @param os the ostream for output
@@ -986,33 +986,33 @@ namespace util
     template<typename T_>
     std::ostream& operator<<(std::ostream& os, const Interval<T_>& itvl)
     {
-        Var::StreamMode sm = (Var::StreamMode)os.iword(Var::xalloc_index);
-        if (sm == 0)
-            sm = Var::standard;
+        std::ios::fmtflags backup = os.flags();
+        streamManip* pSM = (streamManip*) os.pword(streamManip::streamManip_xindex);
+        streamManip sm = (pSM == 0) ? streamManip(&os) : *pSM;
+
         bool leftInf = itvl.isLeftInfinite();
         bool rightInf = itvl.isRightInfinite();
         bool leftOpen = itvl.isLeftOpen();
         bool rightOpen = itvl.isRightOpen();
 
-        char left = (sm & Var::round_open_brace) == Var::round_open_brace && leftOpen ? '(' : '[';
-        char right = (sm & Var::round_open_brace) == Var::round_open_brace && rightOpen ? ')' : ']';
+        char left = sm.isSet(util::round_open_brace) && leftOpen ? '(' : '[';
+        char right = sm.isSet(util::round_open_brace) && rightOpen ? ')' : ']';
 
-        bool symbolic = (sm & Var::symbolic_infinity) == Var::symbolic_infinity;
+        bool symbolic = sm.isSet(util::symbolic_infinity);
         os << left;
         if (symbolic && leftInf)
             os << "-∞";
         else if (leftInf)
-            os << minVal<T_> ();
+            sm.stream(os, minVal<T_> ());
         else
-            os << itvl.low_;
+            sm.stream(os, itvl.low_);
         os << ", ";
         if (symbolic && rightInf)
             os << "+∞";
         else if (rightInf)
-            os << maxVal<T_>();
-
+            sm.stream(os, maxVal<T_>());
         else
-            os << itvl.high_;
+            sm.stream(os, itvl.high_);
 
         os << right;
         return os;
