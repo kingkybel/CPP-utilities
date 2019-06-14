@@ -28,7 +28,7 @@
 namespace std
 {
 
-    template<class T, class U = T>
+    template<typename T, typename U = T>
     T exchange(T& obj, U&& new_value)
     {
         T old_value = std::move(obj);
@@ -40,19 +40,19 @@ namespace std
 
 namespace util
 {
-    std::map<std::ostream*, std::pair<size_t, std::ios::fmtflags> > streamConfig::restore_map;
-    const int streamConfig::mode_xindex = std::ios_base::xalloc();
-    const int streamConfig::aggregate_xindex = std::ios_base::xalloc();
-    const int streamConfig::alternative_xindex = std::ios_base::xalloc();
-    const int streamConfig::complement_xindex = std::ios_base::xalloc();
-    const int streamConfig::stream_mode_xindex = std::ios_base::xalloc();
+    std::map<std::ostream*, std::pair<size_t, std::ios::fmtflags> > streamManip::restore_map;
+    const int streamManip::mode_xindex = std::ios_base::xalloc();
+    const int streamManip::aggregate_xindex = std::ios_base::xalloc();
+    const int streamManip::alternative_xindex = std::ios_base::xalloc();
+    const int streamManip::complement_xindex = std::ios_base::xalloc();
+    const int streamManip::streamManip_xindex = std::ios_base::xalloc();
 
-    streamConfig::streamConfig(std::ostream* pOs /*= 0*/,
-                               long mode /*= none_set*/,
-                               long aggregate /* = 0*/,
-                               long alternative /* = all_set*/,
-                               long complement /* = 0*/
-                               )
+    streamManip::streamManip(std::ostream* pOs /*= 0*/,
+                             long mode /*= none_set*/,
+                             long aggregate /* = 0*/,
+                             long alternative /* = all_set*/,
+                             long complement /* = 0*/
+                             )
     : pOs_(pOs)
     , mode_(mode)
     , aggregate_(aggregate)
@@ -63,14 +63,14 @@ namespace util
             apply(*pOs);
     }
 
-    streamConfig::~streamConfig()
+    streamManip::~streamManip()
     {
         if (pOs_ != 0)
-            reset(pOs_);
+            reset(*pOs_);
     }
 
-    streamConfig::streamConfig(streamConfig&& rhs)
-    : pOs_(std::exchange(rhs.pOs_, 0))
+    streamManip::streamManip(streamManip&& rhs)
+    : pOs_(std::exchange(rhs.pOs_, (std::ostream*)0))
     , mode_(std::exchange(rhs.mode_, util::none_set))
     , aggregate_(std::exchange(rhs.aggregate_, 0))
     , alternative_(std::exchange(rhs.alternative_, util::all_set))
@@ -79,16 +79,17 @@ namespace util
 
     }
 
-    streamConfig& streamConfig::operator=(streamConfig&& rhs)
+    streamManip& streamManip::operator=(streamManip&& rhs)
     {
-        pOs_ = std::exchange(rhs.pOs_, 0);
+        pOs_ = rhs.pOs_;
+        rhs.pOs_ = 0;
         mode_ = std::exchange(rhs.mode_, util::none_set);
         aggregate_ = std::exchange(rhs.aggregate_, 0);
         alternative_ = std::exchange(rhs.alternative_, util::all_set);
         complement_ = std::exchange(rhs.complement_, 0);
     }
 
-    std::ostream& streamConfig::apply(std::ostream& os)
+    std::ostream& streamManip::apply(std::ostream& os) const
     {
         if (restore_map[&os].first == 0)
         {
@@ -97,35 +98,10 @@ namespace util
         }
         ++(restore_map[&os].first);
 
-        // first get the aggregate as a basis
-        long aggMode = aggregate_;
-
-        // remove all from aggregated mode that are flagged as removed
-        aggMode &= complement_;
-
-        // add all explicitly set stream-mode flags
-        aggMode |= mode_;
-
-        // then get alternatives
-        stream_mode_alternatives altMode = (stream_mode_alternatives) alternative_;
-        TRACE1((long) altMode);
-
-        if (altMode == scientific_float)
-        {
-            os << floatFmt();
-        }
-        else if (altMode == long_float)
-        {
-            os << floatFmt(10, 10);
-        }
-        else if (altMode == short_float)
-        {
-            os << floatFmt(10, 10);
-        }
         return os;
     }
 
-    std::ostream& streamConfig::reset(std::ostream& os)
+    std::ostream& streamManip::reset(std::ostream& os) const
     {
         if (os != 0)
         {
