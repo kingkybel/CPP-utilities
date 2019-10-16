@@ -2,7 +2,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.69])
-AC_INIT([DKyb-Cxx-Utilities], [1.0], [info@kybelksties.com])
+AC_INIT([DKyb-Cxx-Utilities], [1.0], [github@kybelksties.com])
 AC_LANG_SOURCE()
 AC_CONFIG_MACRO_DIR([/usr/local/share/aclocal])
 AC_CONFIG_SRCDIR([src/anyutil.cc])

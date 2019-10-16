@@ -11,9 +11,13 @@ libutil_a_SOURCES = src/anyutil.cc \
 		    src/stringutil.cc
 AM_CPPFLAGS = -I ./include -std=c++17
 ACLOCAL_AMFLAGS = -I /usr/local/share/aclocal
-check_PROGRAMS	= utiltests
-utiltests_SOURCES= tests/utiltests.cc
+#check_PROGRAMS	= utiltests testrunner
+check_PROGRAMS	= testrunner
+#utiltests_SOURCES= tests/utiltests.cc
+testrunner_SOURCES= tests/testrunner.cc tests/matrixTest.cc
 
 LDADD = $(top_builddir)/libutil.a $(BOOST_FILESYSTEM_LIB)
+testrunner_LDADD =${LDADD} /usr/local/lib/libcppunit.so
 
-TESTS	= utiltests
+#TESTS	= utiltests testrunner
+TESTS	= testrunner

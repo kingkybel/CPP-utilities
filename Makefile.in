@@ -86,8 +86,8 @@ POST_INSTALL = :
 NORMAL_UNINSTALL = :
 PRE_UNINSTALL = :
 POST_UNINSTALL = :
-check_PROGRAMS = utiltests$(EXEEXT)
-TESTS = utiltests$(EXEEXT)
+check_PROGRAMS = testrunner$(EXEEXT)
+TESTS = testrunner$(EXEEXT)
 subdir = .
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/configure.ac
@@ -143,12 +143,13 @@ am_libutil_a_OBJECTS = src/anyutil.$(OBJEXT) src/bayesutil.$(OBJEXT) \
 	src/floatingpoint.$(OBJEXT) src/graphutil.$(OBJEXT) \
 	src/statutil.$(OBJEXT) src/stringutil.$(OBJEXT)
 libutil_a_OBJECTS = $(am_libutil_a_OBJECTS)
-am_utiltests_OBJECTS = tests/utiltests.$(OBJEXT)
-utiltests_OBJECTS = $(am_utiltests_OBJECTS)
-utiltests_LDADD = $(LDADD)
+am_testrunner_OBJECTS = tests/testrunner.$(OBJEXT) \
+	tests/matrixTest.$(OBJEXT)
+testrunner_OBJECTS = $(am_testrunner_OBJECTS)
 am__DEPENDENCIES_1 =
-utiltests_DEPENDENCIES = $(top_builddir)/libutil.a \
-	$(am__DEPENDENCIES_1)
+am__DEPENDENCIES_2 = $(top_builddir)/libutil.a $(am__DEPENDENCIES_1)
+testrunner_DEPENDENCIES = $(am__DEPENDENCIES_2) \
+	/usr/local/lib/libcppunit.so
 AM_V_P = $(am__v_P_@AM_V@)
 am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
 am__v_P_0 = false
@@ -178,8 +179,8 @@ AM_V_CXXLD = $(am__v_CXXLD_@AM_V@)
 am__v_CXXLD_ = $(am__v_CXXLD_@AM_DEFAULT_V@)
 am__v_CXXLD_0 = @echo "  CXXLD   " $@;
 am__v_CXXLD_1 = 
-SOURCES = $(libutil_a_SOURCES) $(utiltests_SOURCES)
-DIST_SOURCES = $(libutil_a_SOURCES) $(utiltests_SOURCES)
+SOURCES = $(libutil_a_SOURCES) $(testrunner_SOURCES)
+DIST_SOURCES = $(libutil_a_SOURCES) $(testrunner_SOURCES)
 am__can_run_installinfo = \
   case $$AM_UPDATE_INFO_DIR in \
     n|no|NO) false;; \
@@ -518,8 +519,10 @@ libutil_a_SOURCES = src/anyutil.cc \
 
 AM_CPPFLAGS = -I ./include -std=c++17
 ACLOCAL_AMFLAGS = -I /usr/local/share/aclocal
-utiltests_SOURCES = tests/utiltests.cc
+#utiltests_SOURCES= tests/utiltests.cc
+testrunner_SOURCES = tests/testrunner.cc tests/matrixTest.cc
 LDADD = $(top_builddir)/libutil.a $(BOOST_FILESYSTEM_LIB)
+testrunner_LDADD = ${LDADD} /usr/local/lib/libcppunit.so
 all: config.h
 	$(MAKE) $(AM_MAKEFLAGS) all-am
 
@@ -640,12 +643,14 @@ tests/$(am__dirstamp):
 tests/$(DEPDIR)/$(am__dirstamp):
 	@$(MKDIR_P) tests/$(DEPDIR)
 	@: > tests/$(DEPDIR)/$(am__dirstamp)
-tests/utiltests.$(OBJEXT): tests/$(am__dirstamp) \
+tests/testrunner.$(OBJEXT): tests/$(am__dirstamp) \
+	tests/$(DEPDIR)/$(am__dirstamp)
+tests/matrixTest.$(OBJEXT): tests/$(am__dirstamp) \
 	tests/$(DEPDIR)/$(am__dirstamp)
 
-utiltests$(EXEEXT): $(utiltests_OBJECTS) $(utiltests_DEPENDENCIES) $(EXTRA_utiltests_DEPENDENCIES) 
-	@rm -f utiltests$(EXEEXT)
-	$(AM_V_CXXLD)$(CXXLINK) $(utiltests_OBJECTS) $(utiltests_LDADD) $(LIBS)
+testrunner$(EXEEXT): $(testrunner_OBJECTS) $(testrunner_DEPENDENCIES) $(EXTRA_testrunner_DEPENDENCIES) 
+	@rm -f testrunner$(EXEEXT)
+	$(AM_V_CXXLD)$(CXXLINK) $(testrunner_OBJECTS) $(testrunner_LDADD) $(LIBS)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
@@ -663,7 +668,8 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/graphutil.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/statutil.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/stringutil.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@tests/$(DEPDIR)/utiltests.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@tests/$(DEPDIR)/matrixTest.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@tests/$(DEPDIR)/testrunner.Po@am__quote@
 
 .cc.o:
 @am__fastdepCXX_TRUE@	$(AM_V_CXX)depbase=`echo $@ | sed 's|[^/]*$$|$(DEPDIR)/&|;s|\.o$$||'`;\
@@ -881,9 +887,9 @@ recheck: all $(check_PROGRAMS)
 	        am__force_recheck=am--force-recheck \
 	        TEST_LOGS="$$log_list"; \
 	exit $$?
-utiltests.log: utiltests$(EXEEXT)
-	@p='utiltests$(EXEEXT)'; \
-	b='utiltests'; \
+testrunner.log: testrunner$(EXEEXT)
+	@p='testrunner$(EXEEXT)'; \
+	b='testrunner'; \
 	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
 	--log-file $$b.log --trs-file $$b.trs \
 	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
