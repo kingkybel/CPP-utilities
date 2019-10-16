@@ -31,11 +31,38 @@
 #include <vector>
 #include <sstream>
 #include <utility>
+#include <complex>
 #include <initializer_list>
+#include <limits>
 #include "stringutil.h"
 
 namespace util
 {
+
+    template<typename T>
+    T normalMin(T val)
+    {
+        return std::numeric_limits<T>::min();
+    }
+
+    //    template<>
+
+    float normalMin(std::complex<float> val)
+    {
+        return std::numeric_limits<float>::min();
+    }
+
+    //    template<>
+
+    double normalMin(std::complex<double> val)
+    {
+        return std::numeric_limits<double>::min();
+    }
+
+    long double normalMin(std::complex<long double> val)
+    {
+        return std::numeric_limits<long double>::min();
+    }
 
     struct matrix_interface
     {
@@ -493,16 +520,16 @@ namespace util
         /**
          * Unary + operator.
          */
-        matrix& operator+()
+        friend matrix<T, enableBoundsCheck> operator+(const matrix<T, enableBoundsCheck>& rhs)
         {
-            return *this;
+            return rhs;
         }
 
         /**
          * Unary negation operator.
          * @param rhs right-hand-side matrix
          */
-        matrix<T, enableBoundsCheck> operator-(const matrix<T, enableBoundsCheck>& rhs)
+        friend matrix<T, enableBoundsCheck> operator-(const matrix<T, enableBoundsCheck>& rhs)
         {
             matrix<T, enableBoundsCheck> temp(rhs);
 
@@ -553,7 +580,7 @@ namespace util
             matrix<T, enableBoundsCheck> reval = lhs;
             for (size_t y = 0; y < reval.sizeY(); y++)
                 for (size_t x = 0; x < reval.sizeX(); x++)
-                    reval(x, y, false) -= rhs(x, y, false);
+                    reval(x, y) -= rhs(x, y);
             return reval;
         }
 
@@ -595,7 +622,7 @@ namespace util
             matrix<T, enableBoundsCheck> reval = rhs;
             for (size_t y = 0; y < reval.sizeY(); y++)
                 for (size_t x = 0; x < reval.sizeX(); x++)
-                    reval(x, y, false) *= c;
+                    reval(x, y) *= c;
             return reval;
         }
 
@@ -625,9 +652,12 @@ namespace util
             for (size_t y = 0; y < lhs.sizeY(); y++)
                 for (size_t x = 0; x < rhs.sizeX(); x++)
                 {
-                    reval(y, x) = T(0);
+                    //                    reval(y, x) = T(0);
+                    //                    for (size_t k = 0; k < lhs.sizeX(); k++)
+                    //                        reval(y, x) += lhs(k, y) * rhs(x, k);
+                    reval(x, y) = T(0);
                     for (size_t k = 0; k < lhs.sizeX(); k++)
-                        reval(y, x) += lhs(k, y) * rhs(x, k);
+                        reval(x, y) += lhs(k, y) * rhs(x, k);
                 }
 
             return reval;
@@ -786,7 +816,7 @@ namespace util
 
             // initialize the return matrix as the unit-matrix of sizeX
             matrix<T, enableBoundsCheck> reval =
-                    matrix<T, enableBoundsCheck>::scalar(sizeX(), T(1.0));
+                matrix<T, enableBoundsCheck>::scalar(sizeX(), T(1.0));
 
             for (k = 0; k < sizeX(); k++)
             {
@@ -872,13 +902,16 @@ namespace util
             return solutions;
         }
 
+#if defined HAVE_LEGACY_DETERMINANT_METHOD
+
         /**
+         *
          * Calculate the determinant of this matrix.
          * @return the determinant
          */
-        T det() const
+        T determinant() const
         {
-            assertSquare(*this, "matrix<T,enableBoundsCheck>::det()");
+            assertSquare(*this, "matrix<T,enableBoundsCheck>::determinant()");
             T piv(0);
             T reval = T(1.0);
 
@@ -900,7 +933,62 @@ namespace util
                         temp(x, y) -= piv * temp(k, y);
                 }
             }
+            if (std::abs(reval) < normalMin(reval))
+                reval = T(0);
             return reval;
+        }
+#endif // defined HAVE_LEGACY_DETERMINANT_METHOD
+
+    private: // make the recursive method private
+
+        /**
+         * Calculate the sub-determinant of this matrix at level n. This is a
+         * recursive method.
+         * @param n the level with first call to be level n == sizeX().
+         * @return the sub-determinant
+         */
+        T determinantR(size_t n) const
+        {
+            assertSquare(*this, "matrix<T,enableBoundsCheck>::det()");
+            T reval = T(0);
+            matrix<T, enableBoundsCheck> submatrix(sizeX() - 1, sizeY() - 1);
+            if (n == 2)
+                return ((*this)(0, 0) * (*this)(1, 1) - (*this)(1, 0) * (*this)(0, 1));
+            else
+            {
+                T pm = T(1.0);
+                const T minus = T(-1.0);
+                for (size_t x = 0; x < n; x++)
+                {
+                    size_t subi = 0;
+                    for (size_t i = 1; i < n; i++)
+                    {
+                        size_t subj = 0;
+                        for (size_t j = 0; j < n; j++)
+                        {
+                            if (j == x)
+                                continue;
+                            submatrix(subi, subj) = (*this)(i, j);
+                            subj++;
+                        }
+                        subi++;
+                    }
+                    reval = reval + ((pm) * (*this)(0, x) * determinantR(n - 1));
+                    pm *= minus;
+                }
+            }
+            return reval;
+        }
+
+    public:
+
+        /**
+         * Calculate the determinant of this matrix.
+         * @return the determinant
+         */
+        T det() const
+        {
+            return determinantR(sizeX());
         }
 
         /**
@@ -985,8 +1073,7 @@ namespace util
          */
         bool isSingular() const
         {
-
-            return isSquare() && det() == T(0);
+            return !isSquare() || det() == T(0);
         }
 
         /**
@@ -995,7 +1082,7 @@ namespace util
          */
         bool isDiagonal() const
         {
-            if (isSquare())
+            if (!isSquare())
                 return false;
             for (size_t y = 0; y < sizeX(); y++)
                 for (size_t x = 0; x < sizeY(); x++)
@@ -1216,15 +1303,15 @@ namespace util
 
             std::stringstream ss;
             ss << location
-                    << ": index ("
-                    << x
-                    << ","
-                    << y
-                    << ") is out of bounds ("
-                    << lhs.sizeX()
-                    << ","
-                    << lhs.sizeY()
-                    << ").";
+                << ": index ("
+                << x
+                << ","
+                << y
+                << ") is out of bounds ("
+                << lhs.sizeX()
+                << ","
+                << lhs.sizeY()
+                << ").";
             throw matrix_error(ss.str());
         }
     }
