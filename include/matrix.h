@@ -45,14 +45,10 @@ namespace util
         return std::numeric_limits<T>::min();
     }
 
-    //    template<>
-
     float normalMin(std::complex<float> val)
     {
         return std::numeric_limits<float>::min();
     }
-
-    //    template<>
 
     double normalMin(std::complex<double> val)
     {
@@ -191,11 +187,56 @@ namespace util
         virtual bool isSkewSymmetric() const = 0;
     };
 
-    class matrix_error : public std::logic_error
+    enum class operType
+    {
+        MatrixAdd, MatrixSub, MatrixMult, MatrixSolve, MatrixDiv
+    };
+
+    class matrixSizesIncompatible : public std::logic_error
     {
     public:
 
-        matrix_error(const std::string& what_arg)
+        matrixSizesIncompatible(const std::string& what_arg)
+        : logic_error(what_arg)
+        {
+        }
+    };
+
+    class matrixScalarMustNotBeZero : public std::logic_error
+    {
+    public:
+
+        matrixScalarMustNotBeZero(const std::string& what_arg)
+        : logic_error(what_arg)
+        {
+        }
+    };
+
+    class matrixMustBeSquare : public std::logic_error
+    {
+    public:
+
+        matrixMustBeSquare(const std::string& what_arg)
+        : logic_error(what_arg)
+        {
+        }
+    };
+
+    class matrixIndexOutOfBounds : public std::out_of_range
+    {
+    public:
+
+        matrixIndexOutOfBounds(const std::string& what_arg)
+        : out_of_range(what_arg)
+        {
+        }
+    };
+
+    class matrixIsSingular : public std::logic_error
+    {
+    public:
+
+        matrixIsSingular(const std::string& what_arg)
         : logic_error(what_arg)
         {
         }
@@ -217,13 +258,15 @@ namespace util
      * matrix template
      *
      * Note: This matrix template class defines majority of the matrix
-     *  operations as overloaded operators or methods. It is assumed that
-     * users of this class is familiar with matrix algebra. We have not
+     * operations as overloaded operators and methods. It is assumed that
+     * users of this class are familiar with matrix algebra. We have not
      * defined any specialization of this template here, so all the instances
-     * of matrix will be created implicitly by the compiler. The data types
-     * tested with this class are float, double, long double, complex<float>,
-     * complex<double> and complex<long double>. Note that this class is not
+     * of matrix will be created implicitly by the compiler. . Note that this class is not
      * optimized for performance.
+     * @param T                 value-type, tested with float, double, long double,
+     *                          complex<float>, complex<double> and complex<long double>
+     * @param enableBoundsCheck check the boundaries when accessing elements if set
+     *                          to true
      */
     template <typename T = long double, bool enableBoundsCheck = false >
     class matrix : public matrix_interface
@@ -236,6 +279,12 @@ namespace util
          */
         mat_t m_;
 
+        /**
+         * Initialize the data container by re-creating it with new dimensions.
+         * @param xDim new x-dimension
+         * @param yDim new y-dimension
+         * @return the new initialized data-container
+         */
         mat_t& initializeData(size_t xDim = 0, size_t yDim = 0)
         {
             m_.clear();
@@ -334,7 +383,7 @@ namespace util
          * @param c scalar value on the diagonal
          * @return a scalar matrix with diagonal c-values
          */
-        static matrix<T, enableBoundsCheck> scalar(size_t dim, const T& c = T(1.0))
+        static matrix<T, enableBoundsCheck> scalar(size_t dim, const T& c = T(1.0L))
         {
             matrix<T, enableBoundsCheck> reval(dim);
             for (size_t i = 0; i < reval.sizeX(); i++)
@@ -395,64 +444,77 @@ namespace util
          * @param rhs left-hand-side matrix
          * @param operation the operation as string
          * @param location the location in the class
-         * @throw matrix_error
+         * @throw matrixSizesIncompatible
          */
         static void assertCompatibleSizes(const matrix<T, enableBoundsCheck>& lhs,
                                           const matrix<T, enableBoundsCheck>& rhs,
-                                          const std::string& operation,
+                                          const operType& operation,
                                           const std::string& location)
         {
-            if (operation == "+" || operation == "-")
+            if (operation == operType::MatrixAdd || operation == operType::MatrixSub)
             {
                 if (!lhs.isAddCompatible(rhs))
-                    throw matrix_error(location +
-                                       ": matrix-size lhs (" +
-                                       asString(lhs.sizeX()) +
-                                       "," +
-                                       asString(lhs.sizeY()) +
-                                       ") is not equal matrix-size rhs(" +
-                                       asString(rhs.sizeX()) +
-                                       "," +
-                                       asString(rhs.sizeY()) +
-                                       ").");
+                    throw matrixSizesIncompatible(location +
+                                                  ": matrix-size lhs (" +
+                                                  asString(lhs.sizeX()) +
+                                                  "," +
+                                                  asString(lhs.sizeY()) +
+                                                  ") is not equal matrix-size rhs(" +
+                                                  asString(rhs.sizeX()) +
+                                                  "," +
+                                                  asString(rhs.sizeY()) +
+                                                  ").");
             }
-            else if (operation == "*")
+            else if (operation == operType::MatrixMult)
             {
                 if (lhs.sizeX() != rhs.sizeY())
-                    throw matrix_error(location +
-                                       ": matrix-x-dimension lhs " +
-                                       asString(lhs.sizeX()) +
-                                       " is not equal matrix-y-dimension rhs" +
-                                       asString(rhs.sizeY()) +
-                                       ".");
+                    throw matrixSizesIncompatible(location +
+                                                  ": x-dimension of lhs-matrix (" +
+                                                  asString(lhs.sizeX()) +
+                                                  ") is not equal to y-dimension rhs (" +
+                                                  asString(rhs.sizeY()) +
+                                                  ").");
             }
-            else if (operation == "solve")
+            else if (operation == operType::MatrixSolve)
             {
                 if (lhs.sizeY() != rhs.sizeY())
-                    throw matrix_error(location +
-                                       ": matrix-y-dimension lhs " +
-                                       asString(lhs.sizeY()) +
-                                       " is not equal matrix-y-dimension rhs" +
-                                       asString(rhs.sizeY()) +
-                                       ".");
+                    throw matrixSizesIncompatible(location +
+                                                  ": matrix-y-dimension lhs " +
+                                                  asString(lhs.sizeY()) +
+                                                  " is not equal matrix-y-dimension rhs " +
+                                                  asString(rhs.sizeY()) +
+                                                  ".");
             }
         }
 
+        /**
+         * Assert that a given scalar is not zero.
+         * @param c the offending scalar
+         * @param location the location in the class
+         * @throw matrixScalarMustNotBeZero
+         */
         static void assertNotZero(T c, const std::string& location)
         {
-            if (c == (T) 0)
-                throw matrix_error(location +
-                                   ": scalar " +
-                                   asString(c) +
-                                   "must not be 0(Zero).");
+            if (c == T(0))
+                throw matrixScalarMustNotBeZero(location +
+                                                ": scalar " +
+                                                asString(c) +
+                                                "must not be 0(Zero).");
         }
 
+        /**
+         * Assert that dimensions of the given matrices are compatible for the
+         * given operation.
+         * @param lhs left-hand-side matrix
+         * @param location the location in the class
+         * @throw matrixMustBeSquare
+         */
         static void assertSquare(const matrix<T, enableBoundsCheck>& lhs,
                                  const std::string& location)
         {
             if (!lhs.isSquare())
-                throw matrix_error(location +
-                                   ": operation only defined for square matrices.");
+                throw matrixMustBeSquare(location +
+                                         ": operation only defined for square matrices.");
         }
 
         /**
@@ -548,7 +610,7 @@ namespace util
          */
         friend matrix<T, enableBoundsCheck> operator+(const matrix<T, enableBoundsCheck>& lhs, const matrix<T, enableBoundsCheck>& rhs)
         {
-            assertCompatibleSizes(lhs, rhs, "operator+(lhs,rhs)", "+");
+            assertCompatibleSizes(lhs, rhs, operType::MatrixAdd, "operator+(lhs,rhs)");
             matrix<T, enableBoundsCheck> reval = lhs;
             for (size_t y = 0; y < reval.sizeY(); y++)
                 for (size_t x = 0; x < reval.sizeX(); x++)
@@ -563,7 +625,7 @@ namespace util
          */
         matrix<T, enableBoundsCheck>& operator+=(const matrix<T, enableBoundsCheck>& rhs)
         {
-            assertCompatibleSizes(*this, rhs, "operator+=(rhs)", "+");
+            assertCompatibleSizes(*this, rhs, operType::MatrixAdd, "operator+=(rhs)");
             *this = *this+rhs;
             return *this;
         }
@@ -576,7 +638,7 @@ namespace util
          */
         friend matrix<T, enableBoundsCheck> operator-(const matrix<T, enableBoundsCheck>& lhs, const matrix<T, enableBoundsCheck>& rhs)
         {
-            assertCompatibleSizes(lhs, rhs, "operator-(lhs,rhs)", "+");
+            assertCompatibleSizes(lhs, rhs, operType::MatrixAdd, "operator-(lhs,rhs)");
             matrix<T, enableBoundsCheck> reval = lhs;
             for (size_t y = 0; y < reval.sizeY(); y++)
                 for (size_t x = 0; x < reval.sizeX(); x++)
@@ -591,7 +653,7 @@ namespace util
          */
         matrix<T, enableBoundsCheck>& operator-=(const matrix<T, enableBoundsCheck>& rhs)
         {
-            assertCompatibleSizes(*this, rhs, "operator-=(rhs)", "-");
+            assertCompatibleSizes(*this, rhs, operType::MatrixSub, "operator-=(rhs)");
             *this = *this-rhs;
             return *this;
         }
@@ -646,7 +708,7 @@ namespace util
         friend matrix<T, enableBoundsCheck> operator*(const matrix<T, enableBoundsCheck>& lhs,
                                                       const matrix<T, enableBoundsCheck>& rhs)
         {
-            assertCompatibleSizes(lhs, rhs, "operator*(lhs,rhs)", "*");
+            assertCompatibleSizes(lhs, rhs, operType::MatrixMult, "operator*(lhs,rhs)");
             matrix<T, enableBoundsCheck> reval(rhs.sizeX(), lhs.sizeY());
 
             for (size_t y = 0; y < lhs.sizeY(); y++)
@@ -816,7 +878,7 @@ namespace util
 
             // initialize the return matrix as the unit-matrix of sizeX
             matrix<T, enableBoundsCheck> reval =
-                matrix<T, enableBoundsCheck>::scalar(sizeX(), T(1.0));
+                matrix<T, enableBoundsCheck>::scalar(sizeX(), T(1.0L));
 
             for (k = 0; k < sizeX(); k++)
             {
@@ -824,7 +886,7 @@ namespace util
                 // singular and cannot be inverted
                 int pivIdx = pivot(k);
                 if (pivIdx == -1)
-                    throw matrix_error("matrix<T,enableBoundsCheck>::operator!: Inversion of a singular matrix");
+                    throw matrixIsSingular("matrix<T,enableBoundsCheck>::operator!: Inversion of a singular matrix");
 
                 // swap rows so that the pivot element is on the diagonal at k
                 if (pivIdx != 0)
@@ -861,7 +923,7 @@ namespace util
         matrix<T, enableBoundsCheck> solve(const matrix<T, enableBoundsCheck>& v) const
         {
             assertSquare(*this, "matrix<T,enableBoundsCheck>::solve(v)");
-            assertCompatibleSizes(*this, v, "solve", "matrix<T,enableBoundsCheck>::solve(v)");
+            assertCompatibleSizes(*this, v, operType::MatrixSolve, "matrix<T,enableBoundsCheck>::solve(v)");
 
             matrix<T, enableBoundsCheck> temp = *this;
             matrix<T, enableBoundsCheck> solutions = v;
@@ -869,7 +931,7 @@ namespace util
             for (size_t pivIdx = 0; pivIdx < sizeX(); pivIdx++)
             {
                 if (temp.pivot(pivIdx, &solutions) == -1)
-                    throw matrix_error("matrix<T,enableBoundsCheck>::solve(): Singular matrix!");
+                    throw matrixIsSingular("matrix<T,enableBoundsCheck>::solve(): Singular matrix!");
 
                 size_t x, y;
                 ////////////////////////////////////////////////////////////////
@@ -913,7 +975,7 @@ namespace util
         {
             assertSquare(*this, "matrix<T,enableBoundsCheck>::determinant()");
             T piv(0);
-            T reval = T(1.0);
+            T reval = T(1.0L);
 
             matrix<T, enableBoundsCheck> temp(*this);
 
@@ -956,8 +1018,8 @@ namespace util
                 return ((*this)(0, 0) * (*this)(1, 1) - (*this)(1, 0) * (*this)(0, 1));
             else
             {
-                T pm = T(1.0);
-                const T minus = T(-1.0);
+                T pm = T(1.0L);
+                const T minus = T(-1.0L);
                 for (size_t x = 0; x < n; x++)
                 {
                     size_t subi = 0;
@@ -995,7 +1057,7 @@ namespace util
          * Calculate the norm of a matrix.
          * @return the norm
          */
-        T norm()
+        T norm() const
         {
             T reval = T(0);
 
@@ -1011,9 +1073,8 @@ namespace util
          * Calculate the condition number of a matrix.
          * @return the condition number
          */
-        T cond()
+        T cond() const
         {
-
             matrix<T, enableBoundsCheck> inv = !(*this);
             return (norm() * inv.norm());
         }
@@ -1024,7 +1085,7 @@ namespace util
          * @param y y-coordinate
          * @return the cofactor of matrix value at (x,y)
          */
-        T cofact(size_t x, size_t y)
+        T cofact(size_t x, size_t y) const
         {
             assertSquare(*this, "cofact(x,y)");
             checkBounds(*this, x, y, "cofact(x,y)");
@@ -1056,7 +1117,7 @@ namespace util
          * Calculate adjoin of a matrix.
          * @return the adjoin
          */
-        matrix<T, enableBoundsCheck>&& adj()
+        matrix<T, enableBoundsCheck> adj() const
         {
             assertSquare(*this, "matrix<T,enableBoundsCheck>::adj()");
             matrix<T, enableBoundsCheck> reval(sizeX(), sizeY());
@@ -1112,7 +1173,7 @@ namespace util
          */
         bool isUnit() const
         {
-            if (isScalar() && (*this)(0, 0) == T(1))
+            if (isScalar() && (*this)(0, 0) == T(1.0L))
                 return true;
             return false;
         }
@@ -1312,7 +1373,7 @@ namespace util
                 << ","
                 << lhs.sizeY()
                 << ").";
-            throw matrix_error(ss.str());
+            throw matrixIndexOutOfBounds(ss.str());
         }
     }
 
