@@ -2,7 +2,8 @@
 A collection of C++-sample-files.
 
 Users of Unix and Linux systems can download the configure and make the library at a terminal prompt
-[~}> ./configure
+
+[~]> ./configure
 [~]> make
 and check by
 
