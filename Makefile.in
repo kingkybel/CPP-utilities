@@ -144,7 +144,7 @@ am_libutil_a_OBJECTS = src/anyutil.$(OBJEXT) src/bayesutil.$(OBJEXT) \
 	src/statutil.$(OBJEXT) src/stringutil.$(OBJEXT)
 libutil_a_OBJECTS = $(am_libutil_a_OBJECTS)
 am_testrunner_OBJECTS = tests/testrunner.$(OBJEXT) \
-	tests/matrixTest.$(OBJEXT)
+	tests/matrixTest.$(OBJEXT) tests/logValTest.$(OBJEXT)
 testrunner_OBJECTS = $(am_testrunner_OBJECTS)
 am__DEPENDENCIES_1 =
 am__DEPENDENCIES_2 = $(top_builddir)/libutil.a $(am__DEPENDENCIES_1)
@@ -520,7 +520,7 @@ libutil_a_SOURCES = src/anyutil.cc \
 AM_CPPFLAGS = -I ./include -std=c++17
 ACLOCAL_AMFLAGS = -I /usr/local/share/aclocal
 #utiltests_SOURCES= tests/utiltests.cc
-testrunner_SOURCES = tests/testrunner.cc tests/matrixTest.cc
+testrunner_SOURCES = tests/testrunner.cc tests/matrixTest.cc tests/logValTest.cc
 LDADD = $(top_builddir)/libutil.a $(BOOST_FILESYSTEM_LIB)
 testrunner_LDADD = ${LDADD} /usr/local/lib/libcppunit.so
 all: config.h
@@ -647,6 +647,8 @@ tests/testrunner.$(OBJEXT): tests/$(am__dirstamp) \
 	tests/$(DEPDIR)/$(am__dirstamp)
 tests/matrixTest.$(OBJEXT): tests/$(am__dirstamp) \
 	tests/$(DEPDIR)/$(am__dirstamp)
+tests/logValTest.$(OBJEXT): tests/$(am__dirstamp) \
+	tests/$(DEPDIR)/$(am__dirstamp)
 
 testrunner$(EXEEXT): $(testrunner_OBJECTS) $(testrunner_DEPENDENCIES) $(EXTRA_testrunner_DEPENDENCIES) 
 	@rm -f testrunner$(EXEEXT)
@@ -668,6 +670,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/graphutil.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/statutil.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/stringutil.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@tests/$(DEPDIR)/logValTest.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@tests/$(DEPDIR)/matrixTest.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@tests/$(DEPDIR)/testrunner.Po@am__quote@
 

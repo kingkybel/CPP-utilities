@@ -14,7 +14,7 @@ ACLOCAL_AMFLAGS = -I /usr/local/share/aclocal
 #check_PROGRAMS	= utiltests testrunner
 check_PROGRAMS	= testrunner
 #utiltests_SOURCES= tests/utiltests.cc
-testrunner_SOURCES= tests/testrunner.cc tests/matrixTest.cc
+testrunner_SOURCES= tests/testrunner.cc tests/matrixTest.cc tests/logValTest.cc
 
 LDADD = $(top_builddir)/libutil.a $(BOOST_FILESYSTEM_LIB)
 testrunner_LDADD =${LDADD} /usr/local/lib/libcppunit.so
