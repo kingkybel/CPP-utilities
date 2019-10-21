@@ -22,37 +22,57 @@
  */
 
 #ifndef NS_UTIL_LOGVALUE_H_INCLUDED
-#define	NS_UTIL_LOGVALUE_H_INCLUDED
+#define NS_UTIL_LOGVALUE_H_INCLUDED
 
 #include <cmath>
 #include <ostream>
+#include <exception>
+#define DO_TRACE_
+#include <traceutil.h>
 namespace util
 {
 
     class logVal
     {
     private:
-        long double val;
+        long double val_;
         bool isPositive_;
-    public:
 
-        logVal(long double logDomainVal, bool isPositive = true)
-        : val(logDomainVal)
+        logVal(long double logDomainVal, bool isPositive)
+        : val_(logDomainVal)
         , isPositive_(isPositive)
         {
+        }
 
+    public:
+
+        bool isZero() const
+        {
+            return val_ == -INFINITY;
         }
 
         static logVal fromReal(long double realDomainVal)
         {
-            return realDomainVal >= 0.0 ?
-                    log(realDomainVal) :
-                    logVal(-realDomainVal, false);
+            return realDomainVal >= 0.0L ?
+                logVal(log(realDomainVal), true) :
+                logVal(log(-realDomainVal), false);
+        }
+
+        static logVal fromLog(long double logDomainVal, bool isPositive = true)
+        {
+            return logVal(logDomainVal, isPositive);
+        }
+
+        logVal(long double realDomainVal)
+        : val_(log(realDomainVal >= 0.0L ? realDomainVal : -realDomainVal))
+        , isPositive_(realDomainVal >= 0.0L)
+        {
+
         }
 
         const long double toReal() const
         {
-            return isPositive_ ? exp(val) : -exp(val);
+            return isPositive_ ? exp(val_) : -exp(val_);
         }
 
         /**
@@ -63,10 +83,51 @@ namespace util
          */
         friend logVal operator+(const logVal& lhs, const logVal& rhs)
         {
-            return (lhs.val == -INFINITY) ? rhs :
-                    (rhs.val == -INFINITY) ? lhs :
-                    (lhs.val > rhs.val) ? lhs.val + log(1 + exp(rhs.val - lhs.val)) :
-                    rhs.val + log(1 + exp(lhs.val - rhs.val));
+            long double lhsDbl = lhs.isPositive_ ? exp(lhs.val_) : -exp(lhs.val_);
+            long double rhsDbl = rhs.isPositive_ ? exp(rhs.val_) : -exp(rhs.val_);
+
+            return logVal(lhsDbl + rhsDbl);
+
+            // (lhs.val_ > rhs.val_) ? lhs.val_ + log(1 + exp(rhs.val_ - lhs.val_)) :
+            // rhs.val_ + log(1 + exp(lhs.val_ - rhs.val_));
+        }
+
+        /**
+         * Takes two values in the logarithmic domain and adds them together.
+         * @param lhs left-hand-side value in logarithmic domain
+         * @param rhs right-hand-side value in logarithmic domain
+         * @return sum of two values converted back into the logarithmic domain
+         */
+        logVal& operator+=(const logVal& rhs)
+        {
+            logVal reval = *this+rhs;
+            val_ = reval.val_;
+            isPositive_ = reval.isPositive_;
+            return *this;
+        }
+
+        /**
+         * Unary minus operator.
+         * @param lhs left-hand-side value in logarithmic domain
+         * @return negative value of lhs converted back into the logarithmic domain
+         */
+        friend logVal operator-(const logVal& lhs)
+        {
+            return fromLog(lhs.val_, !lhs.isPositive_);
+        }
+
+        /**
+         * Takes two values in the logarithmic domain and adds them together.
+         * @param lhs left-hand-side value in logarithmic domain
+         * @param rhs right-hand-side value in logarithmic domain
+         * @return sum of two values converted back into the logarithmic domain
+         */
+        friend logVal operator-(const logVal& lhs, const logVal& rhs)
+        {
+            long double lhsDbl = lhs.isPositive_ ? exp(lhs.val_) : -exp(lhs.val_);
+            long double rhsDbl = rhs.isPositive_ ? exp(rhs.val_) : -exp(rhs.val_);
+
+            return logVal(lhsDbl - rhsDbl);
         }
 
         /**
@@ -77,20 +138,123 @@ namespace util
          */
         friend logVal operator*(const logVal& lhs, const logVal& rhs)
         {
-            return (lhs.val == -INFINITY) || (rhs.val == -INFINITY) ?
-                    -INFINITY :
-                    (lhs.val + rhs.val);
+            return fromLog(lhs.isZero() || rhs.isZero() ? -INFINITY : (lhs.val_ + rhs.val_),
+                           (lhs.isPositive_ == rhs.isPositive_));
+        }
+
+        /**
+         * Takes two values in the logarithmic domain and divides them.
+         * @param lhs left-hand-side value in logarithmic domain
+         * @param rhs right-hand-side value in logarithmic domain
+         * @return quotient of two values converted back into the logarithmic domain
+         */
+        friend logVal operator/(const logVal& lhs, const logVal& rhs)
+        {
+            if (rhs.isZero())
+            {
+                throw std::runtime_error("Attempted division by zero.");
+            }
+            return fromLog(lhs.isZero() ? -INFINITY : (lhs.val_ - rhs.val_),
+                           (lhs.isPositive_ == rhs.isPositive_));
         }
 
         /**
          * Takes two values in the logarithmic domain and multiplies them.
-         * @param lhs left-hand-side value in logarithmic domain
          * @param rhs right-hand-side value in logarithmic domain
          * @return product of two values converted back into the logarithmic domain
          */
+        logVal& operator*=(const logVal& rhs)
+        {
+            logVal reval = *this*rhs;
+            val_ = reval.val_;
+            isPositive_ = reval.isPositive_;
+            return *this;
+        }
+
+        /**
+         * Equality comparison operator.
+         * @param lhs left-hand-side value in logarithmic domain
+         * @param rhs right-hand-side value in logarithmic domain
+         * @return true if lhs equals rhs, false otherwise
+         */
+        friend bool operator==(const logVal& lhs, const logVal& rhs)
+        {
+            return lhs.isPositive_ == rhs.isPositive_ && lhs.val_ == rhs.val_;
+        }
+
+        /**
+         * Less-than comparison operator.
+         * @param lhs left-hand-side value in logarithmic domain
+         * @param rhs right-hand-side value in logarithmic domain
+         * @return true if lhs less than rhs, false otherwise
+         */
+        friend bool operator<(const logVal& lhs, const logVal& rhs)
+        {
+            if (lhs.isPositive_ && rhs.isPositive_)
+                return lhs.val_ < rhs.val_;
+            if (!lhs.isPositive_ && !rhs.isPositive_)
+                return lhs.val_ > rhs.val_;
+
+            return rhs.isPositive_;
+        }
+
+        /**
+         * Less-than-or-equal comparison operator.
+         * @param lhs left-hand-side value in logarithmic domain
+         * @param rhs right-hand-side value in logarithmic domain
+         * @return true if lhs less than or equal rhs, false otherwise
+         */
+        friend bool operator<=(const logVal& lhs, const logVal& rhs)
+        {
+            if (lhs.isPositive_ && rhs.isPositive_)
+                return lhs.val_ <= rhs.val_;
+            if (!lhs.isPositive_ && !rhs.isPositive_)
+                return lhs.val_ >= rhs.val_;
+
+            return rhs.isPositive_;
+        }
+
+        /**
+         * Greater-than comparison operator.
+         * @param lhs left-hand-side value in logarithmic domain
+         * @param rhs right-hand-side value in logarithmic domain
+         * @return true if lhs greater than rhs, false otherwise
+         */
+        friend bool operator>(const logVal& lhs, const logVal& rhs)
+        {
+            if (lhs.isPositive_ && rhs.isPositive_)
+                return lhs.val_ > rhs.val_;
+            if (!lhs.isPositive_ && !rhs.isPositive_)
+                return lhs.val_ < rhs.val_;
+
+            return !rhs.isPositive_;
+        }
+
+        /**
+         * Less-than-or-equal comparison operator.
+         * @param lhs left-hand-side value in logarithmic domain
+         * @param rhs right-hand-side value in logarithmic domain
+         * @return true if lhs greater than or equal rhs, false otherwise
+         */
+        friend bool operator>=(const logVal& lhs, const logVal& rhs)
+        {
+            if (lhs.isPositive_ && rhs.isPositive_)
+                return lhs.val_ >= rhs.val_;
+            if (!lhs.isPositive_ && !rhs.isPositive_)
+                return lhs.val_ <= rhs.val_;
+
+            return !rhs.isPositive_;
+        }
+
+        /**
+         * Stream operator for logVal.
+         * @param os stream to writes to
+         * @param val value to be written
+         * @return the modified stream
+         */
         friend std::ostream& operator<<(std::ostream& os, const logVal& val)
         {
-            os << (val.isPositive_ ? "" : "-") << val.val;
+            os << (val.isPositive_ ? "" : "-") << exp(val.val_);
             return os;
         }
 
@@ -98,5 +262,5 @@ namespace util
     };
 }; // namespace util
 
-#endif	// NS_UTIL_LOGVALUE_H_INCLUDED
+#endif // NS_UTIL_LOGVALUE_H_INCLUDED
 
