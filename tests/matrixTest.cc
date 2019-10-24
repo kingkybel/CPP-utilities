@@ -24,13 +24,13 @@
 #include <initializer_list>
 #include "matrixTest.h"
 #include <matrix.h>
+#define DO_TRACE_
 #include <traceutil.h>
-//#include <logvalue.h>
+#include <logvalue.h>
 #define TEST_HEADER(tp,v0) { std::cout << __func__<< " " << #tp << "=" << tp <<  std::endl; }
 
 using namespace std;
 using namespace util;
-//#define DO_TRACE_
 
 CPPUNIT_TEST_SUITE_REGISTRATION(matrixTest);
 
@@ -272,6 +272,7 @@ void matrixTest::testMatrixConstruction()
     testMatrixConstructionT<double, true>({1.0, 2.0, 3.0, 4.0});
     testMatrixConstructionT<long double>({1.0, 2.0, 3.0, 4.0});
     testMatrixConstructionT<long double, true>({1.0, 2.0, 3.0, 4.0});
+    testMatrixConstructionT<logVal>({1.0L, 2.0L, 3.0L, 4.0L});
 
     testMatrixConstructionT<complex<float> >({
         {1.0, 2.0},

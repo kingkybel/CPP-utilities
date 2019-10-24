@@ -32,7 +32,6 @@ class matrixTest : public CPPUNIT_NS::TestFixture
     CPPUNIT_TEST(testExceptions);
     CPPUNIT_TEST(testMatrixOperations);
     CPPUNIT_TEST(testSquareMatrixOperations);
-
     CPPUNIT_TEST_SUITE_END();
 
 public:

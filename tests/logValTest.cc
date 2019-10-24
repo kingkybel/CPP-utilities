@@ -28,6 +28,7 @@
 #define DO_TRACE_
 #include <stringutil.h>
 #include <traceutil.h>
+#include <matrix.h>
 #include "logValTest.h"
 
 using namespace std;
@@ -108,20 +109,65 @@ void logValTest::testLogVal()
         auto result_l = l_a + l_b;
         CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE(failMessage("+", a, b, result, l_a, l_b, result_l), result, result_l.toReal(), abs(result / 1e8));
 
+        result = a;
+        result += b;
+        result_l = l_a;
+        result_l += l_b;
+        CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE(failMessage("+=", a, b, result, l_a, l_b, result_l), result, result_l.toReal(), abs(result / 1e8));
+
+        result++;
+        result_l++;
+        CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE(failMessage("()++", a, b, result, l_a, l_b, result_l), result, result_l.toReal(), abs(result / 1e8));
+
+        ++result;
+        ++result_l;
+        CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE(failMessage("++()", a, b, result, l_a, l_b, result_l), result, result_l.toReal(), abs(result / 1e8));
+
         result = a - b;
         result_l = l_a - l_b;
         CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE(failMessage("-", a, b, result, l_a, l_b, result_l), result, result_l.toReal(), abs(result / 1e8));
 
+        result--;
+        result_l--;
+        CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE(failMessage("()--", a, b, result, l_a, l_b, result_l), result, result_l.toReal(), abs(result / 1e8));
+
+        --result;
+        --result_l;
+        CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE(failMessage("--()", a, b, result, l_a, l_b, result_l), result, result_l.toReal(), abs(result / 1e8));
+
+        result = a;
+        result -= b;
+        result_l = l_a;
+        result_l -= l_b;
+        CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE(failMessage("-=", a, b, result, l_a, l_b, result_l), result, result_l.toReal(), abs(result / 1e8));
+
         result = a * b;
         result_l = l_a * l_b;
         CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE(failMessage("*", a, b, result, l_a, l_b, result_l), result, result_l.toReal(), abs(result / 1e8));
+
+        result = a;
+        result *= b;
+        result_l = l_a;
+        result_l *= l_b;
+        CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE(failMessage("*=", a, b, result, l_a, l_b, result_l), result, result_l.toReal(), abs(result / 1e8));
 
         if (b != 0.0L)
         {
             result = a / b;
             result_l = l_a / l_b;
             CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE(failMessage("/", a, b, result, l_a, l_b, result_l), result, result_l.toReal(), abs(result / 1e8));
+
+            result = a;
+            result /= b;
+            result_l = l_a;
+            result_l /= l_b;
+            CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE(failMessage("/=", a, b, result, l_a, l_b, result_l), result, result_l.toReal(), abs(result / 1e8));
         }
     }
+
+    // test for +/- zero equality
+    logVal neg_val = logVal::fromLog(-INFINITY, false);
+    logVal pos_val = logVal::fromLog(-INFINITY, true);
+    CPPUNIT_ASSERT_EQUAL(pos_val, neg_val);
 }
 
