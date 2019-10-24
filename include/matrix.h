@@ -35,27 +35,29 @@
 #include <initializer_list>
 #include <limits>
 #include "stringutil.h"
+#define DO_TRACE_
+#include "traceutil.h"
 
 namespace util
 {
 
     template<typename T>
-    T normalMin(T val)
+    inline T normalMin(T val)
     {
         return std::numeric_limits<T>::min();
     }
 
-    float normalMin(std::complex<float> val)
+    inline float normalMin(std::complex<float> val)
     {
         return std::numeric_limits<float>::min();
     }
 
-    double normalMin(std::complex<double> val)
+    inline double normalMin(std::complex<double> val)
     {
         return std::numeric_limits<double>::min();
     }
 
-    long double normalMin(std::complex<long double> val)
+    inline long double normalMin(std::complex<long double> val)
     {
         return std::numeric_limits<long double>::min();
     }
@@ -1354,10 +1356,10 @@ namespace util
     };
 
     template<bool enable = false >
-    void checkBounds(const matrix_interface& lhs,
-                     size_t x,
-                     size_t y,
-                     const std::string& location)
+    inline void checkBounds(const matrix_interface& lhs,
+                            size_t x,
+                            size_t y,
+                            const std::string& location)
     {
         if (!lhs.withinBounds(x, y))
         {
@@ -1378,10 +1380,10 @@ namespace util
     }
 
     template<>
-    void checkBounds<false>(const matrix_interface& lhs,
-                            size_t x,
-                            size_t y,
-                            const std::string& location)
+    inline void checkBounds<false>(const matrix_interface& lhs,
+                                   size_t x,
+                                   size_t y,
+                                   const std::string& location)
     {
     }
 

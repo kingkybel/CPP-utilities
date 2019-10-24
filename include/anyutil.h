@@ -40,7 +40,7 @@
 namespace util
 {
     class Var;
-    template <typename T_> bool isA(const Var& v);
+    template<typename T_> bool isA(const Var& v);
     template <typename T_> bool containsT(const Var& lhsInterval, const Var& rhs);
     template <typename T_> bool equalT(const Var& lhs, const Var& rhs);
     template <typename T_> bool lessT(const Var& lhs, const Var& rhs);
@@ -72,11 +72,11 @@ namespace util
     {
 
         /**
-         * Construct with the string that cannot be scanned into a boolean value.
+         * Construct with the string that cannot be parsed into a boolean value.
          * @param boolstr the failing string
          */
         boolstr_error(const std::string& boolstr)
-        : std::logic_error("Cannot scan '" + boolstr + "' into valid bool")
+        : std::logic_error("Cannot parse '" + boolstr + "' into valid bool")
         {
         }
     };
@@ -305,8 +305,8 @@ namespace util
     {
 
         /**
-         * Default construct a left-or right- finite interval interval.
-         * tags finiteMin and infiniteMax in this context mean the same: the
+         * Default construct a left- or right- finite interval interval.
+         * The tags finiteMin and infiniteMax in this context mean the same: the
          * interval is infinite on the right side and finite on the left. Conversely
          * the tags infiniteMin and  finiteMax mean that the
          * interval is finite on the right side and infinite on the left.
@@ -440,28 +440,23 @@ namespace util
         }
 
         /**
-         * Check whether the interval contains value v. Values exactly on one
-         * of the borders of the interval are contained in the interval if and
-         * only if the border in question is closed.
-         *
+         * Check whether the interval contains value v.
          * @param v value to check
          * @return true if v is contained in the interval, false otherwise
          */
         bool contains(const T_ & v) const
         {
-            // [-∞,-∞],  (-∞,-∞)
-            // [-∞,high], [-∞,high), (-∞,high], (-∞,high)
-            // [low,+∞],  [low,+∞),  (low,+∞],  (low,+∞)
-            // [low,high], [low,high), (low,high], (low,high)
+            /* [-∞,-∞],  (-∞,-∞)                              */
+            /* [-∞,high], [-∞,high), (-∞,high], (-∞,high)     */
+            /* [low,+∞],  [low,+∞),  (low,+∞],  (low,+∞)      */
+            /* [low,high], [low,high), (low,high], (low,high) */
             return (isLeftClosed() ? low_ <= v : low_ < v) &&
-                    (isRightClosed() ? v <= high_ : v < high_);
+                (isRightClosed() ? v <= high_ : v < high_);
 
         }
 
         /**
-         * Check whether the interval is wholly included in this interval. This
-         * is exactly then the case when both borders of the right-hand-side are
-         * contained in this interval.
+         * Check whether the interval is wholly included in this interval.
          * @param rhs the interval to check
          * @return true if the given interval is fully covered in this interval,
          *         false otherwise
@@ -522,25 +517,25 @@ namespace util
     {
     public:
 
-        //        enum StreamMode : long
-        //        {
-        //            reset = 0x0000, ///< reset the stream configuration to empty
-        //            quoted_char = 0x0001, ///< enclose characters in single quotes
-        //            hex_char = 0x0002, ///< display characters in hexadecimal representation
-        //            quoted_string = 0x0004, ///< enclose strings in double quotes
-        //            quoted_date = 0x0008, ///< enclose dates in double quotes
-        //            alpha_bool = 0x0010, ///< display booleans as true and false
-        //            short_float = 0x0020, ///< display floating point values in a short format
-        //            long_float = 0x0040, ///< display floating point values in a longer format
-        //            scientific_float = 0x0080, ///< display floating point values in scientific format
-        //            round_open_brace = 0x0100, ///< indicate open intervals with round braces
-        //            symbolic_infinity = 0x0200, ///< indicate full interval with symbolic infinity "oo"
-        //
-        //            pure = alpha_bool | hex_char | scientific_float, ///< simple scannable format combination
-        //            standard = alpha_bool | short_float | round_open_brace, ///< standard format combination
-        //            safe = quoted_char | hex_char | quoted_string | quoted_date | alpha_bool | scientific_float ///< more complex combination
-        //        };
-        //
+        enum StreamMode : long
+        {
+            reset = 0x0000, ///< reset the stream configuration to empty
+            quoted_char = 0x0001, ///< enclose characters in single quotes
+            hex_char = 0x0002, ///< display characters in hexadecimal representation
+            quoted_string = 0x0004, ///< enclose strings in double quotes
+            quoted_date = 0x0008, ///< enclose dates in double quotes
+            alpha_bool = 0x0010, ///< display booleans as true and false
+            short_float = 0x0020, ///< display floating point values in a short format
+            long_float = 0x0040, ///< display floating point values in a longer format
+            scientific_float = 0x0080, ///< display floating point values in scientific format
+            round_open_brace = 0x0100, ///< indicate open intervals with round braces
+            symbolic_infinity = 0x0200, ///< indicate full interval with symbolic infinity "oo"
+
+            pure = alpha_bool | hex_char | scientific_float, ///< simple scannable format combination
+            standard = alpha_bool | short_float | round_open_brace, ///< standard format combination
+            safe = quoted_char | hex_char | quoted_string | quoted_date | alpha_bool | scientific_float ///< more complex combination
+        };
+
 
         Var(); ///< Construct empty variant.
         Var(const VAR_BOOL& v); ///< Construct boolean variant.
@@ -550,21 +545,8 @@ namespace util
         Var(const VAR_FLOAT& v); ///< Construct floating point variant.
         Var(const VAR_DATE& v); ///< Construct date variant.
 
-        // disambiguation constructors
-
-        Var(const unsigned char& v);
-        Var(const short& v);
-        Var(const unsigned short& v);
-        Var(const int& v);
-        Var(const unsigned int& v);
-        Var(const long& v);
-        Var(const unsigned long& v);
-        Var(const float& v);
-        Var(const double& v);
-
         /**
-         * Construct an T_-type interval variant.
-         * @param itvl an interval of type T_
+         *  Construct an T_-type interval variant.
          */
         template<typename T_>
         Var(const Interval<T_>& itvl)
@@ -572,54 +554,17 @@ namespace util
         {
         }
 
-        /**
-         * Construct string variant.
-         * @param v string-value
-         */
-        Var(const VAR_STRING& v);
+        Var(const VAR_STRING& v); ///< Construct string variant.
+        Var(const Var& rhs); ///< Copy-construct a variant.
+        Var& operator=(const Var& rhs); ///< Assign a variant.
+
+        const std::type_info& type() const; ///< Get the typeid of the contained value.
+        bool empty() const; ///< Check whether the variant is empty.
+        Var& swap(Var& rhs); ///< Swap this variant with the rhs- variant.
+        boost::any value() const; ///< get the contained values as boost::any.
 
         /**
-         * Copy-construct a variant.
-         * @param rhs the right-hand-side variant
-         */
-        Var(const Var& rhs);
-
-        /**
-         * Assignment operator for variants.
-         * @param rhs the right-hand-side variant
-         * @return reference to *this
-         */
-        Var& operator=(const Var& rhs);
-
-        /**
-         * Get the typeid of the contained value.
-         * @return  the type-ID of the contained value
-         */
-        const std::type_info& type() const;
-
-        /**
-         * Check whether the variant is empty.
-         * @return true if so, false otherwise
-         */
-        bool empty() const;
-
-        /**
-         * Swap this variant with the rhs- variant.
-         * @param rhs the right-hand-side variant
-         * @return a reference to the original value
-         */
-        Var& swap(Var& rhs);
-
-        /**
-         * Get the contained values as boost::any.
-         * @return boost::any wrapped value of this variant
-         */
-        boost::any value() const;
-
-        /**
-         * Check whether the value has the native type.
-         * @param v variant value to check against type T_
-         * @return true is v has type T_, false otherwise
+         *  Check whether the value has the native type.
          */
         template<typename T_>
         friend bool isA(const Var& v)
@@ -629,8 +574,7 @@ namespace util
         }
 
         /**
-         * Get the value as the native type.
-         * @return the value of the variant
+         *  Get the value as the native type.
          */
         template <typename T_>
         T_ get() const
@@ -644,36 +588,34 @@ namespace util
         }
 
         /**
-         * Check whether two variants have the same native type.
-         * @param lhs left-hand-side of the comparison
-         * @param rhs right-hand-side of the comparison
-         * @return true if lhs and rhs have the same type, false otherwise
+         * Check whether two vars have the same native type.
          */
-        friend bool sameType(const Var& lhs, const Var& rhs)
+        friend bool sameType(const Var& v1, const Var& v2)
         {
 
-            return lhs.type() == rhs.type();
+            return v1.type() == v2.type();
         }
 
         /**
          * Template equalT is needed to ensure that Var's can be put in
          * associative containers.
-         * @param lhs left-hand-side of the comparison
-         * @param rhs right-hand-side of the comparison
-         * @return if lhs is equal to rhs, false otherwise
+         * The other comparison functions only will be used to transcend their
+         * native type's operators.
          */
         template<typename T_>
         friend bool equalT(const Var& lhs, const Var& rhs)
         {
 
             return lhs.type() == rhs.type() &&
-                    isA<T_>(lhs) &&
-                    lhs.get<T_>() == rhs.get<T_>();
+                isA<T_>(lhs) &&
+                lhs.get<T_>() == rhs.get<T_>();
         }
 
         /**
          * Template lessT is needed to ensure that Var's can be put in
          * associative containers.
+         * The other comparison functions only will be used to transcend their
+         * native type's operators.
          * Helper template for definition of global operator &lt;.
          * @param lhs left-hand-side of the comparison
          * @param rhs right-hand-side of the comparison
@@ -802,14 +744,14 @@ namespace util
          */
         friend bool operator>=(const Var& lhs, const Var& rhs);
 
-        //        /**
-        //         * Out-stream operator for variant stream modifiers.
-        //         * @param os the ostream for output
-        //         * @param sm the modifier
-        //         * @return the modified stream
-        //         */
-        //        friend std::ostream& operator<<(std::ostream& os, Var::StreamMode sm);
-        //
+        /**
+         * Out-stream operator for variant stream modifiers.
+         * @param os the ostream for output
+         * @param sm the modifier
+         * @return the modified stream
+         */
+        friend std::ostream& operator<<(std::ostream& os, Var::StreamMode sm);
+
         /**
          * Out-stream operator for variants.
          * @param os the ostream for output
@@ -938,8 +880,8 @@ namespace util
             auto lTp = lhs.traits_;
             auto rTp = rhs.traits_;
             return lTp < rTp ||
-                    (lTp == rTp && lhs.low_ < rhs.low_) ||
-                    (lTp == rTp && lhs.low_ == rhs.low_ && lhs.high_ < rhs.high_);
+                (lTp == rTp && lhs.low_ < rhs.low_) ||
+                (lTp == rTp && lhs.low_ == rhs.low_ && lhs.high_ < rhs.high_);
         }
         return std::string(typeid (lhs).name()) < std::string(typeid (rhs).name());
     }
@@ -957,9 +899,9 @@ namespace util
     {
 
         return typeid (lhs) == typeid (rhs) &&
-                (IntervalType) lhs == (IntervalType) rhs &&
-                lhs.low_ == rhs.low_ &&
-                lhs.high_ == rhs.high_;
+            (IntervalType) lhs == (IntervalType) rhs &&
+            lhs.low_ == rhs.low_ &&
+            lhs.high_ == rhs.high_;
     }
 
     /**
@@ -986,33 +928,33 @@ namespace util
     template<typename T_>
     std::ostream& operator<<(std::ostream& os, const Interval<T_>& itvl)
     {
-        std::ios::fmtflags backup = os.flags();
-        streamManip* pSM = (streamManip*) os.pword(streamManip::streamManip_xindex);
-        streamManip sm = (pSM == 0) ? streamManip(&os) : *pSM;
-
+        Var::StreamMode sm = (Var::StreamMode)os.iword(Var::xalloc_index);
+        if (sm == 0)
+            sm = Var::standard;
         bool leftInf = itvl.isLeftInfinite();
         bool rightInf = itvl.isRightInfinite();
         bool leftOpen = itvl.isLeftOpen();
         bool rightOpen = itvl.isRightOpen();
 
-        char left = sm.isSet(util::round_open_brace) && leftOpen ? '(' : '[';
-        char right = sm.isSet(util::round_open_brace) && rightOpen ? ')' : ']';
+        char left = (sm & Var::round_open_brace) == Var::round_open_brace && leftOpen ? '(' : '[';
+        char right = (sm & Var::round_open_brace) == Var::round_open_brace && rightOpen ? ')' : ']';
 
-        bool symbolic = sm.isSet(util::symbolic_infinity);
+        bool symbolic = (sm & Var::symbolic_infinity) == Var::symbolic_infinity;
         os << left;
         if (symbolic && leftInf)
             os << "-∞";
         else if (leftInf)
-            sm.stream(os, minVal<T_> ());
+            os << minVal<T_> ();
         else
-            sm.stream(os, itvl.low_);
+            os << itvl.low_;
         os << ", ";
         if (symbolic && rightInf)
             os << "+∞";
         else if (rightInf)
-            sm.stream(os, maxVal<T_>());
+            os << maxVal<T_>();
+
         else
-            sm.stream(os, itvl.high_);
+            os << itvl.high_;
 
         os << right;
         return os;
@@ -1020,8 +962,8 @@ namespace util
 
     /**
      * Scan a string and convert to the template-type.
-     * @param strVal string representation of a value
-     * @return the value as parsed from the string, undefined if not parseable
+     * @param strVal the string-representation
+     * @return the scanned value
      */
     template <typename T_>
     inline T_ scanAs(const VAR_STRING& strVal)
@@ -1035,10 +977,11 @@ namespace util
     }
 
     /**
-     * Scan a string and convert to the template-type specialised for bool.
-     * @param strVal string representation of a value
-     * @return the value as parsed from the string
-     * @throws boolstr_error if string cannot be parsed as boolean
+     * Scan a string and convert to the template-type specialised for VAR_BOOL.
+     *
+     * @param strVal the string-representation
+     * @return the scanned boolean value
+     * @throws boolstr_error if string cannot be interpreted as boolean
      */
     template <>
     inline VAR_BOOL scanAs<VAR_BOOL>(const VAR_STRING& strVal)
@@ -1046,6 +989,7 @@ namespace util
         VAR_BOOL reval = false;
         if (!scanBoolString(strVal, reval))
         {
+
             throw boolstr_error(strVal);
         }
         return reval;
@@ -1053,41 +997,47 @@ namespace util
 
     /**
      * Scan a string and convert to the template-type specialised for string.
-     * @param strVal string representation of a value
-     * @return the same value
+     *
+     * @param strVal the string-representation
+     * @return the string itself
      */
     template <>
     inline VAR_STRING scanAs<VAR_STRING>(const VAR_STRING& strVal)
     {
+
         return strVal;
     }
 
     /**
      * Scan a string and convert to the template-type specialised for date.
-     * @param strVal string representation of a date
-     * @return the date, None scannable dates will be defaulted
+     *
+     * @param strVal the string-representation
+     * @return the parsed VAR_DATE
      */
     template <>
     inline VAR_DATE scanAs<VAR_DATE>(const VAR_STRING& strVal)
     {
+
         return datescan::scanDate((std::string)strVal);
     }
 
     /**
      * Create a Var from any type using the most appropriate constructor.
-     * @param v a native value
-     * @return the value wrapped in a variant
+     *
+     * @param val the POD value
+     * @return the constructed Var
      */
     template <typename T_>
-    Var asVar(const T_ v)
+    Var asVar(const T_ val)
     {
-        return Var(v);
+
+        return Var(val);
     }
 
     /**
      * Create a Var from a string using the template type constructor.
-     * @param strVal string representation of a value
-     * @return a variant of type T_
+     * @param strVal the string-representation
+     * @return the constructed Var
      */
     template<typename T_>
     inline Var scanAsVar(const VAR_STRING& strVal)
@@ -1098,18 +1048,18 @@ namespace util
 
     /**
      * Convert a Var to its native (underlying) type if possible.
-     * @param v the variant to convert
-     * @return the native value as type T_
-     * @throws cast_error if  conversion to type T- is not possible
+     *
+     * @param val the Var value
+     * @return the POD value
      */
     template<typename T_>
-    T_ toNative(const Var& v)
+    T_ toNative(const Var& val)
     {
-        if (!isA<T_>(v))
+        if (!isA<T_>(val))
         {
-            throw cast_error(v.type().name(), typeid (T_).name());
+            throw cast_error(val.type().name(), typeid (T_).name());
         }
-        return v.get<T_>();
+        return val.get<T_>();
     }
 
 

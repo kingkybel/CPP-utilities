@@ -39,6 +39,9 @@ using namespace std;
 namespace util
 {
 
+    /**
+     * General grid exception.
+     */
     class grid_error : public std::out_of_range
     {
     public:
@@ -99,10 +102,10 @@ namespace util
             return mode_;
         }
 
-        //////////////////////////////////////////////////////////////////////////////
-        //                                                                          //
-        //                    pure virtual functions                                //
-        //                                                                          //
+        ////////////////////////////////////////////////////////////////////////
+        //                                                                    //
+        //                    pure virtual functions                          //
+        //                                                                    //
         virtual void resize(const size_t newDimX, const size_t newDimY) = 0;
         virtual size_t sizeX() const = 0;
         virtual size_t sizeY() const = 0;
@@ -113,8 +116,8 @@ namespace util
                          const EL_TYPE& newValue) = 0;
         virtual void show(DisplayMode mode) = 0;
         virtual void setAll(const EL_TYPE& p_elValue) = 0;
-        //                                                                          //
-        //////////////////////////////////////////////////////////////////////////////
+        //                                                                    //
+        ////////////////////////////////////////////////////////////////////////
 
         /**
          *

@@ -38,7 +38,6 @@
 #include <unordered_set>
 #include <unordered_map>
 #include <functional>
-#include <type_traits>
 #include "iosutil.h"
 #ifndef DO_TRACE_
 #define DO_TRACE_
@@ -75,49 +74,6 @@ namespace util
     {
         std::stringstream ss;
         ss << v;
-        return ss.str();
-    }
-
-    /**
-     * Convert integer values to a hex string.
-     */
-    template <typename T_>
-    inline std::string hexString(const T_& v,
-                                 int width = -1,
-                                 bool upper = false,
-                                 bool has0x = true)
-    {
-        std::stringstream ss;
-        ss << fmtHex<T_>(v, width, upper, has0x);
-        return ss.str();
-    }
-
-    /**
-     * Convert integer values to a hex string.
-     */
-    template <typename T_>
-    inline std::string floatString(const T_& v,
-                                   int width = -1,
-                                   size_t precision = 5,
-                                   char fill = '0',
-                                   bool isFixed = true)
-    {
-        std::stringstream ss;
-        if (width < 0)
-            ss << fmtFloat<T_>(v);
-        else
-            ss << fmtFloat<T_>(v, width, precision, fill, isFixed);
-        return ss.str();
-    }
-
-    /**
-     * Convert objects to a string, provided a ostream - &lt;&lt; operator is defined.
-     */
-    template <typename T_>
-    inline std::string asString(const T_& v, const streamManip& sm)
-    {
-        std::stringstream ss;
-        sm.stream(ss, v);
         return ss.str();
     }
 
