@@ -69,51 +69,6 @@ namespace util
     {
     }
 
-    Var::Var(const unsigned char& v)
-    : value_((VAR_CHAR) v)
-    {
-    }
-
-    Var::Var(const short& v)
-    : value_((VAR_INT) v)
-    {
-    }
-
-    Var::Var(const unsigned short& v)
-    : value_((VAR_UINT) v)
-    {
-    }
-
-    Var::Var(const int& v)
-    : value_((VAR_INT) v)
-    {
-    }
-
-    Var::Var(const unsigned int& v)
-    : value_((VAR_UINT) v)
-    {
-    }
-
-    Var::Var(const long& v)
-    : value_((VAR_INT) v)
-    {
-    }
-
-    Var::Var(const unsigned long& v)
-    : value_((VAR_UINT) v)
-    {
-    }
-
-    Var::Var(const float& v)
-    : value_((VAR_FLOAT) v)
-    {
-    }
-
-    Var::Var(const double& v)
-    : value_((VAR_FLOAT) v)
-    {
-    }
-
     Var::Var(const Var& rhs)
     : value_(rhs.value_)
     {
@@ -246,31 +201,77 @@ namespace util
                 asString(lhs) >= asString(rhs);
     }
 
+    ostream& operator<<(ostream& os, Var::StreamMode sm)
+    {
+        //            reset = 0x0000, ///< reset the stream configuration to empty
+        //            quoted_char = 0x0001, ///< enclose characters in single quotes
+        //            hex_char = 0x0002, ///< display characters in hexadecimal representation
+        //            quoted_string = 0x0004, ///< enclose strings in double quotes
+        //            quoted_date = 0x0008, ///< enclose dates in double quotes
+        //            alpha_bool = 0x0010, ///< display booleans as true and false
+        //            short_float = 0x0020, ///< display floating point values in a short format
+        //            long_float = 0x0040, ///< display floating point values in a longer format
+        //            scientific_float = 0x0080, ///< display floating point values in scientific format
+        //            round_open_brace = 0x0100, ///< indicate open intervals with round braces
+        //            symbolic_full = 0x0200, ///< indicate full interval with symbolic infinity "oo"
+        //
+        //            pure = alpha_bool | hex_char | scientific_float, ///< simple scannable format combination
+        //            standard = alpha_bool | short_float | round_open_brace, ///< standard format combination
+        //            safe = quoted_char | hex_char | quoted_string | quoted_date | alpha_bool | scientific_float ///< more complex combination
+        if (os.iword(Var::xalloc_index) == 0)
+        {
+            os.iword(Var::xalloc_index) = Var::standard;
+        }
+
+        if (sm == Var::reset || sm == Var::standard)
+        {
+            os.iword(Var::xalloc_index) = Var::standard;
+            return os;
+        }
+        else if (sm == Var::pure || sm == Var::safe)
+        {
+            os.iword(Var::xalloc_index) = sm;
+            return os;
+        }
+
+        long smLong = os.iword(Var::xalloc_index);
+        if ((sm & Var::scientific_float) == Var::scientific_float)
+        {
+            smLong &= ~Var::long_float;
+            smLong &= ~Var::short_float;
+            os.iword(Var::xalloc_index) |= smLong;
+        }
+        else if ((sm & Var::long_float) == Var::long_float)
+        {
+            smLong &= ~Var::short_float;
+            os.iword(Var::xalloc_index) |= smLong;
+        }
+        else
+        {
+            os.iword(Var::xalloc_index) |= sm;
+        }
+
+        return os;
+    }
+
     ostream& operator<<(ostream& os, const Var& v)
     {
-        std::ios::fmtflags backup = os.flags();
-        streamManip* pSM = (streamManip*) os.pword(streamManip::streamManip_xindex);
-        const streamManip& sm = (pSM == 0) ? streamManip(&os) : *pSM;
+        Var::StreamMode sm = (Var::StreamMode)os.iword(Var::xalloc_index);
+        if (sm == 0)
+            sm = Var::standard;
 
         if (isA<VAR_BOOL>(v))
         {
-            if (sm.isSet(util::alpha_bool))
+            if ((sm & Var::alpha_bool) == Var::alpha_bool)
                 os << boolalpha;
             os << v.get<VAR_BOOL>();
         }
         else if (isA<VAR_CHAR>(v))
         {
-            bool isHex = sm.isSet(util::hex_char);
-            if (sm.isSet(util::squoted_char))
-                if (isHex)
-                    os << squoted(hexString(v.get<VAR_CHAR>()));
-                else
-                    os << squoted(v.get<VAR_CHAR>());
-            else if (sm.isSet(util::dquoted_char))
-                if (isHex)
-                    os << quoted(hexString(v.get<VAR_CHAR>()));
-                else
-                    os << quoted(v.get<VAR_CHAR>());
+            if ((sm & Var::hex_char) == Var::hex_char)
+                os << hex << v.get<VAR_CHAR>();
+            if ((sm & Var::quoted_char) == Var::quoted_char)
+                os << squoted(v.get<VAR_CHAR>());
             else
                 os << v.get<VAR_CHAR>();
         }
@@ -280,28 +281,24 @@ namespace util
             os << v.get<VAR_UINT> ();
         else if (isA<VAR_FLOAT>(v))
         {
-            if (sm.isSet(util::short_float))
+            if ((sm & Var::short_float) == Var::short_float)
                 os << fixed << setprecision(5);
-            else if (sm.isSet(util::long_float))
+            else if ((sm & Var::long_float) == Var::long_float)
                 os << fixed << setprecision(20);
-            else if (sm.isSet(util::scientific_float))
+            if ((sm & Var::scientific_float) == Var::scientific_float)
                 os << scientific << setprecision(20);
             os << v.get<VAR_FLOAT>();
         }
         else if (isA<VAR_STRING> (v))
         {
-            if (sm.isSet(util::squoted_string))
-                os << squoted(v.get<VAR_STRING>());
-            if (sm.isSet(util::dquoted_string))
+            if ((sm & Var::quoted_string) == Var::quoted_string)
                 os << quoted(v.get<VAR_STRING>());
             else
                 os << v.get<VAR_STRING>();
         }
         else if (isA<VAR_DATE>(v))
         {
-            if (sm.isSet(util::squoted_date))
-                os << squoted(v.get<VAR_DATE>());
-            if (sm.isSet(util::dquoted_date))
+            if ((sm & Var::quoted_date) == Var::quoted_date)
                 os << quoted(v.get<VAR_DATE>());
             else
                 os << v.get<VAR_DATE>();
@@ -318,9 +315,6 @@ namespace util
             os << v.get<VAR_DATE_INTERVAL>();
         else if (isA<VAR_FLOAT_INTERVAL>(v))
             os << v.get<VAR_FLOAT_INTERVAL>();
-
-        os.flags(backup);
-
         return os;
     }
 
