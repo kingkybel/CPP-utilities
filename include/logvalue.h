@@ -31,6 +31,8 @@
 #include <traceutil.h>
 namespace util
 {
+    class logVal;
+    long double abs(const logVal& val);
 
     class logVal
     {
@@ -54,8 +56,8 @@ namespace util
         static logVal fromReal(long double realDomainVal)
         {
             return realDomainVal >= 0.0L ?
-                logVal(log(realDomainVal), true) :
-                logVal(log(-realDomainVal), false);
+                    logVal(log(realDomainVal), true) :
+                    logVal(log(-realDomainVal), false);
         }
 
         static logVal fromLog(long double logDomainVal, bool isPositive = true)
@@ -73,9 +75,14 @@ namespace util
         logVal& operator=(const logVal& rhs) = default;
         ~logVal() = default;
 
-        const long double toReal() const
+        long double toReal() const
         {
             return isPositive_ ? exp(val_) : -exp(val_);
+        }
+
+        explicit operator long double()
+        {
+            return toReal();
         }
 
         /**
@@ -90,9 +97,6 @@ namespace util
             long double rhsDbl = rhs.isPositive_ ? exp(rhs.val_) : -exp(rhs.val_);
 
             return logVal(lhsDbl + rhsDbl);
-
-            // (lhs.val_ > rhs.val_) ? lhs.val_ + log(1 + exp(rhs.val_ - lhs.val_)) :
-            // rhs.val_ + log(1 + exp(lhs.val_ - rhs.val_));
         }
 
         /**
@@ -261,8 +265,14 @@ namespace util
          */
         friend bool operator==(const logVal& lhs, const logVal& rhs)
         {
-            return (lhs.isZero() && rhs.isZero()) ||
-                (lhs.isPositive_ == rhs.isPositive_ && lhs.val_ == rhs.val_);
+            bool reval = (lhs.isZero() && rhs.isZero()) ||
+                    (lhs.isPositive_ == rhs.isPositive_ && lhs.val_ == rhs.val_);
+            if (!reval)
+            {
+                TRACE0;
+                std::cout << lhs << " is != " << rhs << std::endl;
+            }
+            return reval;
         }
 
         /**
@@ -353,12 +363,17 @@ namespace util
          */
         friend std::ostream& operator<<(std::ostream& os, const logVal& val)
         {
-            os << val.toReal();
+            os << "lv(" << val.toReal() << ") " << (val.isPositive_ ? "+" : "-") << val.val_;
             return os;
         }
 
 
     };
+
+    inline long double abs(const logVal& val)
+    {
+        return std::abs(val.toReal());
+    }
 }; // namespace util
 
 #endif // NS_UTIL_LOGVALUE_H_INCLUDED

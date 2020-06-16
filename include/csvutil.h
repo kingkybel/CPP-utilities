@@ -120,7 +120,7 @@ namespace util
 
                        //  Begin grammar
                        (
-                        *(char_ - separator) % separator
+                        *(qi::char_ - separator) % separator
                         )
                        ,
                        //  End grammar

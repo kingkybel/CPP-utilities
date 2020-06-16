@@ -34,6 +34,7 @@
 #include <complex>
 #include <initializer_list>
 #include <limits>
+#include <ios>
 #include "stringutil.h"
 #define DO_TRACE_
 #include "traceutil.h"
@@ -875,18 +876,15 @@ namespace util
         matrix<T, enableBoundsCheck> inv()
         {
             assertSquare(*this, "matrix<T,enableBoundsCheck>::inv()");
-            size_t y, x, k;
-            T pivotVal, a2;
 
             // initialize the return matrix as the unit-matrix of sizeX
             matrix<T, enableBoundsCheck> reval =
                 matrix<T, enableBoundsCheck>::scalar(sizeX(), T(1.0L));
-
-            for (k = 0; k < sizeX(); k++)
+            for (size_t k = 0; k < sizeX(); k++)
             {
                 // if we can not find a new pivot-element then the matrix is
                 // singular and cannot be inverted
-                int pivIdx = pivot(k);
+                long long pivIdx = pivot(k);
                 if (pivIdx == -1)
                     throw matrixIsSingular("matrix<T,enableBoundsCheck>::operator!: Inversion of a singular matrix");
 
@@ -897,22 +895,24 @@ namespace util
                 }
                 // divide all values at the row by the pivot value and thus
                 // ensuring that the value at (k,k) == 1
-                pivotVal = (*this)(k, k);
-                for (x = 0; x < sizeX(); x++)
+                T pivotVal = (*this)(k, k);
+                for (size_t x = 0; x < sizeX(); x++)
                 {
                     (*this)(x, k) /= pivotVal;
                     reval(x, k) /= pivotVal;
                 }
-                for (y = 0; y < sizeY(); y++)
+                for (size_t y = 0; y < sizeY(); y++)
+                {
                     if (y != k)
                     {
-                        a2 = (*this)(k, y);
-                        for (x = 0; x < sizeX(); x++)
+                        T a2 = (*this)(k, y);
+                        for (size_t x = 0; x < sizeX(); x++)
                         {
                             (*this)(x, y) -= a2 * (*this)(x, k);
                             reval(x, y) -= a2 * reval(x, k);
                         }
                     }
+                }
             }
             return reval;
         }
@@ -1332,15 +1332,17 @@ namespace util
         long long pivot(size_t pivX, matrix<T, enableBoundsCheck>* solutions = 0)
         {
             long long k = pivX;
-            long double amax = -1.0;
-            long double temp = 0.0;
+            long double amax = 0.0L;
 
             for (size_t x = pivX; x < sizeX(); x++)
-                if ((temp = abs((*this)(pivX, x))) > amax && temp != 0.0)
+            {
+                long double temp = abs((*this)(pivX, x));
+                if (temp > amax)
                 {
                     amax = temp;
                     k = x;
                 }
+            }
             if ((*this)(pivX, k) == T(0))
                 return -1;
             if (k != (long long) (pivX))

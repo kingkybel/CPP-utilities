@@ -37,7 +37,7 @@
 
 namespace util
 {
-    namespace bt = boost::posix_time;
+    namespace val = boost::posix_time;
     namespace datescan
     {
 
@@ -57,7 +57,7 @@ namespace util
         /**
          *  Conversion of a boost::posix_time to a time_t.
          */
-        std::time_t pt_to_time_t(const bt::ptime& pt);
+        std::time_t pt_to_time_t(const val::ptime& pt);
 
         /**
          *  Returns the seconds elapsed since the epoch (1 Jan 1900)
@@ -67,7 +67,7 @@ namespace util
         /**
          *  Scan/parse a string into a date.
          */
-        bt::ptime scanDate(const std::string& s);
+        val::ptime scanDate(const std::string& s);
 
         /**
          *  Returns true if the string depicts a time-only format and false otherwise.
@@ -105,7 +105,7 @@ namespace util
          * all specified as integers. Returns a now-timestamp if all parameters
          * are equal to -1.
          */
-        bt::ptime toDate(int y = -1,
+        val::ptime toDate(int y = -1,
                          int m = -1,
                          int d = -1,
                          int H = 0,
@@ -127,7 +127,7 @@ namespace util
     /**
      *  Checks whether a time is a valid time.
      */
-    inline bool valid(const bt::ptime& pt)
+    inline bool valid(const val::ptime& pt)
     {
         return !pt.is_infinity() &&
                 !pt.is_not_a_date_time() &&

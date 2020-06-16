@@ -681,7 +681,7 @@ namespace std
 
     /**
      * Override the standard hash function for case insensitive strings to
-     * enable as elements in hash containers
+     * enable ci_strings as elements in hash containers
      */
     template<>
     struct hash<util::ci_string>
