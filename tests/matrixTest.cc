@@ -21,13 +21,16 @@
 
 #include <iostream>
 #include <complex>
+#include <ios>
 #include <initializer_list>
 #include "matrixTest.h"
 #include <matrix.h>
-#define DO_TRACE_
-#include <traceutil.h>
 #include <logvalue.h>
+#ifdef IN_DEVELOPMENT
 #define TEST_HEADER(tp,v0) { std::cout << __func__<< " " << #tp << "=" << tp <<  std::endl; }
+#else
+#define TEST_HEADER(tp,v0)
+#endif
 
 using namespace std;
 using namespace util;
@@ -273,6 +276,7 @@ void matrixTest::testMatrixConstruction()
     testMatrixConstructionT<long double>({1.0, 2.0, 3.0, 4.0});
     testMatrixConstructionT<long double, true>({1.0, 2.0, 3.0, 4.0});
     testMatrixConstructionT<logVal>({1.0L, 2.0L, 3.0L, 4.0L});
+    testMatrixConstructionT<logVal, true>({1.0L, 2.0L, 3.0L, 4.0L});
 
     testMatrixConstructionT<complex<float> >({
         {1.0, 2.0},
@@ -338,7 +342,6 @@ void testExceptionsT(initializer_list<T_> hVec,
     size_t dim2 = vVec.size();
     CPPUNIT_ASSERT_MESSAGE("matrices must have minimum size of 2 for these tests",
                            dim1 != dim2 && dim1 >= 2 && dim2 >= 2);
-
     auto hv = matrix<T_, enableBoundsCheck>::hvect(hVec);
     auto vv = matrix<T_, enableBoundsCheck>::vvect(vVec);
     auto m1_2 = matrix<T_, enableBoundsCheck>(dim1 - 1, dim2 + 1, mat);
@@ -426,6 +429,27 @@ void matrixTest::testExceptions()
                                        1.0, 5.0, 4.0,
                                        6.0, 7.0, 10.0,
                                        2.0, 3.0, 7.0
+    });
+
+    testExceptionsT<logVal>({1.0, 2.0, 3.0},
+    {
+                            4.0, 2.0, 5.0, 6.0
+    },
+    {
+                            10.0, 1.0, 3.0,
+                            1.0, 5.0, 4.0,
+                            6.0, 7.0, 10.0,
+                            2.0, 3.0, 7.0
+    });
+    testExceptionsT<logVal, true>({1.0, 2.0, 3.0},
+    {
+                                  4.0, 2.0, 5.0, 6.0
+    },
+    {
+                                  10.0, 1.0, 3.0,
+                                  1.0, 5.0, 4.0,
+                                  6.0, 7.0, 10.0,
+                                  2.0, 3.0, 7.0
     });
 
     testExceptionsT<complex<float>>({
@@ -845,8 +869,31 @@ void testMatrixOperationsT(initializer_list<T_> hVec,
     CPPUNIT_ASSERT(result == nullMatrix1_2);
 
     result = m1_2 + m1_2;
-    CPPUNIT_ASSERT(result == T_(2.0) * m1_2 && result == m1_2 * T_(2.0));
-    CPPUNIT_ASSERT(result / T_(2.0) == m1_2);
+    cout << ios::scientific;
+    auto t1 = m1_2 * T_(2.0);
+    auto t2 = T_(2.0) * m1_2;
+    for (size_t y = 0; y < t1.sizeY(); y++)
+        for (size_t x = 0; x < t1.sizeX(); x++)
+        {
+            stringstream msg;
+            msg.precision(40);
+            msg << "[" << x << "," << y << "]\n\tt1=" << t1(x, y) << "\n\tt2=" << t2(x, y) << endl;
+            CPPUNIT_ASSERT_EQUAL_MESSAGE(msg.str(), t1(x, y), t2(x, y));
+        }
+    CPPUNIT_ASSERT_EQUAL(T_(2.0) * m1_2, m1_2 * T_(2.0));
+
+    t1 = result / T_(2.0);
+    t2 = m1_2;
+    for (size_t y = 0; y < t1.sizeY(); y++)
+        for (size_t x = 0; x < t1.sizeX(); x++)
+        {
+            stringstream msg;
+            msg.precision(128);
+            msg << "Error in [" << x << "," << y << "]\n\tt1=" << t1(x, y) << "\n\tt2=" << t2(x, y) << endl;
+            CPPUNIT_ASSERT_EQUAL_MESSAGE(msg.str(), t1(x, y), t2(x, y));
+        }
+
+    CPPUNIT_ASSERT_EQUAL(result / T_(2.0), m1_2);
 
     result = nullMatrix1_2;
     result -= m1_2;
@@ -928,6 +975,27 @@ void matrixTest::testMatrixOperations()
                                              6.0, 7.0, 10.0,
                                              2.0, 3.0, 7.0
     });
+
+//    testMatrixOperationsT<logVal>({1.0, 2.0, 3.0},
+//    {
+//                                  4.0, 2.0, 5.0, 6.0
+//    },
+//    {
+//                                  10.0, 1.0, 3.0,
+//                                  1.0, 5.0, 4.0,
+//                                  6.0, 7.0, 10.0,
+//                                  2.0, 3.0, 7.0
+//    });
+//    testMatrixOperationsT<logVal, true>({1.0, 2.0, 3.0},
+//    {
+//                                        4.0, 2.0, 5.0, 6.0
+//    },
+//    {
+//                                        10.0, 1.0, 3.0,
+//                                        1.0, 5.0, 4.0,
+//                                        6.0, 7.0, 10.0,
+//                                        2.0, 3.0, 7.0
+//    });
 
     testMatrixOperationsT<complex<float>>({
         {1.0, 2.0},
@@ -1295,8 +1363,8 @@ void testSquareMatrixOperationsT(initializer_list<T_> m1_list,
     for (size_t y = 0; y < expectd.sizeX(); y++)
         for (size_t x = 0; x < expectd.sizeX(); x++)
         {
-            CPPUNIT_ASSERT_DOUBLES_EQUAL(expectd(x, y), sq_inv(x, y), delta);
-            CPPUNIT_ASSERT_DOUBLES_EQUAL(unit1(x, y), result(x, y), T_(0.01));
+            CPPUNIT_ASSERT(abs(expectd(x, y) - sq_inv(x, y)) < delta);
+            CPPUNIT_ASSERT(abs(unit1(x, y) - result(x, y)) < T_(0.01));
         }
 }
 
@@ -1314,4 +1382,40 @@ void matrixTest::testSquareMatrixOperations()
                                              2.0, 4.0, 5.0
     },
                                              1e-10L);
+    testSquareMatrixOperationsT<long double, true>({
+                                                   5.0, 4.0, 7.0, 6.0, 1.0, 4.0, 2.0, 2.0, 5.0
+    },
+    {
+                                                   0.09090909090909090911, 0.18181818181818181817, -0.2727272727272727273,
+                                                   0.66666666666666666663, -0.33333333333333333332, -0.66666666666666666663,
+                                                   -0.3030303030303030303, 0.060606060606060606058, 0.575757575757
+    },
+    {
+                                                   2.0, 4.0, 5.0
+    },
+                                                   1e-10L);
+//    testSquareMatrixOperationsT<logVal>({
+//                                        5.0, 4.0, 7.0, 6.0, 1.0, 4.0, 2.0, 2.0, 5.0
+//    },
+//    {
+//                                        0.09090909090909090911, 0.18181818181818181817, -0.2727272727272727273,
+//                                        0.66666666666666666663, -0.33333333333333333332, -0.66666666666666666663,
+//                                        -0.3030303030303030303, 0.060606060606060606058, 0.575757575757
+//    },
+//    {
+//                                        2.0, 4.0, 5.0
+//    },
+//                                        1e-10L);
+//    testSquareMatrixOperationsT<logVal, true>({
+//                                              5.0, 4.0, 7.0, 6.0, 1.0, 4.0, 2.0, 2.0, 5.0
+//    },
+//    {
+//                                              0.09090909090909090911, 0.18181818181818181817, -0.2727272727272727273,
+//                                              0.66666666666666666663, -0.33333333333333333332, -0.66666666666666666663,
+//                                              -0.3030303030303030303, 0.060606060606060606058, 0.575757575757
+//    },
+//    {
+//                                              2.0, 4.0, 5.0
+//    },
+//                                              1e-10L);
 }

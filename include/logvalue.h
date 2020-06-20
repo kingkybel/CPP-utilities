@@ -27,8 +27,7 @@
 #include <cmath>
 #include <ostream>
 #include <exception>
-#define DO_TRACE_
-#include <traceutil.h>
+
 namespace util
 {
     class logVal;
@@ -267,11 +266,6 @@ namespace util
         {
             bool reval = (lhs.isZero() && rhs.isZero()) ||
                     (lhs.isPositive_ == rhs.isPositive_ && lhs.val_ == rhs.val_);
-            if (!reval)
-            {
-                TRACE0;
-                std::cout << lhs << " is != " << rhs << std::endl;
-            }
             return reval;
         }
 

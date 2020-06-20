@@ -6,15 +6,15 @@
 
 # Macros
 TOP=`pwd`
-CND_PLATFORM=GNU-Linux-x86
+CND_PLATFORM=GNU-Linux
 CND_CONF=Debug
 CND_DISTDIR=dist
 CND_BUILDDIR=build
 CND_DLIB_EXT=so
 NBTMPDIR=${CND_BUILDDIR}/${CND_CONF}/${CND_PLATFORM}/tmp-packaging
 TMPDIRNAME=tmp-packaging
-OUTPUT_PATH=${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/libutil.${CND_DLIB_EXT}
-OUTPUT_BASENAME=libutil.${CND_DLIB_EXT}
+OUTPUT_PATH=${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/libC--utilities.${CND_DLIB_EXT}
+OUTPUT_BASENAME=libC--utilities.${CND_DLIB_EXT}
 PACKAGE_TOP_DIR=util/
 
 # Functions
@@ -186,6 +186,46 @@ copyFileToTmpDir "layout.xml" "${NBTMPDIR}/${PACKAGE_TOP_DIR}layout.xml" 0644
 cd "${TOP}"
 makeDirectory "${NBTMPDIR}/util/tests"
 copyFileToTmpDir "tests/tests.cc" "${NBTMPDIR}/${PACKAGE_TOP_DIR}tests/tests.cc" 0644
+
+cd "${TOP}"
+makeDirectory "${NBTMPDIR}/util/lib"
+copyFileToTmpDir "${OUTPUT_PATH}" "${NBTMPDIR}/${PACKAGE_TOP_DIR}lib/${OUTPUT_BASENAME}" 0644
+
+cd "${TOP}"
+makeDirectory "${NBTMPDIR}/util/lib"
+copyFileToTmpDir "${OUTPUT_PATH}" "${NBTMPDIR}/${PACKAGE_TOP_DIR}lib/${OUTPUT_BASENAME}" 0644
+
+cd "${TOP}"
+makeDirectory "${NBTMPDIR}/util/lib"
+copyFileToTmpDir "${OUTPUT_PATH}" "${NBTMPDIR}/${PACKAGE_TOP_DIR}lib/${OUTPUT_BASENAME}" 0644
+
+cd "${TOP}"
+makeDirectory "${NBTMPDIR}/util/lib"
+copyFileToTmpDir "${OUTPUT_PATH}" "${NBTMPDIR}/${PACKAGE_TOP_DIR}lib/${OUTPUT_BASENAME}" 0644
+
+cd "${TOP}"
+makeDirectory "${NBTMPDIR}/util/lib"
+copyFileToTmpDir "${OUTPUT_PATH}" "${NBTMPDIR}/${PACKAGE_TOP_DIR}lib/${OUTPUT_BASENAME}" 0644
+
+cd "${TOP}"
+makeDirectory "${NBTMPDIR}/util/lib"
+copyFileToTmpDir "${OUTPUT_PATH}" "${NBTMPDIR}/${PACKAGE_TOP_DIR}lib/${OUTPUT_BASENAME}" 0644
+
+cd "${TOP}"
+makeDirectory "${NBTMPDIR}/util/lib"
+copyFileToTmpDir "${OUTPUT_PATH}" "${NBTMPDIR}/${PACKAGE_TOP_DIR}lib/${OUTPUT_BASENAME}" 0644
+
+cd "${TOP}"
+makeDirectory "${NBTMPDIR}/util/lib"
+copyFileToTmpDir "${OUTPUT_PATH}" "${NBTMPDIR}/${PACKAGE_TOP_DIR}lib/${OUTPUT_BASENAME}" 0644
+
+cd "${TOP}"
+makeDirectory "${NBTMPDIR}/util/lib"
+copyFileToTmpDir "${OUTPUT_PATH}" "${NBTMPDIR}/${PACKAGE_TOP_DIR}lib/${OUTPUT_BASENAME}" 0644
+
+cd "${TOP}"
+makeDirectory "${NBTMPDIR}/util/lib"
+copyFileToTmpDir "${OUTPUT_PATH}" "${NBTMPDIR}/${PACKAGE_TOP_DIR}lib/${OUTPUT_BASENAME}" 0644
 
 
 # Generate tar file

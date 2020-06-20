@@ -6,16 +6,16 @@
 
 # Macros
 TOP=`pwd`
-CND_PLATFORM=GNU-Linux-x86
+CND_PLATFORM=GNU-Linux
 CND_CONF=Release
 CND_DISTDIR=dist
 CND_BUILDDIR=build
 CND_DLIB_EXT=so
 NBTMPDIR=${CND_BUILDDIR}/${CND_CONF}/${CND_PLATFORM}/tmp-packaging
 TMPDIRNAME=tmp-packaging
-OUTPUT_PATH=${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/libutil.${CND_DLIB_EXT}
-OUTPUT_BASENAME=libutil.${CND_DLIB_EXT}
-PACKAGE_TOP_DIR=libutil.so/
+OUTPUT_PATH=${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/libC--utilities.${CND_DLIB_EXT}
+OUTPUT_BASENAME=libC--utilities.${CND_DLIB_EXT}
+PACKAGE_TOP_DIR=libC--utilities.so/
 
 # Functions
 function checkReturnCode
@@ -60,51 +60,91 @@ mkdir -p ${NBTMPDIR}
 
 # Copy files and create directories and links
 cd "${TOP}"
-makeDirectory "${NBTMPDIR}/libutil.so/lib"
+makeDirectory "${NBTMPDIR}/libC--utilities.so/lib"
 copyFileToTmpDir "${OUTPUT_PATH}" "${NBTMPDIR}/${PACKAGE_TOP_DIR}lib/${OUTPUT_BASENAME}" 0644
 
 cd "${TOP}"
-makeDirectory "${NBTMPDIR}/libutil.so/tests"
+makeDirectory "${NBTMPDIR}/libC--utilities.so/tests"
 copyFileToTmpDir "tests/tests.cc" "${NBTMPDIR}/${PACKAGE_TOP_DIR}tests/tests.cc" 0644
 
 cd "${TOP}"
-makeDirectory "${NBTMPDIR}/libutil.so/include"
+makeDirectory "${NBTMPDIR}/libC--utilities.so/include"
 copyFileToTmpDir "include/anyutil.h" "${NBTMPDIR}/${PACKAGE_TOP_DIR}include/anyutil.h" 0644
 
 cd "${TOP}"
-makeDirectory "${NBTMPDIR}/libutil.so/include"
+makeDirectory "${NBTMPDIR}/libC--utilities.so/include"
 copyFileToTmpDir "include/bayesutil.h" "${NBTMPDIR}/${PACKAGE_TOP_DIR}include/bayesutil.h" 0644
 
 cd "${TOP}"
-makeDirectory "${NBTMPDIR}/libutil.so/include"
+makeDirectory "${NBTMPDIR}/libC--utilities.so/include"
 copyFileToTmpDir "include/csvutil.h" "${NBTMPDIR}/${PACKAGE_TOP_DIR}include/csvutil.h" 0644
 
 cd "${TOP}"
-makeDirectory "${NBTMPDIR}/libutil.so/include"
+makeDirectory "${NBTMPDIR}/libC--utilities.so/include"
 copyFileToTmpDir "include/dateutil.h" "${NBTMPDIR}/${PACKAGE_TOP_DIR}include/dateutil.h" 0644
 
 cd "${TOP}"
-makeDirectory "${NBTMPDIR}/libutil.so/include"
+makeDirectory "${NBTMPDIR}/libC--utilities.so/include"
 copyFileToTmpDir "include/floatingpoint.h" "${NBTMPDIR}/${PACKAGE_TOP_DIR}include/floatingpoint.h" 0644
 
 cd "${TOP}"
-makeDirectory "${NBTMPDIR}/libutil.so/include"
+makeDirectory "${NBTMPDIR}/libC--utilities.so/include"
 copyFileToTmpDir "include/graphutil.h" "${NBTMPDIR}/${PACKAGE_TOP_DIR}include/graphutil.h" 0644
 
 cd "${TOP}"
-makeDirectory "${NBTMPDIR}/libutil.so/include"
+makeDirectory "${NBTMPDIR}/libC--utilities.so/include"
 copyFileToTmpDir "include/statutil.h" "${NBTMPDIR}/${PACKAGE_TOP_DIR}include/statutil.h" 0644
 
 cd "${TOP}"
-makeDirectory "${NBTMPDIR}/libutil.so/include"
+makeDirectory "${NBTMPDIR}/libC--utilities.so/include"
 copyFileToTmpDir "include/stringutil.h" "${NBTMPDIR}/${PACKAGE_TOP_DIR}include/stringutil.h" 0644
+
+cd "${TOP}"
+makeDirectory "${NBTMPDIR}/libC--utilities.so/lib"
+copyFileToTmpDir "${OUTPUT_PATH}" "${NBTMPDIR}/${PACKAGE_TOP_DIR}lib/${OUTPUT_BASENAME}" 0644
+
+cd "${TOP}"
+makeDirectory "${NBTMPDIR}/libC--utilities.so/lib"
+copyFileToTmpDir "${OUTPUT_PATH}" "${NBTMPDIR}/${PACKAGE_TOP_DIR}lib/${OUTPUT_BASENAME}" 0644
+
+cd "${TOP}"
+makeDirectory "${NBTMPDIR}/libC--utilities.so/lib"
+copyFileToTmpDir "${OUTPUT_PATH}" "${NBTMPDIR}/${PACKAGE_TOP_DIR}lib/${OUTPUT_BASENAME}" 0644
+
+cd "${TOP}"
+makeDirectory "${NBTMPDIR}/libC--utilities.so/lib"
+copyFileToTmpDir "${OUTPUT_PATH}" "${NBTMPDIR}/${PACKAGE_TOP_DIR}lib/${OUTPUT_BASENAME}" 0644
+
+cd "${TOP}"
+makeDirectory "${NBTMPDIR}/libC--utilities.so/lib"
+copyFileToTmpDir "${OUTPUT_PATH}" "${NBTMPDIR}/${PACKAGE_TOP_DIR}lib/${OUTPUT_BASENAME}" 0644
+
+cd "${TOP}"
+makeDirectory "${NBTMPDIR}/libC--utilities.so/lib"
+copyFileToTmpDir "${OUTPUT_PATH}" "${NBTMPDIR}/${PACKAGE_TOP_DIR}lib/${OUTPUT_BASENAME}" 0644
+
+cd "${TOP}"
+makeDirectory "${NBTMPDIR}/libC--utilities.so/lib"
+copyFileToTmpDir "${OUTPUT_PATH}" "${NBTMPDIR}/${PACKAGE_TOP_DIR}lib/${OUTPUT_BASENAME}" 0644
+
+cd "${TOP}"
+makeDirectory "${NBTMPDIR}/libC--utilities.so/lib"
+copyFileToTmpDir "${OUTPUT_PATH}" "${NBTMPDIR}/${PACKAGE_TOP_DIR}lib/${OUTPUT_BASENAME}" 0644
+
+cd "${TOP}"
+makeDirectory "${NBTMPDIR}/libC--utilities.so/lib"
+copyFileToTmpDir "${OUTPUT_PATH}" "${NBTMPDIR}/${PACKAGE_TOP_DIR}lib/${OUTPUT_BASENAME}" 0644
+
+cd "${TOP}"
+makeDirectory "${NBTMPDIR}/libC--utilities.so/lib"
+copyFileToTmpDir "${OUTPUT_PATH}" "${NBTMPDIR}/${PACKAGE_TOP_DIR}lib/${OUTPUT_BASENAME}" 0644
 
 
 # Generate tar file
 cd "${TOP}"
-rm -f ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/package/libutil.so.tar
+rm -f ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/package/libC--utilities.so.tar
 cd ${NBTMPDIR}
-tar -vcf ../../../../${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/package/libutil.so.tar *
+tar -vcf ../../../../${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/package/libC--utilities.so.tar *
 checkReturnCode
 
 # Cleanup

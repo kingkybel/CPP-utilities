@@ -7,21 +7,21 @@ CND_BASEDIR=`pwd`
 CND_BUILDDIR=build
 CND_DISTDIR=dist
 # Debug configuration
-CND_PLATFORM_Debug=GNU-Linux-x86
-CND_ARTIFACT_DIR_Debug=dist/Debug/GNU-Linux-x86
-CND_ARTIFACT_NAME_Debug=libutil.so
-CND_ARTIFACT_PATH_Debug=dist/Debug/GNU-Linux-x86/libutil.so
-CND_PACKAGE_DIR_Debug=dist/Debug/GNU-Linux-x86/package
+CND_PLATFORM_Debug=GNU-Linux
+CND_ARTIFACT_DIR_Debug=dist/Debug/GNU-Linux
+CND_ARTIFACT_NAME_Debug=libC--utilities.so
+CND_ARTIFACT_PATH_Debug=dist/Debug/GNU-Linux/libC--utilities.so
+CND_PACKAGE_DIR_Debug=dist/Debug/GNU-Linux/package
 CND_PACKAGE_NAME_Debug=util-src.tar.gz
-CND_PACKAGE_PATH_Debug=dist/Debug/GNU-Linux-x86/package/util-src.tar.gz
+CND_PACKAGE_PATH_Debug=dist/Debug/GNU-Linux/package/util-src.tar.gz
 # Release configuration
-CND_PLATFORM_Release=GNU-Linux-x86
-CND_ARTIFACT_DIR_Release=dist/Release/GNU-Linux-x86
-CND_ARTIFACT_NAME_Release=libutil.so
-CND_ARTIFACT_PATH_Release=dist/Release/GNU-Linux-x86/libutil.so
-CND_PACKAGE_DIR_Release=dist/Release/GNU-Linux-x86/package
-CND_PACKAGE_NAME_Release=libutil.so.tar
-CND_PACKAGE_PATH_Release=dist/Release/GNU-Linux-x86/package/libutil.so.tar
+CND_PLATFORM_Release=GNU-Linux
+CND_ARTIFACT_DIR_Release=dist/Release/GNU-Linux
+CND_ARTIFACT_NAME_Release=libC--utilities.so
+CND_ARTIFACT_PATH_Release=dist/Release/GNU-Linux/libC--utilities.so
+CND_PACKAGE_DIR_Release=dist/Release/GNU-Linux/package
+CND_PACKAGE_NAME_Release=libC--utilities.so.tar
+CND_PACKAGE_PATH_Release=dist/Release/GNU-Linux/package/libC--utilities.so.tar
 #
 # include compiler specific variables
 #

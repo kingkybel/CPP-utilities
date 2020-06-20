@@ -93,7 +93,7 @@ namespace util
      * Helper to check that two floating point values are within tolerance of each other.
      * @param v1 value1
      * @param v2 value2
-     * @param tolerance a permissable deviation between v1 and v2
+     * @param tolerance a permissible deviation between v1 and v2
      *
      */
     inline bool withinTolerance(VAR_FLOAT v1, VAR_FLOAT v2, VAR_FLOAT tolerance = 1e-18L)

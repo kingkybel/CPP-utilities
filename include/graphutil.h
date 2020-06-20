@@ -485,7 +485,6 @@ namespace util
             auto found = node2index_.find(node);
             if (found != node2index_.end())
             {
-                TRACE1(*found);
                 // also remove all edges into and out of the node
                 NODE_SET parents = parentNodes(node);
                 for (auto it = parents.begin(); it != parents.end(); it++)

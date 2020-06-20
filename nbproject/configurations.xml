@@ -1,17 +1,29 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<configurationDescriptor version="94">
+<configurationDescriptor version="100">
   <logicalFolder name="root" displayName="root" projectFiles="true" kind="ROOT">
     <logicalFolder name="HeaderFiles"
                    displayName="Header Files"
                    projectFiles="true">
+      <itemPath>include/FFT.h</itemPath>
       <itemPath>include/anyutil.h</itemPath>
       <itemPath>include/bayesutil.h</itemPath>
+      <itemPath>include/brackets.h</itemPath>
+      <itemPath>include/constants.h</itemPath>
       <itemPath>include/csvutil.h</itemPath>
       <itemPath>include/dateutil.h</itemPath>
+      <itemPath>include/degree_conversion.h</itemPath>
       <itemPath>include/floatingpoint.h</itemPath>
       <itemPath>include/graphutil.h</itemPath>
+      <itemPath>include/grid.h</itemPath>
+      <itemPath>include/iosutil.h</itemPath>
+      <itemPath>include/limited_int.h</itemPath>
+      <itemPath>include/logvalue.h</itemPath>
+      <itemPath>include/matrix.h</itemPath>
+      <itemPath>include/primes.h</itemPath>
       <itemPath>include/statutil.h</itemPath>
       <itemPath>include/stringutil.h</itemPath>
+      <itemPath>include/tinytea.h</itemPath>
+      <itemPath>include/type_bracket_map.h</itemPath>
     </logicalFolder>
     <logicalFolder name="ResourceFiles"
                    displayName="Resource Files"
@@ -20,24 +32,54 @@
     <logicalFolder name="SourceFiles"
                    displayName="Source Files"
                    projectFiles="true">
+      <itemPath>src/FFT.cc</itemPath>
       <itemPath>src/anyutil.cc</itemPath>
       <itemPath>src/bayesutil.cc</itemPath>
       <itemPath>src/csvutil.cc</itemPath>
       <itemPath>src/dateutil.cc</itemPath>
       <itemPath>src/floatingpoint.cc</itemPath>
       <itemPath>src/graphutil.cc</itemPath>
+      <itemPath>src/iosutil.cc</itemPath>
+      <itemPath>src/limited_int.cc</itemPath>
+      <itemPath>src/primes.cc</itemPath>
       <itemPath>src/statutil.cc</itemPath>
       <itemPath>src/stringutil.cc</itemPath>
+    </logicalFolder>
+    <logicalFolder name="src" displayName="src" projectFiles="true">
+      <logicalFolder name=".deps" displayName=".deps" projectFiles="true">
+        <itemPath>src/.deps/.dirstamp</itemPath>
+      </logicalFolder>
+      <itemPath>src/.dirstamp</itemPath>
     </logicalFolder>
     <logicalFolder name="TestFiles"
                    displayName="Test Files"
                    projectFiles="false"
                    kind="TEST_LOGICAL_FOLDER">
+      <logicalFolder name="f4"
+                     displayName="Test limited_int"
+                     projectFiles="true"
+                     kind="TEST">
+        <itemPath>tests/LimitedIntTest.h</itemPath>
+      </logicalFolder>
+      <logicalFolder name="f3"
+                     displayName="Test logVal"
+                     projectFiles="true"
+                     kind="TEST">
+        <itemPath>tests/logValTest.cc</itemPath>
+        <itemPath>tests/logValTest.h</itemPath>
+      </logicalFolder>
+      <logicalFolder name="f2"
+                     displayName="Test matrix"
+                     projectFiles="true"
+                     kind="TEST">
+        <itemPath>tests/matrixTest.cc</itemPath>
+        <itemPath>tests/matrixTest.h</itemPath>
+      </logicalFolder>
       <logicalFolder name="f1"
                      displayName="Utility tests"
                      projectFiles="true"
                      kind="TEST">
-        <itemPath>tests/tests.cc</itemPath>
+        <itemPath>tests/utiltests.cc</itemPath>
       </logicalFolder>
     </logicalFolder>
     <logicalFolder name="ExternalFiles"
@@ -46,7 +88,11 @@
                    kind="IMPORTANT_FILES_FOLDER">
       <itemPath>Makefile</itemPath>
     </logicalFolder>
+    <itemPath>utilMindMap.mmd</itemPath>
   </logicalFolder>
+  <sourceRootList>
+    <Elem>src</Elem>
+  </sourceRootList>
   <projectmakefile>Makefile</projectmakefile>
   <confs>
     <conf name="Debug" type="2">
@@ -56,26 +102,45 @@
         <rebuildPropChanged>false</rebuildPropChanged>
       </toolsSet>
       <compileType>
-        <ccTool>
+        <cTool>
+          <standard>10</standard>
           <incDir>
-            <pElem>${BOOST_INCLUDE_PATH}</pElem>
-            <pElem>include</pElem>
+            <pElem>/usr/include</pElem>
+            <pElem>/usr/local/include</pElem>
           </incDir>
+        </cTool>
+        <ccTool>
+          <developmentMode>0</developmentMode>
+          <architecture>2</architecture>
+          <commandlineTool>g++</commandlineTool>
+          <incDir>
+            <pElem>/usr/local/include</pElem>
+            <pElem>/usr/include</pElem>
+            <pElem>include</pElem>
+            <pElem>/usr/local/include/cppunit</pElem>
+          </incDir>
+          <commandLine>-std=c++17</commandLine>
           <preprocessorList>
             <Elem>DO_TRACE_</Elem>
           </preprocessorList>
         </ccTool>
         <linkerTool>
+          <output>${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/libC--utilities.${CND_DLIB_EXT}</output>
           <linkerAddLib>
-            <pElem>${BOOST_LIB_PATH}</pElem>
+            <pElem>/usr/local/lib64</pElem>
+            <pElem>/usr/local/lib/boost</pElem>
+            <pElem>/usr/local/lib</pElem>
           </linkerAddLib>
           <linkerDynSerch>
-            <pElem>${BOOST_LIB_PATH}</pElem>
+            <pElem>/usr/local/lib64</pElem>
+            <pElem>/usr/lib</pElem>
+            <pElem>/usr/local/lib</pElem>
           </linkerDynSerch>
           <linkerLibItems>
             <linkerLibLibItem>gmp</linkerLibLibItem>
             <linkerLibLibItem>gmpxx</linkerLibLibItem>
             <linkerLibLibItem>boost_filesystem</linkerLibLibItem>
+            <linkerLibLibItem>boost_system</linkerLibLibItem>
           </linkerLibItems>
         </linkerTool>
       </compileType>
@@ -277,8 +342,74 @@
                             perm="644"
                             owner="root"
                             group="bin"/>
+          <packFileListElem type="File"
+                            to="${PACKAGE_TOP_DIR}lib/${OUTPUT_BASENAME}"
+                            from="${OUTPUT_PATH}"
+                            perm="644"
+                            owner="root"
+                            group="bin"/>
+          <packFileListElem type="File"
+                            to="${PACKAGE_TOP_DIR}lib/${OUTPUT_BASENAME}"
+                            from="${OUTPUT_PATH}"
+                            perm="644"
+                            owner="root"
+                            group="bin"/>
+          <packFileListElem type="File"
+                            to="${PACKAGE_TOP_DIR}lib/${OUTPUT_BASENAME}"
+                            from="${OUTPUT_PATH}"
+                            perm="644"
+                            owner="root"
+                            group="bin"/>
+          <packFileListElem type="File"
+                            to="${PACKAGE_TOP_DIR}lib/${OUTPUT_BASENAME}"
+                            from="${OUTPUT_PATH}"
+                            perm="644"
+                            owner="root"
+                            group="bin"/>
+          <packFileListElem type="File"
+                            to="${PACKAGE_TOP_DIR}lib/${OUTPUT_BASENAME}"
+                            from="${OUTPUT_PATH}"
+                            perm="644"
+                            owner="root"
+                            group="bin"/>
+          <packFileListElem type="File"
+                            to="${PACKAGE_TOP_DIR}lib/${OUTPUT_BASENAME}"
+                            from="${OUTPUT_PATH}"
+                            perm="644"
+                            owner="root"
+                            group="bin"/>
+          <packFileListElem type="File"
+                            to="${PACKAGE_TOP_DIR}lib/${OUTPUT_BASENAME}"
+                            from="${OUTPUT_PATH}"
+                            perm="644"
+                            owner="root"
+                            group="bin"/>
+          <packFileListElem type="File"
+                            to="${PACKAGE_TOP_DIR}lib/${OUTPUT_BASENAME}"
+                            from="${OUTPUT_PATH}"
+                            perm="644"
+                            owner="root"
+                            group="bin"/>
+          <packFileListElem type="File"
+                            to="${PACKAGE_TOP_DIR}lib/${OUTPUT_BASENAME}"
+                            from="${OUTPUT_PATH}"
+                            perm="644"
+                            owner="root"
+                            group="bin"/>
         </packFileList>
       </packaging>
+      <folder path="TestFiles">
+        <ccTool>
+          <incDir>
+            <pElem>/usr/local/include</pElem>
+          </incDir>
+        </ccTool>
+        <linkerTool>
+          <linkerAddLib>
+            <pElem>/usr/local/lib</pElem>
+          </linkerAddLib>
+        </linkerTool>
+      </folder>
       <folder path="TestFiles/f1">
         <cTool>
           <incDir>
@@ -294,21 +425,94 @@
           <output>${TESTDIR}/TestFiles/f1</output>
         </linkerTool>
       </folder>
+      <folder path="TestFiles/f2">
+        <cTool>
+          <incDir>
+            <pElem>.</pElem>
+          </incDir>
+        </cTool>
+        <ccTool>
+          <incDir>
+            <pElem>.</pElem>
+          </incDir>
+        </ccTool>
+        <linkerTool>
+          <output>${TESTDIR}/TestFiles/f2</output>
+        </linkerTool>
+      </folder>
+      <folder path="TestFiles/f3">
+        <cTool>
+          <commandLine>`cppunit-config --cflags`</commandLine>
+        </cTool>
+        <ccTool>
+          <commandLine>`cppunit-config --cflags`</commandLine>
+        </ccTool>
+        <linkerTool>
+          <output>${TESTDIR}/TestFiles/f3</output>
+          <linkerLibItems>
+            <linkerOptionItem>`cppunit-config --libs`</linkerOptionItem>
+          </linkerLibItems>
+        </linkerTool>
+      </folder>
+      <folder path="TestFiles/f4">
+        <cTool>
+          <commandLine>`cppunit-config --cflags`</commandLine>
+        </cTool>
+        <ccTool>
+          <commandLine>`cppunit-config --cflags`</commandLine>
+        </ccTool>
+        <linkerTool>
+          <output>${TESTDIR}/TestFiles/f4</output>
+          <linkerLibItems>
+            <linkerOptionItem>`cppunit-config --libs`</linkerOptionItem>
+          </linkerLibItems>
+        </linkerTool>
+      </folder>
+      <item path="include/FFT.h" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="include/anyutil.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/bayesutil.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="include/brackets.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="include/constants.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/csvutil.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/dateutil.h" ex="false" tool="3" flavor2="0">
       </item>
+      <item path="include/degree_conversion.h" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="include/floatingpoint.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/graphutil.h" ex="false" tool="3" flavor2="0">
       </item>
+      <item path="include/grid.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="include/iosutil.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="include/limited_int.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="include/logvalue.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="include/matrix.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="include/primes.h" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="include/statutil.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/stringutil.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="include/tinytea.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="include/type_bracket_map.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="src/.deps/.dirstamp" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="src/.dirstamp" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="src/FFT.cc" ex="false" tool="1" flavor2="0">
       </item>
       <item path="src/anyutil.cc" ex="false" tool="1" flavor2="0">
       </item>
@@ -322,11 +526,29 @@
       </item>
       <item path="src/graphutil.cc" ex="false" tool="1" flavor2="0">
       </item>
+      <item path="src/iosutil.cc" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="src/limited_int.cc" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="src/primes.cc" ex="false" tool="1" flavor2="0">
+      </item>
       <item path="src/statutil.cc" ex="false" tool="1" flavor2="0">
       </item>
       <item path="src/stringutil.cc" ex="false" tool="1" flavor2="0">
       </item>
-      <item path="tests/tests.cc" ex="false" tool="1" flavor2="0">
+      <item path="tests/LimitedIntTest.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="tests/logValTest.cc" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="tests/logValTest.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="tests/matrixTest.cc" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="tests/matrixTest.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="tests/utiltests.cc" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="utilMindMap.mmd" ex="false" tool="3" flavor2="0">
       </item>
     </conf>
     <conf name="Release" type="2">
@@ -338,13 +560,21 @@
       <compileType>
         <cTool>
           <developmentMode>5</developmentMode>
+          <incDir>
+            <pElem>/usr/include</pElem>
+            <pElem>/usr/local/include</pElem>
+          </incDir>
         </cTool>
         <ccTool>
-          <developmentMode>5</developmentMode>
+          <developmentMode>0</developmentMode>
+          <architecture>2</architecture>
           <incDir>
-            <pElem>${BOOST_INCLUDE_PATH}</pElem>
+            <pElem>/usr/local/include</pElem>
+            <pElem>/usr/include</pElem>
             <pElem>include</pElem>
+            <pElem>/usr/local/include/cppunit</pElem>
           </incDir>
+          <commandLine>-std=c++17</commandLine>
         </ccTool>
         <fortranCompilerTool>
           <developmentMode>5</developmentMode>
@@ -354,15 +584,20 @@
         </asmTool>
         <linkerTool>
           <linkerAddLib>
-            <pElem>${BOOST_LIB_PATH}</pElem>
+            <pElem>/usr/local/lib64</pElem>
+            <pElem>/usr/local/lib/boost</pElem>
+            <pElem>/usr/local/lib</pElem>
           </linkerAddLib>
           <linkerDynSerch>
-            <pElem>${BOOST_LIB_PATH}</pElem>
+            <pElem>/usr/local/lib64</pElem>
+            <pElem>/usr/lib</pElem>
+            <pElem>/usr/local/lib</pElem>
           </linkerDynSerch>
           <linkerLibItems>
             <linkerLibLibItem>gmp</linkerLibLibItem>
             <linkerLibLibItem>gmpxx</linkerLibLibItem>
             <linkerLibLibItem>boost_filesystem</linkerLibLibItem>
+            <linkerLibLibItem>boost_system</linkerLibLibItem>
           </linkerLibItems>
         </linkerTool>
       </compileType>
@@ -429,8 +664,69 @@
                             perm="644"
                             owner="root"
                             group="bin"/>
+          <packFileListElem type="File"
+                            to="${PACKAGE_TOP_DIR}lib/${OUTPUT_BASENAME}"
+                            from="${OUTPUT_PATH}"
+                            perm="644"
+                            owner="root"
+                            group="bin"/>
+          <packFileListElem type="File"
+                            to="${PACKAGE_TOP_DIR}lib/${OUTPUT_BASENAME}"
+                            from="${OUTPUT_PATH}"
+                            perm="644"
+                            owner="root"
+                            group="bin"/>
+          <packFileListElem type="File"
+                            to="${PACKAGE_TOP_DIR}lib/${OUTPUT_BASENAME}"
+                            from="${OUTPUT_PATH}"
+                            perm="644"
+                            owner="root"
+                            group="bin"/>
+          <packFileListElem type="File"
+                            to="${PACKAGE_TOP_DIR}lib/${OUTPUT_BASENAME}"
+                            from="${OUTPUT_PATH}"
+                            perm="644"
+                            owner="root"
+                            group="bin"/>
+          <packFileListElem type="File"
+                            to="${PACKAGE_TOP_DIR}lib/${OUTPUT_BASENAME}"
+                            from="${OUTPUT_PATH}"
+                            perm="644"
+                            owner="root"
+                            group="bin"/>
+          <packFileListElem type="File"
+                            to="${PACKAGE_TOP_DIR}lib/${OUTPUT_BASENAME}"
+                            from="${OUTPUT_PATH}"
+                            perm="644"
+                            owner="root"
+                            group="bin"/>
+          <packFileListElem type="File"
+                            to="${PACKAGE_TOP_DIR}lib/${OUTPUT_BASENAME}"
+                            from="${OUTPUT_PATH}"
+                            perm="644"
+                            owner="root"
+                            group="bin"/>
+          <packFileListElem type="File"
+                            to="${PACKAGE_TOP_DIR}lib/${OUTPUT_BASENAME}"
+                            from="${OUTPUT_PATH}"
+                            perm="644"
+                            owner="root"
+                            group="bin"/>
+          <packFileListElem type="File"
+                            to="${PACKAGE_TOP_DIR}lib/${OUTPUT_BASENAME}"
+                            from="${OUTPUT_PATH}"
+                            perm="644"
+                            owner="root"
+                            group="bin"/>
         </packFileList>
       </packaging>
+      <folder path="TestFiles">
+        <linkerTool>
+          <linkerAddLib>
+            <pElem>/usr/local/lib</pElem>
+          </linkerAddLib>
+        </linkerTool>
+      </folder>
       <folder path="TestFiles/f1">
         <cTool>
           <incDir>
@@ -446,21 +742,94 @@
           <output>${TESTDIR}/TestFiles/f1</output>
         </linkerTool>
       </folder>
+      <folder path="TestFiles/f2">
+        <cTool>
+          <incDir>
+            <pElem>.</pElem>
+          </incDir>
+        </cTool>
+        <ccTool>
+          <incDir>
+            <pElem>.</pElem>
+          </incDir>
+        </ccTool>
+        <linkerTool>
+          <output>${TESTDIR}/TestFiles/f2</output>
+        </linkerTool>
+      </folder>
+      <folder path="TestFiles/f3">
+        <cTool>
+          <commandLine>`cppunit-config --cflags`</commandLine>
+        </cTool>
+        <ccTool>
+          <commandLine>`cppunit-config --cflags`</commandLine>
+        </ccTool>
+        <linkerTool>
+          <output>${TESTDIR}/TestFiles/f3</output>
+          <linkerLibItems>
+            <linkerOptionItem>`cppunit-config --libs`</linkerOptionItem>
+          </linkerLibItems>
+        </linkerTool>
+      </folder>
+      <folder path="TestFiles/f4">
+        <cTool>
+          <commandLine>`cppunit-config --cflags`</commandLine>
+        </cTool>
+        <ccTool>
+          <commandLine>`cppunit-config --cflags`</commandLine>
+        </ccTool>
+        <linkerTool>
+          <output>${TESTDIR}/TestFiles/f4</output>
+          <linkerLibItems>
+            <linkerOptionItem>`cppunit-config --libs`</linkerOptionItem>
+          </linkerLibItems>
+        </linkerTool>
+      </folder>
+      <item path="include/FFT.h" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="include/anyutil.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/bayesutil.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="include/brackets.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="include/constants.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/csvutil.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/dateutil.h" ex="false" tool="3" flavor2="0">
       </item>
+      <item path="include/degree_conversion.h" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="include/floatingpoint.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/graphutil.h" ex="false" tool="3" flavor2="0">
       </item>
+      <item path="include/grid.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="include/iosutil.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="include/limited_int.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="include/logvalue.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="include/matrix.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="include/primes.h" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="include/statutil.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/stringutil.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="include/tinytea.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="include/type_bracket_map.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="src/.deps/.dirstamp" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="src/.dirstamp" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="src/FFT.cc" ex="false" tool="1" flavor2="0">
       </item>
       <item path="src/anyutil.cc" ex="false" tool="1" flavor2="0">
       </item>
@@ -474,11 +843,29 @@
       </item>
       <item path="src/graphutil.cc" ex="false" tool="1" flavor2="0">
       </item>
+      <item path="src/iosutil.cc" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="src/limited_int.cc" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="src/primes.cc" ex="false" tool="1" flavor2="0">
+      </item>
       <item path="src/statutil.cc" ex="false" tool="1" flavor2="0">
       </item>
       <item path="src/stringutil.cc" ex="false" tool="1" flavor2="0">
       </item>
-      <item path="tests/tests.cc" ex="false" tool="1" flavor2="0">
+      <item path="tests/LimitedIntTest.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="tests/logValTest.cc" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="tests/logValTest.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="tests/matrixTest.cc" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="tests/matrixTest.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="tests/utiltests.cc" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="utilMindMap.mmd" ex="false" tool="3" flavor2="0">
       </item>
     </conf>
   </confs>
