@@ -45,7 +45,6 @@ namespace util
         template<typename T_>
         static T_ nth_next(T_ const & val, decltype(val.val()) const & n)
         {
-            T_ reval;
             return val.val() + n;
         }
     };
@@ -76,7 +75,6 @@ namespace util
         template<typename T_>
         static T_ nth_next(T_ const & val, decltype(val.val()) const & n)
         {
-            T_ reval;
             return val.val() + n;
         }
     };
@@ -89,7 +87,7 @@ namespace util
         {
             if ((val > max) || (val < min))
             {
-                T_ const dist = max - min;
+                T_ const dist = max - min + 1;
                 val -= min;
                 val %= dist;
                 if (val < 0)
@@ -102,7 +100,6 @@ namespace util
         template<typename T_>
         static T_ nth_next(T_ const & val, decltype(val.val()) const & n)
         {
-            T_ reval;
             return val.val() + n;
         }
     };
@@ -176,6 +173,18 @@ namespace util
             }
         }
 
+        /**
+         * Construction/conversion from a cousin. Scale the right hand side onto
+         * this type.
+         * @param rhs right-hand-side limited_in
+         */
+        template <typename T2_, T2_ min2_, T2_ max2_, typename Policy2_>
+        limited_int(limited_int<T2_, min2_, max2_, Policy2_> const & rhs)
+        : T_((long double)rhs.val()/(long double)(max_-min_)*(long double)(max2_-min2_))
+        {
+
+        }
+
         bool const isValid() const
         {
             return val_ != invalid_;
@@ -230,8 +239,11 @@ namespace util
         friend std::ostream & operator<<(std::ostream & os,
                                          limited_int<T_, min_, max_, Policy_> const & i)
         {
-            os << i.val()
-                    << " "
+            if(!i.isValid())
+                os << "<INVALID>";
+            else
+                os << i.val();
+            os << " "
                     << "["
                     << (T_) i.min()
                     << ","
