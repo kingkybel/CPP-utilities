@@ -31,376 +31,387 @@
 #include <sstream>
 #include <typeinfo>
 
-namespace util {
-
-template<typename INT_, INT_ min_, INT_ max_, uint64_t features_ = 0UL>
-struct limited_int_policy
+namespace util
 {
-   constexpr static INT_ invalid_ = (  min_ != std::numeric_limits<INT_>::min() ?
-                                       std::numeric_limits<INT_>::min() :
-                                       std::numeric_limits<INT_>::max());
 
-   enum Feature : uint64_t
-   {
-      INCREMENT = 1UL << 0,
-      DECREMENT = 1UL << 1,
-      UNARY_PLUS = 1UL << 2,
-      BINARY_PLUS = 1UL << 3,
-      UNARY_MINUS = 1UL << 4,
-      BINARY_MINUS = 1UL << 5,
-      MULTIPLY = 1UL << 6,
-      DIVIDE = 1UL << 7,
-      INDEX = 1UL << 8,
-   };
-   
-   constexpr static bool enabled(Feature const feature)
-   {
-      return (features_ & feature) == feature;
-   }
-   
-   static bool withinBounds(INT_ const &val)
-   {
-      return ((val >= min_) && (val <= max_) && (min_ < max_));
-   }
+    enum Feature : uint64_t
+    {
+        INCREMENT = 1UL << 0,
+        DECREMENT = 1UL << 1,
+        UNARY_PLUS = 1UL << 2,
+        BINARY_PLUS = 1UL << 3,
+        UNARY_MINUS = 1UL << 4,
+        BINARY_MINUS = 1UL << 5,
+        MULTIPLY = 1UL << 6,
+        DIVIDE = 1UL << 7,
+    };
 
-   static bool apply(INT_ & val)
-   {
-      if (!withinBounds(val))
-      {
-         val = invalid_;
-         return false;
-      }
-      return true;
-   }
-   
-   template<typename LimitedInt_>
-   static LimitedInt_ nth_next(LimitedInt_ const & val, decltype(val.val()) const & n)
-   {
-      return val.val() + n;
-   }
-};
+    template<typename INT_, INT_ min_, INT_ max_, uint64_t features_ = 0UL >
+    struct limited_int_policy
+    {
+        constexpr static bool isPolicy_ = true;
+        constexpr static INT_ invalid_ = (min_ != std::numeric_limits<INT_>::min() ?
+                                          std::numeric_limits<INT_>::min() :
+                                          std::numeric_limits<INT_>::max());
 
-template<typename INT_, INT_ min_, INT_ max_, uint64_t features_ = 0UL>
-struct PolicySetInvalid : public limited_int_policy<INT_, min_, max_, features_>
-{
-};
+        constexpr static bool enabled(Feature const feature)
+        {
+            return (features_ & feature) == feature;
+        }
 
-template<typename INT_, INT_ min_, INT_ max_, uint64_t features_ = 0UL>
-struct PolicyThrowException : public limited_int_policy<INT_, min_, max_, features_>
-{
-   typedef limited_int_policy<INT_, min_, max_, features_> Base;
+        static bool withinBounds(INT_ const &val)
+        {
+            return ((val >= min_) && (val <= max_) && (min_ < max_));
+        }
 
-   static bool apply(INT_ & val)
-   {
-      if (!Base::withinBounds(val))
-      {
-         val = Base::invalid_;
-         std::stringstream ss;
-         ss << "limited_int<"
-               << typeid (INT_).name()
-               << ","
-               << min_
-               << ","
-               << max_
-               << ",PolicyThrowException>("
-               << val
-               << ") out of range.";
-         throw std::out_of_range(ss.str());
-      }
-      return true;
-   }
-};
+        static bool apply(INT_ & val)
+        {
+            if (!withinBounds(val))
+            {
+                val = invalid_;
+                return false;
+            }
+            return true;
+        }
 
-template<typename INT_, INT_ min_, INT_ max_, uint64_t features_ = 0UL>
-struct PolicySetModulo : public limited_int_policy<INT_, min_, max_, features_>
-{
-   typedef limited_int_policy<INT_, min_, max_, features_> Base;
-   static bool apply(INT_ & val)
-   {
-      if (!Base::withinBounds(val))
-      {
-         INT_ const dist = max_ - min_ + 1;
-         val -= min_;
-         val %= dist;
-         if (val < 0)
-            val += dist;
-         val += min_;
-      }
-      return true;
-   }
-};
+        template<typename LimitedInt_>
+        static LimitedInt_ nth_next(LimitedInt_ const & val, decltype(val.val()) const & n)
+        {
+            return val.val() + n;
+        }
+    };
+
+    template<typename INT_, INT_ min_, INT_ max_, uint64_t features_ = 0UL >
+    struct PolicySetInvalid : public limited_int_policy<INT_, min_, max_, features_>
+    {
+    };
+
+    template<typename INT_, INT_ min_, INT_ max_, uint64_t features_ = 0UL >
+    struct PolicyThrowException : public limited_int_policy<INT_, min_, max_, features_>
+    {
+        typedef limited_int_policy<INT_, min_, max_, features_> Base;
+
+        static bool apply(INT_ & val)
+        {
+            if (!Base::withinBounds(val))
+            {
+                val = Base::invalid_;
+                std::stringstream ss;
+                ss << "limited_int<"
+                        << typeid (INT_).name()
+                        << ","
+                        << min_
+                        << ","
+                        << max_
+                        << ",PolicyThrowException>("
+                        << val
+                        << ") out of range.";
+                throw std::out_of_range(ss.str());
+            }
+            return true;
+        }
+    };
+
+    template<typename INT_, INT_ min_, INT_ max_, uint64_t features_ = 0UL >
+    struct PolicySetModulo : public limited_int_policy<INT_, min_, max_, features_>
+    {
+        typedef limited_int_policy<INT_, min_, max_, features_> Base;
+
+        static bool apply(INT_ & val)
+        {
+            if (!Base::withinBounds(val))
+            {
+                INT_ const dist = max_ - min_ + 1;
+                val -= min_;
+                val %= dist;
+                if (val < 0)
+                    val += dist;
+                val += min_;
+            }
+            return true;
+        }
+    };
 
 
-template <typename LimitedIntTag>
-class limited_int_iterator;
+    template <typename LimitedIntTag>
+    class limited_int_iterator;
 
-template < typename T_,
-         T_ min_ = std::numeric_limits<T_>::min() + 1,
-         T_ max_ = std::numeric_limits<T_>::max(),
-         typename Policy_ = PolicySetModulo<T_, min_, max_, 1UL>
->
-struct limited_int
-{
-   typedef Policy_ PolicyType;
-private:
+    template <  typename T_,
+                T_ min_ = std::numeric_limits<T_>::min() + 1,
+                T_ max_ = std::numeric_limits<T_>::max(),
+                typename Policy_ = PolicySetModulo<T_, min_, max_, 1UL>
+    >
+    struct limited_int
+    {
+        typedef Policy_ PolicyType;
+    private:
 
-   explicit limited_int(bool dummy)
-   : val_(Policy_::invalid_)
-   {
-   }
-   
-   // according to features flagged in Policy_ include features in this.
-   constexpr static bool INCREMENT_ENABLED = Policy_::enabled(Policy_::Feature::INCREMENT);
-   constexpr static bool DECREMENT_ENABLED = Policy_::enabled(Policy_::Feature::DECREMENT);
-   constexpr static bool UNARY_PLUS_ENABLED = Policy_::enabled(Policy_::Feature::UNARY_PLUS);
-   constexpr static bool BINARY_PLUS_ENABLED = Policy_::enabled(Policy_::Feature::BINARY_PLUS);
-   constexpr static bool UNARY_MINUS_ENABLED = Policy_::enabled(Policy_::Feature::UNARY_MINUS);
-   constexpr static bool BINARY_MINUS_ENABLED = Policy_::enabled(Policy_::Feature::BINARY_MINUS);
-   constexpr static bool DIVIDE_ENABLED = Policy_::enabled(Policy_::Feature::DIVIDE);
-   constexpr static bool INDEX_ENABLED = Policy_::enabled(Policy_::Feature::INDEX);
+        explicit limited_int(bool dummy)
+        : val_(Policy_::invalid_)
+        {
+        }
 
-   T_ val_ = min_;
+        // according to features flagged in Policy_ include features in this.
+        constexpr static bool INCREMENT_ENABLED = Policy_::enabled(Feature::INCREMENT);
+        constexpr static bool DECREMENT_ENABLED = Policy_::enabled(Feature::DECREMENT);
+        constexpr static bool UNARY_PLUS_ENABLED = Policy_::enabled(Feature::UNARY_PLUS);
+        constexpr static bool BINARY_PLUS_ENABLED = Policy_::enabled(Feature::BINARY_PLUS);
+        constexpr static bool UNARY_MINUS_ENABLED = Policy_::enabled(Feature::UNARY_MINUS);
+        constexpr static bool BINARY_MINUS_ENABLED = Policy_::enabled(Feature::BINARY_MINUS);
+        constexpr static bool DIVIDE_ENABLED = Policy_::enabled(Feature::DIVIDE);
 
-public:
-   typedef limited_int_iterator<limited_int<T_, min_, max_, Policy_> > iterator;
+        T_ val_ = min_;
 
-   limited_int(T_ val = min_)
-   : val_(val)
-   {
-      static_assert(true == std::is_integral<T_>::value,
-                    "limited_int<> needs integral type as template parameter");
-      static_assert(min_ < max_,
-                    "limited_int<> min needs to be smaller than max");
-//      static_assert(true == is_policy<Policy_>::value,
-//                    "no valid Policy_");
-      static_assert(std::numeric_limits<T_>::min() != min_
-                    || std::numeric_limits<T_>::max() != max_,
-                    "limited_int<> cannot extend from numeric limit min() to max().");
+    public:
+        typedef limited_int_iterator<limited_int<T_, min_, max_, Policy_> > iterator;
 
-      Policy_::apply(val_);
-   }
+        limited_int(T_ val = min_)
+        : val_(val)
+        {
+            static_assert(true == std::is_integral<T_>::value,
+                          "limited_int<> needs integral type as template parameter");
+            static_assert(min_ < max_,
+                          "limited_int<> min needs to be smaller than max");
+            //      static_assert(true == is_policy<Policy_>::value,
+            //                    "no valid Policy_");
+            static_assert(std::numeric_limits<T_>::min() != min_
+                          || std::numeric_limits<T_>::max() != max_,
+                          "limited_int<> cannot extend from numeric limit min() to max().");
 
-   template<typename T2_, T2_ min2_, T2_ max2_, typename Policy2_>
-   limited_int(limited_int<T2_, min2_, max2_, Policy2_> const & rhs)
-   : val_(T_((long double) rhs.val() / (long double) (max2_ - min2_)*(long double) (max_ - min_)))
-   {
-   }
+            Policy_::apply(val_);
+        }
 
-   bool const isValid() const
-   {
-      return val_ != Policy_::invalid_;
-   }
+        template<typename T2_, T2_ min2_, T2_ max2_, typename Policy2_>
+        limited_int(limited_int<T2_, min2_, max2_, Policy2_> const & rhs)
+        : val_(T_((long double) rhs.val() / (long double) (max2_ - min2_)*(long double) (max_ - min_)))
+        {
+        }
 
-   template<typename = typename std::enable_if< INCREMENT_ENABLED, bool > >
-   limited_int& operator++()
-   {
-      limited_int tmp = (val_ + 1);
-      val_ = tmp.val_;
-      return *this;
-   }
+        bool isValid() const
+        {
+            return val_ != Policy_::invalid_;
+        }
 
-   template<typename = typename std::enable_if< INCREMENT_ENABLED, bool > >
-   limited_int& operator++(int)
-   {
-      limited_int tmp = (val_ + 1);
-      val_ = tmp.val_;
-      return *this;
-   }
+        template<typename = typename std::enable_if<INCREMENT_ENABLED, bool> >
+        limited_int& operator++()
+        {
+            std::cout << "limited_int& operator++()" << std::endl;
+            limited_int tmp = (val_ + 1);
+            val_ = tmp.val_;
+            return *this;
+        }
 
-   template<typename = typename std::enable_if< DECREMENT_ENABLED, bool > >
-   limited_int& operator--()
-   {
-      limited_int tmp = (val_ - 1);
-      val_ = tmp.val_;
-      return *this;
-   }
+        template<typename = typename std::enable_if<INCREMENT_ENABLED, bool> >
+        limited_int& operator++(int)
+        {
+            limited_int tmp = (val_ + 1);
+            val_ = tmp.val_;
+            return *this;
+        }
 
-   template<typename = typename std::enable_if< DECREMENT_ENABLED, bool > >
-   limited_int& operator--(int)
-   {
-      limited_int tmp = (val_ - 1);
-      val_ = tmp.val_;
-      return *this;
-   }
+        template<typename = typename std::enable_if<DECREMENT_ENABLED, bool> >
+        limited_int& operator--()
+        {
+            limited_int tmp = (val_ - 1);
+            val_ = tmp.val_;
+            return *this;
+        }
 
-   static iterator begin(limited_int start = limited_int::min())
-   {
-      return iterator(start, false);
-   }
+        template<typename = typename std::enable_if<DECREMENT_ENABLED, bool> >
+        limited_int& operator--(int)
+        {
+            limited_int tmp = (val_ - 1);
+            val_ = tmp.val_;
+            return *this;
+        }
 
-   static iterator end(limited_int finish = limited_int::invalid())
-   {
-      return iterator(finish, false);
-   }
+        template<typename TT, typename = typename std::enable_if<BINARY_PLUS_ENABLED, TT>::type >
+        limited_int& operator+=(limited_int const &rhs)
+        {
+            std::cout << "limited_int& operator+=(limited_int const &rhs)" << std::endl;
+            limited_int tmp = (val_ + rhs.val_);
+            val_ = tmp.val_;
+            return *this;
+        }
 
-   static iterator rbegin(limited_int rstart = limited_int::max())
-   {
-      return iterator(rstart, true);
-   }
+        static iterator begin(limited_int start = limited_int::min())
+        {
+            return iterator(start, false);
+        }
 
-   static iterator rend(limited_int rfinish = limited_int::invalid())
-   {
-      return iterator(rfinish, true);
-   }
+        static iterator end(limited_int finish = limited_int::invalid())
+        {
+            return iterator(finish, false);
+        }
 
-   static limited_int min()
-   {
-      return min_;
-   }
+        static iterator rbegin(limited_int rstart = limited_int::max())
+        {
+            return iterator(rstart, true);
+        }
 
-   static limited_int max()
-   {
-      return max_;
-   }
+        static iterator rend(limited_int rfinish = limited_int::invalid())
+        {
+            return iterator(rfinish, true);
+        }
 
-   operator T_() const
-   {
-      return val();
-   }
+        static limited_int min()
+        {
+            return min_;
+        }
 
-   T_ val() const
-   {
-      return val_;
-   }
+        static limited_int max()
+        {
+            return max_;
+        }
 
-   static limited_int invalid()
-   {
-      static limited_int<T_, min_, max_, Policy_> invalidLimitedInt(false);
-      return invalidLimitedInt;
-   }
+        operator T_() const
+        {
+            return val();
+        }
 
-   friend std::ostream & operator<<(std::ostream & os,
-                                    limited_int<T_, min_, max_, Policy_> const & i)
-   {
-      os << i.val()
-            << " "
-            << "["
-            << (T_) i.min()
-            << ","
-            << (T_) i.max()
-            << "]";
-      return os;
-   }
+        T_ val() const
+        {
+            return val_;
+        }
 
-};
+        static limited_int invalid()
+        {
+            static limited_int<T_, min_, max_, Policy_> invalidLimitedInt(false);
+            return invalidLimitedInt;
+        }
 
-template <typename LimitedInt>
-class limited_int_iterator
-: public std::iterator<std::random_access_iterator_tag, LimitedInt>
-{
-   typedef decltype(LimitedInt::invalid().val()) IntType;
+        friend std::ostream & operator<<(std::ostream & os,
+                                         limited_int<T_, min_, max_, Policy_> const & i)
+        {
+            os << i.val()
+                    << " "
+                    << "["
+                    << (T_) i.min()
+                    << ","
+                    << (T_) i.max()
+                    << "]";
+            return os;
+        }
 
-   static const LimitedInt getEnd(LimitedInt start, bool isReverse)
-   {
-      LimitedInt reval = LimitedInt::invalid();
-      try
-      {
-         reval = start + (isReverse ? +1 : -1);
-      }
-      catch (...)
-      {
-         //
-      }
-      return reval;
-   }
+    };
 
-   void makeStep(IntType step, bool isReverse)
-   {
-      try
-      {
-         IntType step = isReverse_ ? IntType(-1) : IntType(1);
-         iterEl_ = LimitedInt::PolicyType::nth_next(iterEl_, step);
-      }
-      catch (std::out_of_range &e)
-      {
-         iterEl_ = LimitedInt::invalid();
-      }
-   }
-public:
+    template <typename LimitedInt>
+    class limited_int_iterator
+    : public std::iterator<std::random_access_iterator_tag, LimitedInt>
+    {
+        typedef decltype(LimitedInt::invalid().val()) IntType;
 
-   limited_int_iterator(LimitedInt start, bool isReverse)
-   : iterEl_(start)
-   , end_(getEnd(start, isReverse))
-   , isReverse_(isReverse)
-   {
-   }
+        static const LimitedInt getEnd(LimitedInt start, bool isReverse)
+        {
+            LimitedInt reval = LimitedInt::invalid();
+            try
+            {
+                reval = start + (isReverse ? +1 : -1);
+            }
+            catch (...)
+            {
+                //
+            }
+            return reval;
+        }
 
-   limited_int_iterator(const limited_int_iterator<LimitedInt> &) = default;
+        void makeStep(IntType step, bool isReverse)
+        {
+            try
+            {
+                IntType step = isReverse_ ? IntType(-1) : IntType(1);
+                iterEl_ = LimitedInt::PolicyType::nth_next(iterEl_, step);
+            }
+            catch (std::out_of_range &e)
+            {
+                iterEl_ = LimitedInt::invalid();
+            }
+        }
+    public:
 
-   limited_int_iterator& operator++()
-   {
-      makeStep(1, isReverse_);
-      return *this;
-   }
+        limited_int_iterator(LimitedInt start, bool isReverse)
+        : iterEl_(start)
+        , end_(getEnd(start, isReverse))
+        , isReverse_(isReverse)
+        {
+        }
 
-   limited_int_iterator operator++(int)
-   {
-      limited_int_iterator<LimitedInt> tmp(*this);
-      operator++();
+        limited_int_iterator(const limited_int_iterator<LimitedInt> &) = default;
 
-      return tmp;
-   }
+        limited_int_iterator& operator++()
+        {
+            makeStep(1, isReverse_);
+            return *this;
+        }
 
-   limited_int_iterator& operator+=(IntType step)
-   {
-      makeStep(step, isReverse_);
-      return *this;
-   }
+        limited_int_iterator operator++(int)
+        {
+            limited_int_iterator<LimitedInt> tmp(*this);
+            operator++();
 
-   limited_int_iterator& operator--()
-   {
-      makeStep(-1, isReverse_);
-      return *this;
-   }
+            return tmp;
+        }
 
-   limited_int_iterator operator--(int)
-   {
-      limited_int_iterator<LimitedInt> tmp(*this);
-      operator--();
+        limited_int_iterator& operator+=(IntType step)
+        {
+            makeStep(step, isReverse_);
+            return *this;
+        }
 
-      return tmp;
-   }
+        limited_int_iterator& operator--()
+        {
+            makeStep(-1, isReverse_);
+            return *this;
+        }
 
-   limited_int_iterator& operator-=(IntType step)
-   {
-      makeStep(-step, isReverse_);
-      return *this;
-   }
+        limited_int_iterator operator--(int)
+        {
+            limited_int_iterator<LimitedInt> tmp(*this);
+            operator--();
 
-   friend inline bool operator==(const limited_int_iterator<LimitedInt>& lhs,
-                                 const limited_int_iterator<LimitedInt>& rhs)
-   {
-      return lhs.iterEl_ == rhs.iterEl_;
-   }
+            return tmp;
+        }
 
-   friend inline bool operator!=(const limited_int_iterator<LimitedInt>& lhs,
-                                 const limited_int_iterator<LimitedInt>& rhs)
-   {
-      return !(lhs.iterEl_ == rhs.iterEl_);
-   }
+        limited_int_iterator& operator-=(IntType step)
+        {
+            makeStep(-step, isReverse_);
+            return *this;
+        }
 
-   LimitedInt& operator*()
-   {
-      return iterEl_;
-   }
+        friend inline bool operator==(const limited_int_iterator<LimitedInt>& lhs,
+                                      const limited_int_iterator<LimitedInt>& rhs)
+        {
+            return lhs.iterEl_ == rhs.iterEl_;
+        }
 
-   LimitedInt* operator->() const
-   {
-      return &iterEl_;
-   }
+        friend inline bool operator!=(const limited_int_iterator<LimitedInt>& lhs,
+                                      const limited_int_iterator<LimitedInt>& rhs)
+        {
+            return !(lhs.iterEl_ == rhs.iterEl_);
+        }
 
-   friend std::ostream & operator<<(std::ostream & os,
-                                    limited_int_iterator<LimitedInt> const & i)
-   {
-      os << "&*" << i.iterEl_;
-      return os;
-   }
+        LimitedInt& operator*()
+        {
+            return iterEl_;
+        }
 
-private:
-   LimitedInt iterEl_;
-   LimitedInt const end_;
-   bool const isReverse_;
-};
+        LimitedInt* operator->()
+        {
+            return &iterEl_;
+        }
+
+        friend std::ostream & operator<<(std::ostream & os,
+                                         limited_int_iterator<LimitedInt> const & i)
+        {
+            os << "&*" << i.iterEl_;
+            return os;
+        }
+
+    private:
+        LimitedInt iterEl_;
+        LimitedInt const end_;
+        bool const isReverse_;
+    };
 
 
 }; // namespace util
