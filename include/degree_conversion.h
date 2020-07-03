@@ -38,45 +38,49 @@ namespace util
     template<typename T_> class TRad2Pi;
 
     template<typename T_>
-    class TDeg180 : public limited_int< T_,
-                                        static_cast<T_>(-179),
-                                        static_cast<T_>(180),
-                                        PolicySetModulo>
+    class TDeg180: public limited_int< T_,
+                                       static_cast<T_>(-179),
+                                       static_cast<T_>(180),
+                                       PolicySetModulo<T_, -179, 180, 0UL> >
     {
         typedef limited_int<T_,
-                            static_cast<T_>(-179),
-                            static_cast<T_>(180),
-                            PolicySetModulo>        Base;
+                           static_cast<T_>(-179),
+                           static_cast<T_>(180),
+                           PolicySetModulo<T_, -179, 180, 0UL> > Base;
     public:
         TDeg180(T_ val = 0)
         : Base(val)
         {
-            static_assert(std::is_integral<T_>::value,
-                    "Template TDeg180<> requires integral template parameter");
-            static_assert(T_(-180) < T_(0),
-                    "Cannot instantiate TDeg180 with unsigned type");
-            static_assert(sizeof(T_) > 1,
-                    "Cannot instantiate TDeg180 with underlying type too small");
+            static_assert(std::is_integral<T_>::value, "Template TDeg180<> requires integral template parameter");
+            static_assert(T_(-179) < T_(0), "Cannot instantiate TDeg180 with unsigned type");
+            static_assert(sizeof(T_) > 1, "Cannot instantiate TDeg180 with underlying type too small");
         }
+
+        TDeg180(Base const & rhs)
+        : Base(rhs)
+        {
+        }
+
         TDeg180(TDeg360<T_> const & val360);
         TDeg180(TRad2Pi<T_> const & val2Pi);
+
     };
 
     template<typename T_>
-    class TDeg360 : public limited_int<T_, 0, 359, PolicySetModulo>
+    class TDeg360 : public limited_int<T_, 0, 359, PolicySetModulo<T_, 0, 359, 1UL> >
     {
-        typedef limited_int<T_,
-                            static_cast<T_>(0),
-                            static_cast<T_>(359),
-                            PolicySetModulo>        Base;
+        typedef limited_int<T_, 0, 359, PolicySetModulo<T_, 0, 359, 1UL> > Base;
     public:
         TDeg360(T_ val = 0)
         : Base(val)
         {
-            static_assert(std::is_integral<T_>::value,
-                    "Template TDeg360<> requires integral template parameter");
-            static_assert(sizeof(T_) > 1,
-                    "Cannot instantiate TDeg360 with underlying type too small");
+            static_assert(std::is_integral<T_>::value, "Template TDeg360<> requires integral template parameter");
+            static_assert(sizeof(T_) > 1, "Cannot instantiate TDeg360 with underlying type too small");
+        }
+
+        TDeg360(Base const & rhs)
+        : Base(rhs)
+        {
         }
 
         TDeg360(TDeg180<T_> const & val180)
@@ -87,20 +91,23 @@ namespace util
     };
 
     template<typename T_>
-    class TRad2Pi : public limited_int<T_, 0, MICRO_RAD_2PI, PolicySetModulo>
+    class TRad2Pi : public limited_int<T_,
+                                       static_cast<T_>(0),
+                                       static_cast<T_>(MICRO_RAD_2PI),
+                                       PolicySetModulo<T_, 0, MICRO_RAD_2PI, 0UL> >
     {
-        typedef limited_int<T_,
-                            static_cast<T_>(0),
-                            static_cast<T_>(MICRO_RAD_2PI),
-                            PolicySetModulo>                Base;
+        typedef limited_int<T_, 0, MICRO_RAD_2PI, PolicySetModulo<T_, 0, MICRO_RAD_2PI, 0UL> > Base;
     public:
         TRad2Pi(T_ val = 0)
         : Base(val)
         {
-            static_assert(std::is_integral<T_>::value,
-                    "Template TRad2Pi<> requires integral template parameter");
-            static_assert(sizeof(T_) > 2,
-                    "Cannot instantiate TRad2Pi with underlying type too small");
+            static_assert(std::is_integral<T_>::value, "Template TRad2Pi<> requires integral template parameter");
+            static_assert(sizeof(T_) > 2, "Cannot instantiate TRad2Pi with underlying type too small");
+        }
+
+        TRad2Pi(Base const & rhs)
+        : Base(rhs)
+        {
         }
 
         TRad2Pi(TDeg180<T_> const & val180)

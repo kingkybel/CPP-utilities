@@ -62,9 +62,9 @@ void LimitedValuesTest::tearDown()
 template<typename T_, T_ min, T_ max>
 void checkAllValidValues()
 {
-    typedef limited_int<T_, min, max, PolicyThrowException> testedTypeThrow;
-    typedef limited_int<T_, min, max, PolicySetInvalid> testedTypeInvalid;
-    typedef limited_int<T_, min, max, PolicySetModulo> testedTypeModulo;
+    typedef limited_int<T_, min, max, PolicyThrowException<T_, min, max, -1UL> > testedTypeThrow;
+    typedef limited_int<T_, min, max, PolicySetInvalid<T_, min, max, -1UL> > testedTypeInvalid;
+    typedef limited_int<T_, min, max, PolicySetModulo<T_, min, max, -1UL> > testedTypeModulo;
 
     for (T_ i = min; i <= max; i++)
     {
@@ -134,9 +134,9 @@ void checkAllValidValues()
 template<typename T_, T_ min, T_ max>
 void checkInvalidValues()
 {
-    typedef limited_int<T_, min, max, PolicyThrowException> testedTypeThrow;
-    typedef limited_int<T_, min, max, PolicySetInvalid> testedTypeInvalid;
-    typedef limited_int<T_, min, max, PolicySetModulo> testedTypeModulo;
+    typedef limited_int<T_, min, max, PolicyThrowException<T_, min, max, -1UL> > testedTypeThrow;
+    typedef limited_int<T_, min, max, PolicySetInvalid<T_, min, max, -1UL> > testedTypeInvalid;
+    typedef limited_int<T_, min, max, PolicySetModulo<T_, min, max, -1UL> > testedTypeModulo;
 
     for (T_ i = min - 10; i < min; i++)
     {
@@ -316,6 +316,8 @@ void checkExtremeValues()
         CPPUNIT_FAIL(ss.str());
     }
 
+    cout << "######################## testedTypeLwr[5]=" << (testedTypeLwr()[5]) << endl;
+
 }
 
 void LimitedValuesTest::testInstanciation()
@@ -336,12 +338,12 @@ void LimitedValuesTest::testInstanciation()
     checkInvalidValues<int64_t, 0, 10>();
     checkInvalidValues<int64_t, -10, 10 > ();
 
-    checkExtremeValues<int32_t, PolicyThrowException>();
-    checkExtremeValues<int64_t, PolicyThrowException>();
-    checkExtremeValues<int32_t, PolicySetInvalid>();
-    checkExtremeValues<int64_t, PolicySetInvalid>();
-    checkExtremeValues<int32_t, PolicySetModulo>();
-    checkExtremeValues<int64_t, PolicySetModulo>();
+//    checkExtremeValues<int32_t, PolicyThrowException<int32_t, std::numeric_limits<int32_t>::min(), std::numeric_limits<int32_t>::max(), -1UL>>();
+//    checkExtremeValues<int64_t, PolicyThrowException<int64_t, std::numeric_limits<int64_t>::min(), std::numeric_limits<int64_t>::max(), -1UL>>();
+//    checkExtremeValues<int32_t, PolicySetInvalid<int32_t, std::numeric_limits<int32_t>::min(), std::numeric_limits<int32_t>::max(), -1UL>>();
+//    checkExtremeValues<int64_t, PolicySetInvalid<int64_t, std::numeric_limits<int64_t>::min(), std::numeric_limits<int64_t>::max(), -1UL>>();
+//    checkExtremeValues<int32_t, PolicySetModulo<int32_t, std::numeric_limits<int32_t>::min(), std::numeric_limits<int32_t>::max(), -1UL>>();
+//    checkExtremeValues<int64_t, PolicySetModulo<int64_t, std::numeric_limits<int64_t>::min(), std::numeric_limits<int64_t>::max(), -1UL>>();
 
     // unsigned
     checkAllValidValues<uint32_t, 3, 10>();
@@ -360,9 +362,9 @@ void LimitedValuesTest::testInstanciation()
 template<typename T_, T_ min, T_ max>
 void testIteratorT()
 {
-    typedef limited_int<T_, min, max, PolicyThrowException> testedTypeThrow;
-    typedef limited_int<T_, min, max, PolicySetInvalid> testedTypeInvalid;
-    typedef limited_int<T_, min, max, PolicySetModulo> testedTypeModulo;
+    typedef limited_int<T_, min, max, PolicyThrowException<T_, min, max, -1UL> > testedTypeThrow;
+    typedef limited_int<T_, min, max, PolicySetInvalid<T_, min, max, -1UL> > testedTypeInvalid;
+    typedef limited_int<T_, min, max, PolicySetModulo<T_, min, max, -1UL> > testedTypeModulo;
 
     // Memory efficiency-check: assert that limited_ints don't carry any extra baggage
     CPPUNIT_ASSERT(sizeof (T_) == sizeof (testedTypeThrow));
@@ -695,7 +697,9 @@ void LimitedValuesTest::testDegreeConversion()
     std::map<Deg180, Rad2Pi> map180To2Pi;
     for (int64_t i = -500; i < 500; i++)
         map180To2Pi[i] = Deg180(i); // should store the 2Pi - value cast from the 180 value
-
+Deg180 d;
+d++;
+++d;
     for (auto m : map180To2Pi)
     {
         Deg180 deg180 = m.first;
