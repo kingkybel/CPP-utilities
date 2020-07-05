@@ -2,15 +2,15 @@
 #include <cstdlib>
 
 
-#define STEP 4
+#define STEP 6
 
 //#define SHOW_COMPILE_ERROR
 
 #if STEP == 0                    // no template
-#include "limited_int_0.h" 
+#include "limited_int_0.h"
 #endif
 #if STEP == 1                    // Basic limited int - use modulo operation to get into range
-#include "limited_int_1.h" 
+#include "limited_int_1.h"
 #endif
 #if STEP == 2                    // better output, conversion
 #include "limited_int_2.h"
@@ -22,7 +22,7 @@
 #include "limited_int_4.h"
 #endif
 #if STEP == 5                    // exceptions-policy + more template param sanity
-#include "limited_int_5.h"       
+#include "limited_int_5.h"
 #endif
 #if STEP == 6
 #include "limited_int_6.h"
@@ -34,11 +34,10 @@
 #include <limited_int_8.h>
 #endif
 
-
 int main(int argc, char** argv)
 {
-   execute();
-   
-   return 0;
+    execute();
+
+    return 0;
 }
 

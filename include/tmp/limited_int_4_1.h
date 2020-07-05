@@ -33,30 +33,30 @@
 struct PolicySetInvalid
 {
 
-   template<typename T_>
-   static bool apply(T_ const & min, T_ const & max, T_ & val)
-   {
-      return ((val >= min) && (val <= max));
-   }
+    template<typename T_>
+    static bool apply(T_ const & min, T_ const & max, T_ & val)
+    {
+        return ((val >= min) && (val <= max));
+    }
 };
 
 struct PolicySetModulo
 {
 
-   template<typename T_>
-   static bool apply(T_ const & min, T_ const & max, T_ & val)
-   {
-      if ((val > max) || (val < min))
-      {
-         T_ const dist = max - min + 1;
-         val -= min;
-         val %= dist;
-         if (val < 0)
-            val += dist;
-         val += min;
-      }
-      return true;
-   }
+    template<typename T_>
+    static bool apply(T_ const & min, T_ const & max, T_ & val)
+    {
+        if ((val > max) || (val < min))
+        {
+            T_ const dist = max - min + 1;
+            val -= min;
+            val %= dist;
+            if (val < 0)
+                val += dist;
+            val += min;
+        }
+        return true;
+    }
 };
 
 template < typename T_,
@@ -67,75 +67,75 @@ typename Policy_ = PolicySetModulo
 struct limited_int
 {
 private:
-   T_ val_ = min_;
-   constexpr static T_ invalid_ = (min_ != std::numeric_limits<T_>::min() ?
-                                   std::numeric_limits<T_>::min() :
-                                   std::numeric_limits<T_>::max());
+    T_ val_ = min_;
+    constexpr static T_ invalid_ = (min_ != std::numeric_limits<T_>::min() ?
+                                    std::numeric_limits<T_>::min() :
+                                    std::numeric_limits<T_>::max());
 
 public:
 
-   limited_int(T_ val = min_)
-   {
-      static_assert(true == std::is_integral<T_>::value,
-                    "limited_int<> needs integral type as template parameter");
-      static_assert(min_ < max_,
-                    "limited_int<> min needs to be smaller than max");
-      static_assert(std::numeric_limits<T_>::min() != min_
-                    || std::numeric_limits<T_>::max() != max_,
-                    "limited_int<> cannot extend from numeric limit min() to max().");
+    limited_int(T_ val = min_)
+    {
+        static_assert(true == std::is_integral<T_>::value,
+                      "limited_int<> needs integral type as template parameter");
+        static_assert(min_ < max_,
+                      "limited_int<> min needs to be smaller than max");
+        static_assert(std::numeric_limits<T_>::min() != min_
+                      || std::numeric_limits<T_>::max() != max_,
+                      "limited_int<> cannot extend from numeric limit min() to max().");
 
-      if (false == Policy_::apply(min_, max_, val))
-      {
-         val = invalid_;
-      }
-      val_ = val;
-   }
+        if (false == Policy_::apply(min_, max_, val))
+        {
+            val = invalid_;
+        }
+        val_ = val;
+    }
 
-   static constexpr limited_int min()
-   {
-      return min_;
-   }
+    static constexpr limited_int min()
+    {
+        return min_;
+    }
 
-   static constexpr limited_int max()
-   {
-      return max_;
-   }
+    static constexpr limited_int max()
+    {
+        return max_;
+    }
 
-   static constexpr limited_int invalid()
-   {
-      return invalid_;
-   }
+    static constexpr limited_int invalid()
+    {
+        return invalid_;
+    }
 
-   limited_int isInvalid() const
-   {
-      return val_ == invalid_;
-   }
+    limited_int isInvalid() const
+    {
+        return val_ == invalid_;
+    }
 
-   T_ val() const
-   {
-      return val_;
-   }
+    T_ val() const
+    {
+        return val_;
+    }
 
-   operator T_() const
-   {
-      return val();
-   }
+    operator T_() const
+    {
+        return val();
+    }
 
-   friend std::ostream & operator<<(std::ostream & os,
-                                    limited_int<T_, min_, max_, Policy_> const & i)
-   {
-      if(i.isInvalid())
-         os << "<limited_int::invalid>";
-      else
-         os << i.val();
-      os << " "
-            << "["
-            << (T_) i.min()
-            << ","
-            << (T_) i.max()
-            << "]";
-      return os;
-   }
+    friend std::ostream & operator<<(std::ostream & os,
+                                     limited_int<T_, min_, max_, Policy_> const & i)
+    {
+        if (i.isInvalid())
+            os << "<limited_int::invalid>";
+        else
+            os << i.val();
+        os << " "
+                << "["
+                << (T_) i.min()
+                << ","
+                << (T_) i.max()
+                << "]";
+        return os;
+    }
 
 };
 
@@ -146,27 +146,27 @@ typedef limited_int<long, -10, 15, PolicySetInvalid> Neg10Pos15Inv;
 
 void execute()
 {
-      Neg10Pos15 neg10Pos15;
-      cout << "initializedValue=" << neg10Pos15 << endl;
-   
-      for (long x = -20; x < 20; x++)
-      {
-         neg10Pos15 = x;
-         long y = neg10Pos15;
-         cout << x << ":\tlimited_int=" << neg10Pos15 << "\tlong=" << y << endl;
-      }
-   #if SHOW_COMPILE_ERROR == 1
-      limited_int<double> dbl;
-   #endif
-   #if SHOW_COMPILE_ERROR == 2
-      limited_int<long, 10, 2> ll;
-   #endif
-   #if SHOW_COMPILE_ERROR == 3
-      limited_int<char, std::numeric_limits<char>::min(), std::numeric_limits<char>::max()> cc;
-   #endif
+    Neg10Pos15 neg10Pos15;
+    cout << "initializedValue=" << neg10Pos15 << endl;
 
-   Neg10Pos15Inv neg10Pos15Inv = 20;
-   cout << "initializedValue=" << neg10Pos15Inv << endl;
+    for (long x = -20; x < 20; x++)
+    {
+        neg10Pos15 = x;
+        long y = neg10Pos15;
+        cout << x << ":\tlimited_int=" << neg10Pos15 << "\tlong=" << y << endl;
+    }
+#if SHOW_COMPILE_ERROR == 1
+    limited_int<double> dbl;
+#endif
+#if SHOW_COMPILE_ERROR == 2
+    limited_int<long, 10, 2> ll;
+#endif
+#if SHOW_COMPILE_ERROR == 3
+    limited_int<char, std::numeric_limits<char>::min(), std::numeric_limits<char>::max() > cc;
+#endif
+
+    Neg10Pos15Inv neg10Pos15Inv = 20;
+    cout << "initializedValue=" << neg10Pos15Inv << endl;
 
 }
 

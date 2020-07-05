@@ -136,10 +136,10 @@ namespace util
     template <typename LimitedIntTag>
     class limited_int_iterator;
 
-    template <  typename T_,
-                T_ min_ = std::numeric_limits<T_>::min() + 1,
-                T_ max_ = std::numeric_limits<T_>::max(),
-                typename Policy_ = PolicySetModulo<T_, min_, max_, 1UL>
+    template < typename T_,
+    T_ min_ = std::numeric_limits<T_>::min() + 1,
+    T_ max_ = std::numeric_limits<T_>::max(),
+    typename Policy_ = PolicySetModulo<T_, min_, max_, 1UL>
     >
     struct limited_int
     {
