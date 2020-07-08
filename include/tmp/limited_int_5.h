@@ -1,19 +1,6 @@
 #ifndef LIMITED_INT_H_INCLUDED
 #define LIMITED_INT_H_INCLUDED
 
-#include <iostream>
-#include <limits>
-#include <exception>
-#include <sstream>
-#include <typeinfo>
-#include <type_traits>
-#include <set>
-
-using namespace std;
-
-#define SHOW(expr, comment) {cout << "line("<< __LINE__ << "): " << boolalpha << (#expr)\
-                                  << "=" << (expr) << "\t\t" << (comment) << endl; }
-
 struct resolve_modulo
 {
 
@@ -64,16 +51,6 @@ struct resolve_invalid
     }
 };
 
-template< typename, typename = void >
-struct is_out_of_bounds_resolver : std::false_type { };
-
-template<>
-struct is_out_of_bounds_resolver<resolve_modulo> : std::true_type { };
-template<>
-struct is_out_of_bounds_resolver<resolve_invalid> : std::true_type { };
-template<>
-struct is_out_of_bounds_resolver<resolve_throw> : std::true_type { };
-
 struct convert_scale
 {
 
@@ -122,14 +99,6 @@ struct convert_circular_scale
 
 };
 
-template< typename, typename = void >
-struct is_limited_int_converter : std::false_type { };
-
-template<>
-struct is_limited_int_converter<convert_circular_scale> : std::true_type { };
-template<>
-struct is_limited_int_converter<convert_scale> : std::true_type { };
-
 template<typename INT_,
         INT_ min_,
         INT_ max_,
@@ -142,8 +111,6 @@ struct limited_int_traits
 
     constexpr static INT_ invalid()
     {
-        static_assert(is_limited_int_converter<Converter>::value, "invalid limited_int_converter");
-        static_assert(is_out_of_bounds_resolver<Resolver>::value, "invalid out_of_bounds_resolver");
         return (min_ != std::numeric_limits<INT_>::min() ?
                 std::numeric_limits<INT_>::min() :
                 std::numeric_limits<INT_>::max());
@@ -154,6 +121,7 @@ struct limited_int_traits
         return ((val >= min_) && (val <= max_) && (min_ < max_));
     }
 
+    // @NOTE: interface to apply resolve policy to a given value
     static bool apply(INT_ & val)
     {
         if (!withinBounds(val))
@@ -163,6 +131,7 @@ struct limited_int_traits
         return true;
     }
 
+    // @NOTE: interface to convert one limited_int into another
     template<typename LimitedInt_>
     static INT_ convertFrom(LimitedInt_ const & rhs)
     {
@@ -170,6 +139,8 @@ struct limited_int_traits
     }
 };
 
+
+//// @Note: HERE OUR @LIMITED_INT STARTS ////////////////////////////////////////
 template <  typename T_,
             T_ min_ = std::numeric_limits<T_>::min() + 1,
             T_ max_ = std::numeric_limits<T_>::max(),
@@ -250,49 +221,35 @@ public:
 
 };
 
-using namespace std;
+// @NOTE: Modulo resolution and circular conversion
+typedef limited_int_traits<int64_t, -179, 180, resolve_modulo, convert_circular_scale> Deg180Traits;
+typedef limited_int<int64_t, -179, 180, Deg180Traits> Deg180;
 
-constexpr int64_t const MICRO_RAD_PI = 3'141'592LL;
-constexpr int64_t const MICRO_RAD_2PI = MICRO_RAD_PI << 1 + 1LL;
+typedef limited_int_traits<int64_t, 0, 359, resolve_modulo, convert_circular_scale> Deg360Traits;
+typedef limited_int<int64_t, 0, 359, Deg360Traits> Deg360;
 
-typedef limited_int<int64_t, -179, 180,
-limited_int_traits<int64_t, -179, 180, resolve_modulo, convert_circular_scale>> Deg180;
-typedef limited_int<int64_t, 0, 359,
-limited_int_traits<int64_t, 0, 359, resolve_modulo, convert_circular_scale>> Deg360;
-typedef limited_int<int64_t, 0, MICRO_RAD_2PI,
-limited_int_traits<int64_t, 0, MICRO_RAD_2PI, resolve_modulo, convert_circular_scale>> Rad2Pi;
+typedef limited_int_traits<int64_t, 0, MICRO_RAD_2PI, resolve_modulo, convert_circular_scale> Rad2PiTraits;
+typedef limited_int<int64_t, 0, MICRO_RAD_2PI, Rad2PiTraits> Rad2Pi;
 
-typedef limited_int<int64_t, -1'000'000, 1'000'000,
-limited_int_traits<int64_t, -1'000'000, 1'000'000, resolve_invalid, convert_scale>> MilliM;
-typedef limited_int<int64_t, -1'000'000'000, 1'000'000'000,
-limited_int_traits<int64_t, -1'000'000'000, 1'000'000'000, resolve_invalid, convert_scale>> MicroM;
-typedef limited_int<int64_t, 0, 2'000'000,
-limited_int_traits<int64_t, 0, 2'000'000, resolve_invalid, convert_scale> > MilliM2Million;
+// @NOTE: @INVALID resolution and scaling conversion
+typedef limited_int_traits<int64_t, -1'000'000, 1'000'000, resolve_invalid, convert_scale> MilliMTraits;
+typedef limited_int<int64_t, -1'000'000, 1'000'000, MilliMTraits> MilliM;
+
+typedef limited_int_traits<int64_t, -1'000'000'000, 1'000'000'000, resolve_invalid, convert_scale> MicroMTraits;
+typedef limited_int<int64_t, -1'000'000'000, 1'000'000'000, MicroMTraits> MicroM;
+
+typedef limited_int_traits<int64_t, 0, 2'000'000, resolve_invalid, convert_scale> MilliM2MillionTraits;
+typedef limited_int<int64_t, 0, 2'000'000, MilliM2MillionTraits> MilliM2Million;
 
 void execute()
 {
+    SHOW0("========= ADDED TRAITS TO GOVERN ASPECTS OF BEHAVIOUR ================");
     Deg360 deg360 = 270; // ok
-    SHOW(deg360, "valid");
-
     Deg180 deg180 = -90; // ok
-    SHOW(deg180, "valid");
-
     Rad2Pi rad2Pi = 1'234'567; // ok
-    SHOW(rad2Pi, "valid");
 
-    deg360 = 510; // we don't want values like that!
-    SHOW(deg360, "now has a valid value");
-
-    deg360 = (510 % 360); // [0, 359]
-    SHOW(deg360, "valid after modulo REDUNDANT");
-
-    deg360 = 359;
-
-    deg180 = deg360; // > 180!
-    SHOW("deg180 = deg360(359)", "");
-    SHOW(deg180, "valid after assignment of 360 value to 180 value, but now intuitive");
-
-
+    SHOW0("");
+    SHOW0("--------------------LINEAR CASE SCALING CONVERSION ----------------");
     MilliM milliM = -567'000;
     MicroM microM = milliM;
     SHOW(milliM, "");
@@ -300,6 +257,7 @@ void execute()
     MilliM2Million mm2Mio = milliM;
     SHOW(mm2Mio, "natural scaling conversion");
 
+    SHOW0("--------------------LINEAR CASE INVALID RESOLUTION ----------------");
     MilliM milliMStrange = 1'500'000;
     SHOW(milliMStrange, "No longer strange behavior for linear (milliMStrange = 1'500'000)");
 
@@ -314,44 +272,64 @@ void execute()
     limited_int<bool, true, true > strange4;
     SHOW(strange4, "strange way to define a limited int -- min == max");
 #endif
-
+    SHOW0("---------------limited ints are not seen as integral----------------");
     SHOW(std::is_integral<MilliM>::value,"");
     SHOW(std::is_integral<Deg360>::value,"");
+
+    SHOW0("-------------- Nevertheless can be inserted into set ---------------");
     std::set<MilliM> mmSet;
     for(int64_t v = -3; v < 3; v++)
     {
         mmSet.insert(v);
     }
+    SHOW0("");
+    SHOW0("-------------- TYPE_DEDUCTION IS NOT ALWAYS WHAT WE WOULD LIKE------");
     for(auto v : mmSet)
     {
+       SHOW(v, "value in mm");
         SHOW(MicroM(v),"conversion from MilliM");
         SHOW(MicroM(v+10),"conversion from int64_t ######## STRANGE");
         SHOW(MicroM(MilliM(v+10)),"conversion from MilliM");
+        SHOW0("--------");
     }
 
+    SHOW0("");
+    SHOW0("----------------- LOOPING (DEFAULT MODULO RESOLUTION)---------------");
     typedef limited_int<short, -10, 10> ShortCircuit;
     for(ShortCircuit i = 5; i != 2; i = ShortCircuit(i+1))
         SHOW(i, "ShortCircuit");
 
+
+    SHOW0("");
+    SHOW0("----------------- LOOPING WITH INVALID RESOLUTION    ---------------");
     typedef limited_int<short, -10, 10, limited_int_traits<short, -10, 10, resolve_invalid>> ShortCut;
     for(ShortCut i = 5; i.isValid(); i = ShortCut(i+1))
         SHOW(i, "ShortCut");
 
+    SHOW0("");
+    SHOW0("----------------- MEMORY REQUIREMENT  ------------------------------");
     SHOW(sizeof(ShortCut),"");
-    SHOW(sizeof(short),"");
+    SHOW(sizeof(ShortCut(4711)),"");
 
+    SHOW0("");
+    SHOW0("----------------- AUTOMATIC CONVERSION ------------------------------");
     SHOW(std::max(ShortCircuit(43),ShortCircuit(31415)),"");
     SHOW(ShortCircuit(43),"");
     SHOW(ShortCircuit(31415),"");
 
+    SHOW0("");
+    SHOW0("----------------- INTERACTION WIT P.O.D ------------------------------");
     int64_t x = ShortCircuit(31415);
     SHOW(x,"");
 
 #ifdef SHOW_COMPILE_ERROR
+    // @NOTE: Attempt to use some type as resolver that is not a resolver
     typedef limited_int<long, -10, 10, limited_int_traits<long, -10, 10, long>> LongShot;
     LongShot longShot = 5;
 #endif
 
+    SHOW0("");
+    SHOW0("----------------- THROW RESOLUTION ALSO WORKS ------------------------");
     typedef limited_int<long, -10, 10, limited_int_traits<long, -10, 10, resolve_throw>> LongJump;
     LongJump longJump = 13;
 
