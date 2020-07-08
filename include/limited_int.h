@@ -33,30 +33,215 @@
 
 namespace util
 {
-
-    template<typename INT_, INT_ min_, INT_ max_, uint64_t features_ = 0UL >
-    struct limited_int_policy
+    /**
+     * Helper class that deals with the resolution of out of bounds issues by
+     * applying a modulo operation on the value to move it into the valid range.
+     */
+    struct resolve_modulo
     {
-        constexpr static bool isPolicy_ = true;
-        constexpr static INT_ invalid_ = (min_ != std::numeric_limits<INT_>::min() ?
-                                          std::numeric_limits<INT_>::min() :
-                                          std::numeric_limits<INT_>::max());
 
-        enum Feature : uint64_t
+        template<typename T_>
+        static bool resolve(T_ min, T_ max, T_ & val, T_ invalid)
         {
-            INCREMENT = 1UL << 0,
-            DECREMENT = 1UL << 1,
-            UNARY_PLUS = 1UL << 2,
-            BINARY_PLUS = 1UL << 3,
-            UNARY_MINUS = 1UL << 4,
-            BINARY_MINUS = 1UL << 5,
-            MULTIPLY = 1UL << 6,
-            DIVIDE = 1UL << 7,
-        };
+            T_ const dist = max - min + 1;
+            val -= min;
+            val %= dist;
+            if (val < 0)
+                val += dist;
+            val += min;
+            return true;
+        }
+    };
 
-        constexpr static bool enabled(Feature const feature)
+    /**
+     * Helper class that deals with the resolution of out of bounds issues by
+     * throwing an exception.
+     */
+    struct resolve_throw
+    {
+
+        template<typename T_>
+        static bool resolve(T_ min, T_ max, T_ & val, T_ invalid)
         {
-            return (features_ & feature) == feature;
+            std::stringstream ss;
+            ss << "resolve_throw::resolve() limited_int<"
+                    << typeid (T_).name()
+                    << ","
+                    << min
+                    << ","
+                    << max
+                    << ">("
+                    << val
+                    << ") out of range.";
+            val = (std::numeric_limits<T_>::min() != min ?
+                   std::numeric_limits<T_>::min() :
+                   std::numeric_limits<T_>::max());
+            throw std::out_of_range(ss.str());
+        }
+    };
+
+    /**
+     * Helper class that deals with the resolution of out of bounds issues by
+     * setting the limited int to the special "invalid" value;.
+     */
+    struct resolve_invalid
+    {
+
+        template<typename T_>
+        static bool resolve(T_ min, T_ max, T_ & val, T_ invalid)
+        {
+            val = invalid;
+            return false;
+        }
+    };
+
+    /**
+     * Test whether a type is an "out-of-bounds-resolver" for
+     * static checks. This default delivers always false.
+     */
+    template< typename, typename = void >
+    struct is_out_of_bounds_resolver : std::false_type
+    {
+    };
+
+    /**
+     * Specialised test whether a type is an "out-of-bounds-resolver" for
+     * static checks. This default delivers true for resolve_modulo.
+     */
+    template<>
+    struct is_out_of_bounds_resolver<resolve_modulo> : std::true_type
+    {
+    };
+
+    /**
+     * Specialised test whether a type is an "out-of-bounds-resolver" for
+     * static checks. This default delivers true for resolve_invalid.
+     */
+    template<>
+    struct is_out_of_bounds_resolver<resolve_invalid> : std::true_type
+    {
+    };
+
+    /**
+     * Specialised test whether a type is an "out-of-bounds-resolver" for
+     * static checks. This default delivers true for resolve_throw.
+     */
+    template<>
+    struct is_out_of_bounds_resolver<resolve_throw> : std::true_type
+    {
+    };
+
+    /**
+     * Helper class that deals with the conversion between different limited_int
+     * specialisations by scaling the rhs interval onto the lhs interval.
+     */
+    struct convert_scale
+    {
+
+        template<typename T_, typename LimitedInt2_>
+        static T_ convertFrom(T_ min_, T_ max_, LimitedInt2_ const & rhs)
+        {
+            long double distLhs = ((long double) max_ - (long double) min_);
+            long double distRhs = (rhs.max() - rhs.min());
+            long double valRhsTo0 = ((long double) rhs.val() - rhs.min());
+            long double scaleFactor = distLhs / distRhs;
+            long double valLhsTo0 = valRhsTo0 * scaleFactor;
+            T_ reval(valLhsTo0 + (long double) min_);
+            return reval;
+        }
+
+    };
+
+    /**
+     * Helper class that deals with the conversion between different limited_int
+     * specialisations by circular scaling the rhs interval onto the lhs interval.
+     */
+    struct convert_circular_scale
+    {
+
+        template<typename T_, typename LimitedInt2_>
+        static T_ convertFrom(T_ min_, T_ max_, LimitedInt2_ const & rhs)
+        {
+            if (((rhs.min() + rhs.max() > 1) && rhs.min() != 0)
+                || ((min_ + max_ > 1) && min_ != 0))
+            {
+                std::stringstream ss;
+                ss << "convert_circular_scale::convertFrom(" << min_ << "," << max_
+                        << "," << rhs
+                        << "):can only user circular scale conversion on symmetric around 0 or [0, pos] limited ints";
+                throw std::out_of_range(ss.str());
+            }
+
+            T_ rhsDist = rhs.max() - rhs.min();
+            T_ rhsValMapped = (rhs.min() < 0 && rhs.val() < 0) ?
+                    rhs.val() + rhsDist :
+                    rhs.val();
+            T_ lhsDist = max_ - min_;
+            T_ scale = lhsDist / rhsDist;
+            T_ lhsValMapped = T_((long double) rhsValMapped * (long double) scale);
+            if (min_ < 0)
+                lhsValMapped = (lhsValMapped - lhsDist) % lhsDist;
+
+            return lhsValMapped;
+        }
+
+    };
+
+    /**
+     * Default test whether a type is an "limited-int-converter" for
+     * static checks. This default delivers always false.
+     */
+    template< typename, typename = void >
+    struct is_limited_int_converter : std::false_type
+    {
+    };
+
+    /**
+     * Specialised test whether a type is an "limited-int-converter" for
+     * static checks. This delivers true for convert_circular_scale.
+     */
+    template<>
+    struct is_limited_int_converter<convert_circular_scale> : std::true_type
+    {
+    };
+
+
+    /**
+     * Specialised test whether a type is an "limited-int-converter" for
+     * static checks. This delivers true for convert_scale.
+     */
+    template<>
+    struct is_limited_int_converter<convert_scale> : std::true_type
+    {
+    };
+
+    /**
+     * Traits for limited_int's.
+     * @param INT_ underlying integer type/class
+     * @param min_ the minimal value of the limited_int
+     * @param max the maximal value of the limited_int
+     * @param Res_ type that deals with out of range [min,max] resolution
+     * @param Conv_ type that deals with conversion between limited_int types
+     */
+    template<   typename INT_,
+                INT_ min_,
+                INT_ max_,
+                typename Res_ = resolve_modulo,
+                typename Conv_ = convert_scale>
+    struct limited_int_traits
+    {
+        typedef Res_ Resolver;
+        typedef Conv_ Converter;
+        static constexpr INT_ invalid_ = (min_ != std::numeric_limits<INT_>::min() ?
+                    std::numeric_limits<INT_>::min() :
+                    std::numeric_limits<INT_>::max());
+
+        constexpr static INT_ invalid()
+        {
+            static_assert(is_limited_int_converter<Converter>::value, "invalid limited_int_converter");
+            static_assert(is_out_of_bounds_resolver<Resolver>::value, "invalid out_of_bounds_resolver");
+
+            return invalid_;
         }
 
         static bool withinBounds(INT_ const &val)
@@ -68,10 +253,15 @@ namespace util
         {
             if (!withinBounds(val))
             {
-                val = invalid_;
-                return false;
+                return Resolver::resolve(min_, max_, val, invalid());
             }
             return true;
+        }
+
+        template<typename LimitedInt_>
+        static INT_ convertFrom(LimitedInt_ const & rhs)
+        {
+            return Converter::convertFrom(min_, max_, rhs);
         }
 
         template<typename LimitedInt_>
@@ -81,89 +271,33 @@ namespace util
         }
     };
 
-    template<typename INT_, INT_ min_, INT_ max_, uint64_t features_ = 0UL >
-    struct PolicySetInvalid : public limited_int_policy<INT_, min_, max_, features_>
-    {
-    };
-
-    template<typename INT_, INT_ min_, INT_ max_, uint64_t features_ = 0UL >
-    struct PolicyThrowException : public limited_int_policy<INT_, min_, max_, features_>
-    {
-        typedef limited_int_policy<INT_, min_, max_, features_> Base;
-
-        static bool apply(INT_ & val)
-        {
-            if (!Base::withinBounds(val))
-            {
-                val = Base::invalid_;
-                std::stringstream ss;
-                ss << "limited_int<"
-                        << typeid (INT_).name()
-                        << ","
-                        << min_
-                        << ","
-                        << max_
-                        << ",PolicyThrowException>("
-                        << val
-                        << ") out of range.";
-                throw std::out_of_range(ss.str());
-            }
-            return true;
-        }
-    };
-
-    template<typename INT_, INT_ min_, INT_ max_, uint64_t features_ = 0UL >
-    struct PolicySetModulo : public limited_int_policy<INT_, min_, max_, features_>
-    {
-        typedef limited_int_policy<INT_, min_, max_, features_> Base;
-
-        static bool apply(INT_ & val)
-        {
-            if (!Base::withinBounds(val))
-            {
-                INT_ const dist = max_ - min_ + 1;
-                val -= min_;
-                val %= dist;
-                if (val < 0)
-                    val += dist;
-                val += min_;
-            }
-            return true;
-        }
-    };
-
-
+    /** Forward declared iterator type. */
     template <typename LimitedIntTag>
     class limited_int_iterator;
 
     template < typename T_,
-    T_ min_ = std::numeric_limits<T_>::min() + 1,
-    T_ max_ = std::numeric_limits<T_>::max(),
-    typename Policy_ = PolicySetModulo<T_, min_, max_, 1UL>
-    >
+                T_ min_ = std::numeric_limits<T_>::min() + 1,
+                T_ max_ = std::numeric_limits<T_>::max(),
+                typename Traits_ = limited_int_traits<  T_,
+                                                        min_,
+                                                        max_,
+                                                        resolve_modulo,
+                                                        convert_scale>
+             >
     struct limited_int
     {
-        typedef Policy_ PolicyType;
     private:
 
         explicit limited_int(bool dummy)
-        : val_(Policy_::invalid_)
+        : val_(Traits_::invalid_)
         {
         }
-
-        // according to features flagged in Policy_ include features in this.
-        constexpr static bool INCREMENT_ENABLED = PolicyType::enabled(PolicyType::Feature::INCREMENT);
-        constexpr static bool DECREMENT_ENABLED = PolicyType::enabled(PolicyType::Feature::DECREMENT);
-        constexpr static bool UNARY_PLUS_ENABLED = PolicyType::enabled(PolicyType::Feature::UNARY_PLUS);
-        constexpr static bool BINARY_PLUS_ENABLED = PolicyType::enabled(PolicyType::Feature::BINARY_PLUS);
-        constexpr static bool UNARY_MINUS_ENABLED = PolicyType::enabled(PolicyType::Feature::UNARY_MINUS);
-        constexpr static bool BINARY_MINUS_ENABLED = PolicyType::enabled(PolicyType::Feature::BINARY_MINUS);
-        constexpr static bool DIVIDE_ENABLED = PolicyType::enabled(PolicyType::Feature::DIVIDE);
 
         T_ val_ = min_;
 
     public:
-        typedef limited_int_iterator<limited_int<T_, min_, max_, Policy_> > iterator;
+        typedef Traits_ TraitsType;
+        typedef limited_int_iterator<limited_int<T_, min_, max_, Traits_> > iterator;
 
         limited_int(T_ val = min_)
         : val_(val)
@@ -172,56 +306,47 @@ namespace util
                           "limited_int<> needs integral type as template parameter");
             static_assert(min_ < max_,
                           "limited_int<> min needs to be smaller than max");
-            //      static_assert(true == is_policy<Policy_>::value,
-            //                    "no valid Policy_");
-            static_assert(std::numeric_limits<T_>::min() != min_
-                          || std::numeric_limits<T_>::max() != max_,
-                          "limited_int<> cannot extend from numeric limit min() to max().");
+            static_assert((min_ != std::numeric_limits<T_>::min()) || (max_ != std::numeric_limits<T_>::max()),
+                          "either min or max must be not equal numeric_limits min() and max()");
 
-            Policy_::apply(val_);
+            Traits_::apply(val_);
         }
 
-        template<typename T2_, T2_ min2_, T2_ max2_, typename Policy2_>
-        limited_int(limited_int<T2_, min2_, max2_, Policy2_> const & rhs)
-        : val_(T_((long double) rhs.val() / (long double) (max2_ - min2_)*(long double) (max_ - min_)))
+        template<typename T2_, T2_ min2_, T2_ max2_, typename Traits2_>
+        limited_int(limited_int<T2_, min2_, max2_, Traits2_> const & rhs)
         {
+            val_ = Traits_::convertFrom(rhs);
         }
 
         bool isValid() const
         {
-            return val_ != Policy_::invalid_;
+            return val_ != Traits_::invalid();
         }
 
-        template<typename = typename std::enable_if<INCREMENT_ENABLED, bool> >
-        limited_int& operator++()
+        static constexpr limited_int min()
         {
-            limited_int tmp = (val_ + 1);
-            val_ = tmp.val_;
-            return *this;
+            return min_;
         }
 
-        template<typename = typename std::enable_if<INCREMENT_ENABLED, bool> >
-        limited_int& operator++(int)
+        static limited_int invalid()
         {
-            limited_int tmp = (val_ + 1);
-            val_ = tmp.val_;
-            return *this;
+            static limited_int<T_, min_, max_, Traits_> invalidLimitedInt(false);
+            return invalidLimitedInt;
         }
 
-        template<typename = typename std::enable_if<DECREMENT_ENABLED, bool> >
-        limited_int& operator--()
+        static constexpr limited_int max()
         {
-            limited_int tmp = (val_ - 1);
-            val_ = tmp.val_;
-            return *this;
+            return max_;
         }
 
-        template<typename = typename std::enable_if<DECREMENT_ENABLED, bool> >
-        limited_int& operator--(int)
+        T_ val() const
         {
-            limited_int tmp = (val_ - 1);
-            val_ = tmp.val_;
-            return *this;
+            return val_;
+        }
+
+        operator T_() const
+        {
+            return val();
         }
 
         static iterator begin(limited_int start = limited_int::min())
@@ -244,37 +369,16 @@ namespace util
             return iterator(rfinish, true);
         }
 
-        static limited_int min()
+        /**
+         * global stream operator defined as friend within the template body.
+         */
+        friend std::ostream & operator<<(std::ostream & os, limited_int const & i)
         {
-            return min_;
-        }
-
-        static limited_int max()
-        {
-            return max_;
-        }
-
-        operator T_() const
-        {
-            return val();
-        }
-
-        T_ val() const
-        {
-            return val_;
-        }
-
-        static limited_int invalid()
-        {
-            static limited_int<T_, min_, max_, Policy_> invalidLimitedInt(false);
-            return invalidLimitedInt;
-        }
-
-        friend std::ostream & operator<<(std::ostream & os,
-                                         limited_int<T_, min_, max_, Policy_> const & i)
-        {
-            os << i.val()
-                    << " "
+            if (!i.isValid())
+                os << "<INV>";
+            else
+                os << i.val();
+            os << " "
                     << "["
                     << (T_) i.min()
                     << ","
@@ -285,6 +389,10 @@ namespace util
 
     };
 
+    /**
+     * Templated random access Iterator on a limited_int type.
+     * @param LimitedInt the limited int to iterate over.
+     */
     template <typename LimitedInt>
     class limited_int_iterator
     : public std::iterator<std::random_access_iterator_tag, LimitedInt>
@@ -310,7 +418,7 @@ namespace util
             try
             {
                 IntType step = isReverse_ ? IntType(-1) : IntType(1);
-                iterEl_ = LimitedInt::PolicyType::nth_next(iterEl_, step);
+                iterEl_ = LimitedInt::TraitsType::nth_next(iterEl_, step);
             }
             catch (std::out_of_range &e)
             {

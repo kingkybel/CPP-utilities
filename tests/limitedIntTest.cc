@@ -62,9 +62,16 @@ void LimitedValuesTest::tearDown()
 template<typename T_, T_ min, T_ max>
 void checkAllValidValues()
 {
-    typedef limited_int<T_, min, max, PolicyThrowException<T_, min, max, -1UL> > testedTypeThrow;
-    typedef limited_int<T_, min, max, PolicySetInvalid<T_, min, max, -1UL> > testedTypeInvalid;
-    typedef limited_int<T_, min, max, PolicySetModulo<T_, min, max, -1UL> > testedTypeModulo;
+    typedef limited_int_traits<T_, min, max, resolve_modulo, convert_scale>  traitsModuloScale;
+    typedef limited_int_traits<T_, min, max, resolve_modulo, convert_circular_scale> traitsModuloCircularScale;
+    typedef limited_int_traits<T_, min, max, resolve_invalid, convert_scale> traitsInvalidScale;
+    typedef limited_int_traits<T_, min, max, resolve_invalid, convert_circular_scale>  traitsInvalidCircularScale;
+    typedef limited_int_traits<T_, min, max, resolve_throw, convert_scale> traitsThrowScale;
+    typedef limited_int_traits<T_, min, max, resolve_throw, convert_circular_scale>  traitsThrowCircularScale;
+
+    typedef limited_int<T_, min, max, traitsThrowScale> testedTypeThrow;
+    typedef limited_int<T_, min, max, traitsInvalidCircularScale> testedTypeInvalid;
+    typedef limited_int<T_, min, max, traitsModuloCircularScale> testedTypeModulo;
 
     for (T_ i = min; i <= max; i++)
     {
@@ -134,9 +141,16 @@ void checkAllValidValues()
 template<typename T_, T_ min, T_ max>
 void checkInvalidValues()
 {
-    typedef limited_int<T_, min, max, PolicyThrowException<T_, min, max, -1UL> > testedTypeThrow;
-    typedef limited_int<T_, min, max, PolicySetInvalid<T_, min, max, -1UL> > testedTypeInvalid;
-    typedef limited_int<T_, min, max, PolicySetModulo<T_, min, max, -1UL> > testedTypeModulo;
+    typedef limited_int_traits<T_, min, max, resolve_modulo, convert_scale>  traitsModuloScale;
+    typedef limited_int_traits<T_, min, max, resolve_modulo, convert_circular_scale> traitsModuloCircularScale;
+    typedef limited_int_traits<T_, min, max, resolve_invalid, convert_scale> traitsInvalidScale;
+    typedef limited_int_traits<T_, min, max, resolve_invalid, convert_circular_scale>  traitsInvalidCircularScale;
+    typedef limited_int_traits<T_, min, max, resolve_throw, convert_scale> traitsThrowScale;
+    typedef limited_int_traits<T_, min, max, resolve_throw, convert_circular_scale>  traitsThrowCircularScale;
+
+    typedef limited_int<T_, min, max, traitsThrowScale> testedTypeThrow;
+    typedef limited_int<T_, min, max, traitsInvalidCircularScale> testedTypeInvalid;
+    typedef limited_int<T_, min, max, traitsModuloCircularScale> testedTypeModulo;
 
     for (T_ i = min - 10; i < min; i++)
     {
@@ -362,9 +376,16 @@ void LimitedValuesTest::testInstanciation()
 template<typename T_, T_ min, T_ max>
 void testIteratorT()
 {
-    typedef limited_int<T_, min, max, PolicyThrowException<T_, min, max, -1UL> > testedTypeThrow;
-    typedef limited_int<T_, min, max, PolicySetInvalid<T_, min, max, -1UL> > testedTypeInvalid;
-    typedef limited_int<T_, min, max, PolicySetModulo<T_, min, max, -1UL> > testedTypeModulo;
+    typedef limited_int_traits<T_, min, max, resolve_modulo, convert_scale>  traitsModuloScale;
+    typedef limited_int_traits<T_, min, max, resolve_modulo, convert_circular_scale> traitsModuloCircularScale;
+    typedef limited_int_traits<T_, min, max, resolve_invalid, convert_scale> traitsInvalidScale;
+    typedef limited_int_traits<T_, min, max, resolve_invalid, convert_circular_scale>  traitsInvalidCircularScale;
+    typedef limited_int_traits<T_, min, max, resolve_throw, convert_scale> traitsThrowScale;
+    typedef limited_int_traits<T_, min, max, resolve_throw, convert_circular_scale>  traitsThrowCircularScale;
+
+    typedef limited_int<T_, min, max, traitsThrowScale> testedTypeThrow;
+    typedef limited_int<T_, min, max, traitsInvalidCircularScale> testedTypeInvalid;
+    typedef limited_int<T_, min, max, traitsModuloCircularScale> testedTypeModulo;
 
     // Memory efficiency-check: assert that limited_ints don't carry any extra baggage
     CPPUNIT_ASSERT(sizeof (T_) == sizeof (testedTypeThrow));
@@ -697,9 +718,7 @@ void LimitedValuesTest::testDegreeConversion()
     std::map<Deg180, Rad2Pi> map180To2Pi;
     for (int64_t i = -500; i < 500; i++)
         map180To2Pi[i] = Deg180(i); // should store the 2Pi - value cast from the 180 value
-Deg180 d;
-d++;
-++d;
+
     for (auto m : map180To2Pi)
     {
         Deg180 deg180 = m.first;
