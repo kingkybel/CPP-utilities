@@ -240,14 +240,17 @@ void checkInvalidValues()
     }
 }
 
-template<typename T_, typename Policy_>
+template<typename T_, typename Res_, typename Conv_>
 void checkExtremeValues()
 {
     constexpr T_ minT_ = std::numeric_limits<T_>::min();
     constexpr T_ maxT_ = std::numeric_limits<T_>::max();
 
-    typedef limited_int<T_, maxT_ - 10, maxT_, Policy_> testedTypeUpr;
-    typedef limited_int<T_, minT_, minT_ + 10, Policy_> testedTypeLwr;
+    typedef limited_int_traits<T_, maxT_ - 10, maxT_, Res_, Conv_> testedTypeUprTraits;
+    typedef limited_int<T_, maxT_ - 10, maxT_, testedTypeUprTraits> testedTypeUpr;
+
+    typedef limited_int_traits<T_, minT_, minT_ + 10, Res_, Conv_> testedTypeLwrTraits;
+    typedef limited_int<T_, minT_, minT_ + 10, testedTypeLwrTraits> testedTypeLwr;
 
     try
     {
@@ -330,8 +333,6 @@ void checkExtremeValues()
         CPPUNIT_FAIL(ss.str());
     }
 
-    cout << "######################## testedTypeLwr[5]=" << (testedTypeLwr()[5]) << endl;
-
 }
 
 void LimitedValuesTest::testInstanciation()
@@ -352,12 +353,19 @@ void LimitedValuesTest::testInstanciation()
     checkInvalidValues<int64_t, 0, 10>();
     checkInvalidValues<int64_t, -10, 10 > ();
 
-//    checkExtremeValues<int32_t, PolicyThrowException<int32_t, std::numeric_limits<int32_t>::min(), std::numeric_limits<int32_t>::max(), -1UL>>();
-//    checkExtremeValues<int64_t, PolicyThrowException<int64_t, std::numeric_limits<int64_t>::min(), std::numeric_limits<int64_t>::max(), -1UL>>();
-//    checkExtremeValues<int32_t, PolicySetInvalid<int32_t, std::numeric_limits<int32_t>::min(), std::numeric_limits<int32_t>::max(), -1UL>>();
-//    checkExtremeValues<int64_t, PolicySetInvalid<int64_t, std::numeric_limits<int64_t>::min(), std::numeric_limits<int64_t>::max(), -1UL>>();
-//    checkExtremeValues<int32_t, PolicySetModulo<int32_t, std::numeric_limits<int32_t>::min(), std::numeric_limits<int32_t>::max(), -1UL>>();
-//    checkExtremeValues<int64_t, PolicySetModulo<int64_t, std::numeric_limits<int64_t>::min(), std::numeric_limits<int64_t>::max(), -1UL>>();
+    checkExtremeValues<int32_t, resolve_modulo, convert_scale>();
+    checkExtremeValues<int32_t, resolve_modulo, convert_circular_scale>();
+    checkExtremeValues<int32_t, resolve_invalid, convert_scale>();
+    checkExtremeValues<int32_t, resolve_invalid, convert_circular_scale>();
+    checkExtremeValues<int32_t, resolve_throw, convert_scale>();
+    checkExtremeValues<int32_t, resolve_throw, convert_circular_scale>();
+
+    checkExtremeValues<int64_t, resolve_modulo, convert_scale>();
+    checkExtremeValues<int64_t, resolve_modulo, convert_circular_scale>();
+    checkExtremeValues<int64_t, resolve_invalid, convert_scale>();
+    checkExtremeValues<int64_t, resolve_invalid, convert_circular_scale>();
+    checkExtremeValues<int64_t, resolve_throw, convert_scale>();
+    checkExtremeValues<int64_t, resolve_throw, convert_circular_scale>();
 
     // unsigned
     checkAllValidValues<uint32_t, 3, 10>();
