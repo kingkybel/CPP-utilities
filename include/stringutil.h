@@ -578,7 +578,10 @@ namespace util
      */
     inline std::string toLower(std::string str)
     {
-        std::transform(str.begin(), str.end(), str.begin(), (char(*)(char))tolower);
+        std::transform(str.begin(),
+                       str.end(),
+                       str.begin(),
+                       [](char c) { return tolower(c); });
         return str;
     }
 
@@ -587,7 +590,10 @@ namespace util
      */
     inline std::string toLower(ci_string str)
     {
-        std::transform(str.begin(), str.end(), str.begin(), (char(*)(char))tolower);
+        std::transform(str.begin(),
+                       str.end(),
+                       str.begin(),
+                       [](char c) { return tolower(c);});
         return str.c_str();
     }
 
@@ -596,7 +602,10 @@ namespace util
      */
     inline std::string toUpper(std::string str)
     {
-        std::transform(str.begin(), str.end(), str.begin(), (char(*)(char))toupper);
+        std::transform(str.begin(),
+                       str.end(),
+                       str.begin(),
+                       [](char c) { return toupper(c);});
         return str;
     }
 
@@ -608,7 +617,7 @@ namespace util
         std::transform(str.begin(),
                        str.end(),
                        str.begin(),
-                       (char(*)(char))toupper);
+                       [](char c) { return toupper(c);});
         return str.c_str();
     }
 

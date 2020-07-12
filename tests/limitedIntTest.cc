@@ -707,9 +707,9 @@ void LimitedValuesTest::testDegreeConversion()
                                          return ((v.val() > Deg180::max())
                                                  || (v.val() < Deg180::min()));
                                      }))
-{
-    CPPUNIT_FAIL("Putting int values into a vector<Deg180> left some Deg180 invalid");
-}
+    {
+        CPPUNIT_FAIL("Putting int values into a vector<Deg180> left some Deg180 invalid");
+    }
     std::set<Deg180> set360;
     for (int64_t i = -500; i < 500; i++)
         set360.insert(i);
@@ -720,9 +720,9 @@ void LimitedValuesTest::testDegreeConversion()
                                          return ((v.val() > Deg360::max())
                                                  || (v.val() < Deg360::min()));
                                      }))
-{
-    CPPUNIT_FAIL("Putting int values into a set<Deg360> left some Deg360 invalid");
-}
+    {
+        CPPUNIT_FAIL("Putting int values into a set<Deg360> left some Deg360 invalid");
+    }
     std::map<Deg180, Rad2Pi> map180To2Pi;
     for (int64_t i = -500; i < 500; i++)
         map180To2Pi[i] = Deg180(i); // should store the 2Pi - value cast from the 180 value

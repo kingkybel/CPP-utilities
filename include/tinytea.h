@@ -28,6 +28,8 @@
 #ifndef TINYTEA_H_INCLUDED
 #define TINYTEA_H_INCLUDED
 
+#include <stdint.h>
+
 /**
  * TEA takes 64 bits of data in v[0] and v[1], and 128 bits of key in k[0] - k[3].
  * The result is returned in w[0] and w[1]. Returning the result separately makes
@@ -49,103 +51,49 @@
  */
 struct tinyTea
 {
+    static constexpr uint64_t lwr32 = (uint64_t(uint32_t(-1)));
+    static constexpr uint64_t upr32 = (lwr32 << 32);
+    static constexpr uint32_t delta = 0x9E3779B9; // a key schedule constant
 
-    static void encipher(unsigned long *const data,
-                         unsigned long *const encryptedResult,
-                         const unsigned long *const key)
+public:
+    static uint64_t encrypt(uint64_t val, uint64_t key1, uint64_t key2)
     {
-        register unsigned long y = data[0];
-        register unsigned long z = data[1];
-        register unsigned long sum = 0;
-        register unsigned long delta = 0x9E3779B9;
-        register unsigned long a = key[0];
-        register unsigned long b = key[1];
-        register unsigned long c = key[2];
-        register unsigned long d = key[3];
-        register unsigned long n = 32;
+        uint32_t v0 = (val & upr32) >> 32;
+        uint32_t v1 = (val & lwr32);
+        uint32_t sum = 0U;
+        uint32_t k0 = (key1 & upr32) >> 32;
+        uint32_t k1 = (key1 & lwr32);
+        uint32_t k2 = (key2 & upr32) >> 32;
+        uint32_t k3 = (key2 & lwr32);
 
-        while (n-- > 0)
-        {
+        for (uint32_t i = 0; i < 32; i++)
+        { // basic cycle start
             sum += delta;
-            y += (z << 4) + a ^ z + sum ^ (z >> 5) + b;
-            z += (y << 4) + c ^ y + sum ^ (y >> 5) + d;
-        }
+            v0 += ((v1 << 4) + k0) ^ (v1 + sum) ^ ((v1 >> 5) + k1);
+            v1 += ((v0 << 4) + k2) ^ (v0 + sum) ^ ((v0 >> 5) + k3);
+        } // end cycle
 
-        encryptedResult[0] = y;
-        encryptedResult[1] = z;
+        return (uint64_t(v0) << 32) | uint64_t(v1);
     }
 
-    static void decipher(unsigned long *const encryptedData,
-                         unsigned long *const decryptedResult,
-                         const unsigned long *const key)
+    static uint64_t decrypt(uint64_t val, uint64_t key1, uint64_t key2)
     {
-        register unsigned long y = encryptedData[0];
-        register unsigned long z = encryptedData[1];
-        register unsigned long sum = 0xC6EF3720;
-        register unsigned long delta = 0x9E3779B9;
-        register unsigned long a = key[0];
-        register unsigned long b = key[1];
-        register unsigned long c = key[2];
-        register unsigned long d = key[3];
-        register unsigned long n = 32;
-
-        /* sum = delta<<5, in general sum = delta * n */
-
-        while (n-- > 0)
-        {
-            z -= (y << 4) + c ^ y + sum ^ (y >> 5) + d;
-            y -= (z << 4) + a ^ z + sum ^ (z >> 5) + b;
+        uint32_t v0 = (val & upr32) >> 32;
+        uint32_t v1 = (val & lwr32);
+        uint32_t sum = 0xC6EF3720;
+        uint32_t k0 = (key1 & upr32) >> 32;
+        uint32_t k1 = (key1 & lwr32);
+        uint32_t k2 = (key2 & upr32) >> 32;
+        uint32_t k3 = (key2 & lwr32);
+        for (uint32_t i = 0, sum = 0xC6EF3720; i < 32; i++) // set up; sum is 32*delta
+        { // basic cycle start
+            v1 -= ((v0 << 4) + k2) ^ (v0 + sum) ^ ((v0 >> 5) + k3);
+            v0 -= ((v1 << 4) + k0) ^ (v1 + sum) ^ ((v1 >> 5) + k1);
             sum -= delta;
-        }
+        } // end cycle
 
-        decryptedResult[0] = y;
-        decryptedResult[1] = z;
+        return (uint64_t(v0) << 32) | uint64_t(v1);
     }
-
-    static void encipherNew(const unsigned long *const v,
-                            unsigned long *const w,
-                            const unsigned long * const k)
-    {
-        register unsigned long y = v[0];
-        register unsigned long z = v[1];
-        register unsigned long sum = 0;
-        register unsigned long delta = 0x9E3779B9;
-        register unsigned long n = 32;
-
-        while (n-- > 0)
-        {
-            y += (z << 4 ^ z >> 5) + z ^ sum + k[sum & 3];
-            sum += delta;
-            z += (y << 4 ^ y >> 5) + y ^ sum + k[sum >> 11 & 3];
-        }
-
-        w[0] = y;
-        w[1] = z;
-    }
-
-    static void decipherNew(const unsigned long *const v,
-                            unsigned long *const w,
-                            const unsigned long * const k)
-    {
-        register unsigned long y = v[0];
-        register unsigned long z = v[1];
-        register unsigned long sum = 0xC6EF3720;
-        register unsigned long delta = 0x9E3779B9;
-        register unsigned long n = 32;
-
-        /* sum = delta<<5, in general sum = delta * n */
-
-        while (n-- > 0)
-        {
-            z -= (y << 4 ^ y >> 5) + y ^ sum + k[sum >> 11 & 3];
-            sum -= delta;
-            y -= (z << 4 ^ z >> 5) + z ^ sum + k[sum & 3];
-        }
-
-        w[0] = y;
-        w[1] = z;
-    }
-
 };
 
 #endif // TINYTEA_H_INCLUDED

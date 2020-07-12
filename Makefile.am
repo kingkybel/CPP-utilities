@@ -26,7 +26,8 @@ testrunner_SOURCES = tests/testrunner.cc \
 		    tests/logValTest.cc \
 		    tests/matrixTest.cc \
 		    tests/statutilTest.cc \
-		    tests/stringutilTest.cc
+		    tests/stringutilTest.cc \
+		    tests/tinyTeaTest.cc
 
 LDADD = $(top_builddir)/libutil.a $(BOOST_FILESYSTEM_LIB)
 testrunner_LDADD =${LDADD} /usr/local/lib/libcppunit.so
