@@ -37,16 +37,12 @@ namespace util
    union bit_converter
    {
       typedef T_ DataType;
-      static constexpr long long BYTES_IN_DATA = sizeof (DataType) / sizeof (uint8_t);
-      static constexpr long long BITS_IN_DATA = BYTES_IN_DATA << 3;
       static constexpr long long BYTES_IN_CHAR = CHAR_BIT >> 3;
-      static constexpr long long LONG_LONGS_IN_DATA =
-            std::max(1UL, sizeof (DataType) / sizeof (unsigned long long));
-      static constexpr size_t BITS_IN_LONG_LONG = sizeof (unsigned long long) * 8;
+      static constexpr long long BYTES_IN_DATA = (sizeof (DataType) / sizeof (uint8_t)) * BYTES_IN_CHAR;
+      static constexpr long long BITS_IN_DATA = BYTES_IN_DATA << 3;
 
       DataType data_;
-      unsigned long long ll[LONG_LONGS_IN_DATA];
-      uint8_t byte[sizeof (long double) / sizeof (uint8_t)];
+      uint8_t byte[BYTES_IN_DATA];
 
       bit_converter(DataType data = T_())
       : data_(data)
@@ -54,13 +50,13 @@ namespace util
       }
 
       template<typename FT_>
-      static bit_converter from(std::initializer_list<FT_> ullList)
+      static bit_converter from(std::initializer_list<FT_> ftList)
       {
          bit_converter reval;
          const long long numOfBytes =
-               ullList.size() * (sizeof (FT_) / BYTES_IN_CHAR) * sizeof (int8_t);
+               ftList.size() * (sizeof (FT_) / BYTES_IN_CHAR) * sizeof (int8_t);
          long long i = 0LL;
-         for (auto v : ullList)
+         for (auto v : ftList)
          {
             reval.byte[i] = (i < numOfBytes) ? v : 0U;
             i++;
@@ -70,22 +66,29 @@ namespace util
          return reval;
       }
 
+      operator DataType ()
+      {
+         return data_;
+      }
+      
       template <long long NumberOfBits_ = BITS_IN_DATA>
       std::bitset<NumberOfBits_> asBitset(long long StartBit_ = 0LL) const
       {
+         static_assert(NumberOfBits_ > 0, "Number of requested bits needs to be greater than 0.");
          std::bitset<BITS_IN_DATA> allbits(0ULL);
-         for (size_t ullCount = LONG_LONGS_IN_DATA; ullCount > 0; ullCount--)
+         for (size_t ullCount = BYTES_IN_DATA; ullCount > 0; ullCount--)
          {
-            allbits <<= (ullCount * (sizeof (unsigned long long) * 8));
-            allbits |= std::bitset<BITS_IN_DATA>(ll[ullCount - 1]);
+            allbits <<= 8;
+            allbits |= std::bitset<BITS_IN_DATA>(byte[ullCount - 1]);
          }
 
          std::bitset<NumberOfBits_> reval;
          for (long long i = 0; i < NumberOfBits_; i++)
          {
-            if (i + StartBit_ < BITS_IN_DATA)
+            long long allIdx = (i + StartBit_);
+            if (allIdx >= 0LL && allIdx < BITS_IN_DATA)
             {
-               reval[i] = allbits[i + StartBit_];
+               reval[i] = allbits[allIdx];
             }
          }
 
@@ -116,9 +119,9 @@ namespace util
             }
 
             static constexpr std::bitset<BITS_IN_DATA> mask = ((unsigned long long) (-1));
-            for (size_t ullCount = 0; ullCount < LONG_LONGS_IN_DATA; ullCount++)
+            for (size_t ullCount = 0; ullCount < (BYTES_IN_DATA<<3); ullCount++)
             {
-               ll[ullCount] = ((allBits >> (ullCount * BITS_IN_LONG_LONG)) & mask).to_ullong();
+               setBit(ullCount, allBits[ullCount]);
             }
          }
       }
@@ -135,16 +138,19 @@ namespace util
 
       bool getBit(long long bitIndex) const
       {
-         return asBitset()[bitIndex];
+         long long byteIdx = bitIndex / 8;
+         uint8_t mask = (1 << (bitIndex % 8));
+         return (byte[byteIdx] & mask) == mask;
       }
 
       void setBit(long long bitIndex, bool b = true)
       {
-         int8_t mask = (1 << (bitIndex % 8));
+         long long byteIdx = bitIndex >> 3;
+         uint8_t mask = (1 << (bitIndex % 8));
          if (b == true)
-            byte[bitIndex / 8] |= mask;
+            byte[byteIdx] |= mask;
          else
-            byte[bitIndex / 8] &= ~mask;
+            byte[byteIdx] &= ~mask;
       }
    };
 }; // namespace util
