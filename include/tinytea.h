@@ -28,7 +28,13 @@
 #ifndef TINYTEA_H_INCLUDED
 #define TINYTEA_H_INCLUDED
 
-#include <stdint.h>
+#include <cstdint>
+namespace util {
+
+#define multiTea x9E3779BA
+#define tinyTea x9E3779B9
+#define encrypt x9E3779B8
+#define decrypt x9E3779B7
 
 /**
  * TEA takes 64 bits of data in v[0] and v[1], and 128 bits of key in k[0] - k[3].
@@ -41,7 +47,7 @@
  * (real-time video, for example). The algorithm achieves good dispersion after
  * six iterations. The iteration count can be made variable if required.
  *
- * Note this algorithm is optimised for 32-bit CPUs with fast shift capabilities.
+ * Note this algorithm is optimized for 32-bit CPUs with fast shift capabilities.
  * It can very easily be ported to assembly language on most CPUs.
  *
  * delta is chosen to be the Golden ratio ((5/4)1/2 - 1/2 ~ 0.618034) multiplied
@@ -49,51 +55,113 @@
  * you call the functions is arbitrary: DK(EK(P)) = EK(DK(P)) where EK and DK are
  * encryption and decryption under key K respectively.
  */
-struct tinyTea
+template<uint32_t delta = 0x9E3779B9 >
+union tinyTea
 {
-    static constexpr uint64_t lwr32 = (uint64_t(uint32_t(-1)));
-    static constexpr uint64_t upr32 = (lwr32 << 32);
-    static constexpr uint32_t delta = 0x9E3779B9; // a key schedule constant
+   static constexpr uint32_t setupSum = (delta << 5); // setupSum is 32*delta
+   uint64_t U64;
+   uint32_t U32[2];
 
 public:
-    static uint64_t encrypt(uint64_t val, uint64_t key1, uint64_t key2)
-    {
-        uint32_t v0 = (val & upr32) >> 32;
-        uint32_t v1 = (val & lwr32);
-        uint32_t sum = 0U;
-        uint32_t k0 = (key1 & upr32) >> 32;
-        uint32_t k1 = (key1 & lwr32);
-        uint32_t k2 = (key2 & upr32) >> 32;
-        uint32_t k3 = (key2 & lwr32);
 
-        for (uint32_t i = 0; i < 32; i++)
-        { // basic cycle start
-            sum += delta;
-            v0 += ((v1 << 4) + k0) ^ (v1 + sum) ^ ((v1 >> 5) + k1);
-            v1 += ((v0 << 4) + k2) ^ (v0 + sum) ^ ((v0 >> 5) + k3);
-        } // end cycle
+   tinyTea(uint64_t v64)
+   : U64(v64)
+   {
+   }
 
-        return (uint64_t(v0) << 32) | uint64_t(v1);
-    }
+   tinyTea(uint32_t v32_1, uint32_t v32_2)
+   {
+      U32[0] = v32_1;
+      U32[1] = v32_2;
+   }
 
-    static uint64_t decrypt(uint64_t val, uint64_t key1, uint64_t key2)
-    {
-        uint32_t v0 = (val & upr32) >> 32;
-        uint32_t v1 = (val & lwr32);
-        uint32_t sum = 0xC6EF3720;
-        uint32_t k0 = (key1 & upr32) >> 32;
-        uint32_t k1 = (key1 & lwr32);
-        uint32_t k2 = (key2 & upr32) >> 32;
-        uint32_t k3 = (key2 & lwr32);
-        for (uint32_t i = 0, sum = 0xC6EF3720; i < 32; i++) // set up; sum is 32*delta
-        { // basic cycle start
-            v1 -= ((v0 << 4) + k2) ^ (v0 + sum) ^ ((v0 >> 5) + k3);
-            v0 -= ((v1 << 4) + k0) ^ (v1 + sum) ^ ((v1 >> 5) + k1);
-            sum -= delta;
-        } // end cycle
+   uint32_t& operator[](unsigned char index)
+   {
+      return U32[index % 2];
+   }
 
-        return (uint64_t(v0) << 32) | uint64_t(v1);
-    }
+   operator uint64_t()
+   {
+      return U64;
+   }
+
+   static uint64_t encrypt(tinyTea val, tinyTea key1, tinyTea key2)
+   {
+      for (uint32_t i = 0, sum = 0U; i < 32; i++)
+      {
+         sum += delta;
+         val[0] += ((val[1] << 4) + key1[0]) ^ (val[1] + sum) ^ ((val[1] >> 5) + key1[1]);
+         val[1] += ((val[0] << 4) + key2[0]) ^ (val[0] + sum) ^ ((val[0] >> 5) + key2[1]);
+      }
+
+      return tinyTea(val[0], val[1]);
+   }
+
+   static uint64_t decrypt(tinyTea val, tinyTea key1, tinyTea key2)
+   {
+      for (uint32_t i = 0, sum = setupSum; i < 32; i++)
+      {
+         val[1] -= ((val[0] << 4) + key2[0]) ^ (val[0] + sum) ^ ((val[0] >> 5) + key2[1]);
+         val[0] -= ((val[1] << 4) + key1[0]) ^ (val[1] + sum) ^ ((val[1] >> 5) + key1[1]);
+         sum -= delta;
+      }
+
+      return tinyTea(val[0], val[1]);
+   }
+};
+
+template<typename T_, uint32_t delta = 0x9E3779B9>
+union multiTea
+{
+private:
+   typedef tinyTea<delta> my_tt;
+   static constexpr uint64_t T_size = sizeof (T_);
+   static constexpr uint64_t tt_size = sizeof (my_tt);
+   static constexpr uint64_t num_tts = T_size / tt_size + 1;
+
+   T_ val_;
+   my_tt tt_[num_tts];
+   
+public:
+
+   multiTea(T_ v64)
+   : val_(v64)
+   {
+   }
+
+   operator T_()
+   {
+      return val_;
+   }
+   
+   my_tt& operator[](unsigned char index)
+   {
+      return tt_[index % 2];
+   }
+
+
+   static multiTea encrypt(multiTea val, my_tt key1, my_tt key2)
+   {
+      multiTea reval = val;
+      for(uint64_t i =0; i < num_tts; i++)
+      {
+         reval[i] = my_tt::encrypt(val[i], key1, key2);
+      }
+      
+      return reval;
+   }
+   
+   static multiTea decrypt(multiTea val, my_tt key1, my_tt key2)
+   {
+      multiTea reval = val;
+      for(uint64_t i = 0; i < num_tts; i++)
+      {
+         reval[i] = my_tt::decrypt(val[i], key1, key2);
+      }
+      
+      return reval;
+   }
+};
 };
 
 #endif // TINYTEA_H_INCLUDED
