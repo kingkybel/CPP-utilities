@@ -25,11 +25,9 @@
 #include <stringutil.h>
 #include <anyutil.h>
 #include <limits>
-#include <boost/assign/std/map.hpp>
-#include <boost/assign/list_of.hpp>
+
 using namespace std;
 using namespace util;
-using namespace boost::assign;
 
 namespace util
 {
@@ -65,12 +63,12 @@ namespace util
                 return INT;
         }
     }
-    
+
     NumberClass classifyNumberString(const string& str)
     {
         return classifyNumberStringT(str);
     }
-    
+
     NumberClass classifyNumberString(const ci_string& str)
     {
         return classifyNumberStringT(str);
@@ -84,18 +82,21 @@ namespace util
     bool scanBoolStringT(const T_& strVal, bool& result)
     {
         const static map<ci_string,bool> VALID_BOOL =
-            map_list_of("true",true)("t",true)("yes",true)("y",true)("1",true)("on",true)
-                ("false",false)("f",false)("no",false)("n",false)("0",false)("off",false);
+        {
+            {"true",true},{"t",true},{"yes",true},{"y",true},{"1",true},
+            {"on",true},{"false",false},{"f",false},{"no",false},{"n",false},
+            {"0",false},{"off",false}
+        };
         auto found = VALID_BOOL.find(ci_string(strVal.c_str()));
         result = found != VALID_BOOL.end()?found->second:false;
         return found != VALID_BOOL.end();
     }
-    
+
     bool scanBoolString(const string& strVal, bool& result)
     {
         return scanBoolStringT(strVal, result);
     }
-    
+
     bool scanBoolString(const util::ci_string& strVal, bool& result)
     {
         return scanBoolStringT(strVal, result);
@@ -108,12 +109,14 @@ namespace util
     template<typename T_>
     void stripT(T_& v, const T_& stripChars, StripTrimMode m)
     {
+        typedef T_ TT;
+
         if (v.empty())
             return;
-        T_ reval = "";
-        typename T_::size_type start = ((m & FRONT) == FRONT) ? v.find_first_not_of(stripChars) : 0;
-        typename T_::size_type finish = ((m & BACK) == BACK) ? v.find_last_not_of(stripChars) + 1 : v.size();
-        if (start == T_::npos)
+        TT reval = "";
+        typename TT::size_type start = ((m & FRONT) == FRONT) ? v.find_first_not_of(stripChars) : 0;
+        typename TT::size_type finish = ((m & BACK) == BACK) ? v.find_last_not_of(stripChars) + 1 : v.size();
+        if (start == TT::npos)
         {
             v = "";
             return;
@@ -123,18 +126,18 @@ namespace util
         {
             if (!doInside) // if we did not specify to strip inside-matches
                 reval.append(&v[start], 1);
-            else if (stripChars.find(v[start]) == T_::npos)
+            else if (stripChars.find(v[start]) == TT::npos)
                 reval.append(&v[start], 1);
             start++;
         }
         v = reval;
     }
-    
+
     void strip(string& v, const string& stripChars, StripTrimMode m)
     {
         return stripT(v, stripChars, m);
     }
-    
+
     void strip(ci_string& v, const ci_string& stripChars, StripTrimMode m)
     {
         return stripT(v, stripChars, m);
@@ -204,18 +207,18 @@ namespace util
             insideNonReplChar++;
         }
     }
-    
+
     void replaceChar(string& v, const string& replChars, char repl, StripTrimMode m)
     {
         return replaceCharT(v, replChars, repl, m);
     }
-    
+
     void replaceChar(ci_string& v, const ci_string& replChars, char repl, StripTrimMode m)
     {
         return replaceCharT(v, replChars, repl, m);
     }
 
-    /** 
+    /**
      * splits a string into a vector of strings using a char sep as separator
      */
     template<typename T_>
@@ -242,12 +245,12 @@ namespace util
 
         return results;
     }
-    
+
     vector<string> splitIntoVector(const string& str, char sep)
     {
         return splitIntoVectorT(str, sep);
     }
-    
+
     vector<ci_string> splitIntoVector(const ci_string& str, char sep)
     {
         return splitIntoVectorT(str, sep);
@@ -281,12 +284,12 @@ namespace util
 
         return results;
     }
-    
+
     vector<string> splitIntoVector(const string& str, const string& sep)
     {
         return splitIntoVectorT(str, sep);
     }
-    
+
     vector<ci_string> splitIntoVector(const ci_string& str, const ci_string& sep)
     {
         return splitIntoVectorT(str, sep);
@@ -319,12 +322,12 @@ namespace util
 
         return results;
     }
-    
+
     set<string> splitIntoSet(const string& str, char sep)
     {
         return splitIntoSetT(str, sep);
     }
-    
+
     set<ci_string> splitIntoSet(const ci_string& str, char sep)
     {
         return splitIntoSetT(str, sep);
@@ -358,12 +361,12 @@ namespace util
 
         return results;
     }
-    
+
     set<string> splitIntoSet(const string& str, const string& sep)
     {
         return splitIntoSetT(str, sep);
     }
-    
+
     set<ci_string> splitIntoSet(const ci_string& str, const ci_string& sep)
     {
         return splitIntoSetT(str, sep);

@@ -11,7 +11,7 @@ libutil_a_SOURCES = src/anyutil.cc \
 		    src/primes.cc \
 		    src/statutil.cc \
 		    src/stringutil.cc
-AM_CPPFLAGS = -I ./include -std=c++17
+AM_CPPFLAGS = -I ./include -std=c++20
 ACLOCAL_AMFLAGS = -I /usr/local/share/aclocal
 #check_PROGRAMS	= utiltests testrunner
 check_PROGRAMS	= testrunner
@@ -25,6 +25,7 @@ testrunner_SOURCES = tests/testrunner.cc \
 		    tests/limitedIntTest.cc \
 		    tests/logValTest.cc \
 		    tests/matrixTest.cc \
+		    tests/primesTest.cc \
 		    tests/statutilTest.cc \
 		    tests/stringutilTest.cc \
 		    tests/tinyTeaTest.cc

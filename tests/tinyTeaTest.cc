@@ -60,12 +60,21 @@ void tinyTeaTest::encryption_test()
         {
             for (auto key2 : keys)
             {
-                uint64_t enc = tinyTea::encrypt(val, key1, key2);
-                uint64_t dec = tinyTea::decrypt(enc, key1, key2);
+                uint64_t enc = tinyTea<>::encrypt(val, key1, key2);
+                uint64_t dec = tinyTea<>::decrypt(enc, key1, key2);
                 CPPUNIT_ASSERT_EQUAL_MESSAGE("decrypt the encrypted value should result in the original value", val, dec);
             }
         }
 
     }
+
+//    multiTea<long double> enc = multiTea<long double>::encrypt(1234.4112L, "hasdkjghfdskjghlsdk");
+//    cout << (long double)enc << endl;
+//    cout << multiTea<long double>::decrypt(enc, "hasdkjghfdskjghlsdk") << endl;
+
+//    string strValue = "Unencrypted value";
+//    multiTea<string> encStr = multiTea<string>::encrypt(strValue, "hasdkjghfdskjghlsdk");
+//    cout << (string)encStr << endl;
+//    cout << multiTea<string>::decrypt(encStr, "hasdkjghfdskjghlsdk") << endl;
 }
 

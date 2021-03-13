@@ -70,7 +70,7 @@ namespace util
       {
          return data_;
       }
-      
+
       template <long long NumberOfBits_ = BITS_IN_DATA>
       std::bitset<NumberOfBits_> asBitset(long long StartBit_ = 0LL) const
       {
@@ -124,6 +124,11 @@ namespace util
                setBit(ullCount, allBits[ullCount]);
             }
          }
+      }
+
+      uint8_t& operator[] (long long n)
+      {
+          return byte[n];
       }
 
       uint8_t getByte(long long n) const

@@ -1,0 +1,11 @@
+/src/.deps/
+/src/.dirstamp
+/Makefile.in
+/testrunner.trs
+/testrunner.log
+/config.log
+/test-suite.log
+/configure
+/Makefile
+/stamp-h1
+/testrunner

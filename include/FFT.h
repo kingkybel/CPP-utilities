@@ -21,6 +21,9 @@
  * @author: Dieter J Kybelksties
  */
 
+#if !defined(NS_UTIL_FFT_H_INCLUDED)
+#define NS_UTIL_FFT_H_INCLUDED
+
 #include <cmath>
 #include <complex>
 #include <vector>
@@ -28,9 +31,6 @@
 #include <assert.h>
 #include <boost/math/constants/constants.hpp>
 #include "contants.h"
-
-#if !defined(NS_UTIL_FFT_H_INCLUDED)
-#define NS_UTIL_FFT_H_INCLUDED
 
 namespace util
 {

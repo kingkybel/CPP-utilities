@@ -24,6 +24,7 @@
 
 #ifndef NS_UTIL_IOSUTIL_H_INCLUDED
 #define NS_UTIL_IOSUTIL_H_INCLUDED
+
 #include <iostream>
 #include <iomanip>
 #include <ios>
@@ -204,7 +205,7 @@ namespace util
         return os;
     }
 
-};
+}; // namespace util
 
 #endif // NS_UTIL_IOSUTIL_H_INCLUDED
 
