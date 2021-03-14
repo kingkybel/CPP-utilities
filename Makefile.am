@@ -22,6 +22,7 @@ testrunner_SOURCES = tests/testrunner.cc \
 		    tests/csvutilTest.cc \
 		    tests/dateutilTest.cc \
 		    tests/graphutilTest.cc \
+		    tests/instancePoolTest.cc \
 		    tests/limitedIntTest.cc \
 		    tests/logValTest.cc \
 		    tests/matrixTest.cc \

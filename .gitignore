@@ -5,6 +5,8 @@
 /tests/*.o
 /tests/.deps
 /tests/.dirstamp
+/nbproject/
+/nbproject/*
 /Makefile.in
 /Makefile
 /testrunner.trs
