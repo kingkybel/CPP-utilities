@@ -23,12 +23,12 @@
 
 #include "tinyTeaTest.h"
 
+#include <cmath>
 #include <cstdlib>
 #include <iostream>
 #include <string>
-#include <cmath>
-#include <tinytea.h>
 #include <stringutil.h>
+#include <tinytea.h>
 
 using namespace std;
 using namespace util;
@@ -54,27 +54,27 @@ void tinyTeaTest::tearDown()
 void tinyTeaTest::encryption_test()
 {
     vector<uint64_t> keys = {1701ULL, 666ULL, 4711ULL, 42ULL, 1011ULL};
-    for (uint64_t val = 0ULL; val < 10000ULL; val += 131ULL)
+    for(uint64_t val = 0ULL; val < 10000ULL; val += 131ULL)
     {
-        for (auto key1 : keys)
+        for(auto key1: keys)
         {
-            for (auto key2 : keys)
+            for(auto key2: keys)
             {
                 uint64_t enc = tinyTea<>::encrypt(val, key1, key2);
                 uint64_t dec = tinyTea<>::decrypt(enc, key1, key2);
-                CPPUNIT_ASSERT_EQUAL_MESSAGE("decrypt the encrypted value should result in the original value", val, dec);
+                CPPUNIT_ASSERT_EQUAL_MESSAGE("decrypt the encrypted value should result in the original value",
+                                             val,
+                                             dec);
             }
         }
-
     }
 
-//    multiTea<long double> enc = multiTea<long double>::encrypt(1234.4112L, "hasdkjghfdskjghlsdk");
-//    cout << (long double)enc << endl;
-//    cout << multiTea<long double>::decrypt(enc, "hasdkjghfdskjghlsdk") << endl;
+    //    multiTea<long double> enc = multiTea<long double>::encrypt(1234.4112L, "hasdkjghfdskjghlsdk");
+    //    cout << (long double)enc << endl;
+    //    cout << multiTea<long double>::decrypt(enc, "hasdkjghfdskjghlsdk") << endl;
 
-//    string strValue = "Unencrypted value";
-//    multiTea<string> encStr = multiTea<string>::encrypt(strValue, "hasdkjghfdskjghlsdk");
-//    cout << (string)encStr << endl;
-//    cout << multiTea<string>::decrypt(encStr, "hasdkjghfdskjghlsdk") << endl;
+    //    string strValue = "Unencrypted value";
+    //    multiTea<string> encStr = multiTea<string>::encrypt(strValue, "hasdkjghfdskjghlsdk");
+    //    cout << (string)encStr << endl;
+    //    cout << multiTea<string>::decrypt(encStr, "hasdkjghfdskjghlsdk") << endl;
 }
-

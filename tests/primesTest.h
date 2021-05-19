@@ -31,15 +31,14 @@ class primesTest : public CPPUNIT_NS::TestFixture
     CPPUNIT_TEST(testPrimesConstruction);
     CPPUNIT_TEST_SUITE_END();
 
-public:
+    public:
     primesTest();
     virtual ~primesTest();
     void setUp();
     void tearDown();
 
-private:
+    private:
     void testPrimesConstruction();
 };
 
 #endif /* PRIMESTEST_H */
-

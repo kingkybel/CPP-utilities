@@ -24,33 +24,31 @@
 #ifndef TIMER_H_INCLUDED
 #define TIMER_H_INCLUDED
 
-#include <chrono> // for std::chrono functions
+#include <chrono>  // for std::chrono functions
 
 namespace util
 {
-
-    class timer
-    {
+class timer
+{
     private:
-        using clock_t = std::chrono::high_resolution_clock;
-        using second_t = std::chrono::duration<double, std::ratio<1> >;
-        using nanosecond_t = std::chrono::duration<double, std::ratio<1> >;
+    using clock_t      = std::chrono::high_resolution_clock;
+    using second_t     = std::chrono::duration<double, std::ratio<1>>;
+    using nanosecond_t = std::chrono::duration<double, std::ratio<1>>;
 
-        std::chrono::time_point<clock_t> start_;
+    std::chrono::time_point<clock_t> start_;
 
     public:
+    void start()
+    {
+        start_ = clock_t::now();
+    }
 
-        void start()
-        {
-            start_ = clock_t::now();
-        }
+    double elapsed() const
+    {
+        return (std::chrono::duration_cast<nanosecond_t>(clock_t::now() - start_).count());
+    }
+};
+};
+// namespace util
 
-        double elapsed() const
-        {
-            return std::chrono::duration_cast<nanosecond_t>(clock_t::now() - start_).count();
-        }
-    };
-}; // namespace util
-
-#endif // TIMER_H_INCLUDED
-
+#endif  // TIMER_H_INCLUDED

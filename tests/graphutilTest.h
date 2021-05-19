@@ -35,16 +35,15 @@ class graphutilTest : public CPPUNIT_NS::TestFixture
 
     CPPUNIT_TEST_SUITE_END();
 
-public:
+    public:
     graphutilTest();
     virtual ~graphutilTest();
     void setUp();
     void tearDown();
 
-private:
+    private:
     void util_graph_test();
     void util_graph_algo_test();
 };
 
 #endif /* GRAPHUTILTEST_H */
-

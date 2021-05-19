@@ -34,13 +34,13 @@ class matrixTest : public CPPUNIT_NS::TestFixture
     CPPUNIT_TEST(testSquareMatrixOperations);
     CPPUNIT_TEST_SUITE_END();
 
-public:
+    public:
     matrixTest();
     virtual ~matrixTest();
     void setUp();
     void tearDown();
 
-private:
+    private:
     void testMatrixConstruction();
     void testExceptions();
     void testMatrixOperations();
@@ -48,4 +48,3 @@ private:
 };
 
 #endif /* MATRIXTEST_H */
-

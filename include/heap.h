@@ -24,33 +24,33 @@
 #ifndef HEAP_H_INCLUDED
 #define HEAP_H_INCLUDED
 
-#include <vector>
-#include <stdexcept>
-#include <iostream>
-#include <functional>
 #include <algorithm>
+#include <functional>
+#include <iostream>
+#include <stdexcept>
+#include <vector>
 
 /**
  * @class heap
  */
-template<typename T_, typename Compare = std::greater<T_> >
+template<typename T_, typename Compare = std::greater<T_>>
 class heap
 {
     std::vector<T_> arr;
-    size_t last = 0UL;
+    size_t          last = 0UL;
 
-    static size_t parentOf(size_t const idx)
+    static size_t parentOf(const size_t idx)
     {
         return (idx > 0UL ? (((idx - 1)) / 2UL) : 0UL);
     }
 
     void bubbleUp(size_t nodeIdx)
     {
-        if (nodeIdx != 0UL)
+        if(nodeIdx != 0UL)
         {
             size_t parentIdx = parentOf(nodeIdx);
 
-            if (arr[parentIdx] > arr[nodeIdx])
+            if(arr[parentIdx] > arr[nodeIdx])
             {
                 std::swap(arr[parentIdx], arr[nodeIdx]);
                 bubbleUp(parentIdx);
@@ -61,43 +61,42 @@ class heap
     void bubbleDown(size_t nodeIndex)
     {
         size_t minIdx;
-        size_t leftIdx = nodeIndex * 2 + 1;
+        size_t leftIdx  = nodeIndex * 2 + 1;
         size_t rightIdx = nodeIndex * 2 + 2;
 
-        if (rightIdx >= last)
+        if(rightIdx >= last)
         {
-            if (leftIdx >= last)
+            if(leftIdx >= last)
                 return;
             else
                 minIdx = leftIdx;
         }
         else
         {
-            if (arr[leftIdx] <= arr[rightIdx])
+            if(arr[leftIdx] <= arr[rightIdx])
                 minIdx = leftIdx;
             else
                 minIdx = rightIdx;
         }
 
-        if (arr[nodeIndex] > arr[minIdx])
+        if(arr[nodeIndex] > arr[minIdx])
         {
             std::swap(arr[minIdx], arr[nodeIndex]);
             bubbleDown(minIdx);
         }
-
     }
 
-public:
-    heap() = default;
-    heap(const heap& rhs) = default;
-    virtual ~heap() = default;
+    public:
+    heap()                = default;
+    heap(const heap &rhs) = default;
+    virtual ~heap()       = default;
 
     /**
      *  Function to delete the root from Heap
      */
     void pop()
     {
-        if (!empty())
+        if(!empty())
         {
             // Replace root with last element
             arr[0] = arr[last - 1];
@@ -116,8 +115,9 @@ public:
     {
         // Increase the size of Heap by 1
         last++;
-        if (last >= arr.size())
+        if(last >= arr.size())
             arr.resize(last);
+
         // Insert the element at end of Heap
         arr[last - 1] = Key;
         bubbleUp(last - 1);
@@ -125,29 +125,30 @@ public:
 
     size_t size() const
     {
-        return last;
+        return (last);
     }
 
     T_ operator[](size_t index) const
     {
-        if (index > last)
+        if(index > last)
             throw std::out_of_range("");
-        return arr[index];
+
+        return (arr[index]);
     }
 
     bool empty() const
     {
-        return size() == 0UL;
+        return (size() == 0UL);
     }
 
-    friend std::ostream& operator<<(std::ostream& os, const heap& h)
+    friend std::ostream &operator<<(std::ostream &os, const heap &h)
     {
-        size_t layerSize = 1;
+        size_t layerSize  = 1;
         size_t layerCount = 1;
-        for (size_t i = 0; i < h.size(); i++)
+        for(size_t i = 0; i < h.size(); i++)
         {
             os << h[i];
-            if (layerCount == layerSize)
+            if(layerCount == layerSize)
             {
                 os << "| ";
                 layerSize *= 2;
@@ -159,25 +160,25 @@ public:
                 layerCount++;
             }
         }
-        
+
         return os;
     }
 };
 
-template<typename T_, typename Compare = std::greater<T_> >
+template<typename T_, typename Compare = std::greater<T_>>
 class std_heap
 {
     std::vector<T_> arr;
-    size_t last = 0UL;
+    size_t          last = 0UL;
 
-public:
-    std_heap() = default;
-    std_heap(const std_heap& rhs) = default;
-    virtual ~std_heap() = default;
+    public:
+    std_heap()                    = default;
+    std_heap(const std_heap &rhs) = default;
+    virtual ~std_heap()           = default;
 
-    T_ * const top()
+    T_ *const top()
     {
-        if (empty())
+        if(empty())
             return nullptr;
         return &arr[0];
     }
@@ -189,35 +190,38 @@ public:
     {
         std::pop_heap(arr.begin(), arr.begin() + last, Compare());
         last--;
-        if (last < arr.size() / 2)
+
+        if(last < arr.size() / 2)
             arr.resize(last);
     }
 
     size_t size() const
     {
-        return last;
+        return (last);
     }
 
     T_ operator[](size_t index) const
     {
-        if (index >= last)
+        if(index >= last)
             throw std::out_of_range("");
-        return arr[index];
+
+        return (arr[index]);
     }
 
     bool empty() const
     {
-        return size() == 0UL;
+        return (size() == 0UL);
     }
 
-    friend std::ostream& operator<<(std::ostream& os, const std_heap& h)
+    friend std::ostream &operator<<(std::ostream &os, const std_heap &h)
     {
-        size_t layerSize = 1;
+        size_t layerSize  = 1;
         size_t layerCount = 1;
-        for (size_t i = 0; i < h.size(); i++)
+
+        for(size_t i = 0; i < h.size(); i++)
         {
             os << h[i];
-            if (layerCount == layerSize)
+            if(layerCount == layerSize)
             {
                 os << "| ";
                 layerSize *= 2;
@@ -229,7 +233,8 @@ public:
                 layerCount++;
             }
         }
-        return os;
+
+        return (os);
     }
 
     /**
@@ -239,14 +244,13 @@ public:
     {
         // Increase the size of Heap by 1
         last++;
-        if (arr.size() < size())
+        if(arr.size() < size())
             arr.resize(size() + 1);
+
         arr[size() - 1] = Key;
         // Insert the element at end of Heap
         std::push_heap(arr.begin(), arr.begin() + last, Compare());
     }
 };
 
-
-#endif // HEAP_H_INCLUDED
-
+#endif  // HEAP_H_INCLUDED

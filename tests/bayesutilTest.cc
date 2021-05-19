@@ -22,17 +22,16 @@
  */
 
 #include "bayesutilTest.h"
-#include <iostream>
-#include <string>
-#include <sstream>
 
-#include <map>
-#include <vector>
-#include <set>
 #include <algorithm>
-
-#include <stringutil.h>
 #include <bayesutil.h>
+#include <iostream>
+#include <map>
+#include <set>
+#include <sstream>
+#include <string>
+#include <stringutil.h>
+#include <vector>
 
 using namespace std;
 using namespace util;
@@ -57,11 +56,10 @@ void bayesutilTest::tearDown()
 {
 }
 
-
 void bayesutilTest::util_bayes_test()
 {
-    //BOOST_TEST_MESSAGE("");
-    //BOOST_TEST_MESSAGE("====== Testing Bayes functions ========");
+    // BOOST_TEST_MESSAGE("");
+    // BOOST_TEST_MESSAGE("====== Testing Bayes functions ========");
     {
         BayesNet bn;
 
@@ -76,9 +74,9 @@ void bayesutilTest::util_bayes_test()
         bn.addCauseEffect("Rain", "WetGrass");
         CPPUNIT_ASSERT(!bn.fullyDefined());
 
-        const char* shouldOrder[] = {"Cloud", "Rain", "Sprinkler", "WetGrass"};
+        const char*    shouldOrder[]     = {"Cloud", "Rain", "Sprinkler", "WetGrass"};
         vector<string> breadthFirstNodes = bn.breadthFirstNodeNames();
-        for (size_t i = 0; i != breadthFirstNodes.size(); i++)
+        for(size_t i = 0; i != breadthFirstNodes.size(); i++)
         {
             CPPUNIT_ASSERT_EQUAL(breadthFirstNodes[i], string(shouldOrder[i]));
         }
@@ -89,7 +87,7 @@ void bayesutilTest::util_bayes_test()
         CPPUNIT_ASSERT(connTo_1.find(Node("WetGrass")) != connTo_1.end());
 
         CPPUNIT_ASSERT_THROW(bn.addCauseEffect("Rain", "Cloud"), parallel_error);
-        //BOOST_TEST_MESSAGE(bn);
+        // BOOST_TEST_MESSAGE(bn);
         {
             // write a sample data file
             std::ofstream ofs(filename.c_str());
@@ -146,7 +144,7 @@ void bayesutilTest::util_bayes_test()
         bn.trainWithCsv(data, true);
         CPPUNIT_ASSERT(bn.fullyDefined());
 
-        //BOOST_TEST_MESSAGE(bn);
+        // BOOST_TEST_MESSAGE(bn);
 
         CPPUNIT_ASSERT(bn.P(CondEvent(Event("Cloud", true))) >= 0.0L);
         long double p = bn.P(CondEvent(Event("Cloud", true)));
@@ -168,20 +166,22 @@ void bayesutilTest::util_bayes_test()
         CPPUNIT_ASSERT(connTo_1.find(Node("Cloud")) == connTo_1.end());
         CPPUNIT_ASSERT(connTo_1.find(Node("WetGrass")) == connTo_1.end());
     }
-    //BOOST_TEST_MESSAGE("====== Creating BayesNet without reading csv ========");
+    // BOOST_TEST_MESSAGE("====== Creating BayesNet without reading csv ========");
     {
         BayesNet bn;
 
         bn.addNode("Cloud", EventValueRange(true), "Event describing whether there are clouds in the sky or not");
         bn.addNode("Rain", EventValueRange(VAR_UINT(0), 5), "Event describing the amount of rain falling");
-        bn.addNode("Sprinkler", EventValueRange(VAR_UINT(0), 3), "Event describing the what stage the sprinkler is turned up to");
+        bn.addNode("Sprinkler",
+                   EventValueRange(VAR_UINT(0), 3),
+                   "Event describing the what stage the sprinkler is turned up to");
         bn.addNode("WetGrass", EventValueRange(true), "Event describing whether the grass is wet or not");
         bn.addCauseEffect("Cloud", "Rain");
         bn.addCauseEffect("Cloud", "Sprinkler");
         bn.addCauseEffect("Sprinkler", "WetGrass");
         bn.addCauseEffect("Rain", "WetGrass");
 
-        //BOOST_TEST_MESSAGE(bn);
+        // BOOST_TEST_MESSAGE(bn);
         BayesNet::NODE_SET connNodes = bn.connectedNodes(Node("Sprinkler"));
         CPPUNIT_ASSERT_EQUAL(connNodes.size(), 2UL);
         CPPUNIT_ASSERT(connNodes.find(Node("Cloud")) != connNodes.end());
@@ -189,7 +189,7 @@ void bayesutilTest::util_bayes_test()
         bn.canonise();
         bn.normalise();
         CPPUNIT_ASSERT(bn.fullyDefined());
-        //BOOST_TEST_MESSAGE(bn);
+        // BOOST_TEST_MESSAGE(bn);
         long double p = bn.P(CondEvent(Event("Cloud", true)));
         CPPUNIT_ASSERT(p > 0.0L);
         CPPUNIT_ASSERT(p <= 1.0L);
@@ -203,24 +203,16 @@ void bayesutilTest::util_bayes_test()
         CPPUNIT_ASSERT(p > 0.0L);
         CPPUNIT_ASSERT(p <= 1.0L);
 
-        p = bn.P(Event("Rain", VAR_UINT(2)) &&
-                 Event("Cloud", false) &&
-                 Event("Sprinkler", VAR_UINT(2)) &&
-                 Event("WetGrass", true)
-                 );
+        p = bn.P(Event("Rain", VAR_UINT(2)) && Event("Cloud", false) && Event("Sprinkler", VAR_UINT(2))
+                 && Event("WetGrass", true));
         CPPUNIT_ASSERT(p > 0.0L);
         CPPUNIT_ASSERT(p <= 1.0L);
 
         EventList irrelevant;
-        CondEvent
-        e = bn.bayesBallAlgorithm(CondEvent(Event("Rain", VAR_UINT(4)),
-                                            Event("Cloud", true)),
-                                  irrelevant);
-        e = bn.bayesBallAlgorithm(CondEvent(Event("Rain", VAR_UINT(4)),
-                                            Event("Sprinkler", true)),
-                                  irrelevant);
+        CondEvent e = bn.bayesBallAlgorithm(CondEvent(Event("Rain", VAR_UINT(4)), Event("Cloud", true)), irrelevant);
+        e = bn.bayesBallAlgorithm(CondEvent(Event("Rain", VAR_UINT(4)), Event("Sprinkler", true)), irrelevant);
     }
-    //BOOST_TEST_MESSAGE("====== BayesNet check BayesBallAlgorithm works ========");
+    // BOOST_TEST_MESSAGE("====== BayesNet check BayesBallAlgorithm works ========");
     {
         BayesNet bn;
         bn.addNode("X", EventValueRange(true), "");

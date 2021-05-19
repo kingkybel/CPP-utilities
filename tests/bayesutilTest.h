@@ -34,15 +34,14 @@ class bayesutilTest : public CPPUNIT_NS::TestFixture
 
     CPPUNIT_TEST_SUITE_END();
 
-public:
+    public:
     bayesutilTest();
     virtual ~bayesutilTest();
     void setUp();
     void tearDown();
 
-private:
+    private:
     void util_bayes_test();
 };
 
 #endif /* BAYESUTILTEST_H */
-

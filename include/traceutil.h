@@ -23,27 +23,39 @@
  */
 
 #ifndef NS_UTIL_TRACEUTIL_H_INCLUDED
-#define	NS_UTIL_TRACEUTIL_H_INCLUDED
+#define NS_UTIL_TRACEUTIL_H_INCLUDED
 
+#include <iostream>
 
 #if defined DO_TRACE_
 
-#define TRACE0 { std::cout << __FILE__ << ":" << __LINE__ << " " << __FUNCTION__ << std::endl; }
-#define TRACE1(v1) { std::cout << __FILE__ << ":" << __LINE__ << " " << __FUNCTION__ << " " << #v1 << "=" << v1 << std::endl; }
-// multi process versions for forked processes
-#define PTRACE0 { std::cout << __FILE__ << ":" << __LINE__ << " " << __FUNCTION__ << " PID=" << getpid() << std::endl; }
-#define PTRACE1(v1) { std::cout << __FILE__ << ":" << __LINE__  << " " << __FUNCTION__ << " PID=" << getpid() << " " << #v1 << "=" << v1 << std::endl; }
+    #define TRACE0                                                                        \
+        {                                                                                 \
+            std::cout << __FILE__ << ":" << __LINE__ << " " << __FUNCTION__ << std::endl; \
+        }
+    #define TRACE1(v1)                                                                                               \
+        {                                                                                                            \
+            std::cout << __FILE__ << ":" << __LINE__ << " " << __FUNCTION__ << " " << #v1 << "=" << v1 << std::endl; \
+        }
+    // multi process versions for forked processes
+    #define PTRACE0                                                                                              \
+        {                                                                                                        \
+            std::cout << __FILE__ << ":" << __LINE__ << " " << __FUNCTION__ << " PID=" << getpid() << std::endl; \
+        }
+    #define PTRACE1(v1)                                                                                          \
+        {                                                                                                        \
+            std::cout << __FILE__ << ":" << __LINE__ << " " << __FUNCTION__ << " PID=" << getpid() << " " << #v1 \
+                      << "=" << v1 << std::endl;                                                                 \
+        }
 
 #else
 
-#define TRACE0
-#define TRACE1(v1)
-// multi process versions for forked processes
-#define PTRACE0
-#define PTRACE1(v1)
+    #define TRACE0
+    #define TRACE1(v1)
+    // multi process versions for forked processes
+    #define PTRACE0
+    #define PTRACE1(v1)
 
-#endif // DO_TRACE_
+#endif  // DO_TRACE_
 
-
-#endif	// NS_UTIL_TRACEUTIL_H_INCLUDED
-
+#endif  // NS_UTIL_TRACEUTIL_H_INCLUDED

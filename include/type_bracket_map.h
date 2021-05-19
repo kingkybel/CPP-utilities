@@ -24,83 +24,83 @@
 #ifndef NS_UTIL_TYPE_BRACKET_MAP_H_INCLUDED
 #define NS_UTIL_TYPE_BRACKET_MAP_H_INCLUDED
 
-#include <typeinfo>
-#include <string>
-#include <unordered_map>
 #include <brackets.h>
+#include <string>
+#include <typeinfo>
+#include <unordered_map>
 
 namespace util
 {
-
-    class type_bracket_map
-    {
+class type_bracket_map
+{
     private:
-        std::unordered_map <std::string, Brackets> type2brackets;
-        static type_bracket_map theInstance;
+    std::unordered_map<std::string, Brackets> type2brackets;
+    static type_bracket_map                   theInstance;
 
-        type_bracket_map()
-        {
-        }
+    type_bracket_map()
+    {
+    }
 
     public:
+    bool empty() const
+    {
+        return (type2brackets.empty());
+    }
 
-        bool empty() const
+    void clear()
+    {
+        type2brackets.erase(type2brackets.begin(), type2brackets.end());
+    }
+
+    void initialize()
+    {
+        clear();
+        type2brackets["none"]          = Brackets(Brackets::NONE);
+        type2brackets["vector"]        = Brackets(Brackets::CHEFRON);
+        type2brackets["deque"]         = Brackets("(*", " < ", "*)");
+        type2brackets["unordered_set"] = Brackets("{~", " ", "~}");
+        type2brackets["pair"]          = Brackets("(", "->", ")");
+        type2brackets["unordered_map"] = Brackets("{~", " ", "~}");
+        type2brackets["map"]           = Brackets(Brackets::BRACKET);
+        type2brackets["set"]           = Brackets(Brackets::BRACE);
+        type2brackets["string"]        = Brackets(Brackets::DOUBLEQUOTES);
+        type2brackets["char"]          = Brackets(Brackets::SINGLEQUOTES);
+    }
+
+    static type_bracket_map& instance()
+    {
+        if(type_bracket_map::theInstance.empty())
         {
-            return type2brackets.empty();
+            type_bracket_map::theInstance.initialize();
         }
 
-        void clear()
-        {
-            type2brackets.erase(type2brackets.begin(), type2brackets.end());
-        }
+        return (type_bracket_map::theInstance);
+    }
 
-        void initialize()
-        {
-            clear();
-            type2brackets["none"] = Brackets(Brackets::NONE);
-            type2brackets["vector"] = Brackets(Brackets::CHEFRON);
-            type2brackets["deque"] = Brackets("(*", " < ", "*)");
-            type2brackets["unordered_set"] = Brackets("{~", " ", "~}");
-            type2brackets["pair"] = Brackets("(", "->", ")");
-            type2brackets["unordered_map"] = Brackets("{~", " ", "~}");
-            type2brackets["map"] = Brackets(Brackets::BRACKET);
-            type2brackets["set"] = Brackets(Brackets::BRACE);
-            type2brackets["string"] = Brackets(Brackets::DOUBLEQUOTES);
-            type2brackets["char"] = Brackets(Brackets::SINGLEQUOTES);
-        }
+    template<typename T>
+    void add(Brackets bracket)
+    {
+        type2brackets[typeid(T).name()] = bracket;
+    }
 
-        static type_bracket_map& instance()
-        {
-            if (type_bracket_map::theInstance.empty())
-            {
-                type_bracket_map::theInstance.initialize();
-            }
-            return type_bracket_map::theInstance;
-        }
+    template<typename T>
+    const Brackets& get() const
+    {
+        if(type2brackets.find(typeid(T).name()) == type2brackets.end())
+            return (type2brackets["none"]);
 
-        template<typename T>
-        void add(Brackets bracket)
-        {
-            type2brackets[typeid (T).name()] = bracket;
-        }
+        return (type2brackets[typeid(T).name()]);
+    }
 
-        template<typename T>
-        const Brackets& get() const
-        {
-            if (type2brackets.find(typeid (T).name()) == type2brackets.end())
-                return type2brackets["none"];
-            return type2brackets[typeid (T).name()];
-        }
+    const Brackets& get(const std::string& name) const
+    {
+        if(type2brackets.find(name) == type2brackets.end())
+            return (type2brackets["none"]);
 
-        const Brackets& get(const std::string& name) const
-        {
-            if (type2brackets.find(name) == type2brackets.end())
-                return type2brackets["none"];
-            return type2brackets[name];
-        }
+        return (type2brackets[name]);
+    }
+};
+};
+// namespace util
 
-    };
-}; // namespace util
-
-#endif // NS_UTIL_TYPE_BRACKET_MAP_H_INCLUDED
-
+#endif  // NS_UTIL_TYPE_BRACKET_MAP_H_INCLUDED

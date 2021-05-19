@@ -23,10 +23,10 @@
 
 #include "bitConverterTest.h"
 
+#include <bit_converter.h>
 #include <cstdlib>
 #include <iostream>
 #include <string>
-#include <bit_converter.h>
 
 using namespace std;
 using namespace util;
@@ -53,6 +53,4 @@ void bitConverterTest::construction_test()
 {
     bit_converter defaultBC = 0.0L;
     cout << defaultBC.asBitset().to_string() << endl;
-
 }
-

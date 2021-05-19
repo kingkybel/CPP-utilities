@@ -19,17 +19,21 @@
  * @author: Dieter J Kybelksties
  */
 
-#include <iostream>
-#include <complex>
-#include <ios>
-#include <initializer_list>
 #include "primesTest.h"
+
+#include <complex>
+#include <initializer_list>
+#include <ios>
+#include <iostream>
 #include <primes.h>
 #define IN_DEVELOPMENT
 #ifdef IN_DEVELOPMENT
-#define TEST_HEADER(tp) { std::cout << __PRETTY_FUNCTION__<< " " << #tp << "=" << tp <<  std::endl; }
+    #define TEST_HEADER(tp)                                                           \
+        {                                                                             \
+            std::cout << __PRETTY_FUNCTION__ << " " << #tp << "=" << tp << std::endl; \
+        }
 #else
-#define TEST_HEADER(tp)
+    #define TEST_HEADER(tp)
 #endif
 
 using namespace std;

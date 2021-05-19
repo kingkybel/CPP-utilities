@@ -26,19 +26,20 @@
 #ifndef TRAITS_H_INCLUDED
 #define TRAITS_H_INCLUDED
 
-
-#define DEFINE_HAS_STATIC_MEMBER(traitsName, funcName, signature)               \
-    template <typename U>                                                   \
-    class traitsName                                                        \
-    {                                                                       \
-    private:                                                                \
-        template<typename T, T> struct helper;                              \
-        template<typename T>                                                \
-        static std::uint8_t check(helper<signature, &funcName>*);           \
-        template<typename T> static std::uint16_t check(...);               \
-    public:                                                                 \
-        static                                                              \
-        constexpr bool value = sizeof(check<U>(0)) == sizeof(std::uint8_t); \
+#define DEFINE_HAS_STATIC_MEMBER(traitsName, funcName, signature)                  \
+    template<typename U>                                                           \
+    class traitsName                                                               \
+    {                                                                              \
+        private:                                                                   \
+        template<typename T, T>                                                    \
+        struct helper;                                                             \
+        template<typename T>                                                       \
+        static std::uint8_t check(helper<signature, &funcName>*);                  \
+        template<typename T>                                                       \
+        static std::uint16_t check(...);                                           \
+                                                                                   \
+        public:                                                                    \
+        static constexpr bool value = sizeof(check<U>(0)) == sizeof(std::uint8_t); \
     }
 
 // usage:
@@ -62,40 +63,38 @@
 // cout << has_static_bool_fill<test1>::value << endl; // --> 1
 // cout << has_static_bool_fill<test2>::value << endl; // --> 0
 
-
-
 // Primary template with a static assertion
 // for a meaningful error message
 // if it ever gets instantiated.
 // We could leave it undefined if we didn't care.
 
-#define DEFINE_HAS_MEMBER(TraitName, FunctionName)                                  \
-template<typename, typename T>                                                      \
-struct TraitName {                                                                  \
-    static_assert(                                                                  \
-        std::integral_constant<T, false>::value,                                    \
-        "Second template parameter needs to be of function type.");                 \
-};                                                                                  \
-                                                                                    \
-/* specialization that does the checking */                                         \
-template<typename C, typename Ret, typename... Args>                                \
-struct TraitName<C, Ret(Args...)> {                                                 \
-private:                                                                            \
-    template<typename T>                                                            \
-    static constexpr auto check(T*) -> typename                                     \
-        std::is_same<                                                               \
-            decltype( std::declval<T>().FunctionName( std::declval<Args>()... ) ),  \
-            Ret    /* ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^*/      \
-        >::type;  /* attempt to call it and see if the return type is correct*/     \
-                                                                                    \
-    template<typename>                                                              \
-    static constexpr std::false_type check(...);                                    \
-                                                                                    \
-    typedef decltype(check<C>(0)) type;                                             \
-                                                                                    \
-public:                                                                             \
-    static constexpr bool value = type::value;                                      \
-};                                                                                  \
+#define DEFINE_HAS_MEMBER(TraitName, FunctionName)                                                    \
+    template<typename, typename T>                                                                    \
+    struct TraitName                                                                                  \
+    {                                                                                                 \
+        static_assert(std::integral_constant<T, false>::value,                                        \
+                      "Second template parameter needs to be of function type.");                     \
+    };                                                                                                \
+                                                                                                      \
+    /* specialization that does the checking */                                                       \
+    template<typename C, typename Ret, typename... Args>                                              \
+    struct TraitName<C, Ret(Args...)>                                                                 \
+    {                                                                                                 \
+        private:                                                                                      \
+        template<typename T>                                                                          \
+        static constexpr auto check(T*) ->                                                            \
+         typename std::is_same<decltype(std::declval<T>().FunctionName(std::declval<Args>()...)),     \
+                               Ret      /* ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^*/   \
+                               >::type; /* attempt to call it and see if the return type is correct*/ \
+                                                                                                      \
+        template<typename>                                                                            \
+        static constexpr std::false_type check(...);                                                  \
+                                                                                                      \
+        using type = decltype(check<C>(0));                                                           \
+                                                                                                      \
+        public:                                                                                       \
+        static constexpr bool value = type::value;                                                    \
+    };
 
 // usage:
 // add this macro to your project with the first parameter the name
@@ -117,6 +116,4 @@ public:                                                                         
 // cout << has_some_func<test1, int(std::string)>::value << endl; // --> 1
 // cout << has_some_func<test2, int(std::string)>::value << endl; // --> 0
 
-
-#endif // TRAITS_H_INCLUDED
-
+#endif  // TRAITS_H_INCLUDED

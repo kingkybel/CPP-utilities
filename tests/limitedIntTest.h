@@ -36,17 +36,16 @@ class LimitedValuesTest : public CPPUNIT_NS::TestFixture
 
     CPPUNIT_TEST_SUITE_END();
 
-public:
+    public:
     LimitedValuesTest();
     virtual ~LimitedValuesTest();
     void setUp();
     void tearDown();
 
-private:
+    private:
     void testInstanciation();
     void testIterator();
     void testDegreeConversion();
 };
 
 #endif /* LIMITEDVALUESTEST_H */
-

@@ -34,15 +34,14 @@ class bitConverterTest : public CPPUNIT_NS::TestFixture
 
     CPPUNIT_TEST_SUITE_END();
 
-public:
+    public:
     bitConverterTest();
     virtual ~bitConverterTest();
     void setUp();
     void tearDown();
 
-private:
+    private:
     void construction_test();
 };
 
-#endif // BIT_CONVERTER_TEST_H_INCLUDED
-
+#endif  // BIT_CONVERTER_TEST_H_INCLUDED

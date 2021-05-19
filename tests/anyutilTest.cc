@@ -23,17 +23,17 @@
 
 #include "anyutilTest.h"
 
-#include <iostream>
-#include <string>
-#include <sstream>
-#include <map>
-#include <vector>
-#include <set>
-#include <algorithm>
+#include "anyutil.h"
+#include "dateutil.h"
+#include "stringutil.h"
 
-#include <stringutil.h>
-#include <dateutil.h>
-#include <anyutil.h>
+#include <algorithm>
+#include <iostream>
+#include <map>
+#include <set>
+#include <sstream>
+#include <string>
+#include <vector>
 
 using namespace std;
 using namespace util;
@@ -59,10 +59,10 @@ void anyutilTest::tearDown()
 
 void anyutilTest::util_any_test()
 {
-    //BOOST_TEST_MESSAGE("");
-    //BOOST_TEST_MESSAGE("====== Testing any templates functions ========");
+    // BOOST_TEST_MESSAGE("");
+    // BOOST_TEST_MESSAGE("====== Testing any templates functions ========");
 
-    //BOOST_TEST_MESSAGE("boolean values...");
+    // BOOST_TEST_MESSAGE("boolean values...");
     bool bYes = scanAs<bool>("t");
     CPPUNIT_ASSERT_EQUAL(bYes, true);
     bYes = scanAs<bool>("TrUe");
@@ -84,7 +84,7 @@ void anyutilTest::util_any_test()
     bNo = scanAs<bool>("NO");
     CPPUNIT_ASSERT_EQUAL(bNo, false);
 
-    //BOOST_TEST_MESSAGE("int values...");
+    // BOOST_TEST_MESSAGE("int values...");
     VAR_INT i = scanAs<VAR_INT>("1234");
     CPPUNIT_ASSERT_EQUAL(i, VAR_INT(1234));
     i = scanAs<VAR_INT>("-666");
@@ -92,7 +92,7 @@ void anyutilTest::util_any_test()
     VAR_UINT ui = scanAs<VAR_UINT>("1234");
     CPPUNIT_ASSERT_EQUAL(ui, VAR_UINT(1234));
 
-    //BOOST_TEST_MESSAGE("float values...");
+    // BOOST_TEST_MESSAGE("float values...");
     VAR_FLOAT f = scanAs<VAR_FLOAT>("-1234.3456");
     CPPUNIT_ASSERT_DOUBLES_EQUAL(f, -1234.3456L, VAR_INT(1e-27));
     f = scanAs<VAR_FLOAT>("1234.34e-31");
@@ -100,7 +100,7 @@ void anyutilTest::util_any_test()
 
     Var anAny(string("a T_"));
     CPPUNIT_ASSERT(isA<string>(anAny));
-    anAny = (VAR_INT) 5L;
+    anAny = (VAR_INT)5L;
     CPPUNIT_ASSERT(isA<VAR_INT>(anAny));
 
     initDateFormats();
@@ -141,26 +141,26 @@ void anyutilTest::util_any_test()
 
     VAR_UINT_INTERVAL itv_minus_oo_oo;
     CPPUNIT_ASSERT(itv_minus_oo_oo.contains(VAR_UINT(8)));
-    CPPUNIT_ASSERT(VAR_UINT_INTERVAL(2,{infiniteMax}).isSubIntervalOf(itv_minus_oo_oo));
-    CPPUNIT_ASSERT(VAR_UINT_INTERVAL(2,{infiniteMin}).isSubIntervalOf(itv_minus_oo_oo));
+    CPPUNIT_ASSERT(VAR_UINT_INTERVAL(2, {infiniteMax}).isSubIntervalOf(itv_minus_oo_oo));
+    CPPUNIT_ASSERT(VAR_UINT_INTERVAL(2, {infiniteMin}).isSubIntervalOf(itv_minus_oo_oo));
     CPPUNIT_ASSERT(VAR_UINT_INTERVAL(4ULL, 12344ULL).isSubIntervalOf(itv_minus_oo_oo));
-    VAR_FLOAT_INTERVAL itv_5_oo(5.0L,{infiniteMax});
+    VAR_FLOAT_INTERVAL itv_5_oo(5.0L, {infiniteMax});
     CPPUNIT_ASSERT(!itv_5_oo.contains(VAR_FLOAT(4.0)));
-    CPPUNIT_ASSERT(!VAR_FLOAT_INTERVAL(2.234,{infiniteMax}).isSubIntervalOf(itv_5_oo));
-    CPPUNIT_ASSERT(!VAR_FLOAT_INTERVAL(2.234,{infiniteMin}).isSubIntervalOf(itv_5_oo));
+    CPPUNIT_ASSERT(!VAR_FLOAT_INTERVAL(2.234, {infiniteMax}).isSubIntervalOf(itv_5_oo));
+    CPPUNIT_ASSERT(!VAR_FLOAT_INTERVAL(2.234, {infiniteMin}).isSubIntervalOf(itv_5_oo));
 
     // [c, +oo]
     VAR_CHAR_INTERVAL itv_c_oo = VAR_CHAR_INTERVAL(VAR_CHAR('c'));
     CPPUNIT_ASSERT(itv_c_oo.contains(VAR_CHAR('z')));
-    CPPUNIT_ASSERT(!VAR_CHAR_INTERVAL('f',{infiniteMin}).isSubIntervalOf(itv_c_oo));
-    CPPUNIT_ASSERT(!VAR_CHAR_INTERVAL('a',{infiniteMax}).isSubIntervalOf(itv_c_oo));
+    CPPUNIT_ASSERT(!VAR_CHAR_INTERVAL('f', {infiniteMin}).isSubIntervalOf(itv_c_oo));
+    CPPUNIT_ASSERT(!VAR_CHAR_INTERVAL('a', {infiniteMax}).isSubIntervalOf(itv_c_oo));
 }
 
 template<typename T_>
 void util_any_interval_testT(T_ i, T_ j)
 {
-    //BOOST_TEST_MESSAGE("");
-    //BOOST_TEST_MESSAGE("====== Testing any interval functions ========");
+    // BOOST_TEST_MESSAGE("");
+    // BOOST_TEST_MESSAGE("====== Testing any interval functions ========");
     typedef Interval<T_> INTERV;
 
     CPPUNIT_ASSERT(INTERV() == INTERV());

@@ -34,15 +34,14 @@ class csvutilTest : public CPPUNIT_NS::TestFixture
 
     CPPUNIT_TEST_SUITE_END();
 
-public:
+    public:
     csvutilTest();
     virtual ~csvutilTest();
     void setUp();
     void tearDown();
 
-private:
+    private:
     void util_csv_test();
 };
 
 #endif /* CSVUTILTEST_H */
-

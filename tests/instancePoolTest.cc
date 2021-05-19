@@ -22,12 +22,12 @@
  */
 
 #include "instancePoolTest.h"
-#include <iostream>
-#include <string>
-#include <sstream>
 
-#include <stringutil.h>
 #include <instance_pool.h>
+#include <iostream>
+#include <sstream>
+#include <string>
+#include <stringutil.h>
 
 //#define DO_TRACE_
 #include <traceutil.h>
@@ -55,20 +55,18 @@ void instancePoolTest::tearDown()
 
 struct UnlimitedPool : public InstancePool<UnlimitedPool>
 {
-private:
-    int i;
+    private:
+    int        i;
     static int counter;
 
-    UnlimitedPool(int i_ = 0)
-    : i(i_)
+    UnlimitedPool(int i_ = 0) : i(i_)
     {
     }
 
-public:
-
+    public:
     static bool fill()
     {
-        for (int i = 0; i < 5; i++)
+        for(int i = 0; i < 5; i++)
         {
             try
             {
@@ -76,7 +74,7 @@ public:
                 counter++;
                 addInstance(p);
             }
-            catch (...)
+            catch(...)
             {
                 return false;
             }
@@ -87,7 +85,7 @@ public:
 
     static void removeAnInstance()
     {
-        if (!empty())
+        if(!empty())
         {
             auto inst = getInstance();
             removeInstance(inst);
@@ -108,14 +106,13 @@ int UnlimitedPool::counter = 0;
 
 void instancePoolTest::unlimited_pool_test()
 {
-    for (size_t i = 0; i < 20; i++)
+    for(size_t i = 0; i < 20; i++)
     {
         try
         {
-            cout << "Initial UnlimitedPool::getInstance()->get()"
-                    << UnlimitedPool::getInstance()->get() << endl;
+            cout << "Initial UnlimitedPool::getInstance()->get()" << UnlimitedPool::getInstance()->get() << endl;
         }
-        catch (...)
+        catch(...)
         {
             CPPUNIT_ASSERT_ASSERTION_FAIL_MESSAGE("Getting instance should not have thrown", false);
         }
@@ -124,14 +121,13 @@ void instancePoolTest::unlimited_pool_test()
     // adds more elements
     UnlimitedPool::fill();
 
-    for (size_t i = 0; i < 20; i++)
+    for(size_t i = 0; i < 20; i++)
     {
         try
         {
-            cout << "After re-fill UnlimitedPool::getInstance()->get()"
-                    << UnlimitedPool::getInstance()->get() << endl;
+            cout << "After re-fill UnlimitedPool::getInstance()->get()" << UnlimitedPool::getInstance()->get() << endl;
         }
-        catch (...)
+        catch(...)
         {
             CPPUNIT_ASSERT_ASSERTION_FAIL_MESSAGE("Getting instance should not have thrown", false);
         }
@@ -140,14 +136,14 @@ void instancePoolTest::unlimited_pool_test()
     // remove one elements
     UnlimitedPool::removeAnInstance();
 
-    for (size_t i = 0; i < 20; i++)
+    for(size_t i = 0; i < 20; i++)
     {
         try
         {
-            cout << "Removed one instance UnlimitedPool::getInstance()->get()"
-                    << UnlimitedPool::getInstance()->get() << endl;
+            cout << "Removed one instance UnlimitedPool::getInstance()->get()" << UnlimitedPool::getInstance()->get()
+                 << endl;
         }
-        catch (...)
+        catch(...)
         {
             CPPUNIT_ASSERT_ASSERTION_FAIL_MESSAGE("Getting instance should not have thrown", false);
         }
@@ -156,39 +152,35 @@ void instancePoolTest::unlimited_pool_test()
     // remove all elements
     UnlimitedPool::clearPool();
 
-    for (size_t i = 0; i < 5; i++)
+    for(size_t i = 0; i < 5; i++)
     {
         try
         {
-            cout << "Removed one instance UnlimitedPool::getInstance()->get()"
-                    << UnlimitedPool::getInstance()->get() << endl;
+            cout << "Removed one instance UnlimitedPool::getInstance()->get()" << UnlimitedPool::getInstance()->get()
+                 << endl;
             CPPUNIT_ASSERT_ASSERTION_FAIL_MESSAGE("Should have thrown", true);
         }
-        catch (exception & e)
+        catch(exception &e)
         {
             cout << "Attempt to get instance from empty pool threw expectedly" << endl;
         }
     }
-
-
 }
 
 struct LimitedPool : public InstancePool<LimitedPool, 8, 3>
 {
-private:
-    int i_;
+    private:
+    int        i_;
     static int counter;
 
-    LimitedPool(int i = 0)
-    : i_(i)
+    LimitedPool(int i = 0) : i_(i)
     {
     }
 
-public:
-
+    public:
     static bool fill()
     {
-        for (int i = 0; i < 5; i++)
+        for(int i = 0; i < 5; i++)
         {
             try
             {
@@ -196,7 +188,7 @@ public:
                 counter++;
                 addInstance(p);
             }
-            catch (...)
+            catch(...)
             {
                 return false;
             }
@@ -207,7 +199,7 @@ public:
 
     static void removeAnInstance()
     {
-        if (!empty())
+        if(!empty())
         {
             removeFrontInstance();
         }
@@ -228,14 +220,13 @@ int LimitedPool::counter = 0;
 
 void instancePoolTest::limited_pool_test()
 {
-    for (size_t i = 0; i < 20; i++)
+    for(size_t i = 0; i < 20; i++)
     {
         try
         {
-            cout << "Initial LimitedPool::getInstance()->get()"
-                    << LimitedPool::getInstance()->get() << endl;
+            cout << "Initial LimitedPool::getInstance()->get()" << LimitedPool::getInstance()->get() << endl;
         }
-        catch (...)
+        catch(...)
         {
             CPPUNIT_ASSERT_ASSERTION_FAIL_MESSAGE("Getting instance should not have thrown", false);
         }
@@ -246,22 +237,22 @@ void instancePoolTest::limited_pool_test()
     try
     {
         LimitedPool::fill();
-        CPPUNIT_ASSERT_ASSERTION_FAIL_MESSAGE("Re-filling more than allowed number of instances should have thrown", false);
+        CPPUNIT_ASSERT_ASSERTION_FAIL_MESSAGE("Re-filling more than allowed number of instances should have thrown",
+                                              false);
     }
-    catch (...)
+    catch(...)
     {
         cout << "Expectedly thrown error when re-filling more than allowed number of instances:" << endl;
     }
     cout << "after refill" << endl;
 
-    for (size_t i = 0; i < 20; i++)
+    for(size_t i = 0; i < 20; i++)
     {
         try
         {
-            cout << "After re-fill LimitedPool::getInstance()->get(): "
-                    << LimitedPool::getInstance()->get() << endl;
+            cout << "After re-fill LimitedPool::getInstance()->get(): " << LimitedPool::getInstance()->get() << endl;
         }
-        catch (...)
+        catch(...)
         {
             CPPUNIT_ASSERT_ASSERTION_FAIL_MESSAGE("Getting instance should not have thrown", false);
         }
@@ -270,14 +261,15 @@ void instancePoolTest::limited_pool_test()
     // remove one elements
     LimitedPool::removeAnInstance();
 
-    for (size_t i = 0; i < 20; i++)
+    for(size_t i = 0; i < 20; i++)
     {
         try
         {
-            cout << i << "/" << 20 << ": Removed one instance LimitedPool::getInstance()->get(): "
-                    << LimitedPool::getInstance()->get() << endl;
+            cout << i << "/" << 20
+                 << ": Removed one instance LimitedPool::getInstance()->get(): " << LimitedPool::getInstance()->get()
+                 << endl;
         }
-        catch (...)
+        catch(...)
         {
             CPPUNIT_ASSERT_ASSERTION_FAIL_MESSAGE("Getting instance should not have thrown", false);
         }
@@ -289,35 +281,31 @@ void instancePoolTest::limited_pool_test()
 
     cout << "after clean LimitedPool" << endl;
 
-    for (size_t i = 0; i < 5; i++)
+    for(size_t i = 0; i < 5; i++)
     {
         try
         {
-            cout << "Removed one instance LimitedPool::getInstance()->get(): "
-                    << LimitedPool::getInstance()->get() << endl;
+            cout << "Removed one instance LimitedPool::getInstance()->get(): " << LimitedPool::getInstance()->get()
+                 << endl;
             CPPUNIT_ASSERT_ASSERTION_FAIL_MESSAGE("Should have thrown", true);
         }
-        catch (...)
+        catch(...)
         {
             cout << "Attempt to get instance from empty pool threw expectedly" << endl;
         }
     }
-
-
 }
 
 struct SingletonPool : public Singleton<SingletonPool>
 {
-private:
+    private:
     std::string s_;
 
-    SingletonPool(const std::string& s = "")
-    : s_(s)
+    SingletonPool(const std::string &s = "") : s_(s)
     {
-
     }
-public:
 
+    public:
     static bool fill()
     {
         ObjectPointer p = ObjectPointer(new SingletonPool("Hello"));
@@ -339,14 +327,13 @@ public:
 
 void instancePoolTest::singleton_pool_test()
 {
-    for (size_t i = 0; i < 20; i++)
+    for(size_t i = 0; i < 20; i++)
     {
         try
         {
-            cout << "Initial SingletonPool::getInstance()->get(): "
-                    << SingletonPool::getInstance()->get() << endl;
+            cout << "Initial SingletonPool::getInstance()->get(): " << SingletonPool::getInstance()->get() << endl;
         }
-        catch (...)
+        catch(...)
         {
             CPPUNIT_ASSERT_ASSERTION_FAIL_MESSAGE("Getting instance should not have thrown", false);
         }
@@ -357,19 +344,19 @@ void instancePoolTest::singleton_pool_test()
         // adds more elements
         SingletonPool::fill();
     }
-    catch (const exception& e)
+    catch(const exception &e)
     {
         cout << "Attempt add another instance to singleton threw expectedly" << endl;
     }
 
-    for (size_t i = 0; i < 20; i++)
+    for(size_t i = 0; i < 20; i++)
     {
         try
         {
-            cout << "After re-fill SingletonPool::getInstance()->get(): "
-                    << SingletonPool::getInstance()->get() << endl;
+            cout << "After re-fill SingletonPool::getInstance()->get(): " << SingletonPool::getInstance()->get()
+                 << endl;
         }
-        catch (...)
+        catch(...)
         {
             CPPUNIT_ASSERT_ASSERTION_FAIL_MESSAGE("Getting instance should not have thrown", false);
         }
@@ -378,19 +365,18 @@ void instancePoolTest::singleton_pool_test()
     // remove one elements
     SingletonPool::clearInstance();
 
-    for (size_t i = 0; i < 20; i++)
+    for(size_t i = 0; i < 20; i++)
     {
         try
         {
-            cout << "Removed one instance SingletonPool::getInstance()->get(): "
-                    << SingletonPool::getInstance()->get() << endl;
-            CPPUNIT_ASSERT_ASSERTION_FAIL_MESSAGE("Getting instance from empty singleton pool should have thrown", true);
+            cout << "Removed one instance SingletonPool::getInstance()->get(): " << SingletonPool::getInstance()->get()
+                 << endl;
+            CPPUNIT_ASSERT_ASSERTION_FAIL_MESSAGE("Getting instance from empty singleton pool should have thrown",
+                                                  true);
         }
-        catch (...)
+        catch(...)
         {
             cout << "Attempt add an instance from empty singleton pool threw expectedly" << endl;
         }
     }
-
 }
-

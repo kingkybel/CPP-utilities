@@ -37,13 +37,13 @@ class stringutilTest : public CPPUNIT_NS::TestFixture
 
     CPPUNIT_TEST_SUITE_END();
 
-public:
+    public:
     stringutilTest();
     virtual ~stringutilTest();
     void setUp();
     void tearDown();
 
-private:
+    private:
     void util_ci_traits_test();
     void util_container_conversion_test();
     void util_string_test();
@@ -51,4 +51,3 @@ private:
 };
 
 #endif /* STRINGUTILTEST_H */
-

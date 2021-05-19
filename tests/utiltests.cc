@@ -8,24 +8,24 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 #define BOOST_TEST_DYN_LINK
-#include <boost/test/unit_test.hpp>
-#include <boost/test/included/unit_test.hpp>
-#include <boost/bind.hpp>
 #include <boost/assign/std/vector.hpp>
+#include <boost/bind.hpp>
+#include <boost/test/included/unit_test.hpp>
+#include <boost/test/unit_test.hpp>
 #define BOOST_NO_CXX11_SCOPED_ENUMS
 #include <boost/filesystem.hpp>
 #undef BOOST_NO_CXX11_SCOPED_ENUMS
-#include <cstdlib>
-#include <iostream>
-#include <string>
-#include <cmath>
-#include <stringutil.h>
-#include <dateutil.h>
 #include <anyutil.h>
-#include <csvutil.h>
 #include <bayesutil.h>
-#include <statutil.h>
+#include <cmath>
+#include <cstdlib>
+#include <csvutil.h>
+#include <dateutil.h>
 #include <graphutil.h>
+#include <iostream>
+#include <statutil.h>
+#include <string>
+#include <stringutil.h>
 
 using namespace std;
 using namespace boost::unit_test;
@@ -41,16 +41,15 @@ const string filename = "/tmp/test.csv";
 template<typename T_>
 struct SR
 {
-
-    SR(const T_& source,
-       const T_& tp,
+    SR(const T_ &    source,
+       const T_ &    tp,
        StripTrimMode m,
-       const T_& modChars,
-       char c,
-       const T_& result,
-       size_t line,
-       bool differentInsensitive = false,
-       const T_& resultInsensitive = "")
+       const T_ &    modChars,
+       char          c,
+       const T_ &    result,
+       size_t        line,
+       bool          differentInsensitive = false,
+       const T_ &    resultInsensitive    = "")
     : source_(source)
     , tp_(tp)
     , m_(m)
@@ -66,177 +65,174 @@ struct SR
     bool correctResult()
     {
         T_ actualResult = source_;
-        if (tp_ == "trim")
+        if(tp_ == "trim")
         {
             trim(actualResult, modChars_, m_);
         }
-        else if (tp_ == "strip")
+        else if(tp_ == "strip")
         {
             strip(actualResult, modChars_, m_);
         }
-        else if (tp_ == "replace")
+        else if(tp_ == "replace")
         {
             replaceChar(actualResult, modChars_, c_, m_);
         }
-        T_ expectedResult =
-                (typeid (T_) == typeid (ci_string) && differentInsensitive_) ?
-                resultInsensitive_ : result_;
-        bool reval = (expectedResult == actualResult);
-        if (!reval)
-            cout << " Line " << line_ << ": "
-                << quoted(expectedResult) << " != " << quoted(actualResult)
-            << " " << ends;
+        T_   expectedResult = (typeid(T_) == typeid(ci_string) && differentInsensitive_) ? resultInsensitive_ : result_;
+        bool reval          = (expectedResult == actualResult);
+        if(!reval)
+            cout << " Line " << line_ << ": " << quoted(expectedResult) << " != " << quoted(actualResult) << " "
+                 << ends;
         return reval;
     }
-    T_ source_;
-    T_ tp_;
+    T_            source_;
+    T_            tp_;
     StripTrimMode m_;
-    T_ modChars_;
-    char c_;
-    T_ result_;
-    bool differentInsensitive_;
-    T_ resultInsensitive_;
-    size_t line_;
+    T_            modChars_;
+    char          c_;
+    T_            result_;
+    bool          differentInsensitive_;
+    T_            resultInsensitive_;
+    size_t        line_;
 };
 
 template<typename T_>
 void util_string_mod_test(int i, int j)
 {
     typedef SR<T_> SR;
-    SR modResults[] = {
-                       // trivial
-                       SR("", "trim", ALL, "\n\t \r", char(0), "", __LINE__),
-                       SR("", "trim", LEFT, "\n\t \r", char(0), "", __LINE__),
-                       SR("", "trim", RIGHT, "\n\t \r", char(0), "", __LINE__),
-                       SR(" ", "trim", ALL, "\n\t \r", char(0), "", __LINE__),
-                       SR(" ", "trim", LEFT, "\n\t \r", char(0), "", __LINE__),
-                       SR(" ", "trim", RIGHT, "\n\t \r", char(0), "", __LINE__),
-                       SR("\t", "trim", ALL, "\n\t \r", char(0), "", __LINE__),
-                       SR("\t", "trim", LEFT, "\n\t \r", char(0), "", __LINE__),
-                       SR("\t", "trim", RIGHT, "\n\t \r", char(0), "", __LINE__),
-                       SR("\n", "trim", ALL, "\n\t \r", char(0), "", __LINE__),
-                       SR("\n", "trim", LEFT, "\n\t \r", char(0), "", __LINE__),
-                       SR("\n", "trim", RIGHT, "\n\t \r", char(0), "", __LINE__),
+    SR             modResults[] = {
+     // trivial
+     SR("", "trim", ALL, "\n\t \r", char(0), "", __LINE__),
+     SR("", "trim", LEFT, "\n\t \r", char(0), "", __LINE__),
+     SR("", "trim", RIGHT, "\n\t \r", char(0), "", __LINE__),
+     SR(" ", "trim", ALL, "\n\t \r", char(0), "", __LINE__),
+     SR(" ", "trim", LEFT, "\n\t \r", char(0), "", __LINE__),
+     SR(" ", "trim", RIGHT, "\n\t \r", char(0), "", __LINE__),
+     SR("\t", "trim", ALL, "\n\t \r", char(0), "", __LINE__),
+     SR("\t", "trim", LEFT, "\n\t \r", char(0), "", __LINE__),
+     SR("\t", "trim", RIGHT, "\n\t \r", char(0), "", __LINE__),
+     SR("\n", "trim", ALL, "\n\t \r", char(0), "", __LINE__),
+     SR("\n", "trim", LEFT, "\n\t \r", char(0), "", __LINE__),
+     SR("\n", "trim", RIGHT, "\n\t \r", char(0), "", __LINE__),
 
-                       SR("", "strip", ALL, "\n\t \r", char(0), "", __LINE__),
-                       SR("", "strip", LEFT, "\n\t \r", char(0), "", __LINE__),
-                       SR("", "strip", RIGHT, "\n\t \r", char(0), "", __LINE__),
-                       SR(" ", "strip", ALL, "\n\t \r", char(0), "", __LINE__),
-                       SR(" ", "strip", LEFT, "\n\t \r", char(0), "", __LINE__),
-                       SR(" ", "strip", RIGHT, "\n\t \r", char(0), "", __LINE__),
-                       SR("\t", "strip", ALL, "\n\t \r", char(0), "", __LINE__),
-                       SR("\t", "strip", LEFT, "\n\t \r", char(0), "", __LINE__),
-                       SR("\t", "strip", RIGHT, "\n\t \r", char(0), "", __LINE__),
-                       SR("\n", "strip", ALL, "\n\t \r", char(0), "", __LINE__),
-                       SR("\n", "strip", LEFT, "\n\t \r", char(0), "", __LINE__),
-                       SR("\n", "strip", RIGHT, "\n\t \r", char(0), "", __LINE__),
+     SR("", "strip", ALL, "\n\t \r", char(0), "", __LINE__),
+     SR("", "strip", LEFT, "\n\t \r", char(0), "", __LINE__),
+     SR("", "strip", RIGHT, "\n\t \r", char(0), "", __LINE__),
+     SR(" ", "strip", ALL, "\n\t \r", char(0), "", __LINE__),
+     SR(" ", "strip", LEFT, "\n\t \r", char(0), "", __LINE__),
+     SR(" ", "strip", RIGHT, "\n\t \r", char(0), "", __LINE__),
+     SR("\t", "strip", ALL, "\n\t \r", char(0), "", __LINE__),
+     SR("\t", "strip", LEFT, "\n\t \r", char(0), "", __LINE__),
+     SR("\t", "strip", RIGHT, "\n\t \r", char(0), "", __LINE__),
+     SR("\n", "strip", ALL, "\n\t \r", char(0), "", __LINE__),
+     SR("\n", "strip", LEFT, "\n\t \r", char(0), "", __LINE__),
+     SR("\n", "strip", RIGHT, "\n\t \r", char(0), "", __LINE__),
 
-                       SR("", "replace", ALL, "\n\t \r", '#', "", __LINE__),
-                       SR("", "replace", LEFT, "\n\t \r", '#', "", __LINE__),
-                       SR("", "replace", RIGHT, "\n\t \r", '#', "", __LINE__),
-                       SR(" ", "replace", ALL, "\n\t \r", '#', "#", __LINE__, false),
-                       SR(" ", "replace", LEFT, "\n\t \r", '#', "#", __LINE__),
-                       SR(" ", "replace", RIGHT, "\n\t \r", '#', "#", __LINE__),
-                       SR("\t", "replace", ALL, "\n\t \r", '#', "#", __LINE__),
-                       SR("\t", "replace", LEFT, "\n\t \r", '#', "#", __LINE__),
-                       SR("\t", "replace", RIGHT, "\n\t \r", '#', "#", __LINE__),
-                       SR("\n", "replace", ALL, "\n\t \r", '#', "#", __LINE__),
-                       SR("\n", "replace", LEFT, "\n\t \r", '#', "#", __LINE__),
-                       SR("\n", "replace", RIGHT, "\n\t \r", '#', "#", __LINE__),
+     SR("", "replace", ALL, "\n\t \r", '#', "", __LINE__),
+     SR("", "replace", LEFT, "\n\t \r", '#', "", __LINE__),
+     SR("", "replace", RIGHT, "\n\t \r", '#', "", __LINE__),
+     SR(" ", "replace", ALL, "\n\t \r", '#', "#", __LINE__, false),
+     SR(" ", "replace", LEFT, "\n\t \r", '#', "#", __LINE__),
+     SR(" ", "replace", RIGHT, "\n\t \r", '#', "#", __LINE__),
+     SR("\t", "replace", ALL, "\n\t \r", '#', "#", __LINE__),
+     SR("\t", "replace", LEFT, "\n\t \r", '#', "#", __LINE__),
+     SR("\t", "replace", RIGHT, "\n\t \r", '#', "#", __LINE__),
+     SR("\n", "replace", ALL, "\n\t \r", '#', "#", __LINE__),
+     SR("\n", "replace", LEFT, "\n\t \r", '#', "#", __LINE__),
+     SR("\n", "replace", RIGHT, "\n\t \r", '#', "#", __LINE__),
 
-                       // trivial case-dependent
-                       SR("", "trim", ALL, "abc", char(0), "", __LINE__, false, ""),
-                       SR("", "trim", LEFT, "abc", char(0), "", __LINE__, false, ""),
-                       SR("", "trim", RIGHT, "abc", char(0), "", __LINE__, false, ""),
-                       SR("a", "trim", ALL, "abc", char(0), "", __LINE__, false, ""),
-                       SR("a", "trim", LEFT, "abc", char(0), "", __LINE__, false, ""),
-                       SR("a", "trim", RIGHT, "abc", char(0), "", __LINE__, false, ""),
-                       SR("b", "trim", ALL, "abc", char(0), "", __LINE__, false, ""),
-                       SR("b", "trim", LEFT, "abc", char(0), "", __LINE__, false, ""),
-                       SR("b", "trim", RIGHT, "abc", char(0), "", __LINE__, false, ""),
-                       SR("c", "trim", ALL, "abc", char(0), "", __LINE__, false, ""),
-                       SR("c", "trim", LEFT, "abc", char(0), "", __LINE__, false, ""),
-                       SR("c", "trim", RIGHT, "abc", char(0), "", __LINE__, false, ""),
-                       SR("A", "trim", ALL, "abc", char(0), "A", __LINE__, true, ""),
-                       SR("A", "trim", LEFT, "abc", char(0), "A", __LINE__, true, ""),
-                       SR("A", "trim", RIGHT, "abc", char(0), "A", __LINE__, true, ""),
-                       SR("B", "trim", ALL, "abc", char(0), "B", __LINE__, true, ""),
-                       SR("B", "trim", LEFT, "abc", char(0), "B", __LINE__, true, ""),
-                       SR("B", "trim", RIGHT, "abc", char(0), "B", __LINE__, true, ""),
-                       SR("C", "trim", ALL, "abc", char(0), "C", __LINE__, true, ""),
-                       SR("C", "trim", LEFT, "abc", char(0), "C", __LINE__, true, ""),
-                       SR("C", "trim", RIGHT, "abc", char(0), "C", __LINE__, true, ""),
+     // trivial case-dependent
+     SR("", "trim", ALL, "abc", char(0), "", __LINE__, false, ""),
+     SR("", "trim", LEFT, "abc", char(0), "", __LINE__, false, ""),
+     SR("", "trim", RIGHT, "abc", char(0), "", __LINE__, false, ""),
+     SR("a", "trim", ALL, "abc", char(0), "", __LINE__, false, ""),
+     SR("a", "trim", LEFT, "abc", char(0), "", __LINE__, false, ""),
+     SR("a", "trim", RIGHT, "abc", char(0), "", __LINE__, false, ""),
+     SR("b", "trim", ALL, "abc", char(0), "", __LINE__, false, ""),
+     SR("b", "trim", LEFT, "abc", char(0), "", __LINE__, false, ""),
+     SR("b", "trim", RIGHT, "abc", char(0), "", __LINE__, false, ""),
+     SR("c", "trim", ALL, "abc", char(0), "", __LINE__, false, ""),
+     SR("c", "trim", LEFT, "abc", char(0), "", __LINE__, false, ""),
+     SR("c", "trim", RIGHT, "abc", char(0), "", __LINE__, false, ""),
+     SR("A", "trim", ALL, "abc", char(0), "A", __LINE__, true, ""),
+     SR("A", "trim", LEFT, "abc", char(0), "A", __LINE__, true, ""),
+     SR("A", "trim", RIGHT, "abc", char(0), "A", __LINE__, true, ""),
+     SR("B", "trim", ALL, "abc", char(0), "B", __LINE__, true, ""),
+     SR("B", "trim", LEFT, "abc", char(0), "B", __LINE__, true, ""),
+     SR("B", "trim", RIGHT, "abc", char(0), "B", __LINE__, true, ""),
+     SR("C", "trim", ALL, "abc", char(0), "C", __LINE__, true, ""),
+     SR("C", "trim", LEFT, "abc", char(0), "C", __LINE__, true, ""),
+     SR("C", "trim", RIGHT, "abc", char(0), "C", __LINE__, true, ""),
 
-                       SR("", "strip", ALL, "abc", char(0), "", __LINE__, false, ""),
-                       SR("", "strip", LEFT, "abc", char(0), "", __LINE__, false, ""),
-                       SR("", "strip", RIGHT, "abc", char(0), "", __LINE__, false, ""),
-                       SR("a", "strip", ALL, "abc", char(0), "", __LINE__, false, ""),
-                       SR("a", "strip", LEFT, "abc", char(0), "", __LINE__, false, ""),
-                       SR("a", "strip", RIGHT, "abc", char(0), "", __LINE__, ""),
-                       SR("b", "strip", ALL, "abc", char(0), "", __LINE__, false, ""),
-                       SR("b", "strip", LEFT, "abc", char(0), "", __LINE__, false, ""),
-                       SR("b", "strip", RIGHT, "abc", char(0), "", __LINE__, false, ""),
-                       SR("c", "strip", ALL, "abc", char(0), "", __LINE__, false, ""),
-                       SR("c", "strip", LEFT, "abc", char(0), "", __LINE__, false, ""),
-                       SR("c", "strip", RIGHT, "abc", char(0), "", __LINE__, false, ""),
-                       SR("A", "strip", ALL, "abc", char(0), "A", __LINE__, true, ""),
-                       SR("A", "strip", LEFT, "abc", char(0), "A", __LINE__, true, ""),
-                       SR("A", "strip", RIGHT, "abc", char(0), "A", __LINE__, true, ""),
-                       SR("B", "strip", ALL, "abc", char(0), "B", __LINE__, true, ""),
-                       SR("B", "strip", LEFT, "abc", char(0), "B", __LINE__, true, ""),
-                       SR("B", "strip", RIGHT, "abc", char(0), "B", __LINE__, true, ""),
-                       SR("C", "strip", ALL, "abc", char(0), "C", __LINE__, true, ""),
-                       SR("C", "strip", LEFT, "abc", char(0), "C", __LINE__, true, ""),
-                       SR("C", "strip", RIGHT, "abc", char(0), "C", __LINE__, true, ""),
+     SR("", "strip", ALL, "abc", char(0), "", __LINE__, false, ""),
+     SR("", "strip", LEFT, "abc", char(0), "", __LINE__, false, ""),
+     SR("", "strip", RIGHT, "abc", char(0), "", __LINE__, false, ""),
+     SR("a", "strip", ALL, "abc", char(0), "", __LINE__, false, ""),
+     SR("a", "strip", LEFT, "abc", char(0), "", __LINE__, false, ""),
+     SR("a", "strip", RIGHT, "abc", char(0), "", __LINE__, ""),
+     SR("b", "strip", ALL, "abc", char(0), "", __LINE__, false, ""),
+     SR("b", "strip", LEFT, "abc", char(0), "", __LINE__, false, ""),
+     SR("b", "strip", RIGHT, "abc", char(0), "", __LINE__, false, ""),
+     SR("c", "strip", ALL, "abc", char(0), "", __LINE__, false, ""),
+     SR("c", "strip", LEFT, "abc", char(0), "", __LINE__, false, ""),
+     SR("c", "strip", RIGHT, "abc", char(0), "", __LINE__, false, ""),
+     SR("A", "strip", ALL, "abc", char(0), "A", __LINE__, true, ""),
+     SR("A", "strip", LEFT, "abc", char(0), "A", __LINE__, true, ""),
+     SR("A", "strip", RIGHT, "abc", char(0), "A", __LINE__, true, ""),
+     SR("B", "strip", ALL, "abc", char(0), "B", __LINE__, true, ""),
+     SR("B", "strip", LEFT, "abc", char(0), "B", __LINE__, true, ""),
+     SR("B", "strip", RIGHT, "abc", char(0), "B", __LINE__, true, ""),
+     SR("C", "strip", ALL, "abc", char(0), "C", __LINE__, true, ""),
+     SR("C", "strip", LEFT, "abc", char(0), "C", __LINE__, true, ""),
+     SR("C", "strip", RIGHT, "abc", char(0), "C", __LINE__, true, ""),
 
-                       SR("", "replace", ALL, "abc", '#', "", __LINE__, false, ""),
-                       SR("", "replace", LEFT, "abc", '#', "", __LINE__, false, ""),
-                       SR("", "replace", RIGHT, "abc", '#', "", __LINE__, false, ""),
-                       SR("a", "replace", ALL, "abc", '#', "#", __LINE__, false, "#"),
-                       SR("a", "replace", LEFT, "abc", '#', "#", __LINE__, false, "#"),
-                       SR("a", "replace", RIGHT, "abc", '#', "#", __LINE__, false, "#"),
-                       SR("b", "replace", ALL, "abc", '#', "#", __LINE__, false, "#"),
-                       SR("b", "replace", LEFT, "abc", '#', "#", __LINE__, false, "#"),
-                       SR("b", "replace", RIGHT, "abc", '#', "#", __LINE__, false, "#"),
-                       SR("c", "replace", ALL, "abc", '#', "#", __LINE__, false, "#"),
-                       SR("c", "replace", LEFT, "abc", '#', "#", __LINE__, false, "#"),
-                       SR("c", "replace", RIGHT, "abc", '#', "#", __LINE__, false, "#"),
-                       SR("A", "replace", ALL, "abc", '#', "A", __LINE__, true, "#"),
-                       SR("A", "replace", LEFT, "abc", '#', "A", __LINE__, true, "#"),
-                       SR("A", "replace", RIGHT, "abc", '#', "A", __LINE__, true, "#"),
-                       SR("B", "replace", ALL, "abc", '#', "B", __LINE__, true, "#"),
-                       SR("B", "replace", LEFT, "abc", '#', "B", __LINE__, true, "#"),
-                       SR("B", "replace", RIGHT, "abc", '#', "B", __LINE__, true, "#"),
-                       SR("C", "replace", ALL, "abc", '#', "C", __LINE__, true, "#"),
-                       SR("C", "replace", LEFT, "abc", '#', "C", __LINE__, true, "#"),
-                       SR("C", "replace", RIGHT, "abc", '#', "C", __LINE__, true, "#"),
+     SR("", "replace", ALL, "abc", '#', "", __LINE__, false, ""),
+     SR("", "replace", LEFT, "abc", '#', "", __LINE__, false, ""),
+     SR("", "replace", RIGHT, "abc", '#', "", __LINE__, false, ""),
+     SR("a", "replace", ALL, "abc", '#', "#", __LINE__, false, "#"),
+     SR("a", "replace", LEFT, "abc", '#', "#", __LINE__, false, "#"),
+     SR("a", "replace", RIGHT, "abc", '#', "#", __LINE__, false, "#"),
+     SR("b", "replace", ALL, "abc", '#', "#", __LINE__, false, "#"),
+     SR("b", "replace", LEFT, "abc", '#', "#", __LINE__, false, "#"),
+     SR("b", "replace", RIGHT, "abc", '#', "#", __LINE__, false, "#"),
+     SR("c", "replace", ALL, "abc", '#', "#", __LINE__, false, "#"),
+     SR("c", "replace", LEFT, "abc", '#', "#", __LINE__, false, "#"),
+     SR("c", "replace", RIGHT, "abc", '#', "#", __LINE__, false, "#"),
+     SR("A", "replace", ALL, "abc", '#', "A", __LINE__, true, "#"),
+     SR("A", "replace", LEFT, "abc", '#', "A", __LINE__, true, "#"),
+     SR("A", "replace", RIGHT, "abc", '#', "A", __LINE__, true, "#"),
+     SR("B", "replace", ALL, "abc", '#', "B", __LINE__, true, "#"),
+     SR("B", "replace", LEFT, "abc", '#', "B", __LINE__, true, "#"),
+     SR("B", "replace", RIGHT, "abc", '#', "B", __LINE__, true, "#"),
+     SR("C", "replace", ALL, "abc", '#', "C", __LINE__, true, "#"),
+     SR("C", "replace", LEFT, "abc", '#', "C", __LINE__, true, "#"),
+     SR("C", "replace", RIGHT, "abc", '#', "C", __LINE__, true, "#"),
 
-                       // not-so-trivial case-dependent
-                       SR("aABbCc", "trim", ALL, "abc", char(0), "ABbC", __LINE__, true, ""),
-                       SR("aABbCc", "trim", LEFT, "abc", char(0), "ABbCc", __LINE__, true, ""),
-                       SR("aABbCc", "trim", RIGHT, "abc", char(0), "aABbC", __LINE__, true, ""),
+     // not-so-trivial case-dependent
+     SR("aABbCc", "trim", ALL, "abc", char(0), "ABbC", __LINE__, true, ""),
+     SR("aABbCc", "trim", LEFT, "abc", char(0), "ABbCc", __LINE__, true, ""),
+     SR("aABbCc", "trim", RIGHT, "abc", char(0), "aABbC", __LINE__, true, ""),
 
-                       SR("aABbCc", "strip", ALL, "abc", char(0), "ABC", __LINE__, true, ""),
-                       SR("aABbCc", "strip", LEFT, "abc", char(0), "ABbCc", __LINE__, true, ""),
-                       SR("aABbCc", "strip", RIGHT, "abc", char(0), "aABbC", __LINE__, true, ""),
+     SR("aABbCc", "strip", ALL, "abc", char(0), "ABC", __LINE__, true, ""),
+     SR("aABbCc", "strip", LEFT, "abc", char(0), "ABbCc", __LINE__, true, ""),
+     SR("aABbCc", "strip", RIGHT, "abc", char(0), "aABbC", __LINE__, true, ""),
 
-                       SR("aABbCc", "replace", ALL, "abc", '#', "#AB#C#", __LINE__, true, "######"),
-                       SR("aABbCc", "replace", LEFT, "abc", '#', "#ABbCc", __LINE__, true, "######"),
-                       SR("aABbCc", "replace", RIGHT, "abc", '#', "aABbC#", __LINE__, true, "######"),
+     SR("aABbCc", "replace", ALL, "abc", '#', "#AB#C#", __LINE__, true, "######"),
+     SR("aABbCc", "replace", LEFT, "abc", '#', "#ABbCc", __LINE__, true, "######"),
+     SR("aABbCc", "replace", RIGHT, "abc", '#', "aABbC#", __LINE__, true, "######"),
 
-                       SR("a-A-B-b-c-C", "trim", ALL, "abc", char(0), "-A-B-b-c-C", __LINE__, true, "-A-B-b-c-"),
-                       SR("a-A-B-b-c-C", "trim", LEFT, "abc", char(0), "-A-B-b-c-C", __LINE__, true, "-A-B-b-c-C"),
-                       SR("a-A-B-b-c-C", "trim", RIGHT, "abc", char(0), "a-A-B-b-c-C", __LINE__, true, "a-A-B-b-c-"),
+     SR("a-A-B-b-c-C", "trim", ALL, "abc", char(0), "-A-B-b-c-C", __LINE__, true, "-A-B-b-c-"),
+     SR("a-A-B-b-c-C", "trim", LEFT, "abc", char(0), "-A-B-b-c-C", __LINE__, true, "-A-B-b-c-C"),
+     SR("a-A-B-b-c-C", "trim", RIGHT, "abc", char(0), "a-A-B-b-c-C", __LINE__, true, "a-A-B-b-c-"),
 
-                       SR("a-A-B-b-c-C", "strip", ALL, "abc", char(0), "-A-B---C", __LINE__, true, "-----"),
-                       SR("a-A-B-b-c-C", "strip", LEFT, "abc", char(0), "-A-B-b-c-C", __LINE__, true, "-A-B-b-c-C"),
-                       SR("a-A-B-b-c-C", "strip", RIGHT, "abc", char(0), "a-A-B-b-c-C", __LINE__, true, "a-A-B-b-c-"),
+     SR("a-A-B-b-c-C", "strip", ALL, "abc", char(0), "-A-B---C", __LINE__, true, "-----"),
+     SR("a-A-B-b-c-C", "strip", LEFT, "abc", char(0), "-A-B-b-c-C", __LINE__, true, "-A-B-b-c-C"),
+     SR("a-A-B-b-c-C", "strip", RIGHT, "abc", char(0), "a-A-B-b-c-C", __LINE__, true, "a-A-B-b-c-"),
 
-                       SR("a-A-B-b-c-C", "replace", ALL, "abc", '#', "#-A-B-#-#-C", __LINE__, true, "#-#-#-#-#-#"),
-                       SR("a-A-B-b-c-C", "replace", LEFT, "abc", '#', "#-A-B-b-c-C", __LINE__, true, "#-A-B-b-c-C"),
-                       SR("a-A-B-b-c-C", "replace", RIGHT, "abc", '#', "a-A-B-b-c-C", __LINE__, true, "a-A-B-b-c-#"),
+     SR("a-A-B-b-c-C", "replace", ALL, "abc", '#', "#-A-B-#-#-C", __LINE__, true, "#-#-#-#-#-#"),
+     SR("a-A-B-b-c-C", "replace", LEFT, "abc", '#', "#-A-B-b-c-C", __LINE__, true, "#-A-B-b-c-C"),
+     SR("a-A-B-b-c-C", "replace", RIGHT, "abc", '#', "a-A-B-b-c-C", __LINE__, true, "a-A-B-b-c-#"),
     };
-    for (size_t i = 0; i < sizeof (modResults) / sizeof (SR); i++)
+    for(size_t i = 0; i < sizeof(modResults) / sizeof(SR); i++)
     {
         BOOST_CHECK(modResults[i].correctResult());
     }
@@ -244,22 +240,16 @@ void util_string_mod_test(int i, int j)
 
 struct DR
 {
-
-    DR(const string& param, const string result, size_t line)
-    : param_(param)
-    , result_(result)
-    , line_(line)
+    DR(const string &param, const string result, size_t line) : param_(param), result_(result), line_(line)
     {
-
     }
 
     bool correctResult()
     {
         bool reval = (result_ == asString(scanDate(param_)));
-        if (!reval)
-            cout << " Line " << line_ << ": "
-                << quoted(result_) << " != " << quoted(asString(scanDate(param_)))
-            << " " << ends;
+        if(!reval)
+            cout << " Line " << line_ << ": " << quoted(result_) << " != " << quoted(asString(scanDate(param_))) << " "
+                 << ends;
         return reval;
     }
     string param_;
@@ -465,8 +455,8 @@ void util_string_test(int i, int j)
     BOOST_CHECK_EQUAL(result[3], "89");
     BOOST_CHECK_EQUAL(result[4], "89/12");
 
-    const T_ stripStr = " _ 123.456/789-0ab/_ _";
-    T_ stripable = stripStr;
+    const T_ stripStr  = " _ 123.456/789-0ab/_ _";
+    T_       stripable = stripStr;
 
     BOOST_TEST_MESSAGE("strip " << stripable << " of \".\"");
     strip(stripable, ".");
@@ -494,11 +484,11 @@ void util_string_test(int i, int j)
     trim(stripable, " _");
     BOOST_CHECK_EQUAL(stripable, "123.456/789-0ab/");
 
-    stripable = stripStr; // " _ 123.456/789-0ab/_ _"
+    stripable = stripStr;  // " _ 123.456/789-0ab/_ _"
     BOOST_TEST_MESSAGE("replaceChar " << stripable << " chars \"_\" with '#'");
     replaceChar(stripable, "_", '#');
     BOOST_CHECK_EQUAL(stripable, " # 123.456/789-0ab/# #");
-    stripable = stripStr; // " _ 123.456/789-0ab/_ _"
+    stripable = stripStr;  // " _ 123.456/789-0ab/_ _"
     BOOST_TEST_MESSAGE("replaceChar " << stripable << " chars \" _\" with '#'");
     replaceChar(stripable, "_ ", '#');
     BOOST_CHECK_EQUAL(stripable, "###123.456/789-0ab/###");
@@ -637,8 +627,8 @@ void util_string_left_right_test(int i, int j)
     BOOST_CHECK_EQUAL(result[3], "89");
     BOOST_CHECK_EQUAL(result[4], "89/12");
 
-    const T_ stripStr = " _ 123.456/789-0ab/_ _";
-    T_ stripable = stripStr;
+    const T_ stripStr  = " _ 123.456/789-0ab/_ _";
+    T_       stripable = stripStr;
 
     BOOST_TEST_MESSAGE("strip " << stripable << " of \".\"");
     strip(stripable, ".");
@@ -728,9 +718,8 @@ void util_ci_string_test(int i, int j)
     BOOST_CHECK_EQUAL(result[0], "");
     BOOST_CHECK_EQUAL(result[1], "xxx");
 
-
-    const ci_string stripStr = "abCaaAxxxabcxxxcBA";
-    ci_string stripable = stripStr;
+    const ci_string stripStr  = "abCaaAxxxabcxxxcBA";
+    ci_string       stripable = stripStr;
 
     BOOST_TEST_MESSAGE("strip " << stripable << " of \"abc\"");
     strip(stripable, "abc");
@@ -747,133 +736,148 @@ void util_date_european_test(int i, int j)
     resetDateFormats();
     initDateFormats(DateFormatPreference::European);
     DR scanResults[] = {
-                        // test all declinated formats
-                        DR("1967-November-10 12:34:56", "1967-Nov-10 12:34:56", __LINE__), // "%Y-%B-%d %H:%M:%S"
-                        DR("1967-Nov-10 12:34:56", "1967-Nov-10 12:34:56", __LINE__), // "%Y-%b-%d %H:%M:%S"
-                        DR("67-November-10 12:34:56", "2067-Nov-10 12:34:56", __LINE__), // "%y-%B-%d %H:%M:%S"
-                        DR("67-Nov-10 12:34:56", "2067-Nov-10 12:34:56", __LINE__), // "%y-%b-%d %H:%M:%S"
+     // test all declinated formats
+     DR("1967-November-10 12:34:56", "1967-Nov-10 12:34:56", __LINE__),  // "%Y-%B-%d %H:%M:%S"
+     DR("1967-Nov-10 12:34:56", "1967-Nov-10 12:34:56", __LINE__),       // "%Y-%b-%d %H:%M:%S"
+     DR("67-November-10 12:34:56", "2067-Nov-10 12:34:56", __LINE__),    // "%y-%B-%d %H:%M:%S"
+     DR("67-Nov-10 12:34:56", "2067-Nov-10 12:34:56", __LINE__),         // "%y-%b-%d %H:%M:%S"
 
-                        DR("November 10 1967 12:34:56", "1967-Nov-10 12:34:56", __LINE__), // American Format"%B %d %Y %H:%M:%S"
-                        DR("Nov 10 1967 12:34:56", "1967-Nov-10 12:34:56", __LINE__), // American Format"%b %d %Y %H:%M:%S"
-                        DR("November 10 67 12:34:56", "2067-Nov-10 12:34:56", __LINE__), // American Format"%B %d %y %H:%M:%S"
-                        DR("Nov 10 67 12:34:56", "2067-Nov-10 12:34:56", __LINE__), // American Format"%b %d %y %H:%M:%S"
+     DR("November 10 1967 12:34:56", "1967-Nov-10 12:34:56", __LINE__),  // American Format"%B %d %Y %H:%M:%S"
+     DR("Nov 10 1967 12:34:56", "1967-Nov-10 12:34:56", __LINE__),       // American Format"%b %d %Y %H:%M:%S"
+     DR("November 10 67 12:34:56", "2067-Nov-10 12:34:56", __LINE__),    // American Format"%B %d %y %H:%M:%S"
+     DR("Nov 10 67 12:34:56", "2067-Nov-10 12:34:56", __LINE__),         // American Format"%b %d %y %H:%M:%S"
 
-                        DR("10 November 1967 12:34:56", "1967-Nov-10 12:34:56", __LINE__), // "%d %B %Y %H:%M:%S"
-                        DR("10 Nov 1967 12:34:56", "1967-Nov-10 12:34:56", __LINE__), // "%d %b %Y %H:%M:%S"
-                        DR("10 November 67 12:34:56", "2067-Nov-10 12:34:56", __LINE__), // "%d %B %y %H:%M:%S"
-                        DR("10 Nov 67 12:34:56", "2067-Nov-10 12:34:56", __LINE__), // "%d %b %y %H:%M:%S"
+     DR("10 November 1967 12:34:56", "1967-Nov-10 12:34:56", __LINE__),  // "%d %B %Y %H:%M:%S"
+     DR("10 Nov 1967 12:34:56", "1967-Nov-10 12:34:56", __LINE__),       // "%d %b %Y %H:%M:%S"
+     DR("10 November 67 12:34:56", "2067-Nov-10 12:34:56", __LINE__),    // "%d %B %y %H:%M:%S"
+     DR("10 Nov 67 12:34:56", "2067-Nov-10 12:34:56", __LINE__),         // "%d %b %y %H:%M:%S"
 
-                        DR("Friday 10 November, 1967 12:34:56", "1967-Nov-10 12:34:56", __LINE__), // "%A %d %B, %Y %H:%M:%S"
-                        DR("Fri 10 November, 1967 12:34:56", "1967-Nov-10 12:34:56", __LINE__), // "%a %d %B, %Y %H:%M:%S"
-                        DR("Friday 10 Nov, 1967 12:34:56", "1967-Nov-10 12:34:56", __LINE__), // "%A %d %b, %Y %H:%M:%S"
-                        DR("Fri 10 Nov, 1967 12:34:56", "1967-Nov-10 12:34:56", __LINE__), // "%a %d %b, %Y %H:%M:%S"
-                        DR("Friday 10 November, 67 12:34:56", "2067-Nov-10 12:34:56", __LINE__), // "%A %d %B, %y %H:%M:%S"
-                        DR("Fri 10 November, 67 12:34:56", "2067-Nov-10 12:34:56", __LINE__), // "%a %d %B, %y %H:%M:%S"
-                        DR("Friday 10 Nov, 67 12:34:56", "2067-Nov-10 12:34:56", __LINE__), // "%A %d %b, %y %H:%M:%S"
-                        DR("Fri 10 Nov, 67 12:34:56", "2067-Nov-10 12:34:56", __LINE__), // "%a %d %b, %y %H:%M:%S"
+     DR("Friday 10 November, 1967 12:34:56",
+        "1967-Nov-10 12:34:56",
+        __LINE__),  // "%A %d %B, %Y %H:%M:%S"
+     DR("Fri 10 November, 1967 12:34:56",
+        "1967-Nov-10 12:34:56",
+        __LINE__),  // "%a %d %B, %Y %H:%M:%S"
+     DR("Friday 10 Nov, 1967 12:34:56",
+        "1967-Nov-10 12:34:56",
+        __LINE__),                                                       // "%A %d %b, %Y %H:%M:%S"
+     DR("Fri 10 Nov, 1967 12:34:56", "1967-Nov-10 12:34:56", __LINE__),  // "%a %d %b, %Y %H:%M:%S"
+     DR("Friday 10 November, 67 12:34:56",
+        "2067-Nov-10 12:34:56",
+        __LINE__),  // "%A %d %B, %y %H:%M:%S"
+     DR("Fri 10 November, 67 12:34:56",
+        "2067-Nov-10 12:34:56",
+        __LINE__),                                                        // "%a %d %B, %y %H:%M:%S"
+     DR("Friday 10 Nov, 67 12:34:56", "2067-Nov-10 12:34:56", __LINE__),  // "%A %d %b, %y %H:%M:%S"
+     DR("Fri 10 Nov, 67 12:34:56", "2067-Nov-10 12:34:56", __LINE__),     // "%a %d %b, %y %H:%M:%S"
 
-                        DR("10/28/1967 12:34:56", "1967-Oct-28 12:34:56", __LINE__), //  American Format"%m/%d/%Y %H:%M:%S"
-                        DR("10/28/67 12:34:56", "2067-Oct-28 12:34:56", __LINE__), //  American Format"%m/%d/%y %H:%M:%S"
+     DR("10/28/1967 12:34:56", "1967-Oct-28 12:34:56", __LINE__),  //  American Format"%m/%d/%Y %H:%M:%S"
+     DR("10/28/67 12:34:56", "2067-Oct-28 12:34:56", __LINE__),    //  American Format"%m/%d/%y %H:%M:%S"
 
-                        DR("28/11/1967 12:34:56", "1967-Nov-28 12:34:56", __LINE__), // "%d/%m/%Y %H:%M:%S"
-                        DR("28/11/67 12:34:56", "2067-Nov-28 12:34:56", __LINE__), // "%d/%m/%y %H:%M:%S"
+     DR("28/11/1967 12:34:56", "1967-Nov-28 12:34:56", __LINE__),  // "%d/%m/%Y %H:%M:%S"
+     DR("28/11/67 12:34:56", "2067-Nov-28 12:34:56", __LINE__),    // "%d/%m/%y %H:%M:%S"
 
-                        DR("28.11.1967 12:34:56", "1967-Nov-28 12:34:56", __LINE__), // "%d.%m.%Y %H:%M:%S"
-                        DR("28.11.67 12:34:56", "2067-Nov-28 12:34:56", __LINE__), // "%d.%m.%y %H:%M:%S"
+     DR("28.11.1967 12:34:56", "1967-Nov-28 12:34:56", __LINE__),  // "%d.%m.%Y %H:%M:%S"
+     DR("28.11.67 12:34:56", "2067-Nov-28 12:34:56", __LINE__),    // "%d.%m.%y %H:%M:%S"
 
-                        DR("28-11-1967 12:34:56", "1967-Nov-28 12:34:56", __LINE__), // "%d-%m-%Y %H:%M:%S"
-                        DR("28-11-67 12:34:56", "2067-Nov-28 12:34:56", __LINE__), // "%d-%m-%y %H:%M:%S"
+     DR("28-11-1967 12:34:56", "1967-Nov-28 12:34:56", __LINE__),  // "%d-%m-%Y %H:%M:%S"
+     DR("28-11-67 12:34:56", "2067-Nov-28 12:34:56", __LINE__),    // "%d-%m-%y %H:%M:%S"
 
-                        DR("19671110_123456", "1967-Nov-10 12:34:56", __LINE__), // "%Y%m%d_%H%M%S"
-                        DR("671110_123456", "2067-Nov-10 12:34:56", __LINE__), // "%y%m%d_%H%M%S"
+     DR("19671110_123456", "1967-Nov-10 12:34:56", __LINE__),  // "%Y%m%d_%H%M%S"
+     DR("671110_123456", "2067-Nov-10 12:34:56", __LINE__),    // "%y%m%d_%H%M%S"
 
-                        //        // time-only (USES CURRENT-DATE! Need to test separately.)
-                        //        DR("12:34:56", "2014-Jan-27 12:34:56",__LINE__),                       // "%H:%M:%S" time only
-                        //        DR("12:34", "2014-Jan-27 12:34:00",__LINE__),                          // "%H:%M" time only
+     //        // time-only (USES CURRENT-DATE! Need to test separately.)
+     //        DR("12:34:56", "2014-Jan-27 12:34:56",__LINE__),                       // "%H:%M:%S" time only
+     //        DR("12:34", "2014-Jan-27 12:34:00",__LINE__),                          // "%H:%M" time only
 
-                        DR("November 10 1967", "1967-Nov-10 00:00:00", __LINE__), // "%B %d %Y" American Format
-                        DR("Nov 10 1967", "1967-Nov-10 00:00:00", __LINE__), // "%b %d %Y" American Format
-                        DR("November 10 67", "2067-Nov-10 00:00:00", __LINE__), // "%B %d %y" American Format
-                        DR("Nov 10 67", "2067-Nov-10 00:00:00", __LINE__), // "%b %d %y" American Format
+     DR("November 10 1967", "1967-Nov-10 00:00:00", __LINE__),  // "%B %d %Y" American Format
+     DR("Nov 10 1967", "1967-Nov-10 00:00:00", __LINE__),       // "%b %d %Y" American Format
+     DR("November 10 67", "2067-Nov-10 00:00:00", __LINE__),    // "%B %d %y" American Format
+     DR("Nov 10 67", "2067-Nov-10 00:00:00", __LINE__),         // "%b %d %y" American Format
 
-                        DR("10 November 1967", "1967-Nov-10 00:00:00", __LINE__), // "%d %B %Y"
-                        DR("10 Nov 1967", "1967-Nov-10 00:00:00", __LINE__), // "%d %b %Y"
-                        DR("10 November 67", "2067-Nov-10 00:00:00", __LINE__), // "%d %B %y"
-                        DR("10 Nov 67", "2067-Nov-10 00:00:00", __LINE__), // "%d %b %y"
+     DR("10 November 1967", "1967-Nov-10 00:00:00", __LINE__),  // "%d %B %Y"
+     DR("10 Nov 1967", "1967-Nov-10 00:00:00", __LINE__),       // "%d %b %Y"
+     DR("10 November 67", "2067-Nov-10 00:00:00", __LINE__),    // "%d %B %y"
+     DR("10 Nov 67", "2067-Nov-10 00:00:00", __LINE__),         // "%d %b %y"
 
-                        DR("Friday 10 November, 1967", "1967-Nov-10 00:00:00", __LINE__), // "%A %d %B, %Y"
-                        DR("Fri 10 November, 1967", "1967-Nov-10 00:00:00", __LINE__), // "%a %d %B, %Y"
-                        DR("Friday 10 Nov, 1967", "1967-Nov-10 00:00:00", __LINE__), // "%A %d %b, %Y"
-                        DR("Fri 10 Nov, 1967", "1967-Nov-10 00:00:00", __LINE__), // "%a %d %b, %Y"
-                        DR("Friday 10 November, 67", "2067-Nov-10 00:00:00", __LINE__), // "%A %d %B, %y"
-                        DR("Fri 10 November, 67", "2067-Nov-10 00:00:00", __LINE__), // "%a %d %B, %y"
-                        DR("Friday 10 Nov, 67", "2067-Nov-10 00:00:00", __LINE__), // "%A %d %b, %y"
-                        DR("Fri 10 Nov, 67", "2067-Nov-10 00:00:00", __LINE__), // "%a %d %b, %y"
+     DR("Friday 10 November, 1967", "1967-Nov-10 00:00:00", __LINE__),  // "%A %d %B, %Y"
+     DR("Fri 10 November, 1967", "1967-Nov-10 00:00:00", __LINE__),     // "%a %d %B, %Y"
+     DR("Friday 10 Nov, 1967", "1967-Nov-10 00:00:00", __LINE__),       // "%A %d %b, %Y"
+     DR("Fri 10 Nov, 1967", "1967-Nov-10 00:00:00", __LINE__),          // "%a %d %b, %Y"
+     DR("Friday 10 November, 67", "2067-Nov-10 00:00:00", __LINE__),    // "%A %d %B, %y"
+     DR("Fri 10 November, 67", "2067-Nov-10 00:00:00", __LINE__),       // "%a %d %B, %y"
+     DR("Friday 10 Nov, 67", "2067-Nov-10 00:00:00", __LINE__),         // "%A %d %b, %y"
+     DR("Fri 10 Nov, 67", "2067-Nov-10 00:00:00", __LINE__),            // "%a %d %b, %y"
 
-                        DR("10/28/1967", "1967-Oct-28 00:00:00", __LINE__), // "%m/%d/%Y" American Format
-                        DR("10/28/19", "2019-Oct-28 00:00:00", __LINE__), // "%m/%d/%y" American Format
-                        DR("28/11/1967", "1967-Nov-28 00:00:00", __LINE__), // "%d/%m/%Y"
-                        DR("28/11/67", "2067-Nov-28 00:00:00", __LINE__), // "%d/%m/%y"
-                        DR("28.11.1967", "1967-Nov-28 00:00:00", __LINE__), // "%d.%m.%Y"
-                        DR("28.11.67", "2067-Nov-28 00:00:00", __LINE__), // "%d.%m.%y"
-                        DR("28-11-1967", "1967-Nov-28 00:00:00", __LINE__), // "%d-%m-%Y"
-                        DR("28-11-67", "2067-Nov-28 00:00:00", __LINE__), // "%d-%m-%y"
-                        DR("19671110", "1967-Nov-10 00:00:00", __LINE__), // "%Y%m%d"
-                        DR("671110", "6711-Oct-01 00:00:00", __LINE__), // "%y%m%d"
+     DR("10/28/1967", "1967-Oct-28 00:00:00", __LINE__),  // "%m/%d/%Y" American Format
+     DR("10/28/19", "2019-Oct-28 00:00:00", __LINE__),    // "%m/%d/%y" American Format
+     DR("28/11/1967", "1967-Nov-28 00:00:00", __LINE__),  // "%d/%m/%Y"
+     DR("28/11/67", "2067-Nov-28 00:00:00", __LINE__),    // "%d/%m/%y"
+     DR("28.11.1967", "1967-Nov-28 00:00:00", __LINE__),  // "%d.%m.%Y"
+     DR("28.11.67", "2067-Nov-28 00:00:00", __LINE__),    // "%d.%m.%y"
+     DR("28-11-1967", "1967-Nov-28 00:00:00", __LINE__),  // "%d-%m-%Y"
+     DR("28-11-67", "2067-Nov-28 00:00:00", __LINE__),    // "%d-%m-%y"
+     DR("19671110", "1967-Nov-10 00:00:00", __LINE__),    // "%Y%m%d"
+     DR("671110", "6711-Oct-01 00:00:00", __LINE__),      // "%y%m%d"
 
-                        // test formats that might require leading zeros
-                        DR("November 3 1967 12:34:56", "1967-Nov-03 12:34:56", __LINE__), // American Format"%B %d %Y %H:%M:%S"
-                        DR("Nov 3 1967 12:34:56", "1967-Nov-03 12:34:56", __LINE__), // American Format"%b %d %Y %H:%M:%S"
-                        DR("November 3 67 12:34:56", "2067-Nov-03 12:34:56", __LINE__), // American Format"%B %d %y %H:%M:%S"
-                        DR("Nov 3 67 12:34:56", "2067-Nov-03 12:34:56", __LINE__), // American Format"%b %d %y %H:%M:%S"
+     // test formats that might require leading zeros
+     DR("November 3 1967 12:34:56", "1967-Nov-03 12:34:56", __LINE__),  // American Format"%B %d %Y %H:%M:%S"
+     DR("Nov 3 1967 12:34:56", "1967-Nov-03 12:34:56", __LINE__),       // American Format"%b %d %Y %H:%M:%S"
+     DR("November 3 67 12:34:56", "2067-Nov-03 12:34:56", __LINE__),    // American Format"%B %d %y %H:%M:%S"
+     DR("Nov 3 67 12:34:56", "2067-Nov-03 12:34:56", __LINE__),         // American Format"%b %d %y %H:%M:%S"
 
-                        DR("3 November 1967 12:34:56", "1967-Nov-03 12:34:56", __LINE__), // "%d %B %Y %H:%M:%S"
-                        DR("3 Nov 1967 12:34:56", "1967-Nov-03 12:34:56", __LINE__), // "%d %b %Y %H:%M:%S"
-                        DR("3 November 67 12:34:56", "2067-Nov-03 12:34:56", __LINE__), // "%d %B %y %H:%M:%S"
-                        DR("3 Nov 67 12:34:56", "2067-Nov-03 12:34:56", __LINE__), // "%d %b %y %H:%M:%S"
+     DR("3 November 1967 12:34:56", "1967-Nov-03 12:34:56", __LINE__),  // "%d %B %Y %H:%M:%S"
+     DR("3 Nov 1967 12:34:56", "1967-Nov-03 12:34:56", __LINE__),       // "%d %b %Y %H:%M:%S"
+     DR("3 November 67 12:34:56", "2067-Nov-03 12:34:56", __LINE__),    // "%d %B %y %H:%M:%S"
+     DR("3 Nov 67 12:34:56", "2067-Nov-03 12:34:56", __LINE__),         // "%d %b %y %H:%M:%S"
 
-                        DR("Friday 3 November, 1967 12:34:56", "1967-Nov-03 12:34:56", __LINE__), // "%A %d %B, %Y %H:%M:%S"
-                        DR("Fri 3 November, 1967 12:34:56", "1967-Nov-03 12:34:56", __LINE__), // "%a %d %B, %Y %H:%M:%S"
-                        DR("Friday 3 Nov, 1967 12:34:56", "1967-Nov-03 12:34:56", __LINE__), // "%A %d %b, %Y %H:%M:%S"
-                        DR("Fri 3 Nov, 1967 12:34:56", "1967-Nov-03 12:34:56", __LINE__), // "%a %d %b, %Y %H:%M:%S"
-                        DR("Friday 3 November, 67 12:34:56", "2067-Nov-03 12:34:56", __LINE__), // "%A %d %B, %y %H:%M:%S"
-                        DR("Fri 3 November, 67 12:34:56", "2067-Nov-03 12:34:56", __LINE__), // "%a %d %B, %y %H:%M:%S"
-                        DR("Friday 3 Nov, 67 12:34:56", "2067-Nov-03 12:34:56", __LINE__), // "%A %d %b, %y %H:%M:%S"
-                        DR("Fri 3 Nov, 67 12:34:56", "2067-Nov-03 12:34:56", __LINE__), // "%a %d %b, %y %H:%M:%S"
+     DR("Friday 3 November, 1967 12:34:56",
+        "1967-Nov-03 12:34:56",
+        __LINE__),  // "%A %d %B, %Y %H:%M:%S"
+     DR("Fri 3 November, 1967 12:34:56",
+        "1967-Nov-03 12:34:56",
+        __LINE__),                                                         // "%a %d %B, %Y %H:%M:%S"
+     DR("Friday 3 Nov, 1967 12:34:56", "1967-Nov-03 12:34:56", __LINE__),  // "%A %d %b, %Y %H:%M:%S"
+     DR("Fri 3 Nov, 1967 12:34:56", "1967-Nov-03 12:34:56", __LINE__),     // "%a %d %b, %Y %H:%M:%S"
+     DR("Friday 3 November, 67 12:34:56",
+        "2067-Nov-03 12:34:56",
+        __LINE__),                                                         // "%A %d %B, %y %H:%M:%S"
+     DR("Fri 3 November, 67 12:34:56", "2067-Nov-03 12:34:56", __LINE__),  // "%a %d %B, %y %H:%M:%S"
+     DR("Friday 3 Nov, 67 12:34:56", "2067-Nov-03 12:34:56", __LINE__),    // "%A %d %b, %y %H:%M:%S"
+     DR("Fri 3 Nov, 67 12:34:56", "2067-Nov-03 12:34:56", __LINE__),       // "%a %d %b, %y %H:%M:%S"
 
-                        DR("3/28/1967 12:34:56", "1967-Mar-28 12:34:56", __LINE__), //  American Format"%m/%d/%Y %H:%M:%S"
-                        DR("3/28/67 12:34:56", "2067-Mar-28 12:34:56", __LINE__), //  American Format"%m/%d/%y %H:%M:%S"
-                        DR("10/3/1967 12:34:56", "1967-Mar-10 12:34:56", __LINE__), //  American Format"%m/%d/%Y %H:%M:%S"
-                        DR("10/3/67 12:34:56", "2067-Mar-10 12:34:56", __LINE__), //  American Format"%m/%d/%y %H:%M:%S"
-                        DR("9/3/1967 12:34:56", "1967-Mar-09 12:34:56", __LINE__), //  American Format"%m/%d/%Y %H:%M:%S"
-                        DR("9/3/67 12:34:56", "2067-Mar-09 12:34:56", __LINE__), //  American Format"%m/%d/%y %H:%M:%S"
+     DR("3/28/1967 12:34:56", "1967-Mar-28 12:34:56", __LINE__),  //  American Format"%m/%d/%Y %H:%M:%S"
+     DR("3/28/67 12:34:56", "2067-Mar-28 12:34:56", __LINE__),    //  American Format"%m/%d/%y %H:%M:%S"
+     DR("10/3/1967 12:34:56", "1967-Mar-10 12:34:56", __LINE__),  //  American Format"%m/%d/%Y %H:%M:%S"
+     DR("10/3/67 12:34:56", "2067-Mar-10 12:34:56", __LINE__),    //  American Format"%m/%d/%y %H:%M:%S"
+     DR("9/3/1967 12:34:56", "1967-Mar-09 12:34:56", __LINE__),   //  American Format"%m/%d/%Y %H:%M:%S"
+     DR("9/3/67 12:34:56", "2067-Mar-09 12:34:56", __LINE__),     //  American Format"%m/%d/%y %H:%M:%S"
 
-                        DR("3/11/1967 12:34:56", "1967-Nov-03 12:34:56", __LINE__), // "%d/%m/%Y %H:%M:%S"
-                        DR("3/11/67 12:34:56", "2067-Nov-03 12:34:56", __LINE__), // "%d/%m/%y %H:%M:%S"
-                        DR("28/3/1967 12:34:56", "1967-Mar-28 12:34:56", __LINE__), // "%d/%m/%Y %H:%M:%S"
-                        DR("28/3/67 12:34:56", "2067-Mar-28 12:34:56", __LINE__), // "%d/%m/%y %H:%M:%S"
-                        DR("9/3/1967 12:34:56", "1967-Mar-09 12:34:56", __LINE__), // "%d/%m/%Y %H:%M:%S"
-                        DR("9/3/67 12:34:56", "2067-Mar-09 12:34:56", __LINE__), // "%d/%m/%y %H:%M:%S"
+     DR("3/11/1967 12:34:56", "1967-Nov-03 12:34:56", __LINE__),  // "%d/%m/%Y %H:%M:%S"
+     DR("3/11/67 12:34:56", "2067-Nov-03 12:34:56", __LINE__),    // "%d/%m/%y %H:%M:%S"
+     DR("28/3/1967 12:34:56", "1967-Mar-28 12:34:56", __LINE__),  // "%d/%m/%Y %H:%M:%S"
+     DR("28/3/67 12:34:56", "2067-Mar-28 12:34:56", __LINE__),    // "%d/%m/%y %H:%M:%S"
+     DR("9/3/1967 12:34:56", "1967-Mar-09 12:34:56", __LINE__),   // "%d/%m/%Y %H:%M:%S"
+     DR("9/3/67 12:34:56", "2067-Mar-09 12:34:56", __LINE__),     // "%d/%m/%y %H:%M:%S"
 
-                        DR("3.11.1967 12:34:56", "1967-Nov-03 12:34:56", __LINE__), // "%d.%m.%Y %H:%M:%S"
-                        DR("3.11.67 12:34:56", "2067-Nov-03 12:34:56", __LINE__), // "%d.%m.%y %H:%M:%S"
-                        DR("28.3.1967 12:34:56", "1967-Mar-28 12:34:56", __LINE__), // "%d.%m.%Y %H:%M:%S"
-                        DR("28.3.67 12:34:56", "2067-Mar-28 12:34:56", __LINE__), // "%d.%m.%y %H:%M:%S"
-                        DR("9.3.1967 12:34:56", "1967-Mar-09 12:34:56", __LINE__), // "%d.%m.%Y %H:%M:%S"
-                        DR("9.3.67 12:34:56", "2067-Mar-09 12:34:56", __LINE__), // "%d.%m.%y %H:%M:%S"
+     DR("3.11.1967 12:34:56", "1967-Nov-03 12:34:56", __LINE__),  // "%d.%m.%Y %H:%M:%S"
+     DR("3.11.67 12:34:56", "2067-Nov-03 12:34:56", __LINE__),    // "%d.%m.%y %H:%M:%S"
+     DR("28.3.1967 12:34:56", "1967-Mar-28 12:34:56", __LINE__),  // "%d.%m.%Y %H:%M:%S"
+     DR("28.3.67 12:34:56", "2067-Mar-28 12:34:56", __LINE__),    // "%d.%m.%y %H:%M:%S"
+     DR("9.3.1967 12:34:56", "1967-Mar-09 12:34:56", __LINE__),   // "%d.%m.%Y %H:%M:%S"
+     DR("9.3.67 12:34:56", "2067-Mar-09 12:34:56", __LINE__),     // "%d.%m.%y %H:%M:%S"
 
-                        DR("3-11-1967 12:34:56", "1967-Nov-03 12:34:56", __LINE__), // "%d-%m-%Y %H:%M:%S"
-                        DR("3-11-67 12:34:56", "2067-Nov-03 12:34:56", __LINE__), // "%d-%m-%y %H:%M:%S"
-                        DR("28-3-1967 12:34:56", "1967-Mar-28 12:34:56", __LINE__), // "%d-%m-%Y %H:%M:%S"
-                        DR("28-3-67 12:34:56", "2067-Mar-28 12:34:56", __LINE__), // "%d-%m-%y %H:%M:%S"
-                        DR("9-3-1967 12:34:56", "1967-Mar-09 12:34:56", __LINE__), // "%d-%m-%Y %H:%M:%S"
-                        DR("9-3-67 12:34:56", "2067-Mar-09 12:34:56", __LINE__), // "%d-%m-%y %H:%M:%S"
+     DR("3-11-1967 12:34:56", "1967-Nov-03 12:34:56", __LINE__),  // "%d-%m-%Y %H:%M:%S"
+     DR("3-11-67 12:34:56", "2067-Nov-03 12:34:56", __LINE__),    // "%d-%m-%y %H:%M:%S"
+     DR("28-3-1967 12:34:56", "1967-Mar-28 12:34:56", __LINE__),  // "%d-%m-%Y %H:%M:%S"
+     DR("28-3-67 12:34:56", "2067-Mar-28 12:34:56", __LINE__),    // "%d-%m-%y %H:%M:%S"
+     DR("9-3-1967 12:34:56", "1967-Mar-09 12:34:56", __LINE__),   // "%d-%m-%Y %H:%M:%S"
+     DR("9-3-67 12:34:56", "2067-Mar-09 12:34:56", __LINE__),     // "%d-%m-%y %H:%M:%S"
     };
-    for (size_t i = 0; i < sizeof (scanResults) / sizeof (DR); i++)
+    for(size_t i = 0; i < sizeof(scanResults) / sizeof(DR); i++)
     {
         BOOST_CHECK(scanResults[i].correctResult());
     }
-
 
     resetDateFormats();
     addDateFormat("%H:%M:%S");
@@ -884,7 +888,7 @@ void util_date_european_test(int i, int j)
     BOOST_CHECK_EQUAL("12:34:00", asString(dt.time_of_day()));
 
     resetDateFormats();
-    for (size_t i = 0; i < sizeof (scanResults) / sizeof (DR); i++)
+    for(size_t i = 0; i < sizeof(scanResults) / sizeof(DR); i++)
     {
         BOOST_CHECK_EQUAL("not-a-date-time", asString(scanDate(scanResults[i].param_)));
     }
@@ -897,129 +901,145 @@ void util_date_american_test(int i, int j)
     resetDateFormats();
     initDateFormats(DateFormatPreference::USA);
     DR scanResults[] = {
-                        // test all declinated formats
-                        DR("1967-November-10 12:34:56", "1967-Nov-10 12:34:56", __LINE__), // "%Y-%B-%d %H:%M:%S"
-                        DR("1967-Nov-10 12:34:56", "1967-Nov-10 12:34:56", __LINE__), // "%Y-%b-%d %H:%M:%S"
-                        DR("67-November-10 12:34:56", "2067-Nov-10 12:34:56", __LINE__), // "%y-%B-%d %H:%M:%S"
-                        DR("67-Nov-10 12:34:56", "2067-Nov-10 12:34:56", __LINE__), // "%y-%b-%d %H:%M:%S"
+     // test all declinated formats
+     DR("1967-November-10 12:34:56", "1967-Nov-10 12:34:56", __LINE__),  // "%Y-%B-%d %H:%M:%S"
+     DR("1967-Nov-10 12:34:56", "1967-Nov-10 12:34:56", __LINE__),       // "%Y-%b-%d %H:%M:%S"
+     DR("67-November-10 12:34:56", "2067-Nov-10 12:34:56", __LINE__),    // "%y-%B-%d %H:%M:%S"
+     DR("67-Nov-10 12:34:56", "2067-Nov-10 12:34:56", __LINE__),         // "%y-%b-%d %H:%M:%S"
 
-                        DR("November 10 1967 12:34:56", "1967-Nov-10 12:34:56", __LINE__), // American Format"%B %d %Y %H:%M:%S"
-                        DR("Nov 10 1967 12:34:56", "1967-Nov-10 12:34:56", __LINE__), // American Format"%b %d %Y %H:%M:%S"
-                        DR("November 10 67 12:34:56", "2067-Nov-10 12:34:56", __LINE__), // American Format"%B %d %y %H:%M:%S"
-                        DR("Nov 10 67 12:34:56", "2067-Nov-10 12:34:56", __LINE__), // American Format"%b %d %y %H:%M:%S"
+     DR("November 10 1967 12:34:56", "1967-Nov-10 12:34:56", __LINE__),  // American Format"%B %d %Y %H:%M:%S"
+     DR("Nov 10 1967 12:34:56", "1967-Nov-10 12:34:56", __LINE__),       // American Format"%b %d %Y %H:%M:%S"
+     DR("November 10 67 12:34:56", "2067-Nov-10 12:34:56", __LINE__),    // American Format"%B %d %y %H:%M:%S"
+     DR("Nov 10 67 12:34:56", "2067-Nov-10 12:34:56", __LINE__),         // American Format"%b %d %y %H:%M:%S"
 
-                        DR("10 November 1967 12:34:56", "1967-Nov-10 12:34:56", __LINE__), // "%d %B %Y %H:%M:%S"
-                        DR("10 Nov 1967 12:34:56", "1967-Nov-10 12:34:56", __LINE__), // "%d %b %Y %H:%M:%S"
-                        DR("10 November 67 12:34:56", "2067-Nov-10 12:34:56", __LINE__), // "%d %B %y %H:%M:%S"
-                        DR("10 Nov 67 12:34:56", "2067-Nov-10 12:34:56", __LINE__), // "%d %b %y %H:%M:%S"
+     DR("10 November 1967 12:34:56", "1967-Nov-10 12:34:56", __LINE__),  // "%d %B %Y %H:%M:%S"
+     DR("10 Nov 1967 12:34:56", "1967-Nov-10 12:34:56", __LINE__),       // "%d %b %Y %H:%M:%S"
+     DR("10 November 67 12:34:56", "2067-Nov-10 12:34:56", __LINE__),    // "%d %B %y %H:%M:%S"
+     DR("10 Nov 67 12:34:56", "2067-Nov-10 12:34:56", __LINE__),         // "%d %b %y %H:%M:%S"
 
-                        DR("Friday 10 November, 1967 12:34:56", "1967-Nov-10 12:34:56", __LINE__), // "%A %d %B, %Y %H:%M:%S"
-                        DR("Fri 10 November, 1967 12:34:56", "1967-Nov-10 12:34:56", __LINE__), // "%a %d %B, %Y %H:%M:%S"
-                        DR("Friday 10 Nov, 1967 12:34:56", "1967-Nov-10 12:34:56", __LINE__), // "%A %d %b, %Y %H:%M:%S"
-                        DR("Fri 10 Nov, 1967 12:34:56", "1967-Nov-10 12:34:56", __LINE__), // "%a %d %b, %Y %H:%M:%S"
-                        DR("Friday 10 November, 67 12:34:56", "2067-Nov-10 12:34:56", __LINE__), // "%A %d %B, %y %H:%M:%S"
-                        DR("Fri 10 November, 67 12:34:56", "2067-Nov-10 12:34:56", __LINE__), // "%a %d %B, %y %H:%M:%S"
-                        DR("Friday 10 Nov, 67 12:34:56", "2067-Nov-10 12:34:56", __LINE__), // "%A %d %b, %y %H:%M:%S"
-                        DR("Fri 10 Nov, 67 12:34:56", "2067-Nov-10 12:34:56", __LINE__), // "%a %d %b, %y %H:%M:%S"
+     DR("Friday 10 November, 1967 12:34:56",
+        "1967-Nov-10 12:34:56",
+        __LINE__),  // "%A %d %B, %Y %H:%M:%S"
+     DR("Fri 10 November, 1967 12:34:56",
+        "1967-Nov-10 12:34:56",
+        __LINE__),  // "%a %d %B, %Y %H:%M:%S"
+     DR("Friday 10 Nov, 1967 12:34:56",
+        "1967-Nov-10 12:34:56",
+        __LINE__),                                                       // "%A %d %b, %Y %H:%M:%S"
+     DR("Fri 10 Nov, 1967 12:34:56", "1967-Nov-10 12:34:56", __LINE__),  // "%a %d %b, %Y %H:%M:%S"
+     DR("Friday 10 November, 67 12:34:56",
+        "2067-Nov-10 12:34:56",
+        __LINE__),  // "%A %d %B, %y %H:%M:%S"
+     DR("Fri 10 November, 67 12:34:56",
+        "2067-Nov-10 12:34:56",
+        __LINE__),                                                        // "%a %d %B, %y %H:%M:%S"
+     DR("Friday 10 Nov, 67 12:34:56", "2067-Nov-10 12:34:56", __LINE__),  // "%A %d %b, %y %H:%M:%S"
+     DR("Fri 10 Nov, 67 12:34:56", "2067-Nov-10 12:34:56", __LINE__),     // "%a %d %b, %y %H:%M:%S"
 
-                        DR("10/28/1967 12:34:56", "1967-Oct-28 12:34:56", __LINE__), //  American Format"%m/%d/%Y %H:%M:%S"
-                        DR("10/28/67 12:34:56", "2067-Oct-28 12:34:56", __LINE__), //  American Format"%m/%d/%y %H:%M:%S"
+     DR("10/28/1967 12:34:56", "1967-Oct-28 12:34:56", __LINE__),  //  American Format"%m/%d/%Y %H:%M:%S"
+     DR("10/28/67 12:34:56", "2067-Oct-28 12:34:56", __LINE__),    //  American Format"%m/%d/%y %H:%M:%S"
 
-                        DR("28/11/1967 12:34:56", "1967-Nov-28 12:34:56", __LINE__), // "%d/%m/%Y %H:%M:%S"
-                        DR("28/11/67 12:34:56", "2067-Nov-28 12:34:56", __LINE__), // "%d/%m/%y %H:%M:%S"
+     DR("28/11/1967 12:34:56", "1967-Nov-28 12:34:56", __LINE__),  // "%d/%m/%Y %H:%M:%S"
+     DR("28/11/67 12:34:56", "2067-Nov-28 12:34:56", __LINE__),    // "%d/%m/%y %H:%M:%S"
 
-                        DR("28.11.1967 12:34:56", "1967-Nov-28 12:34:56", __LINE__), // "%d.%m.%Y %H:%M:%S"
-                        DR("28.11.67 12:34:56", "2067-Nov-28 12:34:56", __LINE__), // "%d.%m.%y %H:%M:%S"
+     DR("28.11.1967 12:34:56", "1967-Nov-28 12:34:56", __LINE__),  // "%d.%m.%Y %H:%M:%S"
+     DR("28.11.67 12:34:56", "2067-Nov-28 12:34:56", __LINE__),    // "%d.%m.%y %H:%M:%S"
 
-                        DR("28-11-1967 12:34:56", "1967-Nov-28 12:34:56", __LINE__), // "%d-%m-%Y %H:%M:%S"
-                        DR("28-11-67 12:34:56", "2067-Nov-28 12:34:56", __LINE__), // "%d-%m-%y %H:%M:%S"
+     DR("28-11-1967 12:34:56", "1967-Nov-28 12:34:56", __LINE__),  // "%d-%m-%Y %H:%M:%S"
+     DR("28-11-67 12:34:56", "2067-Nov-28 12:34:56", __LINE__),    // "%d-%m-%y %H:%M:%S"
 
-                        DR("19671110_123456", "1967-Nov-10 12:34:56", __LINE__), // "%Y%m%d_%H%M%S"
-                        DR("671110_123456", "2067-Nov-10 12:34:56", __LINE__), // "%y%m%d_%H%M%S"
+     DR("19671110_123456", "1967-Nov-10 12:34:56", __LINE__),  // "%Y%m%d_%H%M%S"
+     DR("671110_123456", "2067-Nov-10 12:34:56", __LINE__),    // "%y%m%d_%H%M%S"
 
-                        //        // time-only (USES CURRENT-DATE! Need to test separately.)
-                        //        DR("12:34:56", "2014-Jan-27 12:34:56",__LINE__),                       // "%H:%M:%S" time only
-                        //        DR("12:34", "2014-Jan-27 12:34:00",__LINE__),                          // "%H:%M" time only
+     //        // time-only (USES CURRENT-DATE! Need to test separately.)
+     //        DR("12:34:56", "2014-Jan-27 12:34:56",__LINE__),                       // "%H:%M:%S" time only
+     //        DR("12:34", "2014-Jan-27 12:34:00",__LINE__),                          // "%H:%M" time only
 
-                        DR("November 10 1967", "1967-Nov-10 00:00:00", __LINE__), // "%B %d %Y" American Format
-                        DR("Nov 10 1967", "1967-Nov-10 00:00:00", __LINE__), // "%b %d %Y" American Format
-                        DR("November 10 67", "2067-Nov-10 00:00:00", __LINE__), // "%B %d %y" American Format
-                        DR("Nov 10 67", "2067-Nov-10 00:00:00", __LINE__), // "%b %d %y" American Format
+     DR("November 10 1967", "1967-Nov-10 00:00:00", __LINE__),  // "%B %d %Y" American Format
+     DR("Nov 10 1967", "1967-Nov-10 00:00:00", __LINE__),       // "%b %d %Y" American Format
+     DR("November 10 67", "2067-Nov-10 00:00:00", __LINE__),    // "%B %d %y" American Format
+     DR("Nov 10 67", "2067-Nov-10 00:00:00", __LINE__),         // "%b %d %y" American Format
 
-                        DR("10 November 1967", "1967-Nov-10 00:00:00", __LINE__), // "%d %B %Y"
-                        DR("10 Nov 1967", "1967-Nov-10 00:00:00", __LINE__), // "%d %b %Y"
-                        DR("10 November 67", "2067-Nov-10 00:00:00", __LINE__), // "%d %B %y"
-                        DR("10 Nov 67", "2067-Nov-10 00:00:00", __LINE__), // "%d %b %y"
+     DR("10 November 1967", "1967-Nov-10 00:00:00", __LINE__),  // "%d %B %Y"
+     DR("10 Nov 1967", "1967-Nov-10 00:00:00", __LINE__),       // "%d %b %Y"
+     DR("10 November 67", "2067-Nov-10 00:00:00", __LINE__),    // "%d %B %y"
+     DR("10 Nov 67", "2067-Nov-10 00:00:00", __LINE__),         // "%d %b %y"
 
-                        DR("Friday 10 November, 1967", "1967-Nov-10 00:00:00", __LINE__), // "%A %d %B, %Y"
-                        DR("Fri 10 November, 1967", "1967-Nov-10 00:00:00", __LINE__), // "%a %d %B, %Y"
-                        DR("Friday 10 Nov, 1967", "1967-Nov-10 00:00:00", __LINE__), // "%A %d %b, %Y"
-                        DR("Fri 10 Nov, 1967", "1967-Nov-10 00:00:00", __LINE__), // "%a %d %b, %Y"
-                        DR("Friday 10 November, 67", "2067-Nov-10 00:00:00", __LINE__), // "%A %d %B, %y"
-                        DR("Fri 10 November, 67", "2067-Nov-10 00:00:00", __LINE__), // "%a %d %B, %y"
-                        DR("Friday 10 Nov, 67", "2067-Nov-10 00:00:00", __LINE__), // "%A %d %b, %y"
-                        DR("Fri 10 Nov, 67", "2067-Nov-10 00:00:00", __LINE__), // "%a %d %b, %y"
+     DR("Friday 10 November, 1967", "1967-Nov-10 00:00:00", __LINE__),  // "%A %d %B, %Y"
+     DR("Fri 10 November, 1967", "1967-Nov-10 00:00:00", __LINE__),     // "%a %d %B, %Y"
+     DR("Friday 10 Nov, 1967", "1967-Nov-10 00:00:00", __LINE__),       // "%A %d %b, %Y"
+     DR("Fri 10 Nov, 1967", "1967-Nov-10 00:00:00", __LINE__),          // "%a %d %b, %Y"
+     DR("Friday 10 November, 67", "2067-Nov-10 00:00:00", __LINE__),    // "%A %d %B, %y"
+     DR("Fri 10 November, 67", "2067-Nov-10 00:00:00", __LINE__),       // "%a %d %B, %y"
+     DR("Friday 10 Nov, 67", "2067-Nov-10 00:00:00", __LINE__),         // "%A %d %b, %y"
+     DR("Fri 10 Nov, 67", "2067-Nov-10 00:00:00", __LINE__),            // "%a %d %b, %y"
 
-                        DR("10/28/1967", "1967-Oct-28 00:00:00", __LINE__), // "%m/%d/%Y" American Format
-                        DR("10/28/19", "2019-Oct-28 00:00:00", __LINE__), // "%m/%d/%y" American Format
-                        DR("28/11/1967", "1967-Nov-28 00:00:00", __LINE__), // "%d/%m/%Y"
-                        DR("28/11/67", "2067-Nov-28 00:00:00", __LINE__), // "%d/%m/%y"
-                        DR("28.11.1967", "1967-Nov-28 00:00:00", __LINE__), // "%d.%m.%Y"
-                        DR("28.11.67", "2067-Nov-28 00:00:00", __LINE__), // "%d.%m.%y"
-                        DR("28-11-1967", "1967-Nov-28 00:00:00", __LINE__), // "%d-%m-%Y"
-                        DR("28-11-67", "2067-Nov-28 00:00:00", __LINE__), // "%d-%m-%y"
-                        DR("19671110", "1967-Nov-10 00:00:00", __LINE__), // "%Y%m%d"
-                        DR("671110", "6711-Oct-01 00:00:00", __LINE__), // "%y%m%d"
+     DR("10/28/1967", "1967-Oct-28 00:00:00", __LINE__),  // "%m/%d/%Y" American Format
+     DR("10/28/19", "2019-Oct-28 00:00:00", __LINE__),    // "%m/%d/%y" American Format
+     DR("28/11/1967", "1967-Nov-28 00:00:00", __LINE__),  // "%d/%m/%Y"
+     DR("28/11/67", "2067-Nov-28 00:00:00", __LINE__),    // "%d/%m/%y"
+     DR("28.11.1967", "1967-Nov-28 00:00:00", __LINE__),  // "%d.%m.%Y"
+     DR("28.11.67", "2067-Nov-28 00:00:00", __LINE__),    // "%d.%m.%y"
+     DR("28-11-1967", "1967-Nov-28 00:00:00", __LINE__),  // "%d-%m-%Y"
+     DR("28-11-67", "2067-Nov-28 00:00:00", __LINE__),    // "%d-%m-%y"
+     DR("19671110", "1967-Nov-10 00:00:00", __LINE__),    // "%Y%m%d"
+     DR("671110", "6711-Oct-01 00:00:00", __LINE__),      // "%y%m%d"
 
-                        // test formats that might require leading zeros
-                        DR("November 3 1967 12:34:56", "1967-Nov-03 12:34:56", __LINE__), // American Format"%B %d %Y %H:%M:%S"
-                        DR("Nov 3 1967 12:34:56", "1967-Nov-03 12:34:56", __LINE__), // American Format"%b %d %Y %H:%M:%S"
-                        DR("November 3 67 12:34:56", "2067-Nov-03 12:34:56", __LINE__), // American Format"%B %d %y %H:%M:%S"
-                        DR("Nov 3 67 12:34:56", "2067-Nov-03 12:34:56", __LINE__), // American Format"%b %d %y %H:%M:%S"
+     // test formats that might require leading zeros
+     DR("November 3 1967 12:34:56", "1967-Nov-03 12:34:56", __LINE__),  // American Format"%B %d %Y %H:%M:%S"
+     DR("Nov 3 1967 12:34:56", "1967-Nov-03 12:34:56", __LINE__),       // American Format"%b %d %Y %H:%M:%S"
+     DR("November 3 67 12:34:56", "2067-Nov-03 12:34:56", __LINE__),    // American Format"%B %d %y %H:%M:%S"
+     DR("Nov 3 67 12:34:56", "2067-Nov-03 12:34:56", __LINE__),         // American Format"%b %d %y %H:%M:%S"
 
-                        DR("3 November 1967 12:34:56", "1967-Nov-03 12:34:56", __LINE__), // "%d %B %Y %H:%M:%S"
-                        DR("3 Nov 1967 12:34:56", "1967-Nov-03 12:34:56", __LINE__), // "%d %b %Y %H:%M:%S"
-                        DR("3 November 67 12:34:56", "2067-Nov-03 12:34:56", __LINE__), // "%d %B %y %H:%M:%S"
-                        DR("3 Nov 67 12:34:56", "2067-Nov-03 12:34:56", __LINE__), // "%d %b %y %H:%M:%S"
+     DR("3 November 1967 12:34:56", "1967-Nov-03 12:34:56", __LINE__),  // "%d %B %Y %H:%M:%S"
+     DR("3 Nov 1967 12:34:56", "1967-Nov-03 12:34:56", __LINE__),       // "%d %b %Y %H:%M:%S"
+     DR("3 November 67 12:34:56", "2067-Nov-03 12:34:56", __LINE__),    // "%d %B %y %H:%M:%S"
+     DR("3 Nov 67 12:34:56", "2067-Nov-03 12:34:56", __LINE__),         // "%d %b %y %H:%M:%S"
 
-                        DR("Friday 3 November, 1967 12:34:56", "1967-Nov-03 12:34:56", __LINE__), // "%A %d %B, %Y %H:%M:%S"
-                        DR("Fri 3 November, 1967 12:34:56", "1967-Nov-03 12:34:56", __LINE__), // "%a %d %B, %Y %H:%M:%S"
-                        DR("Friday 3 Nov, 1967 12:34:56", "1967-Nov-03 12:34:56", __LINE__), // "%A %d %b, %Y %H:%M:%S"
-                        DR("Fri 3 Nov, 1967 12:34:56", "1967-Nov-03 12:34:56", __LINE__), // "%a %d %b, %Y %H:%M:%S"
-                        DR("Friday 3 November, 67 12:34:56", "2067-Nov-03 12:34:56", __LINE__), // "%A %d %B, %y %H:%M:%S"
-                        DR("Fri 3 November, 67 12:34:56", "2067-Nov-03 12:34:56", __LINE__), // "%a %d %B, %y %H:%M:%S"
-                        DR("Friday 3 Nov, 67 12:34:56", "2067-Nov-03 12:34:56", __LINE__), // "%A %d %b, %y %H:%M:%S"
-                        DR("Fri 3 Nov, 67 12:34:56", "2067-Nov-03 12:34:56", __LINE__), // "%a %d %b, %y %H:%M:%S"
+     DR("Friday 3 November, 1967 12:34:56",
+        "1967-Nov-03 12:34:56",
+        __LINE__),  // "%A %d %B, %Y %H:%M:%S"
+     DR("Fri 3 November, 1967 12:34:56",
+        "1967-Nov-03 12:34:56",
+        __LINE__),                                                         // "%a %d %B, %Y %H:%M:%S"
+     DR("Friday 3 Nov, 1967 12:34:56", "1967-Nov-03 12:34:56", __LINE__),  // "%A %d %b, %Y %H:%M:%S"
+     DR("Fri 3 Nov, 1967 12:34:56", "1967-Nov-03 12:34:56", __LINE__),     // "%a %d %b, %Y %H:%M:%S"
+     DR("Friday 3 November, 67 12:34:56",
+        "2067-Nov-03 12:34:56",
+        __LINE__),                                                         // "%A %d %B, %y %H:%M:%S"
+     DR("Fri 3 November, 67 12:34:56", "2067-Nov-03 12:34:56", __LINE__),  // "%a %d %B, %y %H:%M:%S"
+     DR("Friday 3 Nov, 67 12:34:56", "2067-Nov-03 12:34:56", __LINE__),    // "%A %d %b, %y %H:%M:%S"
+     DR("Fri 3 Nov, 67 12:34:56", "2067-Nov-03 12:34:56", __LINE__),       // "%a %d %b, %y %H:%M:%S"
 
-                        DR("3/28/1967 12:34:56", "1967-Mar-28 12:34:56", __LINE__), //  American Format"%m/%d/%Y %H:%M:%S"
-                        DR("3/28/67 12:34:56", "2067-Mar-28 12:34:56", __LINE__), //  American Format"%m/%d/%y %H:%M:%S"
-                        DR("10/3/1967 12:34:56", "1967-Oct-03 12:34:56", __LINE__), //  American Format"%m/%d/%Y %H:%M:%S"
-                        DR("10/3/67 12:34:56", "2067-Oct-03 12:34:56", __LINE__), //  American Format"%m/%d/%y %H:%M:%S"
-                        DR("9/3/1967 12:34:56", "1967-Sep-03 12:34:56", __LINE__), //  American Format"%m/%d/%Y %H:%M:%S"
-                        DR("9/3/67 12:34:56", "2067-Sep-03 12:34:56", __LINE__), //  American Format"%m/%d/%y %H:%M:%S"
+     DR("3/28/1967 12:34:56", "1967-Mar-28 12:34:56", __LINE__),  //  American Format"%m/%d/%Y %H:%M:%S"
+     DR("3/28/67 12:34:56", "2067-Mar-28 12:34:56", __LINE__),    //  American Format"%m/%d/%y %H:%M:%S"
+     DR("10/3/1967 12:34:56", "1967-Oct-03 12:34:56", __LINE__),  //  American Format"%m/%d/%Y %H:%M:%S"
+     DR("10/3/67 12:34:56", "2067-Oct-03 12:34:56", __LINE__),    //  American Format"%m/%d/%y %H:%M:%S"
+     DR("9/3/1967 12:34:56", "1967-Sep-03 12:34:56", __LINE__),   //  American Format"%m/%d/%Y %H:%M:%S"
+     DR("9/3/67 12:34:56", "2067-Sep-03 12:34:56", __LINE__),     //  American Format"%m/%d/%y %H:%M:%S"
 
-                        DR("3/11/1967 12:34:56", "1967-Mar-11 12:34:56", __LINE__), // "%d/%m/%Y %H:%M:%S"
-                        DR("3/11/67 12:34:56", "2067-Mar-11 12:34:56", __LINE__), // "%d/%m/%y %H:%M:%S"
-                        DR("28/3/1967 12:34:56", "1967-Mar-28 12:34:56", __LINE__), // "%d/%m/%Y %H:%M:%S"
-                        DR("28/3/67 12:34:56", "2067-Mar-28 12:34:56", __LINE__), // "%d/%m/%y %H:%M:%S"
-                        DR("9/3/1967 12:34:56", "1967-Sep-03 12:34:56", __LINE__), // "%d/%m/%Y %H:%M:%S"
-                        DR("9/3/67 12:34:56", "2067-Sep-03 12:34:56", __LINE__), // "%d/%m/%y %H:%M:%S"
+     DR("3/11/1967 12:34:56", "1967-Mar-11 12:34:56", __LINE__),  // "%d/%m/%Y %H:%M:%S"
+     DR("3/11/67 12:34:56", "2067-Mar-11 12:34:56", __LINE__),    // "%d/%m/%y %H:%M:%S"
+     DR("28/3/1967 12:34:56", "1967-Mar-28 12:34:56", __LINE__),  // "%d/%m/%Y %H:%M:%S"
+     DR("28/3/67 12:34:56", "2067-Mar-28 12:34:56", __LINE__),    // "%d/%m/%y %H:%M:%S"
+     DR("9/3/1967 12:34:56", "1967-Sep-03 12:34:56", __LINE__),   // "%d/%m/%Y %H:%M:%S"
+     DR("9/3/67 12:34:56", "2067-Sep-03 12:34:56", __LINE__),     // "%d/%m/%y %H:%M:%S"
 
-                        DR("3.11.1967 12:34:56", "1967-Mar-11 12:34:56", __LINE__), // "%d.%m.%Y %H:%M:%S"
-                        DR("3.11.67 12:34:56", "2067-Mar-11 12:34:56", __LINE__), // "%d.%m.%y %H:%M:%S"
-                        DR("28.3.1967 12:34:56", "1967-Mar-28 12:34:56", __LINE__), // "%d.%m.%Y %H:%M:%S"
-                        DR("28.3.67 12:34:56", "2067-Mar-28 12:34:56", __LINE__), // "%d.%m.%y %H:%M:%S"
-                        DR("9.3.1967 12:34:56", "1967-Sep-03 12:34:56", __LINE__), // "%d.%m.%Y %H:%M:%S"
-                        DR("9.3.67 12:34:56", "2067-Sep-03 12:34:56", __LINE__), // "%d.%m.%y %H:%M:%S"
+     DR("3.11.1967 12:34:56", "1967-Mar-11 12:34:56", __LINE__),  // "%d.%m.%Y %H:%M:%S"
+     DR("3.11.67 12:34:56", "2067-Mar-11 12:34:56", __LINE__),    // "%d.%m.%y %H:%M:%S"
+     DR("28.3.1967 12:34:56", "1967-Mar-28 12:34:56", __LINE__),  // "%d.%m.%Y %H:%M:%S"
+     DR("28.3.67 12:34:56", "2067-Mar-28 12:34:56", __LINE__),    // "%d.%m.%y %H:%M:%S"
+     DR("9.3.1967 12:34:56", "1967-Sep-03 12:34:56", __LINE__),   // "%d.%m.%Y %H:%M:%S"
+     DR("9.3.67 12:34:56", "2067-Sep-03 12:34:56", __LINE__),     // "%d.%m.%y %H:%M:%S"
 
-                        DR("3-11-1967 12:34:56", "1967-Mar-11 12:34:56", __LINE__), // "%d-%m-%Y %H:%M:%S"
-                        DR("3-11-67 12:34:56", "2067-Mar-11 12:34:56", __LINE__), // "%d-%m-%y %H:%M:%S"
-                        DR("28-3-1967 12:34:56", "1967-Mar-28 12:34:56", __LINE__), // "%d-%m-%Y %H:%M:%S"
-                        DR("28-3-67 12:34:56", "2067-Mar-28 12:34:56", __LINE__), // "%d-%m-%y %H:%M:%S"
-                        DR("9-3-1967 12:34:56", "1967-Sep-03 12:34:56", __LINE__), // "%d-%m-%Y %H:%M:%S"
-                        DR("9-3-67 12:34:56", "2067-Sep-03 12:34:56", __LINE__), // "%d-%m-%y %H:%M:%S"
+     DR("3-11-1967 12:34:56", "1967-Mar-11 12:34:56", __LINE__),  // "%d-%m-%Y %H:%M:%S"
+     DR("3-11-67 12:34:56", "2067-Mar-11 12:34:56", __LINE__),    // "%d-%m-%y %H:%M:%S"
+     DR("28-3-1967 12:34:56", "1967-Mar-28 12:34:56", __LINE__),  // "%d-%m-%Y %H:%M:%S"
+     DR("28-3-67 12:34:56", "2067-Mar-28 12:34:56", __LINE__),    // "%d-%m-%y %H:%M:%S"
+     DR("9-3-1967 12:34:56", "1967-Sep-03 12:34:56", __LINE__),   // "%d-%m-%Y %H:%M:%S"
+     DR("9-3-67 12:34:56", "2067-Sep-03 12:34:56", __LINE__),     // "%d-%m-%y %H:%M:%S"
     };
-    for (size_t i = 0; i < sizeof (scanResults) / sizeof (DR); i++)
+    for(size_t i = 0; i < sizeof(scanResults) / sizeof(DR); i++)
     {
         BOOST_CHECK(scanResults[i].correctResult());
     }
@@ -1068,7 +1088,7 @@ void util_any_test(int ii, int jj)
 
     Var anAny(string("a T_"));
     BOOST_CHECK(isA<string>(anAny));
-    anAny = (VAR_INT) 5L;
+    anAny = (VAR_INT)5L;
     BOOST_CHECK(isA<VAR_INT>(anAny));
 
     initDateFormats();
@@ -1110,19 +1130,19 @@ void util_any_test(int ii, int jj)
 
     VAR_UINT_INTERVAL itv_minus_oo_oo;
     BOOST_CHECK(itv_minus_oo_oo.contains(VAR_UINT(8)));
-    BOOST_CHECK(VAR_UINT_INTERVAL(2,{infiniteMax}).isSubIntervalOf(itv_minus_oo_oo));
-    BOOST_CHECK(VAR_UINT_INTERVAL(2,{infiniteMin}).isSubIntervalOf(itv_minus_oo_oo));
+    BOOST_CHECK(VAR_UINT_INTERVAL(2, {infiniteMax}).isSubIntervalOf(itv_minus_oo_oo));
+    BOOST_CHECK(VAR_UINT_INTERVAL(2, {infiniteMin}).isSubIntervalOf(itv_minus_oo_oo));
     BOOST_CHECK(VAR_UINT_INTERVAL(4ULL, 12344ULL).isSubIntervalOf(itv_minus_oo_oo));
-    VAR_FLOAT_INTERVAL itv_5_oo(5.0L,{infiniteMax});
+    VAR_FLOAT_INTERVAL itv_5_oo(5.0L, {infiniteMax});
     BOOST_CHECK(!itv_5_oo.contains(VAR_FLOAT(4.0)));
-    BOOST_CHECK(!VAR_FLOAT_INTERVAL(2.234,{infiniteMax}).isSubIntervalOf(itv_5_oo));
-    BOOST_CHECK(!VAR_FLOAT_INTERVAL(2.234,{infiniteMin}).isSubIntervalOf(itv_5_oo));
+    BOOST_CHECK(!VAR_FLOAT_INTERVAL(2.234, {infiniteMax}).isSubIntervalOf(itv_5_oo));
+    BOOST_CHECK(!VAR_FLOAT_INTERVAL(2.234, {infiniteMin}).isSubIntervalOf(itv_5_oo));
 
     // [c, +oo]
     VAR_CHAR_INTERVAL itv_c_oo = VAR_CHAR_INTERVAL(VAR_CHAR('c'));
     BOOST_CHECK(itv_c_oo.contains(VAR_CHAR('z')));
-    BOOST_CHECK(!VAR_CHAR_INTERVAL('f',{infiniteMin}).isSubIntervalOf(itv_c_oo));
-    BOOST_CHECK(!VAR_CHAR_INTERVAL('a',{infiniteMax}).isSubIntervalOf(itv_c_oo));
+    BOOST_CHECK(!VAR_CHAR_INTERVAL('f', {infiniteMin}).isSubIntervalOf(itv_c_oo));
+    BOOST_CHECK(!VAR_CHAR_INTERVAL('a', {infiniteMax}).isSubIntervalOf(itv_c_oo));
 }
 
 template<typename T_>
@@ -1193,11 +1213,11 @@ void util_csv_test(int i, int j)
         BOOST_CHECK_EQUAL(csv.getInt(5, 0), 8);
         BOOST_CHECK_EQUAL(csv.getBool(6, 0), true);
         BOOST_CHECK_EQUAL(csv.getBool(7, 0), false);
-        BOOST_CHECK_EQUAL(csv.getInt(8, 0), 999999999999999999); // last one converted to  int
-        BOOST_CHECK_EQUAL(csv.getUint(9, 0), 1000000000000000000); // first one converted to uint
-        BOOST_CHECK_EQUAL(csv.getUint(10, 0), 9223372036854775807); // max long long
-        BOOST_CHECK_EQUAL(csv.getUint(11, 0), 9223372036854775808UL); // one bigger
-        BOOST_CHECK_EQUAL(csv.getUint(12, 0), 10223372036854775807UL); // a lot bigger
+        BOOST_CHECK_EQUAL(csv.getInt(8, 0), 999999999999999999);        // last one converted to  int
+        BOOST_CHECK_EQUAL(csv.getUint(9, 0), 1000000000000000000);      // first one converted to uint
+        BOOST_CHECK_EQUAL(csv.getUint(10, 0), 9223372036854775807);     // max long long
+        BOOST_CHECK_EQUAL(csv.getUint(11, 0), 9223372036854775808UL);   // one bigger
+        BOOST_CHECK_EQUAL(csv.getUint(12, 0), 10223372036854775807UL);  // a lot bigger
     }
     {
         BOOST_TEST_MESSAGE("Get sub-csv");
@@ -1233,10 +1253,10 @@ void util_csv_test(int i, int j)
         BOOST_TEST_MESSAGE("write in default format");
         csv.write(filename);
         {
-            std::ifstream ifs(filename.c_str());
+            std::ifstream  ifs(filename.c_str());
             vector<string> lines;
-            string line;
-            while (!ifs.eof())
+            string         line;
+            while(!ifs.eof())
             {
                 getline(ifs, line);
                 lines.push_back(line);
@@ -1262,10 +1282,10 @@ void util_csv_test(int i, int j)
         BOOST_TEST_MESSAGE("write using different delimiter");
         csv.write(filename, " | ");
         {
-            std::ifstream ifs(filename.c_str());
+            std::ifstream  ifs(filename.c_str());
             vector<string> lines;
-            string line;
-            while (!ifs.eof())
+            string         line;
+            while(!ifs.eof())
             {
                 getline(ifs, line);
                 lines.push_back(line);
@@ -1292,10 +1312,10 @@ void util_csv_test(int i, int j)
         BOOST_TEST_MESSAGE("write using different delimiter and without header/types");
         csv.write(filename, " & ", CSVAnalyzer::hasValues);
         {
-            std::ifstream ifs(filename.c_str());
+            std::ifstream  ifs(filename.c_str());
             vector<string> lines;
-            string line;
-            while (!ifs.eof())
+            string         line;
+            while(!ifs.eof())
             {
                 getline(ifs, line);
                 lines.push_back(line);
@@ -1335,9 +1355,9 @@ void util_csv_test(int i, int j)
         BOOST_CHECK_EQUAL(data.get<string>("Rain", 2), "heavy shower");
         BOOST_CHECK_EQUAL(data.get<bool>(3, 2), true);
         BOOST_CHECK(data.begin("Rain") != data.end("Rain"));
-        CSVAnalyzer::COLUMN_TYPE_ITER it = data.begin("Rain");
-        size_t lineCount = 0;
-        for (; it != data.end("Rain"); it++, lineCount++)
+        CSVAnalyzer::COLUMN_TYPE_ITER it        = data.begin("Rain");
+        size_t                        lineCount = 0;
+        for(; it != data.end("Rain"); it++, lineCount++)
             BOOST_TEST_MESSAGE(*it);
         BOOST_CHECK(it == data.end("Rain"));
         BOOST_CHECK_EQUAL(lineCount, data.lines() + 2);
@@ -1352,9 +1372,9 @@ void util_csv_test(int i, int j)
         BOOST_CHECK_THROW(sub.get<string>("Sprinkler", 2), index_error);
         BOOST_CHECK(sub.begin("Rain") != sub.end("Rain"));
         BOOST_CHECK_THROW(sub.begin("Sprinkler"), index_error);
-        it = sub.begin("Rain");
+        it                  = sub.begin("Rain");
         size_t lineCountSub = 0;
-        for (; it != sub.end("Rain"); it++, lineCountSub++)
+        for(; it != sub.end("Rain"); it++, lineCountSub++)
             BOOST_TEST_MESSAGE(*it);
         BOOST_CHECK(it == sub.end("Rain"));
         BOOST_CHECK_EQUAL(lineCountSub, sub.lines() + 2);
@@ -1365,13 +1385,13 @@ void util_csv_test(int i, int j)
         BOOST_CHECK_EQUAL(sub.header(1), "Cloud");
         BOOST_CHECK_EQUAL(sub.type(0), "string");
         BOOST_CHECK_EQUAL(sub.type(1), "bool");
-        for (size_t line = 0; line < sub.lines(); line++)
+        for(size_t line = 0; line < sub.lines(); line++)
         {
             BOOST_CHECK_EQUAL(sub.getString(0, line), sub.getString("Rain", line));
             BOOST_CHECK_EQUAL(sub.getBool(1, line), sub.getBool("Cloud", line));
         }
     }
-    if (is_regular_file(filename))
+    if(is_regular_file(filename))
     {
         remove(path(filename));
     }
@@ -1407,7 +1427,6 @@ void util_event_test(int i, int j)
         BOOST_CHECK(el2.notConflicting(el1));
         BOOST_CHECK(el1.notConflicting(el2));
 
-
         BOOST_TEST_MESSAGE("Two EventLists *IDENTICAL* to a certain size then different, but same length");
         el1 = Event("E1", true) && Event("E2", false) && Event("E3", false) && Event("E4", false);
         el2 = Event("E1", true) && Event("E2", false) && Event("E3", true) && Event("E4", false);
@@ -1441,8 +1460,8 @@ void util_event_test(int i, int j)
     }
     {
         BOOST_TEST_MESSAGE("Check Events/EventLists creation");
-        EventList el1 = Event("E1", true) && Event("E2", VAR_STRING("fdsa"));
-        EventList el2 = Event("E3", false) && Event("E4", VAR_STRING("dfsg"));
+        EventList              el1 = Event("E1", true) && Event("E2", VAR_STRING("fdsa"));
+        EventList              el2 = Event("E3", false) && Event("E4", VAR_STRING("dfsg"));
         map<EventList, string> elMap;
         elMap[el1] = VAR_STRING("1st");
         elMap[el2] = VAR_STRING("2nd");
@@ -1461,9 +1480,9 @@ void util_event_test(int i, int j)
     }
     {
         ACCUMULATION_MAP accMap;
-        EventList el1 = Event("E1", true) && Event("E2", VAR_STRING("fdsa"));
-        EventList el2 = Event("E3", false) && Event("E4", VAR_STRING("dfsg"));
-        accMap[el1] = ACCUMULATION_DATA(0, 0);
+        EventList        el1 = Event("E1", true) && Event("E2", VAR_STRING("fdsa"));
+        EventList        el2 = Event("E3", false) && Event("E4", VAR_STRING("dfsg"));
+        accMap[el1]          = ACCUMULATION_DATA(0, 0);
     }
     {
         Event e;
@@ -1473,13 +1492,13 @@ void util_event_test(int i, int j)
     }
     {
         BOOST_TEST_MESSAGE("Check CondEvents");
-        Event e;
-        EventList el(e); // empty event is not added so results in empty list
+        Event     e;
+        EventList el(e);  // empty event is not added so results in empty list
         BOOST_CHECK(el.empty());
 
-        el = Event("SomeName", true); // list is initialised with one element
+        el = Event("SomeName", true);  // list is initialised with one element
         BOOST_CHECK(!el.empty());
-        el && Event("SomeMore", (VAR_FLOAT) 3.14159365) && Event("EvenSomeMore", VAR_STRING("XXX"));
+        el &&Event("SomeMore", (VAR_FLOAT)3.14159365) && Event("EvenSomeMore", VAR_STRING("XXX"));
         BOOST_CHECK(!el.empty());
 
         CondEvent c = el;
@@ -1513,7 +1532,7 @@ void util_event_test(int i, int j)
     }
     {
         BOOST_TEST_MESSAGE("Check CondEvent - manipulation");
-        CondEvent ce(Event("E1", true) && Event("E2", true));
+        CondEvent                 ce(Event("E1", true) && Event("E2", true));
         CondEvent::CONDEVENT_LIST l;
         BOOST_CHECK(ce.chainRule(l, "E1"));
 
@@ -1524,7 +1543,7 @@ void util_event_test(int i, int j)
         order.push_back("E4");
         order.push_back("E3");
         ce.chainRule(l, order);
-        for (CondEvent::CONDEVENT_LIST_CITER it = l.begin(); it != l.end(); it++)
+        for(CondEvent::CONDEVENT_LIST_CITER it = l.begin(); it != l.end(); it++)
         {
             BOOST_CHECK_EQUAL(it->eventSize(), 1);
         }
@@ -1561,7 +1580,7 @@ void util_event_test(int i, int j)
 
         ce = Event("E1", true) && Event("E2", true) && Event("E3", true) && Event("E4", true);
         ce.chainRule(l, order);
-        for (CondEvent::CONDEVENT_LIST_CITER it = l.begin(); it != l.end(); it++)
+        for(CondEvent::CONDEVENT_LIST_CITER it = l.begin(); it != l.end(); it++)
         {
             BOOST_CHECK_EQUAL(it->eventSize(), 1);
         }
@@ -1587,25 +1606,15 @@ void util_event_operation_test(int i, int j)
         {
             // comparator1 = [2014-02-03, oo)
 
-            Event itv_20140203_oo =
-                    Event("E1",
-                          Interval<VAR_DATE>(toDate(2014, 2, 3),
-            {
-                                             finiteMin
-            }));
+            Event itv_20140203_oo = Event("E1", Interval<VAR_DATE>(toDate(2014, 2, 3), {finiteMin}));
             BOOST_CHECK(Event("E1", toDate(2014, 2, 3)).matches(itv_20140203_oo));
             BOOST_CHECK(Event("E1", toDate(2015, 2, 3)).matches(itv_20140203_oo));
             BOOST_CHECK(Event("E1", toDate(2014, 3, 3)).matches(itv_20140203_oo));
-            BOOST_CHECK(!Event("E1", toDate(2014, 2, 2)).matches(itv_20140203_oo)); // outside the interval
+            BOOST_CHECK(!Event("E1", toDate(2014, 2, 2)).matches(itv_20140203_oo));  // outside the interval
             BOOST_CHECK(Event("E1", toDate(2015, 2, 2)).matches(itv_20140203_oo));
         }
         {
-
-            Event itv_oo_20140203 = Event("E1",
-                                          Interval<VAR_DATE>(toDate(2014, 2, 3),
-            {
-                                                             infiniteMin, rightClosed
-            }));
+            Event itv_oo_20140203 = Event("E1", Interval<VAR_DATE>(toDate(2014, 2, 3), {infiniteMin, rightClosed}));
             BOOST_CHECK(Event("E1", toDate(2014, 2, 3)).matches(itv_oo_20140203));
             BOOST_CHECK(!Event("E1", toDate(2015, 2, 3)).matches(itv_oo_20140203));
             BOOST_CHECK(!Event("E1", toDate(2014, 3, 3)).matches(itv_oo_20140203));
@@ -1650,36 +1659,36 @@ void util_event_operation_test(int i, int j)
         BOOST_TEST_MESSAGE("Two EventLists of equal size >1");
         BOOST_TEST_MESSAGE("match to interval");
 
-        EventList el1; // E1 in [2014-02-03..2015-02-03], E2 < 11 , E3 >= "dieter"
-        el1 && Event("E1", Interval<VAR_DATE>(toDate(2014, 2, 3), toDate(2015, 2, 3)));
-        el1 && Event("E2", VAR_INT(11), &Event::less);
-        el1 && Event("E3", VAR_STRING("dieter"), &Event::greaterEqual);
+        EventList el1;  // E1 in [2014-02-03..2015-02-03], E2 < 11 , E3 >= "dieter"
+        el1 &&    Event("E1", Interval<VAR_DATE>(toDate(2014, 2, 3), toDate(2015, 2, 3)));
+        el1 &&    Event("E2", VAR_INT(11), &Event::less);
+        el1 &&    Event("E3", VAR_STRING("dieter"), &Event::greaterEqual);
 
         // match only if *ALL* events are matching
         EventList el2;
         el2 = Event("E1", toDate(2014, 2, 3));
-        el2 && Event("E2", VAR_INT(10));
-        el2 && Event("E3", VAR_STRING("dieter"));
+        el2 &&Event("E2", VAR_INT(10));
+        el2 &&Event("E3", VAR_STRING("dieter"));
         BOOST_CHECK(el2.matches(el1));
 
         el2 = Event("E1", toDate(2015, 2, 3));
-        el2 && Event("E2", VAR_INT(-5));
-        el2 && Event("E3", VAR_STRING("freedom"));
+        el2 &&Event("E2", VAR_INT(-5));
+        el2 &&Event("E3", VAR_STRING("freedom"));
         BOOST_CHECK(el2.matches(el1));
 
         el2 = Event("E1", toDate(2013, 2, 3));
-        el2 && Event("E2", VAR_INT(-5));
-        el2 && Event("E3", VAR_STRING("freedom"));
+        el2 &&Event("E2", VAR_INT(-5));
+        el2 &&Event("E3", VAR_STRING("freedom"));
         BOOST_CHECK(!el2.matches(el1));
 
         el2 = Event("E1", toDate(2014, 2, 3));
-        el2 && Event("E2", VAR_INT(23));
-        el2 && Event("E3", VAR_STRING("freedom"));
+        el2 &&Event("E2", VAR_INT(23));
+        el2 &&Event("E3", VAR_STRING("freedom"));
         BOOST_CHECK(!el2.matches(el1));
 
         el2 = Event("E1", toDate(2014, 2, 3));
-        el2 && Event("E2", VAR_INT(-5));
-        el2 && Event("E3", VAR_STRING("angry"));
+        el2 &&Event("E2", VAR_INT(-5));
+        el2 &&Event("E3", VAR_STRING("angry"));
         BOOST_CHECK(!el2.matches(el1));
     }
 }
@@ -1768,9 +1777,9 @@ void util_stat_test(int i, int j)
         VALUERANGES_TYPE eventValRanges;
         VALUERANGES_TYPE condValRanges;
         eventValRanges["1stEventUint"] = EventValueRange(VAR_UINT(0), 5);
-        eventValRanges["2ndEventInt"] = EventValueRange(VAR_INT(-3), 3);
-        condValRanges["boolCond"] = EventValueRange(true);
-        condValRanges["charCond"] = EventValueRange('a', 'h');
+        eventValRanges["2ndEventInt"]  = EventValueRange(VAR_INT(-3), 3);
+        condValRanges["boolCond"]      = EventValueRange(true);
+        condValRanges["charCond"]      = EventValueRange('a', 'h');
 
         DiscreteProbability d(eventValRanges, condValRanges);
         d.canonise();
@@ -1795,16 +1804,16 @@ void util_continuous_stat_test(int i, int j)
     BOOST_CHECK_CLOSE(prob, 1.0L, 1e-10L);
     prob = norm.P(Event("E", Interval<long double>(0.0L)));
     BOOST_CHECK_CLOSE(prob, 0.5L, 1e-10L);
-    prob = norm.P(Event("E", Interval<long double>(0.0L,{infiniteMin})));
+    prob = norm.P(Event("E", Interval<long double>(0.0L, {infiniteMin})));
     BOOST_CHECK_CLOSE(prob, 0.5L, 1e-10L);
-    prob = norm.P(Event("E", Interval<long double>(0.0L, 1.0L)));
+    prob            = norm.P(Event("E", Interval<long double>(0.0L, 1.0L)));
     VAR_FLOAT prob2 = norm.P(Event("E", Interval<long double>(-1.0L, 0.0L)));
     BOOST_CHECK_CLOSE(prob, prob2, 1e-10L);
 
     prob = norm.P(Event("E", Interval<long double>(norm.mu() - norm.sigma(), norm.mu() + norm.sigma())));
     BOOST_CHECK_CLOSE(prob, p_m_var_prob, 1e-10L);
 
-    CSVAnalyzer csv;
+    CSVAnalyzer         csv;
     vector<long double> sample;
     sample += -1.0L, -0.5L, -0.1L, -1.0L, -0.2L, -0.7L, 1.0L;
     csv.appendColumn("E", sample);
@@ -1812,13 +1821,9 @@ void util_continuous_stat_test(int i, int j)
     BOOST_CHECK_CLOSE(norm.P(Event("E", Interval<long double>())), 1.0L, 1e-10L);
     BOOST_CHECK_CLOSE(norm.P(Event("E", Interval<long double>(norm.mu()))), 0.5L, 1e-10L);
 
-    BOOST_CHECK_CLOSE(norm.P(Event("E", Interval<long double>(norm.mu(),
-    {
-                                                              infiniteMin
-    }))), 0.5L, 1e-10L);
+    BOOST_CHECK_CLOSE(norm.P(Event("E", Interval<long double>(norm.mu(), {infiniteMin}))), 0.5L, 1e-10L);
 
-    BOOST_CHECK_CLOSE(norm.P(Event("E", Interval<long double>(norm.mu() - norm.sigma(),
-                                                              norm.mu() + norm.sigma()))),
+    BOOST_CHECK_CLOSE(norm.P(Event("E", Interval<long double>(norm.mu() - norm.sigma(), norm.mu() + norm.sigma()))),
                       p_m_var_prob,
                       1e-10L);
 
@@ -1826,12 +1831,9 @@ void util_continuous_stat_test(int i, int j)
     ExponentialFunction ed(1.0L);
     BOOST_CHECK_CLOSE(ed.P(Event("E", Interval<long double>(0.0L))), 1.0L, 1e-10L);
     BOOST_CHECK_CLOSE(ed.P(Event("E", Interval<long double>(0.0L, 0.0L))), 0.0L, 1e-10L);
-    BOOST_CHECK_CLOSE(ed.P(Event("E", Interval<long double>(0.0L,{finiteMin}))), 1.0L, 1e-10L);
+    BOOST_CHECK_CLOSE(ed.P(Event("E", Interval<long double>(0.0L, {finiteMin}))), 1.0L, 1e-10L);
 
-    BOOST_CHECK_CLOSE(ed.P(Event("E", Interval<long double>(ed.ln2ByLambda(),
-    {
-                                                            infiniteMin
-    }))), 0.5L, 1e-10L);
+    BOOST_CHECK_CLOSE(ed.P(Event("E", Interval<long double>(ed.ln2ByLambda(), {infiniteMin}))), 0.5L, 1e-10L);
     BOOST_CHECK_THROW(ed.train(csv, false), event_range_error);
     csv.clear();
     sample.clear();
@@ -1841,15 +1843,14 @@ void util_continuous_stat_test(int i, int j)
     TRACE1(ed);
 
     UniformFloatFunction uf(0.0L, 1.0L);
-    BOOST_CHECK_CLOSE(uf.P(Event("E", Interval<long double>(0.0L,{infiniteMax}))), 1.0L, 1e-10L);
-    BOOST_CHECK_CLOSE(uf.P(Event("E", Interval<long double>(0.0L,{infiniteMin}))), 0.0L, 1e-10L);
-    BOOST_CHECK_CLOSE(uf.P(Event("E", Interval<long double>(0.0L,{infiniteMax}))), 1.0L, 1e-10L);
+    BOOST_CHECK_CLOSE(uf.P(Event("E", Interval<long double>(0.0L, {infiniteMax}))), 1.0L, 1e-10L);
+    BOOST_CHECK_CLOSE(uf.P(Event("E", Interval<long double>(0.0L, {infiniteMin}))), 0.0L, 1e-10L);
+    BOOST_CHECK_CLOSE(uf.P(Event("E", Interval<long double>(0.0L, {infiniteMax}))), 1.0L, 1e-10L);
 
-    BOOST_CHECK_CLOSE(uf.P(Event("E", Interval<long double>(0.1234L,{infiniteMin}))), 0.1234L, 1e-10L);
-    BOOST_CHECK_CLOSE(uf.P(Event("E", Interval<long double>(0.1234L,{infiniteMax}))), 1.0L - 0.1234L, 1e-10L);
+    BOOST_CHECK_CLOSE(uf.P(Event("E", Interval<long double>(0.1234L, {infiniteMin}))), 0.1234L, 1e-10L);
+    BOOST_CHECK_CLOSE(uf.P(Event("E", Interval<long double>(0.1234L, {infiniteMax}))), 1.0L - 0.1234L, 1e-10L);
     uf.train(csv, false);
     TRACE1(uf);
-
 }
 
 void util_graph_test(int i, int j)
@@ -1877,12 +1878,12 @@ void util_graph_test(int i, int j)
         BOOST_CHECK_EQUAL(g.addEdge(B, C, "second"), true);
         BOOST_CHECK_THROW(g.addEdge(C, A, "third"), circle_error);
 
-        BOOST_CHECK_EQUAL(g.getEdge(A, A), (string*) 0);
+        BOOST_CHECK_EQUAL(g.getEdge(A, A), (string *)0);
         BOOST_CHECK_EQUAL(*(g.getEdge(A, B)), string("first"));
         BOOST_CHECK_EQUAL(*(g.getEdge(B, C)), string("second"));
-        BOOST_CHECK_EQUAL(g.getEdge(C, A), (string*) 0);
+        BOOST_CHECK_EQUAL(g.getEdge(C, A), (string *)0);
         DirectedGraph<PODNode<string>, string>::EDGE_PTR_VECTOR ev = g.getEdges();
-        for (auto it = ev.begin(); it != ev.end(); it++)
+        for(auto it = ev.begin(); it != ev.end(); it++)
         {
             BOOST_TEST_MESSAGE(*(*it));
         }
@@ -1897,7 +1898,7 @@ void util_graph_test(int i, int j)
         g.addEdge(C, E, "7");
         TRACE1(g);
         g.removeEdge(B, C);
-        BOOST_CHECK_EQUAL(g.getEdge(B, C), (string*) 0);
+        BOOST_CHECK_EQUAL(g.getEdge(B, C), (string *)0);
 
         //    TRACE1(g);
     }
@@ -1922,12 +1923,12 @@ void util_graph_test(int i, int j)
         BOOST_CHECK_EQUAL(g.addEdge(B, C, "second"), true);
         BOOST_CHECK_THROW(g.addEdge(C, A, "third"), circle_error);
 
-        BOOST_CHECK_EQUAL(g.getEdge(A, A), (string*) 0);
+        BOOST_CHECK_EQUAL(g.getEdge(A, A), (string *)0);
         BOOST_CHECK_EQUAL(*(g.getEdge(A, B)), string("first"));
         BOOST_CHECK_EQUAL(*(g.getEdge(B, C)), string("second"));
-        BOOST_CHECK_EQUAL(g.getEdge(C, A), (string*) 0);
+        BOOST_CHECK_EQUAL(g.getEdge(C, A), (string *)0);
         DirectedGraph<PODNode<string>, string>::EDGE_PTR_VECTOR ev = g.getEdges();
-        for (auto it = ev.begin(); it != ev.end(); it++)
+        for(auto it = ev.begin(); it != ev.end(); it++)
         {
             BOOST_TEST_MESSAGE(*(*it));
         }
@@ -1942,7 +1943,7 @@ void util_graph_test(int i, int j)
         g.addEdge(C, E, "7");
         TRACE1(g);
         g.removeEdge(B, C);
-        BOOST_CHECK_EQUAL(g.getEdge(B, C), (string*) 0);
+        BOOST_CHECK_EQUAL(g.getEdge(B, C), (string *)0);
 
         //    TRACE1(g);
     }
@@ -1972,7 +1973,7 @@ void util_graph_test(int i, int j)
         BOOST_CHECK_EQUAL(*(g.getEdge(B, C)), string("second"));
         BOOST_CHECK_EQUAL(*g.getEdge(C, A), string("third"));
         DirectedGraph<PODNode<string>, string>::EDGE_PTR_VECTOR ev = g.getEdges();
-        for (auto it = ev.begin(); it != ev.end(); it++)
+        for(auto it = ev.begin(); it != ev.end(); it++)
         {
             BOOST_TEST_MESSAGE(*(*it));
         }
@@ -1987,7 +1988,7 @@ void util_graph_test(int i, int j)
         g.addEdge(C, E, "7");
         TRACE1(g);
         g.removeEdge(B, C);
-        BOOST_CHECK_EQUAL(g.getEdge(B, C), (string*) 0);
+        BOOST_CHECK_EQUAL(g.getEdge(B, C), (string *)0);
 
         //    TRACE1(g);
     }
@@ -2018,9 +2019,7 @@ void util_graph_test(int i, int j)
         BOOST_CHECK_EQUAL(*g.getEdge(B, C), string("second"));
         BOOST_CHECK_EQUAL(*g.getEdge(C, A), string("third"));
         DirectedGraph<PODNode<string>, string>::EDGE_PTR_VECTOR ev = g.getEdges();
-        for (auto it = ev.begin();
-             it != ev.end();
-             it++)
+        for(auto it = ev.begin(); it != ev.end(); it++)
         {
             BOOST_TEST_MESSAGE(*(*it));
         }
@@ -2035,7 +2034,7 @@ void util_graph_test(int i, int j)
         g.addEdge(C, E, "7");
         TRACE1(g);
         g.removeEdge(B, C);
-        BOOST_CHECK_EQUAL(g.getEdge(B, C), (string*) 0);
+        BOOST_CHECK_EQUAL(g.getEdge(B, C), (string *)0);
 
         TRACE1(g);
     }
@@ -2043,9 +2042,7 @@ void util_graph_test(int i, int j)
 
 struct AlgoNode : public NodeBase
 {
-
-    AlgoNode(const string& name = "")
-    : name_(name)
+    AlgoNode(const string &name = "") : name_(name)
     {
     }
 
@@ -2055,22 +2052,22 @@ struct AlgoNode : public NodeBase
         return hasher(name_);
     }
 
-    friend bool operator<(const AlgoNode& lhs, const AlgoNode& rhs)
+    friend bool operator<(const AlgoNode &lhs, const AlgoNode &rhs)
     {
         return lhs.name_ < rhs.name_;
     }
 
-    friend bool operator==(const AlgoNode& lhs, const AlgoNode& rhs)
+    friend bool operator==(const AlgoNode &lhs, const AlgoNode &rhs)
     {
         return lhs.name_ == rhs.name_;
     }
 
-    friend bool operator!=(const AlgoNode& lhs, const AlgoNode& rhs)
+    friend bool operator!=(const AlgoNode &lhs, const AlgoNode &rhs)
     {
         return lhs.name_ != rhs.name_;
     }
 
-    friend ostream& operator<<(ostream& os, const AlgoNode& n)
+    friend ostream &operator<<(ostream &os, const AlgoNode &n)
     {
         os << n.name_;
         return os;
@@ -2080,15 +2077,13 @@ struct AlgoNode : public NodeBase
 
 struct dfVis : public boost::dfs_visitor<>
 {
-
-    dfVis(vector<AlgoNode>& v)
-    : visitList(v)
+    dfVis(vector<AlgoNode> &v) : visitList(v)
     {
     }
-    vector<AlgoNode>& visitList;
+    vector<AlgoNode> &visitList;
 
-    template <class Vertex, class Graph>
-    void discover_vertex(Vertex v, Graph& g)
+    template<class Vertex, class Graph>
+    void discover_vertex(Vertex v, Graph &g)
     {
         visitList.push_back(g[v]);
     }
@@ -2096,15 +2091,13 @@ struct dfVis : public boost::dfs_visitor<>
 
 struct bfVis : public boost::bfs_visitor<>
 {
-
-    bfVis(vector<AlgoNode>& v)
-    : visitList(v)
+    bfVis(vector<AlgoNode> &v) : visitList(v)
     {
     }
-    vector<AlgoNode>& visitList;
+    vector<AlgoNode> &visitList;
 
-    template <class Vertex, class Graph>
-    void discover_vertex(Vertex v, Graph& g)
+    template<class Vertex, class Graph>
+    void discover_vertex(Vertex v, Graph &g)
     {
         visitList.push_back(g[v]);
     }
@@ -2141,7 +2134,7 @@ void util_graph_algo_test(int i, int j)
 
     //    TRACE1(g);
     vector<AlgoNode> result;
-    dfVis vis(result);
+    dfVis            vis(result);
     g.applyDepthFirst(vis);
     //    TRACE1(result);
 }
@@ -2164,9 +2157,9 @@ void util_bayes_test(int i, int j)
         bn.addCauseEffect("Rain", "WetGrass");
         BOOST_CHECK(!bn.fullyDefined());
 
-        const char* shouldOrder[] = {"Cloud", "Rain", "Sprinkler", "WetGrass"};
+        const char *   shouldOrder[]     = {"Cloud", "Rain", "Sprinkler", "WetGrass"};
         vector<string> breadthFirstNodes = bn.breadthFirstNodeNames();
-        for (size_t i = 0; i != breadthFirstNodes.size(); i++)
+        for(size_t i = 0; i != breadthFirstNodes.size(); i++)
         {
             BOOST_CHECK_EQUAL(breadthFirstNodes[i], string(shouldOrder[i]));
         }
@@ -2262,7 +2255,9 @@ void util_bayes_test(int i, int j)
 
         bn.addNode("Cloud", EventValueRange(true), "Event describing whether there are clouds in the sky or not");
         bn.addNode("Rain", EventValueRange(VAR_UINT(0), 5), "Event describing the amount of rain falling");
-        bn.addNode("Sprinkler", EventValueRange(VAR_UINT(0), 3), "Event describing the what stage the sprinkler is turned up to");
+        bn.addNode("Sprinkler",
+                   EventValueRange(VAR_UINT(0), 3),
+                   "Event describing the what stage the sprinkler is turned up to");
         bn.addNode("WetGrass", EventValueRange(true), "Event describing whether the grass is wet or not");
         bn.addCauseEffect("Cloud", "Rain");
         bn.addCauseEffect("Cloud", "Sprinkler");
@@ -2291,22 +2286,14 @@ void util_bayes_test(int i, int j)
         BOOST_CHECK_GT(p, 0.0L);
         BOOST_CHECK_LE(p, 1.0L);
 
-        p = bn.P(Event("Rain", VAR_UINT(2)) &&
-                 Event("Cloud", false) &&
-                 Event("Sprinkler", VAR_UINT(2)) &&
-                 Event("WetGrass", true)
-                 );
+        p = bn.P(Event("Rain", VAR_UINT(2)) && Event("Cloud", false) && Event("Sprinkler", VAR_UINT(2))
+                 && Event("WetGrass", true));
         BOOST_CHECK_GT(p, 0.0L);
         BOOST_CHECK_LE(p, 1.0L);
 
         EventList irrelevant;
-        CondEvent
-        e = bn.bayesBallAlgorithm(CondEvent(Event("Rain", VAR_UINT(4)),
-                                            Event("Cloud", true)),
-                                  irrelevant);
-        e = bn.bayesBallAlgorithm(CondEvent(Event("Rain", VAR_UINT(4)),
-                                            Event("Sprinkler", true)),
-                                  irrelevant);
+        CondEvent e = bn.bayesBallAlgorithm(CondEvent(Event("Rain", VAR_UINT(4)), Event("Cloud", true)), irrelevant);
+        e = bn.bayesBallAlgorithm(CondEvent(Event("Rain", VAR_UINT(4)), Event("Sprinkler", true)), irrelevant);
     }
     BOOST_TEST_MESSAGE("====== BayesNet check BayesBallAlgorithm works ========");
     {
@@ -2357,7 +2344,8 @@ bool init_function()
     framework::master_test_suite().add(BOOST_TEST_CASE(boost::bind(&util_any_interval_test<VAR_INT>, -5, 10)));
     framework::master_test_suite().add(BOOST_TEST_CASE(boost::bind(&util_any_interval_test<VAR_UINT>, 5, 10)));
     framework::master_test_suite().add(BOOST_TEST_CASE(boost::bind(&util_any_interval_test<VAR_FLOAT>, 5.0L, 10.0L)));
-    framework::master_test_suite().add(BOOST_TEST_CASE(boost::bind(&util_any_interval_test<VAR_DATE>, toDate(2014, 1, 24), toDate(2015, 12, 3))));
+    framework::master_test_suite().add(
+     BOOST_TEST_CASE(boost::bind(&util_any_interval_test<VAR_DATE>, toDate(2014, 1, 24), toDate(2015, 12, 3))));
     framework::master_test_suite().add(BOOST_TEST_CASE(boost::bind(&util_csv_test, 1, 1)));
     framework::master_test_suite().add(BOOST_TEST_CASE(boost::bind(&util_event_test, 1, 1)));
     framework::master_test_suite().add(BOOST_TEST_CASE(boost::bind(&util_event_operation_test, 1, 1)));
@@ -2370,7 +2358,7 @@ bool init_function()
     return true;
 }
 
-int main(int argc, char* argv[])
+int main(int argc, char *argv[])
 {
     return unit_test_main(&init_function, argc, argv);
 }

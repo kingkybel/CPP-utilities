@@ -35,16 +35,15 @@ class anyutilTest : public CPPUNIT_NS::TestFixture
 
     CPPUNIT_TEST_SUITE_END();
 
-public:
+    public:
     anyutilTest();
     virtual ~anyutilTest();
     void setUp();
     void tearDown();
 
-private:
+    private:
     void util_any_test();
     void util_any_interval_test();
 };
 
 #endif /* ANYUTILTEST_H */
-

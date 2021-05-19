@@ -22,22 +22,23 @@
  */
 
 #include "statutilTest.h"
-#include <boost/bind.hpp>
+
 #include <boost/assign/std/vector.hpp>
+#include <boost/bind.hpp>
 #define BOOST_NO_CXX11_SCOPED_ENUMS
 #include <boost/filesystem.hpp>
 #undef BOOST_NO_CXX11_SCOPED_ENUMS
-#include <cstdlib>
-#include <iostream>
-#include <string>
-#include <cmath>
-#include <stringutil.h>
-#include <dateutil.h>
 #include <anyutil.h>
-#include <csvutil.h>
 #include <bayesutil.h>
-#include <statutil.h>
+#include <cmath>
+#include <cstdlib>
+#include <csvutil.h>
+#include <dateutil.h>
 #include <graphutil.h>
+#include <iostream>
+#include <statutil.h>
+#include <string>
+#include <stringutil.h>
 
 using namespace std;
 using namespace util;
@@ -48,7 +49,6 @@ using namespace boost::assign;
 using namespace boost::filesystem;
 
 const string filename = "/tmp/test.csv";
-
 
 using namespace std;
 using namespace util;
@@ -101,7 +101,6 @@ void statutilTest::util_event_test()
         CPPUNIT_ASSERT(el2.notConflicting(el1));
         CPPUNIT_ASSERT(el1.notConflicting(el2));
 
-
         ////BOOST_TEST_MESSAGE("Two EventLists *IDENTICAL* to a certain size then different, but same length");
         el1 = Event("E1", true) && Event("E2", false) && Event("E3", false) && Event("E4", false);
         el2 = Event("E1", true) && Event("E2", false) && Event("E3", true) && Event("E4", false);
@@ -135,8 +134,8 @@ void statutilTest::util_event_test()
     }
     {
         ////BOOST_TEST_MESSAGE("Check Events/EventLists creation");
-        EventList el1 = Event("E1", true) && Event("E2", VAR_STRING("fdsa"));
-        EventList el2 = Event("E3", false) && Event("E4", VAR_STRING("dfsg"));
+        EventList              el1 = Event("E1", true) && Event("E2", VAR_STRING("fdsa"));
+        EventList              el2 = Event("E3", false) && Event("E4", VAR_STRING("dfsg"));
         map<EventList, string> elMap;
         elMap[el1] = VAR_STRING("1st");
         elMap[el2] = VAR_STRING("2nd");
@@ -155,9 +154,9 @@ void statutilTest::util_event_test()
     }
     {
         ACCUMULATION_MAP accMap;
-        EventList el1 = Event("E1", true) && Event("E2", VAR_STRING("fdsa"));
-        EventList el2 = Event("E3", false) && Event("E4", VAR_STRING("dfsg"));
-        accMap[el1] = ACCUMULATION_DATA(0, 0);
+        EventList        el1 = Event("E1", true) && Event("E2", VAR_STRING("fdsa"));
+        EventList        el2 = Event("E3", false) && Event("E4", VAR_STRING("dfsg"));
+        accMap[el1]          = ACCUMULATION_DATA(0, 0);
     }
     {
         Event e;
@@ -167,13 +166,13 @@ void statutilTest::util_event_test()
     }
     {
         ////BOOST_TEST_MESSAGE("Check CondEvents");
-        Event e;
-        EventList el(e); // empty event is not added so results in empty list
+        Event     e;
+        EventList el(e);  // empty event is not added so results in empty list
         CPPUNIT_ASSERT(el.empty());
 
-        el = Event("SomeName", true); // list is initialised with one element
+        el = Event("SomeName", true);  // list is initialised with one element
         CPPUNIT_ASSERT(!el.empty());
-        el && Event("SomeMore", (VAR_FLOAT) 3.14159365) && Event("EvenSomeMore", VAR_STRING("XXX"));
+        el&& Event("SomeMore", (VAR_FLOAT)3.14159365) && Event("EvenSomeMore", VAR_STRING("XXX"));
         CPPUNIT_ASSERT(!el.empty());
 
         CondEvent c = el;
@@ -207,7 +206,7 @@ void statutilTest::util_event_test()
     }
     {
         ////BOOST_TEST_MESSAGE("Check CondEvent - manipulation");
-        CondEvent ce(Event("E1", true) && Event("E2", true));
+        CondEvent                 ce(Event("E1", true) && Event("E2", true));
         CondEvent::CONDEVENT_LIST l;
         CPPUNIT_ASSERT(ce.chainRule(l, "E1"));
 
@@ -218,7 +217,7 @@ void statutilTest::util_event_test()
         order.push_back("E4");
         order.push_back("E3");
         ce.chainRule(l, order);
-        for (CondEvent::CONDEVENT_LIST_CITER it = l.begin(); it != l.end(); it++)
+        for(CondEvent::CONDEVENT_LIST_CITER it = l.begin(); it != l.end(); it++)
         {
             CPPUNIT_ASSERT_EQUAL(it->eventSize(), 1UL);
         }
@@ -255,7 +254,7 @@ void statutilTest::util_event_test()
 
         ce = Event("E1", true) && Event("E2", true) && Event("E3", true) && Event("E4", true);
         ce.chainRule(l, order);
-        for (CondEvent::CONDEVENT_LIST_CITER it = l.begin(); it != l.end(); it++)
+        for(CondEvent::CONDEVENT_LIST_CITER it = l.begin(); it != l.end(); it++)
         {
             CPPUNIT_ASSERT_EQUAL(it->eventSize(), 1UL);
         }
@@ -281,25 +280,15 @@ void statutilTest::util_event_operation_test()
         {
             // comparator1 = [2014-02-03, oo)
 
-            Event itv_20140203_oo =
-                    Event("E1",
-                          Interval<VAR_DATE>(toDate(2014, 2, 3),
-            {
-                                             finiteMin
-            }));
+            Event itv_20140203_oo = Event("E1", Interval<VAR_DATE>(toDate(2014, 2, 3), {finiteMin}));
             CPPUNIT_ASSERT(Event("E1", toDate(2014, 2, 3)).matches(itv_20140203_oo));
             CPPUNIT_ASSERT(Event("E1", toDate(2015, 2, 3)).matches(itv_20140203_oo));
             CPPUNIT_ASSERT(Event("E1", toDate(2014, 3, 3)).matches(itv_20140203_oo));
-            CPPUNIT_ASSERT(!Event("E1", toDate(2014, 2, 2)).matches(itv_20140203_oo)); // outside the interval
+            CPPUNIT_ASSERT(!Event("E1", toDate(2014, 2, 2)).matches(itv_20140203_oo));  // outside the interval
             CPPUNIT_ASSERT(Event("E1", toDate(2015, 2, 2)).matches(itv_20140203_oo));
         }
         {
-
-            Event itv_oo_20140203 = Event("E1",
-                                          Interval<VAR_DATE>(toDate(2014, 2, 3),
-            {
-                                                             infiniteMin, rightClosed
-            }));
+            Event itv_oo_20140203 = Event("E1", Interval<VAR_DATE>(toDate(2014, 2, 3), {infiniteMin, rightClosed}));
             CPPUNIT_ASSERT(Event("E1", toDate(2014, 2, 3)).matches(itv_oo_20140203));
             CPPUNIT_ASSERT(!Event("E1", toDate(2015, 2, 3)).matches(itv_oo_20140203));
             CPPUNIT_ASSERT(!Event("E1", toDate(2014, 3, 3)).matches(itv_oo_20140203));
@@ -344,36 +333,36 @@ void statutilTest::util_event_operation_test()
         ////BOOST_TEST_MESSAGE("Two EventLists of equal size >1");
         ////BOOST_TEST_MESSAGE("match to interval");
 
-        EventList el1; // E1 in [2014-02-03..2015-02-03], E2 < 11 , E3 >= "dieter"
-        el1 && Event("E1", Interval<VAR_DATE>(toDate(2014, 2, 3), toDate(2015, 2, 3)));
-        el1 && Event("E2", VAR_INT(11), &Event::less);
-        el1 && Event("E3", VAR_STRING("dieter"), &Event::greaterEqual);
+        EventList el1;  // E1 in [2014-02-03..2015-02-03], E2 < 11 , E3 >= "dieter"
+        el1&&     Event("E1", Interval<VAR_DATE>(toDate(2014, 2, 3), toDate(2015, 2, 3)));
+        el1&&     Event("E2", VAR_INT(11), &Event::less);
+        el1&&     Event("E3", VAR_STRING("dieter"), &Event::greaterEqual);
 
         // match only if *ALL* events are matching
         EventList el2;
         el2 = Event("E1", toDate(2014, 2, 3));
-        el2 && Event("E2", VAR_INT(10));
-        el2 && Event("E3", VAR_STRING("dieter"));
+        el2&& Event("E2", VAR_INT(10));
+        el2&& Event("E3", VAR_STRING("dieter"));
         CPPUNIT_ASSERT(el2.matches(el1));
 
         el2 = Event("E1", toDate(2015, 2, 3));
-        el2 && Event("E2", VAR_INT(-5));
-        el2 && Event("E3", VAR_STRING("freedom"));
+        el2&& Event("E2", VAR_INT(-5));
+        el2&& Event("E3", VAR_STRING("freedom"));
         CPPUNIT_ASSERT(el2.matches(el1));
 
         el2 = Event("E1", toDate(2013, 2, 3));
-        el2 && Event("E2", VAR_INT(-5));
-        el2 && Event("E3", VAR_STRING("freedom"));
+        el2&& Event("E2", VAR_INT(-5));
+        el2&& Event("E3", VAR_STRING("freedom"));
         CPPUNIT_ASSERT(!el2.matches(el1));
 
         el2 = Event("E1", toDate(2014, 2, 3));
-        el2 && Event("E2", VAR_INT(23));
-        el2 && Event("E3", VAR_STRING("freedom"));
+        el2&& Event("E2", VAR_INT(23));
+        el2&& Event("E3", VAR_STRING("freedom"));
         CPPUNIT_ASSERT(!el2.matches(el1));
 
         el2 = Event("E1", toDate(2014, 2, 3));
-        el2 && Event("E2", VAR_INT(-5));
-        el2 && Event("E3", VAR_STRING("angry"));
+        el2&& Event("E2", VAR_INT(-5));
+        el2&& Event("E3", VAR_STRING("angry"));
         CPPUNIT_ASSERT(!el2.matches(el1));
     }
 }
@@ -462,9 +451,9 @@ void statutilTest::util_stat_test()
         VALUERANGES_TYPE eventValRanges;
         VALUERANGES_TYPE condValRanges;
         eventValRanges["1stEventUint"] = EventValueRange(VAR_UINT(0), 5);
-        eventValRanges["2ndEventInt"] = EventValueRange(VAR_INT(-3), 3);
-        condValRanges["boolCond"] = EventValueRange(true);
-        condValRanges["charCond"] = EventValueRange('a', 'h');
+        eventValRanges["2ndEventInt"]  = EventValueRange(VAR_INT(-3), 3);
+        condValRanges["boolCond"]      = EventValueRange(true);
+        condValRanges["charCond"]      = EventValueRange('a', 'h');
 
         DiscreteProbability d(eventValRanges, condValRanges);
         d.canonise();
@@ -489,16 +478,16 @@ void statutilTest::util_continuous_stat_test()
     CPPUNIT_ASSERT_DOUBLES_EQUAL(prob, 1.0L, 1e-10L);
     prob = norm.P(Event("E", Interval<long double>(0.0L)));
     CPPUNIT_ASSERT_DOUBLES_EQUAL(prob, 0.5L, 1e-10L);
-    prob = norm.P(Event("E", Interval<long double>(0.0L,{infiniteMin})));
+    prob = norm.P(Event("E", Interval<long double>(0.0L, {infiniteMin})));
     CPPUNIT_ASSERT_DOUBLES_EQUAL(prob, 0.5L, 1e-10L);
-    prob = norm.P(Event("E", Interval<long double>(0.0L, 1.0L)));
+    prob            = norm.P(Event("E", Interval<long double>(0.0L, 1.0L)));
     VAR_FLOAT prob2 = norm.P(Event("E", Interval<long double>(-1.0L, 0.0L)));
     CPPUNIT_ASSERT_DOUBLES_EQUAL(prob, prob2, 1e-10L);
 
     prob = norm.P(Event("E", Interval<long double>(norm.mu() - norm.sigma(), norm.mu() + norm.sigma())));
     CPPUNIT_ASSERT_DOUBLES_EQUAL(prob, p_m_var_prob, 1e-10L);
 
-    CSVAnalyzer csv;
+    CSVAnalyzer         csv;
     vector<long double> sample;
     sample += -1.0L, -0.5L, -0.1L, -1.0L, -0.2L, -0.7L, 1.0L;
     csv.appendColumn("E", sample);
@@ -506,25 +495,21 @@ void statutilTest::util_continuous_stat_test()
     CPPUNIT_ASSERT_DOUBLES_EQUAL(norm.P(Event("E", Interval<long double>())), 1.0L, 1e-10L);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(norm.P(Event("E", Interval<long double>(norm.mu()))), 0.5L, 1e-10L);
 
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(norm.P(Event("E", Interval<long double>(norm.mu(),
-    {
-                                                              infiniteMin
-    }))), 0.5L, 1e-10L);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(norm.P(Event("E", Interval<long double>(norm.mu(), {infiniteMin}))), 0.5L, 1e-10L);
 
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(norm.P(Event("E", Interval<long double>(norm.mu() - norm.sigma(),
-                                                              norm.mu() + norm.sigma()))),
-                      p_m_var_prob,
-                      1e-10L);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(
+     norm.P(Event("E", Interval<long double>(norm.mu() - norm.sigma(), norm.mu() + norm.sigma()))),
+     p_m_var_prob,
+     1e-10L);
 
     ExponentialFunction ed(1.0L);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(ed.P(Event("E", Interval<long double>(0.0L))), 1.0L, 1e-10L);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(ed.P(Event("E", Interval<long double>(0.0L, 0.0L))), 0.0L, 1e-10L);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(ed.P(Event("E", Interval<long double>(0.0L,{finiteMin}))), 1.0L, 1e-10L);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(ed.P(Event("E", Interval<long double>(0.0L, {finiteMin}))), 1.0L, 1e-10L);
 
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(ed.P(Event("E", Interval<long double>(ed.ln2ByLambda(),
-    {
-                                                            infiniteMin
-    }))), 0.5L, 1e-10L);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(ed.P(Event("E", Interval<long double>(ed.ln2ByLambda(), {infiniteMin}))),
+                                 0.5L,
+                                 1e-10L);
     CPPUNIT_ASSERT_THROW(ed.train(csv, false), event_range_error);
     csv.clear();
     sample.clear();
@@ -533,12 +518,13 @@ void statutilTest::util_continuous_stat_test()
     ed.train(csv, false);
 
     UniformFloatFunction uf(0.0L, 1.0L);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(uf.P(Event("E", Interval<long double>(0.0L,{infiniteMax}))), 1.0L, 1e-10L);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(uf.P(Event("E", Interval<long double>(0.0L,{infiniteMin}))), 0.0L, 1e-10L);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(uf.P(Event("E", Interval<long double>(0.0L,{infiniteMax}))), 1.0L, 1e-10L);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(uf.P(Event("E", Interval<long double>(0.0L, {infiniteMax}))), 1.0L, 1e-10L);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(uf.P(Event("E", Interval<long double>(0.0L, {infiniteMin}))), 0.0L, 1e-10L);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(uf.P(Event("E", Interval<long double>(0.0L, {infiniteMax}))), 1.0L, 1e-10L);
 
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(uf.P(Event("E", Interval<long double>(0.1234L,{infiniteMin}))), 0.1234L, 1e-10L);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(uf.P(Event("E", Interval<long double>(0.1234L,{infiniteMax}))), 1.0L - 0.1234L, 1e-10L);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(uf.P(Event("E", Interval<long double>(0.1234L, {infiniteMin}))), 0.1234L, 1e-10L);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(uf.P(Event("E", Interval<long double>(0.1234L, {infiniteMax}))),
+                                 1.0L - 0.1234L,
+                                 1e-10L);
     uf.train(csv, false);
-
 }

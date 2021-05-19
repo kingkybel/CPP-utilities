@@ -32,15 +32,14 @@ class logValTest : public CPPUNIT_NS::TestFixture
 
     CPPUNIT_TEST_SUITE_END();
 
-public:
+    public:
     logValTest();
     virtual ~logValTest();
     void setUp();
     void tearDown();
 
-private:
+    private:
     void testLogVal();
 };
 
-#endif // LOGVALTEST_H_INCLUDED
-
+#endif  // LOGVALTEST_H_INCLUDED

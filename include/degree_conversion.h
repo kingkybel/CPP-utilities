@@ -25,33 +25,39 @@
 #ifndef DEGREE_CONVERSION_H_INCLUDED
 #define DEGREE_CONVERSION_H_INCLUDED
 
+#include "constants.h"
+#include "limited_int.h"
+
+#include <exception>
 #include <iostream>
 #include <limits>
-#include <exception>
 #include <sstream>
-#include "constants.h"
 
 namespace util
 {
+using Deg180Traits =
+ limited_int_traits<int64_t, DEGREE_180_MIN, DEGREE_180_MAX, resolve_modulo, convert_circular_scale>;
+using Deg180 = limited_int<int64_t, DEGREE_180_MIN, DEGREE_180_MAX, Deg180Traits>;
 
-typedef limited_int_traits<int64_t, -179, 180, resolve_modulo, convert_circular_scale> Deg180Traits;
-typedef limited_int<int64_t, -179, 180, Deg180Traits> Deg180;
+using Deg360Traits =
+ limited_int_traits<int64_t, DEGREE_360_MIN, DEGREE_360_MAX, resolve_modulo, convert_circular_scale>;
+using Deg360 = limited_int<int64_t, DEGREE_360_MIN, DEGREE_360_MAX, Deg360Traits>;
 
-typedef limited_int_traits<int64_t, 0, 359, resolve_modulo, convert_circular_scale> Deg360Traits;
-typedef limited_int<int64_t, 0, 359, Deg360Traits> Deg360;
+using Rad2PiTraits =
+ limited_int_traits<int64_t, MICRO_RAD_2PI_MIN, MICRO_RAD_2PI_MAX, resolve_modulo, convert_circular_scale>;
+using Rad2Pi = limited_int<int64_t, 0, MICRO_RAD_2PI_MAX, Rad2PiTraits>;
 
-typedef limited_int_traits<int64_t, 0, MICRO_RAD_2PI, resolve_modulo, convert_circular_scale> Rad2PiTraits;
-typedef limited_int<int64_t, 0, MICRO_RAD_2PI, Rad2PiTraits> Rad2Pi;
+using MilliMTraits = limited_int_traits<int64_t, -FACTOR_M_TO_MM, FACTOR_M_TO_MM, resolve_invalid, convert_scale>;
+using MilliM       = limited_int<int64_t, -FACTOR_M_TO_MM, FACTOR_M_TO_MM, MilliMTraits>;
 
-typedef limited_int_traits<int64_t, -1'000'000, 1'000'000, resolve_invalid, convert_scale> MilliMTraits;
-typedef limited_int<int64_t, -1'000'000, 1'000'000, MilliMTraits> MilliM;
+using MicroMTraits =
+ limited_int_traits<int64_t, -FACTOR_M_TO_MICRO_METER, FACTOR_M_TO_MICRO_METER, resolve_invalid, convert_scale>;
+using MicroM = limited_int<int64_t, -FACTOR_M_TO_MICRO_METER, FACTOR_M_TO_MICRO_METER, MicroMTraits>;
 
-typedef limited_int_traits<int64_t, -1'000'000'000, 1'000'000'000, resolve_invalid, convert_scale> MicroMTraits;
-typedef limited_int<int64_t, -1'000'000'000, 1'000'000'000, MicroMTraits> MicroM;
+using MilliM2MillionTraits =
+ limited_int_traits<int64_t, TWO_MILLION_MM_MIN, TWO_MILLION_MM_MAX, resolve_invalid, convert_scale>;
+using MilliM2Million = limited_int<int64_t, TWO_MILLION_MM_MIN, TWO_MILLION_MM_MAX, MilliM2MillionTraits>;
 
-typedef limited_int_traits<int64_t, 0, 2'000'000, resolve_invalid, convert_scale> MilliM2MillionTraits;
-typedef limited_int<int64_t, 0, 2'000'000, MilliM2MillionTraits> MilliM2Million;
-
-}; // namespace util
-#endif // DEGREE_CONVERSION_H_INCLUDED
-
+};
+// namespace util
+#endif  // DEGREE_CONVERSION_H_INCLUDED

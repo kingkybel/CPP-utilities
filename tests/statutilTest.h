@@ -37,13 +37,13 @@ class statutilTest : public CPPUNIT_NS::TestFixture
 
     CPPUNIT_TEST_SUITE_END();
 
-public:
+    public:
     statutilTest();
     virtual ~statutilTest();
     void setUp();
     void tearDown();
 
-private:
+    private:
     void util_stat_test();
     void util_event_operation_test();
     void util_event_test();
@@ -51,4 +51,3 @@ private:
 };
 
 #endif /* GRAPHUTILTEST_H */
-

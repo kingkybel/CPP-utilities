@@ -36,17 +36,16 @@ class instancePoolTest : public CPPUNIT_NS::TestFixture
 
     CPPUNIT_TEST_SUITE_END();
 
-public:
+    public:
     instancePoolTest();
     virtual ~instancePoolTest();
     void setUp();
     void tearDown();
 
-private:
+    private:
     void unlimited_pool_test();
     void limited_pool_test();
     void singleton_pool_test();
 };
 
 #endif /* CSVUTILTEST_H */
-

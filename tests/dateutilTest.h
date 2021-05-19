@@ -35,16 +35,15 @@ class dateutilTest : public CPPUNIT_NS::TestFixture
 
     CPPUNIT_TEST_SUITE_END();
 
-public:
+    public:
     dateutilTest();
     virtual ~dateutilTest();
     void setUp();
     void tearDown();
 
-private:
+    private:
     void util_date_european_test();
     void util_date_american_test();
 };
 
 #endif /* DATEUTILTEST_H */
-

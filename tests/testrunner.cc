@@ -12,24 +12,20 @@
  */
 
 // CppUnit site http://sourceforge.net/projects/cppunit/files
-
 #include <cppunit/BriefTestProgressListener.h>
 #include <cppunit/CompilerOutputter.h>
-#include <cppunit/extensions/TestFactoryRegistry.h>
+#include <cppunit/Test.h>
+#include <cppunit/TestFailure.h>
 #include <cppunit/TestResult.h>
 #include <cppunit/TestResultCollector.h>
 #include <cppunit/TestRunner.h>
-
-#include <cppunit/Test.h>
-#include <cppunit/TestFailure.h>
+#include <cppunit/extensions/TestFactoryRegistry.h>
 #include <cppunit/portability/Stream.h>
 
 class ProgressListener : public CPPUNIT_NS::TestListener
 {
-public:
-
-    ProgressListener()
-    : m_lastTestFailed(false)
+    public:
+    ProgressListener() : m_lastTestFailed(false)
     {
     }
 
@@ -54,19 +50,19 @@ public:
 
     void endTest(CPPUNIT_NS::Test *test)
     {
-        if (!m_lastTestFailed)
+        if(!m_lastTestFailed)
             CPPUNIT_NS::stdCOut() << " : OK";
         CPPUNIT_NS::stdCOut() << "\n";
     }
 
-private:
+    private:
     /// Prevents the use of the copy constructor.
     ProgressListener(const ProgressListener &copy);
 
     /// Prevents the use of the copy operator.
     void operator=(const ProgressListener &copy);
 
-private:
+    private:
     bool m_lastTestFailed;
 };
 

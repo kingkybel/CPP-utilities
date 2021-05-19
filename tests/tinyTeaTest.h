@@ -34,15 +34,14 @@ class tinyTeaTest : public CPPUNIT_NS::TestFixture
 
     CPPUNIT_TEST_SUITE_END();
 
-public:
+    public:
     tinyTeaTest();
     virtual ~tinyTeaTest();
     void setUp();
     void tearDown();
 
-private:
+    private:
     void encryption_test();
 };
 
 #endif /* TINYTEATEST_H */
-

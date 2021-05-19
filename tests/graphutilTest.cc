@@ -23,22 +23,22 @@
 
 #include "graphutilTest.h"
 
-#include <boost/bind.hpp>
 #include <boost/assign/std/vector.hpp>
+#include <boost/bind.hpp>
 #define BOOST_NO_CXX11_SCOPED_ENUMS
 #include <boost/filesystem.hpp>
 #undef BOOST_NO_CXX11_SCOPED_ENUMS
-#include <cstdlib>
-#include <iostream>
-#include <string>
-#include <cmath>
-#include <stringutil.h>
-#include <dateutil.h>
 #include <anyutil.h>
-#include <csvutil.h>
 #include <bayesutil.h>
-#include <statutil.h>
+#include <cmath>
+#include <cstdlib>
+#include <csvutil.h>
+#include <dateutil.h>
 #include <graphutil.h>
+#include <iostream>
+#include <statutil.h>
+#include <string>
+#include <stringutil.h>
 
 using namespace std;
 using namespace util;
@@ -68,8 +68,8 @@ void graphutilTest::tearDown()
 
 void graphutilTest::util_graph_test()
 {
-    //BOOST_TEST_MESSAGE("");
-    //BOOST_TEST_MESSAGE("====== Testing graph functions ========");
+    // BOOST_TEST_MESSAGE("");
+    // BOOST_TEST_MESSAGE("====== Testing graph functions ========");
     {
         DirectedGraph<PODNode<string>, string> g(false, false);
 
@@ -96,9 +96,9 @@ void graphutilTest::util_graph_test()
         CPPUNIT_ASSERT_EQUAL(*(g.getEdge(B, C)), string("second"));
         CPPUNIT_ASSERT(nullptr == g.getEdge(C, A));
         DirectedGraph<PODNode<string>, string>::EDGE_PTR_VECTOR ev = g.getEdges();
-        for (auto it = ev.begin(); it != ev.end(); it++)
+        for(auto it = ev.begin(); it != ev.end(); it++)
         {
-            //BOOST_TEST_MESSAGE(*(*it));
+            // BOOST_TEST_MESSAGE(*(*it));
         }
 
         g.clear();
@@ -138,9 +138,9 @@ void graphutilTest::util_graph_test()
         CPPUNIT_ASSERT_EQUAL(*(g.getEdge(B, C)), string("second"));
         CPPUNIT_ASSERT(nullptr == g.getEdge(C, A));
         DirectedGraph<PODNode<string>, string>::EDGE_PTR_VECTOR ev = g.getEdges();
-        for (auto it = ev.begin(); it != ev.end(); it++)
+        for(auto it = ev.begin(); it != ev.end(); it++)
         {
-            //BOOST_TEST_MESSAGE(*(*it));
+            // BOOST_TEST_MESSAGE(*(*it));
         }
 
         g.clear();
@@ -181,9 +181,9 @@ void graphutilTest::util_graph_test()
         CPPUNIT_ASSERT_EQUAL(*(g.getEdge(B, C)), string("second"));
         CPPUNIT_ASSERT_EQUAL(*g.getEdge(C, A), string("third"));
         DirectedGraph<PODNode<string>, string>::EDGE_PTR_VECTOR ev = g.getEdges();
-        for (auto it = ev.begin(); it != ev.end(); it++)
+        for(auto it = ev.begin(); it != ev.end(); it++)
         {
-            //BOOST_TEST_MESSAGE(*(*it));
+            // BOOST_TEST_MESSAGE(*(*it));
         }
 
         g.clear();
@@ -224,11 +224,9 @@ void graphutilTest::util_graph_test()
         CPPUNIT_ASSERT_EQUAL(*g.getEdge(B, C), string("second"));
         CPPUNIT_ASSERT_EQUAL(*g.getEdge(C, A), string("third"));
         DirectedGraph<PODNode<string>, string>::EDGE_PTR_VECTOR ev = g.getEdges();
-        for (auto it = ev.begin();
-             it != ev.end();
-             it++)
+        for(auto it = ev.begin(); it != ev.end(); it++)
         {
-            //BOOST_TEST_MESSAGE(*(*it));
+            // BOOST_TEST_MESSAGE(*(*it));
         }
 
         g.clear();
@@ -247,9 +245,7 @@ void graphutilTest::util_graph_test()
 
 struct AlgoNode : public NodeBase
 {
-
-    AlgoNode(const string& name = "")
-    : name_(name)
+    AlgoNode(const string &name = "") : name_(name)
     {
     }
 
@@ -259,22 +255,22 @@ struct AlgoNode : public NodeBase
         return hasher(name_);
     }
 
-    friend bool operator<(const AlgoNode& lhs, const AlgoNode& rhs)
+    friend bool operator<(const AlgoNode &lhs, const AlgoNode &rhs)
     {
         return lhs.name_ < rhs.name_;
     }
 
-    friend bool operator==(const AlgoNode& lhs, const AlgoNode& rhs)
+    friend bool operator==(const AlgoNode &lhs, const AlgoNode &rhs)
     {
         return lhs.name_ == rhs.name_;
     }
 
-    friend bool operator!=(const AlgoNode& lhs, const AlgoNode& rhs)
+    friend bool operator!=(const AlgoNode &lhs, const AlgoNode &rhs)
     {
         return lhs.name_ != rhs.name_;
     }
 
-    friend ostream& operator<<(ostream& os, const AlgoNode& n)
+    friend ostream &operator<<(ostream &os, const AlgoNode &n)
     {
         os << n.name_;
         return os;
@@ -284,15 +280,13 @@ struct AlgoNode : public NodeBase
 
 struct dfVis : public boost::dfs_visitor<>
 {
-
-    dfVis(vector<AlgoNode>& v)
-    : visitList(v)
+    dfVis(vector<AlgoNode> &v) : visitList(v)
     {
     }
-    vector<AlgoNode>& visitList;
+    vector<AlgoNode> &visitList;
 
-    template <class Vertex, class Graph>
-    void discover_vertex(Vertex v, Graph& g)
+    template<class Vertex, class Graph>
+    void discover_vertex(Vertex v, Graph &g)
     {
         visitList.push_back(g[v]);
     }
@@ -300,15 +294,13 @@ struct dfVis : public boost::dfs_visitor<>
 
 struct bfVis : public boost::bfs_visitor<>
 {
-
-    bfVis(vector<AlgoNode>& v)
-    : visitList(v)
+    bfVis(vector<AlgoNode> &v) : visitList(v)
     {
     }
-    vector<AlgoNode>& visitList;
+    vector<AlgoNode> &visitList;
 
-    template <class Vertex, class Graph>
-    void discover_vertex(Vertex v, Graph& g)
+    template<class Vertex, class Graph>
+    void discover_vertex(Vertex v, Graph &g)
     {
         visitList.push_back(g[v]);
     }
@@ -316,8 +308,8 @@ struct bfVis : public boost::bfs_visitor<>
 
 void graphutilTest::util_graph_algo_test()
 {
-    //BOOST_TEST_MESSAGE("");
-    //BOOST_TEST_MESSAGE("====== Testing graph algorithm functions ========");
+    // BOOST_TEST_MESSAGE("");
+    // BOOST_TEST_MESSAGE("====== Testing graph algorithm functions ========");
 
     DirectedGraph<AlgoNode> g;
 
@@ -344,7 +336,6 @@ void graphutilTest::util_graph_algo_test()
     CPPUNIT_ASSERT_EQUAL(g.addEdge(AlgoNode("g"), AlgoNode("e"), "12"), true);
 
     vector<AlgoNode> result;
-    dfVis vis(result);
+    dfVis            vis(result);
     g.applyDepthFirst(vis);
 }
-
