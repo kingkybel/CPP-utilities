@@ -395,7 +395,7 @@ class BayesNet
     /**
      * Calculate conditionally independent sets of nodes (d-separated nodes).
      */
-    CondEvent bayesBallAlgorithm(const CondEvent &ce, EventList &irrelevant) const;
+    CondEvent bayesBallAlgorithm(const CondEvent &ce, EventCatenation &irrelevant) const;
 
     /**
      * Generic ostream - &lt;&lt; operator for BayesNet.

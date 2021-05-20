@@ -91,20 +91,25 @@ struct boolstr_error : public std::logic_error
     }
 };
 
+/** The only boolean type allowed in Var-variants. */
 using VAR_BOOL = bool;
-///< The only boolean type allowed in Var-variants.
+
+/** The only character type allowed in Var-variants. */
 using VAR_CHAR = char;
-///< The only character type allowed in Var-variants.
+
+/** The only integer type allowed in Var-variants. */
 using VAR_INT = long long;
-///< The only integer type allowed in Var-variants.
+
+/**The only unsigned integer type allowed in Var-variants. */
 using VAR_UINT = unsigned long long;
-///< The only unsigned integer type allowed in Var-variants.
+
+/** The only floating point type allowed in Var-variants. */
 using VAR_FLOAT = long double;
-///< The only floating point type allowed in Var-variants.
+/** The only date type allowed in Var-variants. */
 using VAR_DATE = boost::posix_time::ptime;
-///< The only date type allowed in Var-variants.
+
+/**The only character-string type allowed in Var-variants.*/
 using VAR_STRING = std::string;
-///< The only character-string type allowed in Var-variants.
 
 /**
  * Helper to check that two floating point values are within tolerance of each other.
@@ -224,9 +229,7 @@ struct IntervalType
     IntervalType(std::initializer_list<borderType> l = std::initializer_list<borderType>({closed, finite}))
     {
         for(auto it: l)
-        {
             setFlag(it);
-        }
     }
 
     void resetTraits()
@@ -524,18 +527,23 @@ struct Interval : public IntervalType
     T_ high_;  ///< Maximal value
 };
 
+/** The only boolean-interval type allowed in Var-variants. */
 using VAR_BOOL_INTERVAL = Interval<VAR_BOOL>;
-///< The only boolean-interval type allowed in Var-variants.
+
+/** The only character-interval type allowed in Var-variants. */
 using VAR_CHAR_INTERVAL = Interval<VAR_CHAR>;
-///< The only character-interval type allowed in Var-variants.
+
+/** The only integer-interval type allowed in Var-variants. */
 using VAR_INT_INTERVAL = Interval<VAR_INT>;
-///< The only integer-interval type allowed in Var-variants.
+
+/** The only unsigned-integer-interval type allowed in Var-variants. */
 using VAR_UINT_INTERVAL = Interval<VAR_UINT>;
-///< The only unsigned-integer-interval type allowed in Var-variants.
+
+/** The only floating-point-interval type allowed in Var-variants. */
 using VAR_FLOAT_INTERVAL = Interval<VAR_FLOAT>;
-///< The only floating-point-interval type allowed in Var-variants.
+
+/** The only date-interval type allowed in Var-variants. */
 using VAR_DATE_INTERVAL = Interval<VAR_DATE>;
-///< The only date-interval type allowed in Var-variants.
 
 /**
  *  Restricted type variant.
@@ -626,6 +634,11 @@ class Var
      * associative containers.
      * The other comparison functions only will be used to transcend their
      * native type's operators.
+     *
+     * @param lhs left-hand-side of the comparison
+     * @param rhs right-hand-side of the comparison
+     *
+     * @return if lhs is equal to rhs, false otherwise
      */
     template<typename T_>
     friend bool equalT(const Var &lhs, const Var &rhs)
@@ -639,6 +652,7 @@ class Var
      * The other comparison functions only will be used to transcend their
      * native type's operators.
      * Helper template for definition of global operator &lt;.
+     *
      * @param lhs left-hand-side of the comparison
      * @param rhs right-hand-side of the comparison
      *
@@ -655,6 +669,7 @@ class Var
 
     /**
      * Helper template for definition of global operator &le;.
+     *
      * @param lhs left-hand-side of the comparison
      * @param rhs right-hand-side of the comparison
      *
@@ -671,6 +686,7 @@ class Var
 
     /**
      * Helper template for definition of global operator &gt;.
+     *
      * @param lhs left-hand-side of the comparison
      * @param rhs right-hand-side of the comparison
      *
@@ -687,6 +703,7 @@ class Var
 
     /**
      * Helper template for definition of global operator &ge;.
+     *
      * @param lhs left-hand-side of the comparison
      * @param rhs right-hand-side of the comparison
      *
@@ -703,6 +720,7 @@ class Var
 
     /**
      * Helper template for definition of global containment check.
+     *
      * @param lhs left-hand-side of the comparison
      * @param rhs right-hand-side of the comparison
      *
@@ -722,6 +740,7 @@ class Var
     /**
      * Check whether an Interval - Variant contains a value.
      * Non-Interval variants are treated as Intervals containing only one value.
+     *
      * @param val value to check
      *
      * @return if this contains val, false otherwise
@@ -731,6 +750,7 @@ class Var
     /**
      * Variant equality.
      * Transcends to native type operator.
+     *
      * @param lhs left-hand-side of the comparison
      * @param rhs right-hand-side of the comparison
      *
@@ -741,6 +761,7 @@ class Var
     /**
      * Variant less than.
      * Transcends to native type operator.
+     *
      * @param lhs left-hand-side of the comparison
      * @param rhs right-hand-side of the comparison
      *
@@ -751,6 +772,7 @@ class Var
     /**
      * Variant less/equality.
      * Transcends to native type operator.
+     *
      * @param lhs left-hand-side of the comparison
      * @param rhs right-hand-side of the comparison
      *
@@ -761,6 +783,7 @@ class Var
     /**
      * Variant greater.
      * Transcends to native type operator.
+     *
      * @param lhs left-hand-side of the comparison
      * @param rhs right-hand-side of the comparison
      *
@@ -771,6 +794,7 @@ class Var
     /**
      * Variant greater/equality.
      * Transcends to native type operator.
+     *
      * @param lhs left-hand-side of the comparison
      * @param rhs right-hand-side of the comparison
      * @return if lhs is greater/equal than rhs, false otherwise
@@ -779,6 +803,7 @@ class Var
 
     /**
      * Out-stream operator for variant stream modifiers.
+     *
      * @param os the ostream for output
      * @param sm the modifier
      *
@@ -788,8 +813,10 @@ class Var
 
     /**
      * Out-stream operator for variants.
+     *
      * @param os the ostream for output
      * @param v the variant to output
+     *
      * @return the modified stream
      */
     friend std::ostream &operator<<(std::ostream &os, const Var &v)
@@ -814,6 +841,7 @@ class Var
 
     /**
      * Out-stream operator for intervals.
+     *
      * @param os the ostream for output
      * @param itvl the interval to output
      *
@@ -841,6 +869,7 @@ struct Operation
      * <li>operator is taken from right-hand side</li>
      * <li>&lt; , &le;, &gt;, &ge; follow natural definition</li>
      * </ul>
+     *
      * @param lhs left-hand-side of comparison
      * @param rhs right-hand-side of comparison
      *
@@ -850,6 +879,7 @@ struct Operation
 
     /**
      * Provide a description of the operation for stream-operators.
+     *
      * @param v the variant to get a description for
      *
      * @return a string description of v
@@ -990,6 +1020,7 @@ bool operator!=(const Interval<T1_> &lhs, const Interval<T2_> &rhs)
 
 /**
  * Generic Out-stream - &lt;&lt; operator for Interval's.
+ *
  * @param os the ostream for output
  * @param itvl the interval to output
  *
@@ -999,25 +1030,29 @@ template<typename T_>
 std::ostream &operator<<(std::ostream &os, const Interval<T_> &itvl)
 {
     auto sm = static_cast<Var::StreamMode>(os.iword(Var::xalloc_index));
+
     if(sm == 0)
         sm = Var::standard;
+
     bool isLeftInf   = itvl.isLeftInfinite();
     bool isRightInf  = itvl.isRightInfinite();
     bool isLeftOpen  = itvl.isLeftOpen();
     bool isRightOpen = itvl.isRightOpen();
+    char left        = (sm & Var::round_open_brace) == Var::round_open_brace && isLeftOpen ? '(' : '[';
+    char right       = (sm & Var::round_open_brace) == Var::round_open_brace && isRightOpen ? ')' : ']';
+    bool symbolic    = (sm & Var::symbolic_infinity) == Var::symbolic_infinity;
 
-    char left  = (sm & Var::round_open_brace) == Var::round_open_brace && isLeftOpen ? '(' : '[';
-    char right = (sm & Var::round_open_brace) == Var::round_open_brace && isRightOpen ? ')' : ']';
-
-    bool symbolic = (sm & Var::symbolic_infinity) == Var::symbolic_infinity;
     os << left;
+
     if(symbolic && isLeftInf)
         os << "-∞";
     else if(isLeftInf)
         os << minVal<T_>();
     else
         os << itvl.low_;
+
     os << ", ";
+
     if(symbolic && isRightInf)
         os << "+∞";
     else if(isRightInf)
@@ -1033,6 +1068,7 @@ std::ostream &operator<<(std::ostream &os, const Interval<T_> &itvl)
 
 /**
  * Scan a string and convert to the template-type.
+ *
  * @param strVal the string-representation
  *
  * @return the scanned value
@@ -1042,6 +1078,7 @@ inline T_ scanAs(const VAR_STRING &strVal)
 {
     T_                reval;
     std::stringstream ss;
+
     ss << strVal;
     ss >> reval;
 
@@ -1060,10 +1097,9 @@ template<>
 inline VAR_BOOL scanAs<VAR_BOOL>(const VAR_STRING &strVal)
 {
     VAR_BOOL reval = false;
+
     if(!scanBoolString(strVal, reval))
-    {
         throw boolstr_error(strVal);
-    }
 
     return (reval);
 }
@@ -1130,9 +1166,7 @@ template<typename T_>
 T_ toNative(const Var &val)
 {
     if(!isA<T_>(val))
-    {
         throw cast_error(val.type().name(), typeid(T_).name());
-    }
 
     return (val.get<T_>());
 }

@@ -15,6 +15,7 @@
       <itemPath>include/floatingpoint.h</itemPath>
       <itemPath>include/graphutil.h</itemPath>
       <itemPath>include/grid.h</itemPath>
+      <itemPath>include/instance_pool.h</itemPath>
       <itemPath>include/iosutil.h</itemPath>
       <itemPath>include/limited_int.h</itemPath>
       <itemPath>include/logvalue.h</itemPath>
@@ -396,6 +397,24 @@
                             perm="644"
                             owner="root"
                             group="bin"/>
+          <packFileListElem type="File"
+                            to="${PACKAGE_TOP_DIR}lib/${OUTPUT_BASENAME}"
+                            from="${OUTPUT_PATH}"
+                            perm="644"
+                            owner="root"
+                            group="bin"/>
+          <packFileListElem type="File"
+                            to="${PACKAGE_TOP_DIR}lib/${OUTPUT_BASENAME}"
+                            from="${OUTPUT_PATH}"
+                            perm="644"
+                            owner="root"
+                            group="bin"/>
+          <packFileListElem type="File"
+                            to="${PACKAGE_TOP_DIR}lib/${OUTPUT_BASENAME}"
+                            from="${OUTPUT_PATH}"
+                            perm="644"
+                            owner="root"
+                            group="bin"/>
         </packFileList>
       </packaging>
       <folder path="TestFiles">
@@ -489,6 +508,8 @@
       <item path="include/graphutil.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/grid.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="include/instance_pool.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/iosutil.h" ex="false" tool="3" flavor2="0">
       </item>
@@ -718,6 +739,24 @@
                             perm="644"
                             owner="root"
                             group="bin"/>
+          <packFileListElem type="File"
+                            to="${PACKAGE_TOP_DIR}lib/${OUTPUT_BASENAME}"
+                            from="${OUTPUT_PATH}"
+                            perm="644"
+                            owner="root"
+                            group="bin"/>
+          <packFileListElem type="File"
+                            to="${PACKAGE_TOP_DIR}lib/${OUTPUT_BASENAME}"
+                            from="${OUTPUT_PATH}"
+                            perm="644"
+                            owner="root"
+                            group="bin"/>
+          <packFileListElem type="File"
+                            to="${PACKAGE_TOP_DIR}lib/${OUTPUT_BASENAME}"
+                            from="${OUTPUT_PATH}"
+                            perm="644"
+                            owner="root"
+                            group="bin"/>
         </packFileList>
       </packaging>
       <folder path="TestFiles">
@@ -806,6 +845,8 @@
       <item path="include/graphutil.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/grid.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="include/instance_pool.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/iosutil.h" ex="false" tool="3" flavor2="0">
       </item>

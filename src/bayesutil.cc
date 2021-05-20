@@ -757,7 +757,7 @@ struct schedNode
     bool bottom_  = false;
 };
 
-CondEvent BayesNet::bayesBallAlgorithm(const CondEvent &ce, EventList &irrelevant) const
+CondEvent BayesNet::bayesBallAlgorithm(const CondEvent &ce, EventCatenation &irrelevant) const
 {
     using SCHEDULE_TYPE = map<string, schedNode>;
     SCHEDULE_TYPE sched;
@@ -857,16 +857,16 @@ CondEvent BayesNet::bayesBallAlgorithm(const CondEvent &ce, EventList &irrelevan
     }
 
     // blat out irrelevant list - just in case
-    irrelevant = EventList();
+    irrelevant = EventCatenation();
 
-    EventList requisiteEvents;
-    EventList requisiteConditions;
+    EventCatenation requisiteEvents;
+    EventCatenation requisiteConditions;
 
     for(auto it = sched.begin(); it != sched.end(); it++)
     {
-        Event     evt  = ce.event().eventByName(it->first);
-        Event     cond = ce.condition().eventByName(it->first);
-        EventList el   = evt;
+        Event           evt  = ce.event().eventByName(it->first);
+        Event           cond = ce.condition().eventByName(it->first);
+        EventCatenation el   = evt;
 
         if(el.empty() && !cond.empty())
             el &&cond;

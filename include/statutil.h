@@ -47,7 +47,7 @@ namespace util
  */
 struct event_range_error : public std::logic_error
 {
-    enum rangeType
+    enum conflict_type
     {
         exponential_range,  ///< Outside the range of the exponential function [0..oo)
         gaussian_range,     ///< Outside the range of the gaussian function (-oo..oo)
@@ -64,7 +64,7 @@ struct event_range_error : public std::logic_error
     {
     }
 
-    event_range_error(rangeType tp, VAR_FLOAT f1, VAR_FLOAT f2 = 0.0L, VAR_FLOAT f3 = 0.0L)
+    event_range_error(conflict_type tp, VAR_FLOAT f1, VAR_FLOAT f2 = 0.0L, VAR_FLOAT f3 = 0.0L)
     : std::logic_error(tp == exponential_range ?
                         "Range for exponential function is [0..oo) but found " + asString(f1) :
                         tp == uniform_range ? "Range for exponential function is [" + asString(f1) + ".." + asString(f2)
@@ -90,7 +90,7 @@ struct event_error : public std::logic_error
     }
 };
 
-class EventList;
+class EventCatenation;
 
 /**
  * Error handling for event lists with mutually exclusive events.
@@ -103,8 +103,9 @@ struct eventlist_conflict_error : public std::logic_error
         cond,     ///< condition list conflicts with itself
         evt_cond  ///< event- and condition-lists conflict with each other
     };
-    eventlist_conflict_error(conflict_type tp, const EventList &e1);
-    eventlist_conflict_error(const EventList &e1, const EventList &e2);
+
+    eventlist_conflict_error(conflict_type tp, const EventCatenation &e1);
+    eventlist_conflict_error(const EventCatenation &e1, const EventCatenation &e2);
 };
 
 /**
@@ -112,14 +113,14 @@ struct eventlist_conflict_error : public std::logic_error
  */
 struct distribution_error : public std::logic_error
 {
-    enum type
+    enum conflict_type
     {
         empty_uniform,
         empty_normalise,
         empty_canonise
     };
 
-    distribution_error(type tp)
+    distribution_error(conflict_type tp)
     : std::logic_error(
      std::string(tp == empty_uniform ? "Make uniform" : tp == empty_normalise ? "Normalise" : "Canonise")
      + ": cannot modify distribution as node-distribution "
@@ -293,6 +294,7 @@ class Event
 
     /**
      * Construct Var-type Event.
+     *
      * @param name event name
      * @param a variant
      * @param dummyConfirm Needed to ensure only valid types are used.
@@ -305,13 +307,13 @@ class Event
      *
      * @param rhs right-hand side
      */
-    Event(const Event &rhs);
+    Event(const Event &rhs) = default;
 
     /**
      * Assign Event.
      * @param rhs right-hand side
      */
-    Event &operator=(const Event &rhs);
+    Event &operator=(const Event &rhs) = default;
 
     /**
      * Change Event - parameters name/value/operation.
@@ -459,7 +461,7 @@ class Event
     bool        isPlaceHolder_ = false;
 };
 
-using EVENT_SET = std::set<Event>;
+using EventCollection = std::set<Event>;
 
 /**
  * The range that the value of an an Event can assume.
@@ -476,7 +478,7 @@ class EventValueRange
         gaussian,       ///< gaussian bell distribution on the float range
         exponential     ///< exponential distribution on the positive float range
     };
-    using RANGEVALUE_SET = std::set<Var>;
+    using RangeValues = std::set<Var>;
 
     /**
      * Default construct a boolean range (or not if haveBoolRange == false).
@@ -704,7 +706,7 @@ class EventValueRange
      *
      * @return the created list of events
      */
-    [[nodiscard]] EVENT_SET makeEventSet(const std::string &name) const;
+    [[nodiscard]] EventCollection makeEventSet(const std::string &name) const;
 
     /**
      * Generic ostream - &lt;&lt; operator for EventValueRange.
@@ -739,38 +741,38 @@ class EventValueRange
     }
 
     DistributionType type_{discrete};  ///< Indicates the type range.
-    RANGEVALUE_SET   values_;          ///< Collection describing the range.
+    RangeValues      values_;          ///< Collection describing the range.
 };
 
 /**
  * Tag for a list of statistical Events (Event_1 and Event_2 and ...).
  * This enables statistical expressions like P(E1=e1,E2 &lt; e2,...)
  */
-class EventList
+class EventCatenation
 {
     public:
-    using EVENT_CONTAINER       = std::set<Event>;
-    using EVENT_CONTAINER_ITER  = EVENT_CONTAINER::iterator;
-    using EVENT_CONTAINER_CITER = EVENT_CONTAINER::const_iterator;
+    using EventsCollection    = std::set<Event>;
+    using EventsIterator      = EventsCollection::iterator;
+    using EventsConstIterator = EventsCollection::const_iterator;
 
     /**
      * Default construct empty event-list.
      */
-    EventList() = default;
+    EventCatenation() = default;
 
     /**
      * Construct a one-element event-list (if Event is not empty).
      *
      * @param event an event
      */
-    EventList(const Event &event);
+    EventCatenation(const Event &event);
 
     /**
      * Copy construct an EventList.
      *
      * @param rhs the right-hand-side event
      */
-    EventList(const EventList &rhs) = default;
+    EventCatenation(const EventCatenation &rhs) = default;
 
     /**
      * Assign the right-hand-side to this.
@@ -779,7 +781,7 @@ class EventList
      *
      * @return the modified Event-list
      */
-    EventList &operator=(const EventList &rhs) = default;
+    EventCatenation &operator=(const EventCatenation &rhs) = default;
 
     /**
      * Append a single Event to the this.
@@ -788,7 +790,7 @@ class EventList
      *
      * @return the modified Event-list
      */
-    EventList &operator&&(const Event &event);
+    EventCatenation &operator&&(const Event &event);
 
     /**
      * Append a list of Events to this.
@@ -797,7 +799,7 @@ class EventList
      *
      * @return the modified Event-list
      */
-    EventList &operator&&(const EventList &el);
+    EventCatenation &operator&&(const EventCatenation &el);
 
     /**
      * Check for emptiness.
@@ -812,12 +814,12 @@ class EventList
     /**
      * Check whether two lists are not conflicting (using the Event-definition of conflict).
      */
-    [[nodiscard]] bool notConflicting(const EventList &eList) const;
+    [[nodiscard]] bool notConflicting(const EventCatenation &eList) const;
 
     /**
-     * Check whether this list matches the other EventList.
+     * Check whether this list matches the other EventCatenation.
      */
-    [[nodiscard]] bool matches(const EventList &eList) const;
+    [[nodiscard]] bool matches(const EventCatenation &eList) const;
 
     /**
      * Retrieve an event from this list by name.
@@ -827,7 +829,7 @@ class EventList
     /**
      * Retrieve the collection of events.
      */
-    EVENT_CONTAINER events() const
+    EventsCollection events() const
     {
         return evts_;
     }
@@ -835,7 +837,7 @@ class EventList
     /**
      * Move name-specified event from this list to the other.
      */
-    bool moveEvent(const std::string &name, EventList &el);
+    bool moveEvent(const std::string &name, EventCatenation &el);
 
     /**
      * Check whether an event named name is in this list.
@@ -845,37 +847,37 @@ class EventList
     /**
      * Iterator pointing to the start of the list of events.
      */
-    EVENT_CONTAINER_ITER begin();
+    EventsIterator begin();
 
     /**
      * Iterator pointing to the start of the list of events (constant version).
      */
-    [[nodiscard]] EVENT_CONTAINER_CITER cbegin() const;
+    [[nodiscard]] EventsConstIterator cbegin() const;
 
     /**
      * Iterator pointing to the end of the list of events.
      */
-    EVENT_CONTAINER_ITER end();
+    EventsIterator end();
 
     /**
      * Iterator pointing to the end of the list of events (constant version).
      */
-    [[nodiscard]] EVENT_CONTAINER_CITER cend() const;
+    [[nodiscard]] EventsConstIterator cend() const;
 
     /**
      * Remove the Event pointed to by the iterator from this list.
      */
-    void erase(EVENT_CONTAINER_ITER it);
+    void erase(EventsIterator it);
 
     /**
      * Enable associative containers.
      */
-    friend bool operator==(const EventList &lhs, const EventList &rhs);
+    friend bool operator==(const EventCatenation &lhs, const EventCatenation &rhs);
 
     /**
      * Enable associative containers.
      */
-    friend bool operator<(const EventList &lhs, const EventList &rhs);
+    friend bool operator<(const EventCatenation &lhs, const EventCatenation &rhs);
 
     /**
      * Generic ostream - &lt;&lt; operator for EventList.
@@ -885,10 +887,10 @@ class EventList
      *
      * @return the modified stream
      */
-    friend std::ostream &operator<<(std::ostream &, const EventList &eList);
+    friend std::ostream &operator<<(std::ostream &, const EventCatenation &eList);
 
     private:
-    EVENT_CONTAINER evts_;  ///< Ordered list of Events.
+    EventsCollection evts_;  ///< Ordered list of Events.
 };
 
 /**
@@ -899,7 +901,7 @@ class EventList
  *
  * @return the newly created list of events
  */
-EventList operator&&(const Event &lhs, const Event &rhs);
+EventCatenation operator&&(const Event &lhs, const Event &rhs);
 
 /**
  * Tag for a list of statistical conditional Events.
@@ -919,7 +921,7 @@ class CondEvent
      * @param events an event list
      * @param conds a condition list
      */
-    CondEvent(const EventList &events = EventList(), const EventList &conds = EventList());
+    CondEvent(const EventCatenation &events = EventCatenation(), const EventCatenation &conds = EventCatenation());
 
     /**
      * Construct from a csv-object, more precisely from the column- headers
@@ -974,14 +976,14 @@ class CondEvent
      *
      * @return the events list
      */
-    [[nodiscard]] const EventList &event() const;
+    [[nodiscard]] const EventCatenation &event() const;
 
     /**
      * Retrieve the condition-part.
      *
      * @return the condition list
      */
-    [[nodiscard]] const EventList &condition() const;
+    [[nodiscard]] const EventCatenation &condition() const;
 
     /**
      * Filter out conditions with names in the list "conds".
@@ -1127,8 +1129,8 @@ class CondEvent
 
     protected:
     private:
-    EventList eList_;     ///< List of Events interpreted as events.
-    EventList condList_;  ///< List of Events interpreted as conditions.
+    EventCatenation eList_;     ///< List of Events interpreted as events.
+    EventCatenation condList_;  ///< List of Events interpreted as conditions.
 };
 
 /**
@@ -1137,10 +1139,7 @@ class CondEvent
  * @param rhs right-hand-side event list
  * @return condition event ( P(lhs | rhs) )
  */
-CondEvent operator||(const EventList &lhs, const EventList &rhs);
-
-static const long double e    = std::exp(1.0L);  ///< Base of the natural logarithm.
-static const long double ln_2 = std::log(2.0L);  ///< Natural logarithm of 2.
+CondEvent operator||(const EventCatenation &lhs, const EventCatenation &rhs);
 
 using VALUERANGES_TYPE = std::map<std::string, EventValueRange>;
 class CSVAnalyzer;
@@ -1195,7 +1194,7 @@ struct ProbabilityFunction
      *
      * @return the probability
      */
-    [[nodiscard]] virtual long double P(const EventList &el) const = 0;
+    [[nodiscard]] virtual long double P(const EventCatenation &el) const = 0;
 
     /**
      * Does the function satisfy probability requirements?
@@ -1301,7 +1300,7 @@ class UniformFloatFunction : public ProbabilityFunction
         long double occurrences;
     };
 
-    typedef std::map<EventList, UNIF_PARAM> UNIF_PARAM_TABLE;
+    typedef std::map<EventCatenation, UNIF_PARAM> UNIF_PARAM_TABLE;
 
     /**
      * Default construct.
@@ -1338,7 +1337,7 @@ class UniformFloatFunction : public ProbabilityFunction
      *
      * @return the probability
      */
-    [[nodiscard]] long double P(const EventList &el) const override;
+    [[nodiscard]] long double P(const EventCatenation &el) const override;
 
     /**
      * Reset the parameters of the probability function.
@@ -1394,7 +1393,7 @@ class GaussFunction : public ProbabilityFunction
         long double sigma;
         long double occurrences;
     };
-    using GAUSS_PARAM_TABLE = std::map<EventList, GAUSS_PARAM>;
+    using GAUSS_PARAM_TABLE = std::map<EventCatenation, GAUSS_PARAM>;
 
     /**
      * Default construct.
@@ -1437,7 +1436,7 @@ class GaussFunction : public ProbabilityFunction
      *
      * @return the probability
      */
-    [[nodiscard]] long double P(const EventList &eventList) const override;
+    [[nodiscard]] long double P(const EventCatenation &eventList) const override;
 
     /**
      * Estimate mu and sigma.
@@ -1505,7 +1504,7 @@ class ExponentialFunction : public ProbabilityFunction
         long double occurrences;
     };
 
-    using EXP_PARAM_TABLE = std::map<EventList, EXP_PARAM>;
+    using EXP_PARAM_TABLE = std::map<EventCatenation, EXP_PARAM>;
 
     /**
      * Default construct.
@@ -1546,7 +1545,7 @@ class ExponentialFunction : public ProbabilityFunction
      *
      * @return the probability
      */
-    [[nodiscard]] long double P(const EventList &el) const override;
+    [[nodiscard]] long double P(const EventCatenation &el) const override;
 
     /**
      * Estimate lambda for first column (must be float). Last column might be
@@ -1604,7 +1603,7 @@ struct ACCUMULATION_DATA
     long double number;
 };
 
-using ACCUMULATION_MAP = std::map<EventList, ACCUMULATION_DATA>;
+using ACCUMULATION_MAP = std::map<EventCatenation, ACCUMULATION_DATA>;
 
 /**
  * Discrete probability function that enumerates value-probability-pairs.
@@ -1687,7 +1686,7 @@ class DiscreteProbability : public ProbabilityFunction
      *
      * @return the probability
      */
-    long double P(const EventList &el) const override
+    long double P(const EventCatenation &el) const override
     {
         return (P(CondEvent(el)));
     }

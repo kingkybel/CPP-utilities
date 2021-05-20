@@ -22,6 +22,7 @@
  * @author: Dieter J Kybelksties
  */
 
+#include <numbers>
 #include <ranges>
 #include <statutil.h>
 #include <stdexcept>
@@ -35,13 +36,14 @@ using namespace boost;
 /**
  *  Error handling for event lists with mutually exclusive events.
  */
-eventlist_conflict_error::eventlist_conflict_error(eventlist_conflict_error::conflict_type tp, const EventList &e1)
+eventlist_conflict_error::eventlist_conflict_error(eventlist_conflict_error::conflict_type tp,
+                                                   const EventCatenation &                 e1)
 : std::logic_error(string(tp == eventlist_conflict_error::evt ? "Event-list " : "Condition-list") + asString(e1)
                    + " has conflicting events")
 {
 }
 
-eventlist_conflict_error::eventlist_conflict_error(const EventList &e1, const EventList &e2)
+eventlist_conflict_error::eventlist_conflict_error(const EventCatenation &e1, const EventCatenation &e2)
 : std::logic_error("Event-list " + asString(e1) + " and Condition-list " + asString(e2) + " have conflicting events")
 {
 }
@@ -97,9 +99,7 @@ EventValueRange::EventValueRange(const set<VAR_UINT> &values) : values_(), type_
 EventValueRange::EventValueRange(const set<VAR_DATE> &values) : values_(), type_(discrete)
 {
     for(auto value: values)
-    {
         insert(value);
-    }
 }
 
 /**
@@ -108,9 +108,7 @@ EventValueRange::EventValueRange(const set<VAR_DATE> &values) : values_(), type_
 EventValueRange::EventValueRange(const set<VAR_STRING> &values) : values_(), type_(discrete)
 {
     for(auto value: values)
-    {
         insert(value);
-    }
 }
 
 /**
@@ -161,11 +159,13 @@ EventValueRange::EventValueRange(DistributionType tp) : values_(), type_(tp)
     if(tp == exponential)
     {
         VAR_FLOAT_INTERVAL interval(0.0L, {finiteMax, rightOpen});
+
         addRange(interval.left(), interval.right());
     }
     else if(tp == gaussian)
     {
         VAR_FLOAT_INTERVAL interval;
+
         addRange(interval.left(), interval.right());
     }
 }
@@ -234,9 +234,7 @@ bool EventValueRange::validValue(const Var &value) const
 bool EventValueRange::add(const Var &val)
 {
     if(validType(val))
-    {
         return (values_.insert(val).second);
-    }
 
     return (false);
 }
@@ -255,14 +253,12 @@ bool EventValueRange::validType(const Var &value) const
  * values with the name. Helper for the creation of canonised (full)
  * probability table
  */
-EVENT_SET EventValueRange::makeEventSet(const string &name) const
+EventCollection EventValueRange::makeEventSet(const string &name) const
 {
-    EVENT_SET reval;
+    EventCollection reval;
 
-    for(auto it = values_.begin(); it != values_.end(); it++)
-    {
-        reval.insert(Event(name, *it, true));
-    }
+    for(auto value: values_)
+        reval.insert(Event(name, value, true));
 
     return (reval);
 }
@@ -272,9 +268,7 @@ EVENT_SET EventValueRange::makeEventSet(const string &name) const
  */
 ostream &operator<<(ostream &os, const EventValueRange &evr)
 {
-    os << evr.values_;
-
-    return (os);
+    return (os << evr.values_);
 }
 
 // static member initialization
@@ -397,14 +391,6 @@ Event::Event(const string &name, const char *s, Operation *op)
 {
 }
 
-Event::Event(const Event &rhs)
-: name_(rhs.name_)
-, value_(rhs.value_)
-, operation_(rhs.operation_)
-, isPlaceHolder_(rhs.isPlaceHolder_)
-{
-}
-
 /**
  * extra dummy parameter dummyConfirm to allow Var as parameter
  */
@@ -416,19 +402,6 @@ Event::Event(const string &name, const Var &a, bool dummyConfirm, Operation *op)
     if(!dummyConfirm)
         throw event_error("Event can only be created if dummy confirm "
                           "parameter is set to true!");
-}
-
-Event &Event::operator=(const Event &rhs)
-{
-    if(&rhs != this)
-    {
-        name_          = rhs.name_;
-        value_         = rhs.value_;
-        operation_     = rhs.operation_;
-        isPlaceHolder_ = rhs.isPlaceHolder_;
-    }
-
-    return (*this);
 }
 
 Event &Event::operator()(const string &name, const Var &value, Operation *op)
@@ -499,12 +472,12 @@ bool operator<(const Event &lhs, const Event &rhs)
                 && (string(typeid(lhs.operation_).name()) < string(typeid(rhs.operation_).name()))));
 }
 
-EventList::EventList(const Event &event)
+EventCatenation::EventCatenation(const Event &event)
 {
     evts_.insert(event);
 }
 
-EventList &EventList::operator&&(const Event &e)
+EventCatenation &EventCatenation::operator&&(const Event &e)
 {
     if(!e.empty())
         evts_.insert(e);
@@ -512,7 +485,7 @@ EventList &EventList::operator&&(const Event &e)
     return (*this);
 }
 
-EventList &EventList::operator&&(const EventList &el)
+EventCatenation &EventCatenation::operator&&(const EventCatenation &el)
 {
     for(auto it = el.cbegin(); it != el.cend(); it++)
         *this &&*it;
@@ -520,20 +493,20 @@ EventList &EventList::operator&&(const EventList &el)
     return (*this);
 }
 
-bool EventList::empty() const
+bool EventCatenation::empty() const
 {
     return (evts_.empty());
 }
 
-size_t EventList::size() const
+size_t EventCatenation::size() const
 {
     return (evts_.size());
 }
 
 /**
- * two EventLists are notConflicting if their Events are pairwise notConflicting
+ * two EventCatenations are notConflicting if their Events are pairwise notConflicting
  */
-bool EventList::notConflicting(const EventList &eList) const
+bool EventCatenation::notConflicting(const EventCatenation &eList) const
 {
     bool reval = true;
     auto el1It = eList.cbegin();
@@ -558,7 +531,7 @@ bool EventList::notConflicting(const EventList &eList) const
     return (reval);
 }
 
-bool EventList::matches(const EventList &eList) const
+bool EventCatenation::matches(const EventCatenation &eList) const
 {
     bool reval  = size() == eList.size();
     auto itThis = cbegin();
@@ -572,7 +545,7 @@ bool EventList::matches(const EventList &eList) const
     return (reval);
 }
 
-Event EventList::eventByName(const string &name) const
+Event EventCatenation::eventByName(const string &name) const
 {
     for(auto it = cbegin(); it != cend(); it++)
         if(it->name() == name)
@@ -581,7 +554,7 @@ Event EventList::eventByName(const string &name) const
     return (Event());
 }
 
-bool EventList::moveEvent(const string &name, EventList &el)
+bool EventCatenation::moveEvent(const string &name, EventCatenation &el)
 {
     bool hasBeenMoved = false;
 
@@ -596,7 +569,7 @@ bool EventList::moveEvent(const string &name, EventList &el)
     return (hasBeenMoved);
 }
 
-bool EventList::hasEvent(const string &e) const
+bool EventCatenation::hasEvent(const string &e) const
 {
     for(auto it = evts_.begin(); it != evts_.end(); it++)
         if(it->name() == e)
@@ -605,32 +578,32 @@ bool EventList::hasEvent(const string &e) const
     return (false);
 }
 
-EventList::EVENT_CONTAINER_ITER EventList::begin()
+EventCatenation::EventsIterator EventCatenation::begin()
 {
     return (evts_.begin());
 }
 
-EventList::EVENT_CONTAINER_CITER EventList::cbegin() const
+EventCatenation::EventsConstIterator EventCatenation::cbegin() const
 {
     return (evts_.begin());
 }
 
-EventList::EVENT_CONTAINER_ITER EventList::end()
+EventCatenation::EventsIterator EventCatenation::end()
 {
     return (evts_.end());
 }
 
-EventList::EVENT_CONTAINER_CITER EventList::cend() const
+EventCatenation::EventsConstIterator EventCatenation::cend() const
 {
     return (evts_.end());
 }
 
-void EventList::erase(EVENT_CONTAINER_ITER it)
+void EventCatenation::erase(EventsIterator it)
 {
     evts_.erase(it);
 }
 
-bool operator==(const EventList &lhs, const EventList &rhs)
+bool operator==(const EventCatenation &lhs, const EventCatenation &rhs)
 {
     return (lhs.evts_ == rhs.evts_);
 }
@@ -641,7 +614,7 @@ bool operator==(const EventList &lhs, const EventList &rhs)
  * wholly contained in the other. In that case the shorter list is "less"
  * than the longer list
  */
-bool operator<(const EventList &lhs, const EventList &rhs)
+bool operator<(const EventCatenation &lhs, const EventCatenation &rhs)
 {
     bool reval     = true;
     auto itLhs     = lhs.cbegin();
@@ -678,7 +651,7 @@ ostream &operator<<(std::ostream &os, const Event &rhs)
     return (os << rhs.name() << rhs.opDesc() << rhs.varValue());
 }
 
-ostream &operator<<(ostream &os, const EventList &eList)
+ostream &operator<<(ostream &os, const EventCatenation &eList)
 {
     size_t i        = 0;
     size_t maxIndex = eList.size() - 1;
@@ -692,16 +665,16 @@ ostream &operator<<(ostream &os, const EventList &eList)
     return (os);
 }
 
-EventList operator&&(const Event &lhs, const Event &rhs)
+EventCatenation operator&&(const Event &lhs, const Event &rhs)
 {
-    EventList reval(lhs);
+    EventCatenation reval(lhs);
 
     reval &&rhs;
 
     return (reval);
 }
 
-CondEvent::CondEvent(const EventList &eList, const EventList &condList) : eList_(eList), condList_(condList)
+CondEvent::CondEvent(const EventCatenation &eList, const EventCatenation &condList) : eList_(eList), condList_(condList)
 {
     // The following errors prevent us from creating mis-formed CondEvents
     if(!eList_.notConflicting(eList_))
@@ -753,12 +726,12 @@ size_t CondEvent::conditionSize() const
     return (condList_.size());
 }
 
-const EventList &CondEvent::event() const
+const EventCatenation &CondEvent::event() const
 {
     return (eList_);
 }
 
-const EventList &CondEvent::condition() const
+const EventCatenation &CondEvent::condition() const
 {
     return (condList_);
 }
@@ -770,7 +743,7 @@ const EventList &CondEvent::condition() const
  */
 CondEvent CondEvent::filterConditions(const set<string> &conds) const
 {
-    EventList filteredConds;
+    EventCatenation filteredConds;
     // first add all conditions that can be found in the filter-set (conds)
     // to the new filtered conditions
     for(auto it = condList_.cbegin(); it != condList_.cend(); it++)
@@ -832,9 +805,9 @@ bool CondEvent::chainRule(CondEvent::CONDEVENT_LIST &cel, const string &name) co
     if(cel.empty())
         cel.push_back(*this);
 
-    bool      reval = true;
-    EventList newEl;
-    EventList newCond = cel.back().condList_;
+    bool            reval = true;
+    EventCatenation newEl;
+    EventCatenation newCond = cel.back().condList_;
 
     for(auto it = cel.back().eList_.begin(); (cel.back().eList_.size() > 1) && (it != cel.back().eList_.end()); it++)
     {
@@ -911,7 +884,7 @@ ostream &operator<<(ostream &os, const CondEvent &ce)
     return (os);
 }
 
-CondEvent operator||(const EventList &lhs, const EventList &rhs)
+CondEvent operator||(const EventCatenation &lhs, const EventCatenation &rhs)
 {
     CondEvent reval(lhs, rhs);
 
@@ -1013,7 +986,7 @@ size_t ProbabilityFunction::getNumberOfConditions() const
  */
 UniformFloatFunction::UniformFloatFunction(VAR_FLOAT low, VAR_FLOAT high, const VALUERANGES_TYPE &conditionValueRanges)
 {
-    param_[EventList()] = UNIF_PARAM(low, high);
+    param_[EventCatenation()] = UNIF_PARAM(low, high);
 }
 
 /**
@@ -1050,7 +1023,7 @@ long double UniformFloatFunction::P(const CondEvent &ce) const
     return (0.0L);
 }
 
-long double UniformFloatFunction::P(const EventList &el) const
+long double UniformFloatFunction::P(const EventCatenation &el) const
 {
     return (P(CondEvent(el)));
 }
@@ -1147,7 +1120,7 @@ ostream &operator<<(ostream &os, const UniformFloatFunction &uff)
  */
 GaussFunction::GaussFunction(long double mu, long double sigma)
 {
-    param_[EventList()] = GAUSS_PARAM(mu, sigma);
+    param_[EventCatenation()] = GAUSS_PARAM(mu, sigma);
 }
 
 /**
@@ -1188,7 +1161,7 @@ long double GaussFunction::P(const CondEvent &ce) const
 /**
  * Probability of an interval. Returns zero if the Event is not an interval-event.
  */
-long double GaussFunction::P(const EventList &el) const
+long double GaussFunction::P(const EventCatenation &el) const
 {
     return (P(CondEvent(el)));
 }
@@ -1304,7 +1277,7 @@ ostream &operator<<(ostream &os, const GaussFunction &d)
  */
 ExponentialFunction::ExponentialFunction(VAR_FLOAT lambda)
 {
-    param_[EventList()] = lambda;
+    param_[EventCatenation()] = lambda;
 }
 
 /**
@@ -1337,9 +1310,9 @@ long double ExponentialFunction::P(const CondEvent &ce) const
 }
 
 /**
- * Delegate Probability from from EventList to avoid excessive casting.
+ * Delegate Probability from from EventCatenation to avoid excessive casting.
  */
-long double ExponentialFunction::P(const EventList &el) const
+long double ExponentialFunction::P(const EventCatenation &el) const
 {
     return (P(CondEvent(el)));
 }
@@ -1410,7 +1383,7 @@ long double ExponentialFunction::lambda(const CondEvent &ce) const
  */
 long double ExponentialFunction::ln2ByLambda(const CondEvent &ce) const
 {
-    return (ln_2 / lambda(ce));
+    return (std::numbers::ln2_v<long double> / lambda(ce));
 }
 
 /**
@@ -1453,9 +1426,7 @@ bool DiscreteProbability::makeUniform()
     long double prob = 1.0 / static_cast<long double>(numberOfValues);
 
     for(auto value: values_)
-    {
         value.second = prob;
-    }
 
     setModified(false);
 
@@ -1528,7 +1499,7 @@ bool DiscreteProbability::normalise()
     return (reval);
 }
 
-void spread(vector<CondEvent> &condEvents, const EVENT_SET &ev, bool isCond, size_t module)
+void spread(vector<CondEvent> &condEvents, const EventCollection &ev, bool isCond, size_t module)
 {
     auto   evIt  = ev.begin();
     size_t count = 0;
@@ -1564,14 +1535,10 @@ bool DiscreteProbability::canonise()
                                  " value-range to canonise discrete distribution.");
 
     for(auto eRangeIt = eventValueRanges_.begin(); eRangeIt != eventValueRanges_.end(); eRangeIt++)
-    {
         numCondEvents *= eRangeIt->second.size();
-    }
 
     for(auto cRangeIt = conditionValueRanges_.begin(); cRangeIt != conditionValueRanges_.end(); cRangeIt++)
-    {
         numCondEvents *= cRangeIt->second.size();
-    }
 
     condEvents.resize(numCondEvents);
 
@@ -1579,7 +1546,7 @@ bool DiscreteProbability::canonise()
 
     for(auto eRangeIt = eventValueRanges_.begin(); eRangeIt != eventValueRanges_.end(); eRangeIt++)
     {
-        EVENT_SET eSet = eRangeIt->second.makeEventSet(eRangeIt->first);
+        EventCollection eSet = eRangeIt->second.makeEventSet(eRangeIt->first);
 
         spread(condEvents, eSet, false, module);
         module *= eSet.size();
@@ -1587,17 +1554,15 @@ bool DiscreteProbability::canonise()
 
     for(auto cRangeIt = conditionValueRanges_.begin(); cRangeIt != conditionValueRanges_.end(); cRangeIt++)
     {
-        EVENT_SET eSet = cRangeIt->second.makeEventSet(cRangeIt->first);
+        EventCollection eSet = cRangeIt->second.makeEventSet(cRangeIt->first);
 
         spread(condEvents, eSet, true, module);
         module *= eSet.size();
     }
 
     for(auto ceIt = condEvents.begin(); ceIt != condEvents.end(); ceIt++)
-    {
         if(values_.find(*ceIt) == values_.end())
             values_[*ceIt] = 0.0L;
-    }
 
     return (reval);
 }
@@ -1737,21 +1702,15 @@ ostream &operator<<(ostream &os, const DiscreteProbability &d)
     os << "Event value ranges:" << endl;
 
     for(auto evRange: d.eventValueRanges_)
-    {
         os << "\t" << evRange.first << ": " << evRange.second << endl;
-    }
 
     os << "Condition value ranges:" << endl;
 
     for(auto condRange: d.conditionValueRanges_)
-    {
         os << "\t" << condRange.first << ": " << condRange.second << endl;
-    }
 
     for(auto value: d.values_)
-    {
         os << "P(" << value.first << ")=" << value.second << endl;
-    }
 
     return (os);
 }

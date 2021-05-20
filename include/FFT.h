@@ -63,12 +63,16 @@ class FFT
     , sampleRate_(sampleRate)
     {
         tapeOfDoubles_.resize(numOfPoints_);
+
         if(calibrate)
         {
             // 1 kHz calibration wave
-            FLOATTYPE TWO_KILO_PI = 2.0 * FLOATTYPE(PI) * 1000.0L;
+            FLOATTYPE TWO_KILO_PI        = 2.0 * FLOATTYPE(PI) * 1000.0L;
+            FLOATTYPE CALIBRATION_FACTOR = 1600.0L;
+
             for(INTTYPE i = 0; i < numOfPoints_; i++)
-                tapeOfDoubles_[i] = 1600.0L * sin(TWO_KILO_PI * i / sampleRate_);
+                tapeOfDoubles_[i] =
+                 CALIBRATION_FACTOR * std::sin((TWO_KILO_PI * i) / static_cast<FLOATTYPE>(sampleRate_));
         }
         else
         {
@@ -76,7 +80,7 @@ class FFT
                 tapeOfDoubles_[i] = FLOATTYPE(0);
         }
 
-        sqrtOfPoints_ = sqrt(static_cast<FLOATTYPE>(numOfPoints_));
+        sqrtOfPoints_ = std::sqrt(static_cast<FLOATTYPE>(numOfPoints_));
         //            // calculate binary log
         //            logOfPoints_ = 0;
         //            numOfPoints--;
@@ -98,8 +102,8 @@ class FFT
             for(INTTYPE i = 0; i < numOfPoints_; i++)
             {
                 const static FLOATTYPE TWO_PI = 2. * PI;
-                FLOATTYPE              re     = cos(TWO_PI * i / FLOATTYPE(powTwo[l]));
-                FLOATTYPE              im     = -sin(TWO_PI * i / FLOATTYPE(powTwo[l]));
+                FLOATTYPE              re     = std::cos(TWO_PI * i / FLOATTYPE(powTwo[l]));
+                FLOATTYPE              im     = -std::sin(TWO_PI * i / FLOATTYPE(powTwo[l]));
 
                 complexExpontials_[l][i] = COMPLEXVALUE(re, im);
             }
@@ -201,6 +205,7 @@ class FFT
                     COMPLEXVALUE T = U;
 
                     T *= transformedComplexVector_[i + step];
+
                     transformedComplexVector_[i + step] = transformedComplexVector_[i];
                     transformedComplexVector_[i + step] -= T;
                     transformedComplexVector_[i] += T;
@@ -246,8 +251,9 @@ class FFT
 
     INTTYPE getFrequencyOfSampleAt(INTTYPE point) const
     {
-        // return frequency in Hz of a given point
         assert(point < numOfPoints_);
+
+        // return frequency in Hz of a given point
         INTTYPE x = sampleRate_ * point;
 
         return (x / numOfPoints_);
@@ -255,7 +261,7 @@ class FFT
 
     INTTYPE HzToPoint(INTTYPE freq) const
     {
-        return (INTTYPE)numOfPoints_ * freq / sampleRate_;
+        return ((numOfPoints_ * freq) / sampleRate_);
     }
 
     INTTYPE MaxFreq() const
@@ -267,7 +273,7 @@ class FFT
     {
         assert(i < numOfPoints_);
 
-        return ((INTTYPE)tapeOfDoubles_[i]);
+        return (static_cast<INTTYPE>(tapeOfDoubles_[i]));
     }
 
     private:

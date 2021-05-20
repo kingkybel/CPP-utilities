@@ -78,8 +78,8 @@ void statutilTest::util_event_test()
     ////BOOST_TEST_MESSAGE("====== Testing event/eventlist/condition event functions ========");
     {
         ////BOOST_TEST_MESSAGE("Two different EventLists of size 1");
-        EventList el1 = Event("E1", true);
-        EventList el2 = Event("E3", false);
+        EventCatenation el1 = Event("E1", true);
+        EventCatenation el2 = Event("E3", false);
         CPPUNIT_ASSERT(el1 < el2);
 
         ////BOOST_TEST_MESSAGE("Two *IDENTICAL* EventLists of size 1");
@@ -134,9 +134,9 @@ void statutilTest::util_event_test()
     }
     {
         ////BOOST_TEST_MESSAGE("Check Events/EventLists creation");
-        EventList              el1 = Event("E1", true) && Event("E2", VAR_STRING("fdsa"));
-        EventList              el2 = Event("E3", false) && Event("E4", VAR_STRING("dfsg"));
-        map<EventList, string> elMap;
+        EventCatenation              el1 = Event("E1", true) && Event("E2", VAR_STRING("fdsa"));
+        EventCatenation              el2 = Event("E3", false) && Event("E4", VAR_STRING("dfsg"));
+        map<EventCatenation, string> elMap;
         elMap[el1] = VAR_STRING("1st");
         elMap[el2] = VAR_STRING("2nd");
 
@@ -154,8 +154,8 @@ void statutilTest::util_event_test()
     }
     {
         ACCUMULATION_MAP accMap;
-        EventList        el1 = Event("E1", true) && Event("E2", VAR_STRING("fdsa"));
-        EventList        el2 = Event("E3", false) && Event("E4", VAR_STRING("dfsg"));
+        EventCatenation  el1 = Event("E1", true) && Event("E2", VAR_STRING("fdsa"));
+        EventCatenation  el2 = Event("E3", false) && Event("E4", VAR_STRING("dfsg"));
         accMap[el1]          = ACCUMULATION_DATA(0, 0);
     }
     {
@@ -166,8 +166,8 @@ void statutilTest::util_event_test()
     }
     {
         ////BOOST_TEST_MESSAGE("Check CondEvents");
-        Event     e;
-        EventList el(e);  // empty event is not added so results in empty list
+        Event           e;
+        EventCatenation el(e);  // empty event is not added so results in empty list
         CPPUNIT_ASSERT(el.empty());
 
         el = Event("SomeName", true);  // list is initialised with one element
@@ -333,13 +333,13 @@ void statutilTest::util_event_operation_test()
         ////BOOST_TEST_MESSAGE("Two EventLists of equal size >1");
         ////BOOST_TEST_MESSAGE("match to interval");
 
-        EventList el1;  // E1 in [2014-02-03..2015-02-03], E2 < 11 , E3 >= "dieter"
-        el1&&     Event("E1", Interval<VAR_DATE>(toDate(2014, 2, 3), toDate(2015, 2, 3)));
-        el1&&     Event("E2", VAR_INT(11), &Event::less);
-        el1&&     Event("E3", VAR_STRING("dieter"), &Event::greaterEqual);
+        EventCatenation el1;  // E1 in [2014-02-03..2015-02-03], E2 < 11 , E3 >= "dieter"
+        el1&&           Event("E1", Interval<VAR_DATE>(toDate(2014, 2, 3), toDate(2015, 2, 3)));
+        el1&&           Event("E2", VAR_INT(11), &Event::less);
+        el1&&           Event("E3", VAR_STRING("dieter"), &Event::greaterEqual);
 
         // match only if *ALL* events are matching
-        EventList el2;
+        EventCatenation el2;
         el2 = Event("E1", toDate(2014, 2, 3));
         el2&& Event("E2", VAR_INT(10));
         el2&& Event("E3", VAR_STRING("dieter"));

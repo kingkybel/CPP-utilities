@@ -208,7 +208,7 @@ void bayesutilTest::util_bayes_test()
         CPPUNIT_ASSERT(p > 0.0L);
         CPPUNIT_ASSERT(p <= 1.0L);
 
-        EventList irrelevant;
+        EventCatenation irrelevant;
         CondEvent e = bn.bayesBallAlgorithm(CondEvent(Event("Rain", VAR_UINT(4)), Event("Cloud", true)), irrelevant);
         e = bn.bayesBallAlgorithm(CondEvent(Event("Rain", VAR_UINT(4)), Event("Sprinkler", true)), irrelevant);
     }
@@ -220,9 +220,9 @@ void bayesutilTest::util_bayes_test()
         bn.addNode("Z", EventValueRange(true), "");
         bn.addCauseEffect("X", "Y");
         bn.addCauseEffect("Y", "Z");
-        EventList irrelevant;
-        CondEvent ce(Event("Z", true), Event("X", true) && Event("Y", true));
-        CondEvent e = bn.bayesBallAlgorithm(ce, irrelevant);
+        EventCatenation irrelevant;
+        CondEvent       ce(Event("Z", true), Event("X", true) && Event("Y", true));
+        CondEvent       e = bn.bayesBallAlgorithm(ce, irrelevant);
 
         bn.clear();
 

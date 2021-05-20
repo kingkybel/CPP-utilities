@@ -28,188 +28,148 @@
 #include <string>
 namespace util
 {
-class Brackets
-{
+    class Brackets
+    {
     public:
-    /**
-     * Enumeration of common bracket types.
-     */
-    enum Type
-    {
         /**
-         * No brackets.
+         * Enumeration of common bracket types.
          */
-        NONE,
-        /**
-         * Curly brackets: "{", "}".
-         */
-        BRACE,
-        /**
-         * Square brackets: "[", "]".
-         */
-        BRACKET,
-        /**
-         * Chevron brackets: "<", ">".
-         */
-        CHEFRON,
-        /**
-         * Round brackets: "(", ")".
-         */
-        ROUND,
-        /**
-         * Pipe brackets: "|", "|".
-         */
-        PIPE,
-        /**
-         * Slash brackets: "/","/".
-         */
-        SLASH,
-        /**
-         * Backslash brackets: "\","\".
-         */
-        BACKSLASH,
-        /**
-         * UNIX-path brackets.
-         */
-        UNIXPATH,
-        /**
-         * Windows-path brackets.
-         */
-        WINDOWSPATH,
-        /**
-         * Singles quotes "\'".
-         */
-        SINGLEQUOTES,
-        /**
-         * Double quotes "\"".
-         */
-        DOUBLEQUOTES,
-        /**
-         * user defined brackets.
-         */
-        USER
-    };
+        enum Type
+        {
+            /**
+             * No brackets.
+             */
+            NONE,
+            /**
+             * Curly brackets: "{", "}".
+             */
+            BRACE,
+            /**
+             * Square brackets: "[", "]".
+             */
+            BRACKET,
+            /**
+             * Chevron brackets: "<", ">".
+             */
+            CHEFRON,
+            /**
+             * Round brackets: "(", ")".
+             */
+            ROUND,
+            /**
+             * Pipe brackets: "|", "|".
+             */
+            PIPE,
+            /**
+             * Slash brackets: "/","/".
+             */
+            SLASH,
+            /**
+             * Backslash brackets: "\","\".
+             */
+            BACKSLASH,
+            /**
+             * UNIX-path brackets.
+             */
+            UNIXPATH,
+            /**
+             * Windows-path brackets.
+             */
+            WINDOWSPATH,
+            /**
+             * Singles quotes "\'".
+             */
+            SINGLEQUOTES,
+            /**
+             * Double quotes "\"".
+             */
+            DOUBLEQUOTES,
+            /**
+             * user defined brackets.
+             */
+            USER
+        };
 
-    /**
-     * Default constructor.
-     * @param type standard type of cracket. defaulted to NONE.
-     */
-    Brackets(Type type = NONE)
-    : type_(type)
-    , left_(type == NONE ? "" :
-                           type == BRACE ?
-                           "{" :
-                           type == BRACKET ?
-                           "[" :
-                           type == CHEFRON ?
-                           "<" :
-                           type == ROUND ?
-                           "(" :
-                           type == PIPE ?
-                           "|" :
-                           type == SLASH ?
-                           "/" :
-                           type == BACKSLASH ?
-                           "\\" :
-                           type == UNIXPATH ?
-                           "/" :
-                           type == WINDOWSPATH ? ":\\" : type == SINGLEQUOTES ? "\'" : type == DOUBLEQUOTES ? "\"" : "")
-    , inner_(type == NONE ?
-              " " :
-              type == BRACE ?
-              "," :
-              type == BRACKET ?
-              "," :
-              type == CHEFRON ?
-              "," :
-              type == ROUND ?
-              "," :
-              type == PIPE ?
-              "|" :
-              type == SLASH ? "/" :
-                              type == BACKSLASH ?
-                              "\\" :
-                              type == UNIXPATH ?
-                              "/" :
-                              type == WINDOWSPATH ? "\\" : type == SINGLEQUOTES ? "" : type == DOUBLEQUOTES ? "" : "")
-    , right_(type == NONE ?
-              "" :
-              type == BRACE ?
-              "}" :
-              type == BRACKET ?
-              "]" :
-              type == CHEFRON ?
-              ">" :
-              type == ROUND ?
-              ")" :
-              type == PIPE ?
-              "|" :
-              type == SLASH ? "/" :
-                              type == BACKSLASH ?
-                              "\\" :
-                              type == UNIXPATH ?
-                              "" :
-                              type == WINDOWSPATH ? "" : type == SINGLEQUOTES ? "\'" : type == DOUBLEQUOTES ? "\"" : "")
-    {
-    }
+        /**
+         * Default constructor.
+         * @param type standard type of bracket. defaulted to NONE.
+         */
+        Brackets (Type type = NONE)
+            : type_ (type), left_ (
+                type == NONE ? "" : type == BRACE ? "{" : type == BRACKET ? "[" : type == CHEFRON ? "<" :
+                type == ROUND ? "(" : type == PIPE ? "|" : type == SLASH ? "/" : type == BACKSLASH ? "\\" :
+                type == UNIXPATH ? "/" : type == WINDOWSPATH ? ":\\" : type == SINGLEQUOTES ? "\'" :
+                type == DOUBLEQUOTES ? "\"" : ""), inner_ (
+                type == NONE ? " " : type == BRACE ? "," : type == BRACKET ? "," : type == CHEFRON ? "," :
+                type == ROUND ? "," : type == PIPE ? "|" : type == SLASH ? "/" : type == BACKSLASH ? "\\" :
+                type == UNIXPATH ? "/" : type == WINDOWSPATH ? "\\" : type == SINGLEQUOTES ? "" :
+                type == DOUBLEQUOTES ? "" : ""), right_ (
+                type == NONE ? "" : type == BRACE ? "}" : type == BRACKET ? "]" : type == CHEFRON ? ">" :
+                type == ROUND ? ")" : type == PIPE ? "|" : type == SLASH ? "/" : type == BACKSLASH ? "\\" :
+                type == UNIXPATH ? "" : type == WINDOWSPATH ? "" : type == SINGLEQUOTES ? "\'" :
+                type == DOUBLEQUOTES ? "\"" : "")
+        {
+        }
 
-    /**
-     * Custom brackets constructor.
-     * @param left left bracket string
-     * @param inner inner bracket string
-     * @param right right bracket string
-     */
-    Brackets(const std::string &left, const std::string &inner, const std::string &right)
-    : type_(USER)
-    , left_(left)
-    , inner_(inner)
-    , right_(right)
-    {
-    }
+        /**
+         * Custom brackets constructor.
+         *
+         * @param left left bracket string
+         * @param inner inner bracket string
+         * @param right right bracket string
+         */
+        Brackets (const std::string &left, const std::string &inner, const std::string &right)
+            : type_ (USER), left_ (left), inner_ (inner), right_ (right)
+        {
+        }
 
-    /**
-     * Get the left (opening) bracket.
-     * @param customLeft custom string to tack to the left of the separator
-     * @param customRight custom string to tack to the right of the separator
-     *
-     * @return the left bracket as string.
-     */
-    const std::string &left(const std::string &customLeft = "", const std::string &customRight = "") const
-    {
-        return (customLeft + left_ + customRight);
-    }
+        Brackets (const Brackets &rhs) = default;
+        Brackets operator = (const Brackets &rhs) = default;
 
-    /**
-     * Get the inner separator.
-     * @param customLeft custom string to tack to the left of the separator
-     * @param customRight custom string to tack to the right of the separator
-     *
-     * @return the left bracket as string.
-     */
-    const std::string &inner(const std::string &customLeft = "", const std::string &customRight = "") const
-    {
-        return (customLeft + inner_ + customRight);
-    }
+        /**
+         * Get the left (opening) bracket.
+         * @param customLeft custom string to tack to the left of the separator
+         * @param customRight custom string to tack to the right of the separator
+         *
+         * @return the left bracket as string.
+         */
+        const std::string& left (const std::string &customLeft = "", const std::string &customRight = "") const
+        {
+            return (customLeft + left_ + customRight);
+        }
 
-    /**
-     * Get the right (closing) bracket.
-     * @param customLeft custom string to tack to the left of the separator
-     * @param customRight custom string to tack to the right of the separator
-     *
-     * @return the right bracket as string.
-     */
-    const std::string &right(const std::string &customLeft = "", const std::string &customRight = "") const
-    {
-        return (customLeft + right_ + customRight);
-    }
+        /**
+         * Get the inner separator.
+         * @param customLeft custom string to tack to the left of the separator
+         * @param customRight custom string to tack to the right of the separator
+         *
+         * @return the left bracket as string.
+         */
+        const std::string& inner (const std::string &customLeft = "", const std::string &customRight = "") const
+        {
+            return (customLeft + inner_ + customRight);
+        }
+
+        /**
+         * Get the right (closing) bracket.
+         * @param customLeft custom string to tack to the left of the separator
+         * @param customRight custom string to tack to the right of the separator
+         *
+         * @return the right bracket as string.
+         */
+        const std::string& right (const std::string &customLeft = "", const std::string &customRight = "") const
+        {
+            return (customLeft + right_ + customRight);
+        }
 
     private:
-    const Type         type_;
-    const std::string &left_;
-    const std::string &inner_;
-    const std::string &right_;
-};
-};
+        const Type type_;
+        const std::string &left_;
+        const std::string &inner_;
+        const std::string &right_;
+    };
+}
+;
 // namespace util
 
 #endif  // NS_UTIL_BRACKETS_H_INCLUDED

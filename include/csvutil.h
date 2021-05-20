@@ -28,11 +28,7 @@
 #include <anyutil.h>
 #include <boost/config/warning_disable.hpp>
 #include <boost/date_time.hpp>  // gregorian dates/posix time/...
-#include <boost/spirit/include/phoenix_core.hpp>
-#include <boost/spirit/include/phoenix_operator.hpp>
-#include <boost/spirit/include/phoenix_stl.hpp>
-#include <boost/spirit/include/qi.hpp>
-#include <ctime>  // for struct tm
+#include <ctime>                // for struct tm
 #include <deque>
 #include <exception>
 #include <fstream>

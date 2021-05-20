@@ -227,6 +227,18 @@ cd "${TOP}"
 makeDirectory "${NBTMPDIR}/util/lib"
 copyFileToTmpDir "${OUTPUT_PATH}" "${NBTMPDIR}/${PACKAGE_TOP_DIR}lib/${OUTPUT_BASENAME}" 0644
 
+cd "${TOP}"
+makeDirectory "${NBTMPDIR}/util/lib"
+copyFileToTmpDir "${OUTPUT_PATH}" "${NBTMPDIR}/${PACKAGE_TOP_DIR}lib/${OUTPUT_BASENAME}" 0644
+
+cd "${TOP}"
+makeDirectory "${NBTMPDIR}/util/lib"
+copyFileToTmpDir "${OUTPUT_PATH}" "${NBTMPDIR}/${PACKAGE_TOP_DIR}lib/${OUTPUT_BASENAME}" 0644
+
+cd "${TOP}"
+makeDirectory "${NBTMPDIR}/util/lib"
+copyFileToTmpDir "${OUTPUT_PATH}" "${NBTMPDIR}/${PACKAGE_TOP_DIR}lib/${OUTPUT_BASENAME}" 0644
+
 
 # Generate tar file
 cd "${TOP}"
