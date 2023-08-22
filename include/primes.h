@@ -290,7 +290,7 @@ class prime_checker
 
     bool isPrime(unsigned long long n)
     {
-        static bool madePartial = makePartialSieve();
+        //static bool madePartial = makePartialSieve();
 
         if(n < SIZE_ULL)
             return (sieve[n]);
@@ -298,7 +298,7 @@ class prime_checker
         if(sieve[n % partialSieveSize] == false)
             return (false);
 
-        unsigned long long currentStepIndex = 1;
+        //unsigned long long currentStepIndex = 1;
 
         for(unsigned long long divisor = 2; divisor < ROOT_SIZE_ULL; divisor++)
         {

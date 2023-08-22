@@ -245,7 +245,7 @@ void statutilTest::util_event_test()
         strSet.clear();
         strSet.insert("E3");
         strSet.insert("E5");
-        ce = Event("E1", true) || Event("E3", true) && Event("E4", true) && Event("E5", true);
+        ce = Event("E1", true) || (Event("E3", true) && Event("E4", true) && Event("E5", true));
         ce = ce.filterConditions(strSet);
         CPPUNIT_ASSERT(ce.hasEvent("E1"));
         CPPUNIT_ASSERT(ce.hasCondition("E3"));
@@ -427,8 +427,8 @@ void statutilTest::util_stat_test()
         CPPUNIT_ASSERT(!d.isModified());
         CPPUNIT_ASSERT(!d.isUniform());
         CPPUNIT_ASSERT(d.isDistribution());
-        CPPUNIT_ASSERT(d.P(Event("FEvent", 5.0L) || Event("CCond", 'B') && Event("BCond", false)) < 1.0L);
-        CPPUNIT_ASSERT(d.P(Event("FEvent", 5.0L) || Event("CCond", 'B') && Event("BCond", false)) > 0.0L);
+        CPPUNIT_ASSERT(d.P(Event("FEvent", 5.0L) || (Event("CCond", 'B') && Event("BCond", false))) < 1.0L);
+        CPPUNIT_ASSERT(d.P(Event("FEvent", 5.0L) || (Event("CCond", 'B') && Event("BCond", false))) > 0.0L);
         ////BOOST_TEST_MESSAGE(d);
     }
     {

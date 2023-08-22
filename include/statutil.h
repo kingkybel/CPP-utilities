@@ -740,8 +740,8 @@ class EventValueRange
         return (reval);
     }
 
-    DistributionType type_{discrete};  ///< Indicates the type range.
     RangeValues      values_;          ///< Collection describing the range.
+    DistributionType type_{discrete};  ///< Indicates the type range.
 };
 
 /**

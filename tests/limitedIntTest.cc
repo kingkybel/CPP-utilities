@@ -61,12 +61,12 @@ void LimitedValuesTest::tearDown()
 template<typename T_, T_ min, T_ max>
 void checkAllValidValues()
 {
-    typedef limited_int_traits<T_, min, max, resolve_modulo, convert_scale>           traitsModuloScale;
+    //typedef limited_int_traits<T_, min, max, resolve_modulo, convert_scale>           traitsModuloScale;
     typedef limited_int_traits<T_, min, max, resolve_modulo, convert_circular_scale>  traitsModuloCircularScale;
-    typedef limited_int_traits<T_, min, max, resolve_invalid, convert_scale>          traitsInvalidScale;
+    //typedef limited_int_traits<T_, min, max, resolve_invalid, convert_scale>          traitsInvalidScale;
     typedef limited_int_traits<T_, min, max, resolve_invalid, convert_circular_scale> traitsInvalidCircularScale;
     typedef limited_int_traits<T_, min, max, resolve_throw, convert_scale>            traitsThrowScale;
-    typedef limited_int_traits<T_, min, max, resolve_throw, convert_circular_scale>   traitsThrowCircularScale;
+    //typedef limited_int_traits<T_, min, max, resolve_throw, convert_circular_scale>   traitsThrowCircularScale;
 
     typedef limited_int<T_, min, max, traitsThrowScale>           testedTypeThrow;
     typedef limited_int<T_, min, max, traitsInvalidCircularScale> testedTypeInvalid;
@@ -131,12 +131,12 @@ void checkAllValidValues()
 template<typename T_, T_ min, T_ max>
 void checkInvalidValues()
 {
-    typedef limited_int_traits<T_, min, max, resolve_modulo, convert_scale>           traitsModuloScale;
+    //typedef limited_int_traits<T_, min, max, resolve_modulo, convert_scale>           traitsModuloScale;
     typedef limited_int_traits<T_, min, max, resolve_modulo, convert_circular_scale>  traitsModuloCircularScale;
-    typedef limited_int_traits<T_, min, max, resolve_invalid, convert_scale>          traitsInvalidScale;
+    //typedef limited_int_traits<T_, min, max, resolve_invalid, convert_scale>          traitsInvalidScale;
     typedef limited_int_traits<T_, min, max, resolve_invalid, convert_circular_scale> traitsInvalidCircularScale;
     typedef limited_int_traits<T_, min, max, resolve_throw, convert_scale>            traitsThrowScale;
-    typedef limited_int_traits<T_, min, max, resolve_throw, convert_circular_scale>   traitsThrowCircularScale;
+    //typedef limited_int_traits<T_, min, max, resolve_throw, convert_circular_scale>   traitsThrowCircularScale;
 
     typedef limited_int<T_, min, max, traitsThrowScale>           testedTypeThrow;
     typedef limited_int<T_, min, max, traitsInvalidCircularScale> testedTypeInvalid;
@@ -146,7 +146,7 @@ void checkInvalidValues()
     {
         try
         {
-            testedTypeThrow v = i;
+            [[maybe_unused]] testedTypeThrow v = i;
             stringstream    ss;
             ss << "Construction of " << typeid(testedTypeThrow).name() << " with invalid value " << i
                << " should have thrown, but did not.";
@@ -161,7 +161,7 @@ void checkInvalidValues()
     {
         try
         {
-            testedTypeThrow v = i;
+            [[maybe_unused]]testedTypeThrow v = i;
             stringstream    ss;
             ss << "Construction of " << typeid(testedTypeThrow).name() << " with invalid value " << i
                << " should have thrown, but did not.";
@@ -355,12 +355,12 @@ void LimitedValuesTest::testInstanciation()
 template<typename T_, T_ min, T_ max>
 void testIteratorT()
 {
-    typedef limited_int_traits<T_, min, max, resolve_modulo, convert_scale>           traitsModuloScale;
+    //typedef limited_int_traits<T_, min, max, resolve_modulo, convert_scale>           traitsModuloScale;
     typedef limited_int_traits<T_, min, max, resolve_modulo, convert_circular_scale>  traitsModuloCircularScale;
-    typedef limited_int_traits<T_, min, max, resolve_invalid, convert_scale>          traitsInvalidScale;
+    //typedef limited_int_traits<T_, min, max, resolve_invalid, convert_scale>          traitsInvalidScale;
     typedef limited_int_traits<T_, min, max, resolve_invalid, convert_circular_scale> traitsInvalidCircularScale;
     typedef limited_int_traits<T_, min, max, resolve_throw, convert_scale>            traitsThrowScale;
-    typedef limited_int_traits<T_, min, max, resolve_throw, convert_circular_scale>   traitsThrowCircularScale;
+    //typedef limited_int_traits<T_, min, max, resolve_throw, convert_circular_scale>   traitsThrowCircularScale;
 
     typedef limited_int<T_, min, max, traitsThrowScale>           testedTypeThrow;
     typedef limited_int<T_, min, max, traitsInvalidCircularScale> testedTypeInvalid;

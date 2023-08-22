@@ -49,7 +49,7 @@ streamModeHandler::streamModeHandler(std::ostream &ostr) : os(ostr)
     aggMode |= mode;
 
     // then get alternatives
-    stream_mode_alternatives altMode = static_cast<stream_mode_alternatives>(alternative);
+    stream_mode altMode = static_cast<stream_mode>(alternative);
     TRACE1(static_cast<long>(altMode));
 
     if(altMode == scientific_float)

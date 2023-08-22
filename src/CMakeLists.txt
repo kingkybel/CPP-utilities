@@ -12,4 +12,4 @@ add_library(dkutils STATIC
   stringutil.cc
 )
 
-target_link_libraries(dkutils PRIVATE boost_string boost_gregorian)
+target_link_libraries(dkutils PRIVATE boost_filesystem)

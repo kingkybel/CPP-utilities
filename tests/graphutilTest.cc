@@ -313,15 +313,17 @@ void graphutilTest::util_graph_algo_test()
 
     DirectedGraph<AlgoNode> g;
 
-    //          a   h
-    //         /|\ / \
-    //        / | c   \
-    //       /  |/ \   \
-    //      b   f   d  /
-    //       \ /|  /  /
-    //        g | /  /
-    //         \|/  /
-    //          e__/
+    /*
+              a   h
+             /|\ / \     
+            / | c   \ 
+           /  |/ \   \ 
+          b   f   d  /
+           \ /|  /  /
+            g | /  /
+             \|/  /
+              e__/
+    */
     CPPUNIT_ASSERT_EQUAL(g.addEdge(AlgoNode("a"), AlgoNode("b"), "01"), true);
     CPPUNIT_ASSERT_EQUAL(g.addEdge(AlgoNode("a"), AlgoNode("c"), "02"), true);
     CPPUNIT_ASSERT_EQUAL(g.addEdge(AlgoNode("a"), AlgoNode("f"), "03"), true);

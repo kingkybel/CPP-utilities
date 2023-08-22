@@ -120,9 +120,9 @@ struct SR
     T_            modChars_;
     char          c_;
     T_            result_;
+    size_t        line_;
     bool          differentInsensitive_;
     T_            resultInsensitive_;
-    size_t        line_;
 };
 
 template<typename T_>

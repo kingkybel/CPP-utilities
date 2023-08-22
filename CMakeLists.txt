@@ -21,10 +21,10 @@ message("Linux version is '${LINUX_VERSION}'")
 
 set(COVERAGE_COMPILER_FLAGS "-g -O0 -fno-default-inline --coverage -fprofile-abs-path -fprofile-arcs -fno-inline -fno-inline-small-functions -ftest-coverage -lgcov" CACHE INTERNAL "")
 
-set(CMAKE_CXX_FLAGS "-rdynamic -Wall -Werror" CACHE STRING "Default C++ compiler flags")
+set(CMAKE_CXX_FLAGS "-rdynamic -Wall -Werror -DBOOST_ALLOW_DEPRECATED_HEADERS -DBOOST_BIND_GLOBAL_PLACEHOLDERS" CACHE STRING "Default C++ compiler flags")
 set(CMAKE_CXX_FLAGS_DEBUG "-g" CACHE STRING "g++ debug flags")
 set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "-g -O2" CACHE STRING "g++ rel+gbg flags")
-set(CMAKE_CXX_FLAGS_COVERAGE ${COVERAGE_COMPILER_FLAGS} CACHE STRING g++ coverage flags." FORCE )
+set(CMAKE_CXX_FLAGS_COVERAGE "${COVERAGE_COMPILER_FLAGS} CACHE STRING g++ coverage flags." FORCE )
 set(CMAKE_CXX_FLAGS_RELEASE "-O2" CACHE STRING "g++ release flags")
 set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
@@ -36,20 +36,23 @@ set(CMAKE_FIND_LIBRARY_SUFFIXES .a)
 find_library(DL_LIB NAMES libdl.a dl)
 find_library(SSL_LIB NAMES libssl.a ssl)
 find_library(PTHREAD_LIB NAMES libpthread.a pthread)
-
-
+find_package(Boost 1.83.0 REQUIRED)
+message("Boost_INCLUDE_DIRS '${Boost_INCLUDE_DIRS}'")
+message("Boost_LIBRARY_DIR_RELEASE '${Boost_LIBRARY_DIR_RELEASE}'")
 project(DKUtil CXX)
-
 include_directories(
-  include
+  ${Boost_INCLUDE_DIRS}
+  ${CMAKE_HOME_DIRECTORY}/include
   system
   )
 link_directories(
+  ${Boost_LIBRARY_DIR_RELEASE}
   system
   )
 
 
-add_subdirectory(src)
+  add_subdirectory(src)
+  add_subdirectory(tests)
 
 
 

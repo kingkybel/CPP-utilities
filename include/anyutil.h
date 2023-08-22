@@ -364,7 +364,7 @@ struct Interval : public IntervalType
             bool leftOpenClosedSpecified  = false;
             bool rightOpenClosedSpecified = false;
 
-            unsigned char newTraits_ = 0x00;
+            //unsigned char newTraits_ = 0x00;
 
             for(auto it: l)
             {

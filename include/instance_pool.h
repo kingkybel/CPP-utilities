@@ -126,8 +126,8 @@ struct InstancePool
         static_assert(has_static_bool_fill<T_>::value,
                       "InstancePool<T_> derived class needs static member 'bool fill()");
 
-        static bool   isFilled = T_::fill();
-        static size_t index    = avail_.size() - 1;
+        [[maybe_unused]]static bool   isFilled = T_::fill();
+        //static size_t index    = avail_.size() - 1;
         if(avail_.size() < minInstances)
         {
             std::stringstream ss;

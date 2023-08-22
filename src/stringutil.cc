@@ -52,7 +52,7 @@ namespace util
             bool isNegative = (str[0] == '-');
             bool isSigned = (str[0] == '-' || str[0] == '+');
 
-            bool reval = ((isdigit (str[0])) || ((str.size () > 1) && isSigned));
+            //bool reval = ((isdigit (str[0])) || ((str.size () > 1) && isSigned));
             if (str.size () - (isSigned ? 1 : 0) > maxUintLen)
                 return (FLOAT);
             else

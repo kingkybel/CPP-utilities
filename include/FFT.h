@@ -282,9 +282,9 @@ class FFT
         transformedComplexVector_[bitReverseVector_[i]] = COMPLEXVALUE(val);
     }
 
+    INTTYPE       logOfPoints_;
     INTTYPE       numOfPoints_;
     INTTYPE       sampleRate_;
-    INTTYPE       logOfPoints_;
     FLOATTYPE     sqrtOfPoints_;
     INTVECTOR     bitReverseVector_;          // bit reverse vector
     COMPLEXVECTOR transformedComplexVector_;  // in-place FFT array

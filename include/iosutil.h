@@ -24,10 +24,9 @@
 
 #ifndef NS_UTIL_IOSUTIL_H_INCLUDED
 #define NS_UTIL_IOSUTIL_H_INCLUDED
-
+#include <iostream>
 #include <iomanip>
 #include <ios>
-#include <iostream>
 #include <map>
 
 #ifndef DO_TRACE_
@@ -37,32 +36,32 @@
 
 namespace util
 {
+
     struct streamModeHandler
     {
-        using RefMap = std::map<std::ostream *, std::pair<size_t, std::ios::fmtflags>>;
-        static RefMap ref_count;
+        static std::map<std::ostream*, std::pair<size_t, std::ios::fmtflags> > ref_count;
         static long mode;
         static long aggregate;
         static long alternative;
         static long complement;
-        std::ostream &os;
+        std::ostream& os;
 
-        explicit streamModeHandler (std::ostream &ostr);
-        streamModeHandler (const streamModeHandler&) = delete;
-        streamModeHandler& operator= (const streamModeHandler&) = delete;
-        streamModeHandler (const streamModeHandler&&) = delete;
-        streamModeHandler& operator= (const streamModeHandler&&) = delete;
+        explicit streamModeHandler(std::ostream& ostr);
+        streamModeHandler(const streamModeHandler&) = delete;
+        streamModeHandler& operator=(const streamModeHandler&) = delete;
+        streamModeHandler(const streamModeHandler&&) = delete;
+        streamModeHandler& operator=(const streamModeHandler&&) = delete;
 
-        ~streamModeHandler ()
+        ~streamModeHandler()
         {
             ref_count[&os].first--;
-
             if (ref_count[&os].first == 0)
             {
                 // restore the state of the stream from the backup location
-                os.flags (ref_count[&os].second);
+                os.flags(ref_count[&os].second);
             }
         }
+
     };
 
     /**
@@ -71,78 +70,79 @@ namespace util
      */
     enum stream_mode : long
     {
-        none_set = 0x0000,  ///< no flags set
-        squoted_char = 0x0001,  ///< enclose characters in single quotes
-        hex_char = 0x0002,  ///< display characters in hexadecimal representation
-        dquoted_string = 0x0004,  ///< enclose strings in double quotes
-        dquoted_date = 0x0008,  ///< enclose dates in double quotes
-        alpha_bool = 0x0010,  ///< display booleans as true and false
-        round_open_brace = 0x0100,  ///< indicate open intervals with round braces
-        symbolic_infinity = 0x0200,  ///< indicate full interval with symbolic infinity "oo"
-        short_float = 0x1000,  ///< display floating point values in a short format
-        long_float = 0x2000,  ///< display floating point values in a longer format
-        scientific_float = 0x4000,  ///< display floating point values in scientific format
-        reset_all = 0xFFFF,  ///< blank out all and revert to system defaults
+        none_set = 0x0000, ///< no flags set
+        squoted_char = 0x0001, ///< enclose characters in single quotes
+        hex_char = 0x0002, ///< display characters in hexadecimal representation
+        dquoted_string = 0x0004, ///< enclose strings in double quotes
+        dquoted_date = 0x0008, ///< enclose dates in double quotes
+        alpha_bool = 0x0010, ///< display booleans as true and false
+        round_open_brace = 0x0100, ///< indicate open intervals with round braces
+        symbolic_infinity = 0x0200, ///< indicate full interval with symbolic infinity "oo"
 
+        // complements
+        all_set = ~none_set, //< all flags set
+        no_quoted_char = ~squoted_char, ///< don't enclose characters in single quotes
+        no_hex_char = ~hex_char, ///< don't display characters in hexadecimal representation
+        no_quoted_string = ~dquoted_string, ///< don't enclose strings in double quotes
+        no_quoted_date = ~dquoted_date, ///< don't enclose dates in double quotes
+        no_alpha_bool = ~alpha_bool, ///< don't display booleans as true and false
+        no_round_open_brace = ~round_open_brace, ///< don't indicate open intervals with round braces
+        no_symbolic_infinity = ~symbolic_infinity, ///< don't indicate full interval with symbolic infinity "oo"
+
+        short_float = 0x1000, ///< display floating point values in a short format
+        long_float = 0x2000, ///< display floating point values in a longer format
+        scientific_float = 0x4000, ///< display floating point values in scientific format
         mask_float = (short_float | long_float | scientific_float),
 
-        // Enumeration of complements of stream modes that modify the display of
-        // certain values in the util-library.
-        all_set = ~none_set,              //< all flags set
-        no_quoted_char = ~squoted_char,          ///< don't enclose characters in single quotes
-        no_hex_char = ~hex_char,              ///< don't display characters in hexadecimal representation
-        no_quoted_string = ~dquoted_string,        ///< don't enclose strings in double quotes
-        no_quoted_date = ~dquoted_date,          ///< don't enclose dates in double quotes
-        no_alpha_bool = ~alpha_bool,            ///< don't display booleans as true and false
-        no_round_open_brace = ~round_open_brace,      ///< don't indicate open intervals with round braces
-        no_symbolic_infinity = ~symbolic_infinity,     ///< don't indicate full interval with symbolic infinity "oo"
-        pure = alpha_bool | hex_char,  ///< simple scannable format combination
-        standard = alpha_bool | short_float | round_open_brace,          ///< standard format combination
-        safe = squoted_char | hex_char | dquoted_string | dquoted_date | alpha_bool  ///< more complex combination
+        pure = alpha_bool | hex_char, ///< simple scannable format combination
+        standard = alpha_bool | short_float | round_open_brace, ///< standard format combination
+        safe = squoted_char | hex_char | dquoted_string | dquoted_date | alpha_bool ///< more complex combination
     };
 
-    inline std::ostream& operator<< (std::ostream &os, stream_mode sm)
+    inline std::ostream& operator<<(std::ostream& os, stream_mode sm)
     {
         TRACE1(util::streamModeHandler::mode);
         util::streamModeHandler::mode |= sm;
         TRACE1(util::streamModeHandler::mode);
-
-        return (os);
+        return os;
     }
 
     /**
      * separate the stream formatting of the util-library from the the
      * formatting of objects outside
      */
-    const static int backup_fmtflags_xalloc_index = std::ios_base::xalloc ();
+    const static int backup_fmtflags_xalloc_index = std::ios_base::xalloc();
 
     struct floatFmt
     {
-        floatFmt ()
 
-        = default;
-
-        floatFmt (size_t width, size_t precision = 5, char fill = '0', bool isFixed = false)
-            : width_ (width), precision_ (precision), fill_ (fill), isFixed_ (isFixed), isScientific_ (false)
+        floatFmt()
+        : isScientific_(true)
         {
         }
 
-        size_t width_
-        { 0UL };
-        size_t precision_
-        { 0UL };
-        char fill_
-        { '0' };
-        bool isFixed_
-        { false };
-        bool isScientific_
-        { true };
+        floatFmt(size_t width,
+                 size_t precision = 5,
+                 char fill = '0',
+                 bool isFixed = false)
+        : width_(width)
+        , precision_(precision)
+        , fill_(fill)
+        , isFixed_(isFixed)
+        , isScientific_(false)
+        {
+        }
+
+        size_t width_;
+        size_t precision_;
+        char fill_;
+        bool isFixed_;
+        bool isScientific_;
     };
 
-    inline std::ostream& operator<< (std::ostream &os, const floatFmt &fmt)
+    inline std::ostream& operator<<(std::ostream& os, const floatFmt& fmt)
     {
         TRACE1(fmt.isScientific_)
-
         if (fmt.isScientific_)
         {
             os << std::ios::scientific;
@@ -151,18 +151,15 @@ namespace util
         {
             TRACE1(fmt.fill_);
             TRACE1(fmt.width_);
-            os.fill (fmt.fill_);
-            os.width (fmt.width_);
-
+            os.fill(fmt.fill_);
+            os.width(fmt.width_);
             if (fmt.isFixed_)
                 os << std::fixed;
         }
-
-        return (os);
+        return os;
     }
 
-}
-;
-// namespace util
+};
 
-#endif  // NS_UTIL_IOSUTIL_H_INCLUDED
+#endif // NS_UTIL_IOSUTIL_H_INCLUDED
+

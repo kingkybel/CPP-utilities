@@ -294,7 +294,7 @@ void quadruple_to_decimal(quadruple *px, decimal_mode *pm, decimal_record *pd, f
     mpf_set_default_prec(defaultNumberOfBits);
     if(pd != nullptr && px != nullptr)
     {
-        memset(pd, 0, sizeof(decimal_record));
+        *pd = decimal_record();
         if(*px == numeric_limits<quadruple>::infinity())  // @suppress("Direct float comparison")
         {
             pd->fpclass = fp_infinity;

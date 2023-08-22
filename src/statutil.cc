@@ -1014,10 +1014,10 @@ long double UniformFloatFunction::P(const CondEvent &ce) const
         VAR_FLOAT           low   = foundParam->second.low;
         VAR_FLOAT           high  = foundParam->second.high;
         Interval<VAR_FLOAT> itvl  = ce.event().cbegin()->interval<VAR_FLOAT>();
-        long double         lowP  = itvl.isLeftInfinite() ? foundParam->second.low : itvl.left();
-        long double         highP = itvl.isRightInfinite() ? foundParam->second.high : itvl.right();
+        long double         lowP  = itvl.isLeftInfinite() ? low : itvl.left();
+        long double         highP = itvl.isRightInfinite() ? high : itvl.right();
 
-        return ((highP - lowP) / (foundParam->second.high - foundParam->second.low));
+        return ((highP - lowP) / (high - low));
     }
 
     return (0.0L);

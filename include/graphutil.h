@@ -255,9 +255,9 @@ struct EdgeDescriptor
     {
     }
 
-    EdgeT_ e_;
     NodeT_ start_;
     NodeT_ finish_;
+    EdgeT_ e_;
 };
 
 /**
