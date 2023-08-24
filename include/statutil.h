@@ -2,7 +2,7 @@
  * File Name:   statutil.h
  * Description: statistic utility functions
  *
- * Copyright (C) 2019 Dieter J Kybelksties
+ * Copyright (C) 2023 Dieter J Kybelksties <github@kybelksties.com>
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -18,19 +18,19 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
- * @date: 2014-02-04
+ * @date: 2023-08-28
  * @author: Dieter J Kybelksties
  */
 
 #ifndef NS_UTIL_STATUTIL_H_INCLUDED
 #define NS_UTIL_STATUTIL_H_INCLUDED
+#include "csvutil.h"
 
 #include <algorithm>
 #include <anyutil.h>
 #include <boost/math/distributions/exponential.hpp>
 #include <boost/math/distributions/normal.hpp>
 #include <cmath>
-#include <csvutil.h>
 #include <exception>
 #include <iostream>
 #include <map>
@@ -65,11 +65,10 @@ struct event_range_error : public std::logic_error
     }
 
     event_range_error(conflict_type tp, VAR_FLOAT f1, VAR_FLOAT f2 = 0.0L, VAR_FLOAT f3 = 0.0L)
-    : std::logic_error(tp == exponential_range ?
-                        "Range for exponential function is [0..oo) but found " + asString(f1) :
-                        tp == uniform_range ? "Range for exponential function is [" + asString(f1) + ".." + asString(f2)
-                                               + "] but found " + asString(f3) :
-                                              "Invalid range.")
+    : std::logic_error(tp == exponential_range ? "Range for exponential function is [0..oo) but found " + asString(f1) :
+                       tp == uniform_range ? "Range for exponential function is [" + asString(f1) + ".." + asString(f2)
+                                              + "] but found " + asString(f3) :
+                                             "Invalid range.")
     {
     }
 };
@@ -121,10 +120,11 @@ struct distribution_error : public std::logic_error
     };
 
     distribution_error(conflict_type tp)
-    : std::logic_error(
-     std::string(tp == empty_uniform ? "Make uniform" : tp == empty_normalise ? "Normalise" : "Canonise")
-     + ": cannot modify distribution as node-distribution "
-       "is empty and range is empty.")
+    : std::logic_error(std::string(tp == empty_uniform   ? "Make uniform" :
+                                   tp == empty_normalise ? "Normalise" :
+                                                           "Canonise")
+                       + ": cannot modify distribution as node-distribution "
+                         "is empty and range is empty.")
     {
     }
 
@@ -444,6 +444,21 @@ class Event
      */
     friend bool operator<(const Event &lhs, const Event &rhs);
 
+    friend bool operator<=(const Event &lhs, const Event &rhs)
+    {
+        return (lhs < rhs) || (lhs == rhs);
+    }
+
+    friend bool operator>(const Event &lhs, const Event &rhs)
+    {
+        return !(lhs <= rhs);
+    }
+
+    friend bool operator>=(const Event &lhs, const Event &rhs)
+    {
+        return !(lhs < rhs);
+    }
+
     /**
      * Generic ostream - &lt;&lt; operator for Events.
      *
@@ -457,7 +472,7 @@ class Event
     private:
     std::string name_;
     Var         value_;
-    Operation * operation_;
+    Operation  *operation_;
     bool        isPlaceHolder_ = false;
 };
 
@@ -1271,10 +1286,10 @@ struct ProbabilityFunction
      *
      * @return success
      */
-    bool             addValidValueToRange(VALUERANGES_TYPE & range,
-                                          VALUERANGES_TYPE & range_ortho,
+    bool             addValidValueToRange(VALUERANGES_TYPE  &range,
+                                          VALUERANGES_TYPE  &range_ortho,
                                           const std::string &name,
-                                          const Var &        value);
+                                          const Var         &value);
     VALUERANGES_TYPE eventValueRanges_;      ///< Map of ranges for events.
     VALUERANGES_TYPE conditionValueRanges_;  ///< Map of ranges for conditions.
 };

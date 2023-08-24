@@ -1,8 +1,8 @@
 /*
  * File Name:   statutil.cc
  * Description: statistic utility functions
- *
- * Copyright (C) 2019 Dieter J Kybelksties
+ * 
+ * Copyright (C) 2023 Dieter J Kybelksties <github@kybelksties.com>
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -18,13 +18,16 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
- * @date: 2014-02-04
+ * @date: 2023-08-28
  * @author: Dieter J Kybelksties
  */
 
+#include "statutil.h"
+//#define DO_TRACE_
+#include "traceutil.h"
+
 #include <numbers>
 #include <ranges>
-#include <statutil.h>
 #include <stdexcept>
 #include <utility>
 
@@ -37,7 +40,7 @@ using namespace boost;
  *  Error handling for event lists with mutually exclusive events.
  */
 eventlist_conflict_error::eventlist_conflict_error(eventlist_conflict_error::conflict_type tp,
-                                                   const EventCatenation &                 e1)
+                                                   const EventCatenation                  &e1)
 : std::logic_error(string(tp == eventlist_conflict_error::evt ? "Event-list " : "Condition-list") + asString(e1)
                    + " has conflicting events")
 {
@@ -474,7 +477,8 @@ bool operator<(const Event &lhs, const Event &rhs)
 
 EventCatenation::EventCatenation(const Event &event)
 {
-    evts_.insert(event);
+    if(!event.empty())
+        evts_.insert(event);
 }
 
 EventCatenation &EventCatenation::operator&&(const Event &e)
@@ -623,15 +627,19 @@ bool operator<(const EventCatenation &lhs, const EventCatenation &rhs)
 
     for(; itLhs != lhs.cend() && itRhs != rhs.cend(); itLhs++, itRhs++)
     {
+        const auto& left = *itLhs;
+        const auto& right = *itRhs;
+        TRACE2(left, right);
         // all left Events are equal because we break at first difference
-        if(*itRhs < *itLhs)  // rhs is smaller so we are *BIGGER* -> return false
+        if(left > right)  // rhs is smaller so we are *BIGGER* -> return false
         {
+            TRACE1((left > right));
             foundDiff = true;
             reval     = false;
             break;
         }
 
-        if(*itLhs < *itRhs)  // lhs is smaller so we are smaller -> return true
+        if(left < right)  // lhs is smaller so we are smaller -> return true
         {
             foundDiff = true;
             break;
@@ -640,7 +648,7 @@ bool operator<(const EventCatenation &lhs, const EventCatenation &rhs)
 
     // lhs is wholly contained in rhs, if rhs is longer then lhs is smaller
     // otherwise rhs is smaller
-    if(!foundDiff)
+     if(!foundDiff)
         reval = lhs.size() < rhs.size();
 
     return (reval);
@@ -802,28 +810,29 @@ bool CondEvent::containsCondition(const string &name) const
  */
 bool CondEvent::chainRule(CondEvent::CONDEVENT_LIST &cel, const string &name) const
 {
-    if(cel.empty())
-        cel.push_back(*this);
+    // if(cel.empty())
+    //     cel.push_back(*this);
 
     bool            reval = true;
-    EventCatenation newEl;
-    EventCatenation newCond = cel.back().condList_;
+    // EventCatenation newEl;
+    // EventCatenation newCond = cel.back().condList_;
 
-    for(auto it = cel.back().eList_.begin(); (cel.back().eList_.size() > 1) && (it != cel.back().eList_.end()); it++)
-    {
-        if(it->name() != name)
-        {
-            newCond &&cel.back().eList_.eventByName(it->name());
-            cel.back().eList_.moveEvent(it->name(), cel.back().condList_);
-        }
-        else
-        {
-            newEl &&cel.back().eList_.eventByName(it->name());
-        }
-    }
+    // // for(auto event : cel.back().eList_)
+    // for(auto it = cel.back().eList_.begin(); (cel.back().eList_.size() > 1) && (it != cel.back().eList_.end()); it++)
+    // {
+    //     if(it->name() != name)
+    //     {
+    //         newCond &&cel.back().eList_.eventByName(it->name());
+    //         cel.back().eList_.moveEvent(it->name(), cel.back().condList_);
+    //     }
+    //     else
+    //     {
+    //         newEl &&cel.back().eList_.eventByName(it->name());
+    //     }
+    // }
 
-    if(!newEl.empty())
-        cel.push_back(CondEvent(newEl, newCond));
+    // if(!newEl.empty())
+    //     cel.push_back(CondEvent(newEl, newCond));
 
     return (reval);
 }
@@ -832,12 +841,12 @@ bool CondEvent::chainRule(CondEvent::CONDEVENT_LIST &cel, const vector<string> &
 {
     bool reval = true;
 
-    cel.clear();
+    // cel.clear();
 
-    for(auto it = nameList.rbegin(); it != nameList.rend(); it++)
-    {
-        chainRule(cel, *it);
-    }
+    // for(auto it = nameList.rbegin(); it != nameList.rend(); it++)
+    // {
+    //     chainRule(cel, *it);
+    // }
 
     return (reval);
 }
@@ -892,8 +901,8 @@ CondEvent operator||(const EventCatenation &lhs, const EventCatenation &rhs)
 }
 
 ProbabilityFunction::ProbabilityFunction(VALUERANGES_TYPE eventValueRanges, VALUERANGES_TYPE conditionValueRanges)
-: eventValueRanges_(std::move(eventValueRanges))
-, conditionValueRanges_(std::move(conditionValueRanges))
+: eventValueRanges_(eventValueRanges)
+, conditionValueRanges_(conditionValueRanges)
 {
 }
 
@@ -957,8 +966,8 @@ bool ProbabilityFunction::addValueToConditionRange(const string &name, const Var
 
 bool ProbabilityFunction::addValidValueToRange(VALUERANGES_TYPE &range,
                                                VALUERANGES_TYPE &range_ortho,
-                                               const string &    name,
-                                               const Var &       value)
+                                               const string     &name,
+                                               const Var        &value)
 {
     bool reval = true;
 

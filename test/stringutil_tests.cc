@@ -1,13 +1,13 @@
 /*
- * File:		stringutilTest.cc
- * Description:         Unit tests for string utilities
+ * File:		stringutil_tests.cc
+ * Description: Unit tests for string utilities
+ * 
+ * Copyright (C) 2023 Dieter J Kybelksties <github@kybelksties.com>
  *
- * Copyright (C) 2020 Dieter J Kybelksties <github@kybelksties.com>
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -15,30 +15,31 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
- * @date: 2020-06-17
+ * @date: 2023-08-28
  * @author: Dieter J Kybelksties
  */
 
-#include "stringutilTest.h"
+#include "anyutil.h"
+#include "bayesutil.h"
+#include "cstdlib"
+#include "csvutil.h"
+#include "dateutil.h"
+#include "graphutil.h"
+#include "statutil.h"
+#include "stringutil.h"
 
 #include <boost/assign/std/vector.hpp>
 #include <boost/bind.hpp>
+#include <gtest/gtest.h>
 #define BOOST_NO_CXX11_SCOPED_ENUMS
 #include <boost/filesystem.hpp>
 #undef BOOST_NO_CXX11_SCOPED_ENUMS
-#include <anyutil.h>
-#include <bayesutil.h>
 #include <cmath>
-#include <cstdlib>
-#include <csvutil.h>
-#include <dateutil.h>
-#include <graphutil.h>
 #include <iostream>
-#include <statutil.h>
 #include <string>
-#include <stringutil.h>
 
 using namespace std;
 using namespace util;
@@ -50,23 +51,17 @@ using namespace boost::filesystem;
 
 const string filename = "/tmp/test.csv";
 
-CPPUNIT_TEST_SUITE_REGISTRATION(stringutilTest);
-
-stringutilTest::stringutilTest()
+class StringUtilTest : public ::testing::Test
 {
-}
+    protected:
+    void SetUp() override
+    {
+    }
 
-stringutilTest::~stringutilTest()
-{
-}
-
-void stringutilTest::setUp()
-{
-}
-
-void stringutilTest::tearDown()
-{
-}
+    void TearDown() override
+    {
+    }
+};
 
 template<typename T_>
 struct SR
@@ -130,7 +125,7 @@ void util_string_mod_testT()
 {
     typedef SR<T_> SR;
     SR             modResults[] = {
-     // trivial
+                 // trivial
      SR("", "trim", StripTrimMode::ALL, "\n\t \r", char(0), "", __LINE__),
      SR("", "trim", StripTrimMode::LEFT, "\n\t \r", char(0), "", __LINE__),
      SR("", "trim", StripTrimMode::RIGHT, "\n\t \r", char(0), "", __LINE__),
@@ -264,74 +259,74 @@ void util_string_mod_testT()
     };
     for(size_t i = 0; i < sizeof(modResults) / sizeof(SR); i++)
     {
-        CPPUNIT_ASSERT(modResults[i].correctResult());
+        ASSERT_TRUE(modResults[i].correctResult());
     }
 }
 
-void stringutilTest::util_ci_traits_test()
+TEST_F(StringUtilTest, util_ci_traits_test)
 {
     // BOOST_TEST_MESSAGE("");
     // BOOST_TEST_MESSAGE("====== Testing util string functions ========");
     ci_char_traits tr;
-    CPPUNIT_ASSERT(tr.eq('a', 'a'));
-    CPPUNIT_ASSERT(tr.eq('a', 'A'));
-    CPPUNIT_ASSERT(tr.ne('a', 'B'));
-    CPPUNIT_ASSERT(tr.lt('a', 'B'));
+    ASSERT_TRUE(tr.eq('a', 'a'));
+    ASSERT_TRUE(tr.eq('a', 'A'));
+    ASSERT_TRUE(tr.ne('a', 'B'));
+    ASSERT_TRUE(tr.lt('a', 'B'));
 
-    CPPUNIT_ASSERT_EQUAL(tr.compare(0, 0, 2), 0);
-    CPPUNIT_ASSERT_EQUAL(tr.compare(0, "a", 2), -1);
-    CPPUNIT_ASSERT_EQUAL(tr.compare("Aa", "aA", 2), 0);
-    CPPUNIT_ASSERT_EQUAL(tr.compare("Aa", "bA", 2), -1);
-    CPPUNIT_ASSERT_EQUAL(tr.compare("Ba", "aA", 2), 1);
-    CPPUNIT_ASSERT_EQUAL(tr.compare("aaaBa", "AAAaA", 5), 4);
-    CPPUNIT_ASSERT_EQUAL(tr.compare("aaaaa", "AAABA", 5), -4);
+    ASSERT_EQ(tr.compare(0, 0, 2), 0);
+    ASSERT_EQ(tr.compare(0, "a", 2), -1);
+    ASSERT_EQ(tr.compare("Aa", "aA", 2), 0);
+    ASSERT_EQ(tr.compare("Aa", "bA", 2), -1);
+    ASSERT_EQ(tr.compare("Ba", "aA", 2), 1);
+    ASSERT_EQ(tr.compare("aaaBa", "AAAaA", 5), 4);
+    ASSERT_EQ(tr.compare("aaaaa", "AAABA", 5), -4);
 
-    CPPUNIT_ASSERT_EQUAL(tr.compare(0, 0, 0), 0);
-    CPPUNIT_ASSERT_EQUAL(tr.compare(0, "a", 0), 0);
-    CPPUNIT_ASSERT_EQUAL(tr.compare("Aa", "aA", 0), 0);
-    CPPUNIT_ASSERT_EQUAL(tr.compare("Aa", "bA", 0), 0);
-    CPPUNIT_ASSERT_EQUAL(tr.compare("Ba", "aA", 0), 0);
-    CPPUNIT_ASSERT_EQUAL(tr.compare("aaaBa", "AAAaA", 0), 0);
-    CPPUNIT_ASSERT_EQUAL(tr.compare("aaaaa", "AAABA", 0), 0);
+    ASSERT_EQ(tr.compare(0, 0, 0), 0);
+    ASSERT_EQ(tr.compare(0, "a", 0), 0);
+    ASSERT_EQ(tr.compare("Aa", "aA", 0), 0);
+    ASSERT_EQ(tr.compare("Aa", "bA", 0), 0);
+    ASSERT_EQ(tr.compare("Ba", "aA", 0), 0);
+    ASSERT_EQ(tr.compare("aaaBa", "AAAaA", 0), 0);
+    ASSERT_EQ(tr.compare("aaaaa", "AAABA", 0), 0);
 
-    CPPUNIT_ASSERT_EQUAL(tr.compare(0, 0, 1), 0);
-    CPPUNIT_ASSERT_EQUAL(tr.compare(0, "a", 1), -1);
-    CPPUNIT_ASSERT_EQUAL(tr.compare("Aa", "aA", 1), 0);
-    CPPUNIT_ASSERT_EQUAL(tr.compare("Aa", "bA", 1), -1);
-    CPPUNIT_ASSERT_EQUAL(tr.compare("Ba", "aA", 1), 1);
-    CPPUNIT_ASSERT_EQUAL(tr.compare("aaaBa", "AAAaA", 1), 0);
-    CPPUNIT_ASSERT_EQUAL(tr.compare("aaaaa", "AAABA", 1), 0);
+    ASSERT_EQ(tr.compare(0, 0, 1), 0);
+    ASSERT_EQ(tr.compare(0, "a", 1), -1);
+    ASSERT_EQ(tr.compare("Aa", "aA", 1), 0);
+    ASSERT_EQ(tr.compare("Aa", "bA", 1), -1);
+    ASSERT_EQ(tr.compare("Ba", "aA", 1), 1);
+    ASSERT_EQ(tr.compare("aaaBa", "AAAaA", 1), 0);
+    ASSERT_EQ(tr.compare("aaaaa", "AAABA", 1), 0);
 
-    CPPUNIT_ASSERT_EQUAL(tr.compare(0, 0, 10), 0);
-    CPPUNIT_ASSERT_EQUAL(tr.compare(0, "a", 10), -1);
-    CPPUNIT_ASSERT_EQUAL(tr.compare("Aa", "aA", 10), 0);
-    CPPUNIT_ASSERT_EQUAL(tr.compare("Aa", "bA", 10), -1);
-    CPPUNIT_ASSERT_EQUAL(tr.compare("Ba", "aA", 10), 1);
-    CPPUNIT_ASSERT_EQUAL(tr.compare("aaaBa", "AAAaA", 10), 4);
-    CPPUNIT_ASSERT_EQUAL(tr.compare("aaaaa", "AAABA", 10), -4);
+    ASSERT_EQ(tr.compare(0, 0, 10), 0);
+    ASSERT_EQ(tr.compare(0, "a", 10), -1);
+    ASSERT_EQ(tr.compare("Aa", "aA", 10), 0);
+    ASSERT_EQ(tr.compare("Aa", "bA", 10), -1);
+    ASSERT_EQ(tr.compare("Ba", "aA", 10), 1);
+    ASSERT_EQ(tr.compare("aaaBa", "AAAaA", 10), 4);
+    ASSERT_EQ(tr.compare("aaaaa", "AAABA", 10), -4);
 }
 
-void stringutilTest::util_container_conversion_test()
+TEST_F(StringUtilTest, util_container_conversion_test)
 {
     // BOOST_TEST_MESSAGE("");
     // BOOST_TEST_MESSAGE("====== Testing conversion functions for containers ========");
     set<string> sSet;
-    CPPUNIT_ASSERT(sSet.empty());
+    ASSERT_TRUE(sSet.empty());
     vector<string> sVec = vectorFromSet(sSet);
-    CPPUNIT_ASSERT(sVec.empty());
+    ASSERT_TRUE(sVec.empty());
     sSet = setFromVector(sVec);
-    CPPUNIT_ASSERT(sSet.empty());
+    ASSERT_TRUE(sSet.empty());
 
     sSet.insert("1stString");
     sSet.insert("2ndString");
-    CPPUNIT_ASSERT(!sSet.empty());
-    CPPUNIT_ASSERT_EQUAL(sSet.size(), 2UL);
+    ASSERT_TRUE(!sSet.empty());
+    ASSERT_EQ(sSet.size(), 2UL);
     sVec = vectorFromSet(sSet);
-    CPPUNIT_ASSERT(!sVec.empty());
-    CPPUNIT_ASSERT_EQUAL(sVec.size(), 2UL);
+    ASSERT_TRUE(!sVec.empty());
+    ASSERT_EQ(sVec.size(), 2UL);
     sSet = setFromVector(sVec);
-    CPPUNIT_ASSERT(!sSet.empty());
-    CPPUNIT_ASSERT_EQUAL(sSet.size(), 2UL);
+    ASSERT_TRUE(!sSet.empty());
+    ASSERT_EQ(sSet.size(), 2UL);
 
     std::unordered_set<string> uSet;
     uSet.insert("x");
@@ -339,8 +334,8 @@ void stringutilTest::util_container_conversion_test()
     uSet.insert("ngb");
 
     sSet = setFromUnordered(uSet);
-    CPPUNIT_ASSERT(!sSet.empty());
-    CPPUNIT_ASSERT_EQUAL(sSet.size(), 3UL);
+    ASSERT_TRUE(!sSet.empty());
+    ASSERT_EQ(sSet.size(), 3UL);
 }
 
 template<typename T_>
@@ -351,161 +346,161 @@ void util_string_testT()
 
     T_ trimstring = "";
     trim(trimstring, " \n\t\r");
-    CPPUNIT_ASSERT(trimstring == "");
+    ASSERT_TRUE(trimstring == "");
     trimstring = " ";
     trim(trimstring, " \n\t\r");
-    CPPUNIT_ASSERT(trimstring == "");
+    ASSERT_TRUE(trimstring == "");
     trimstring = "\t";
     trim(trimstring, " \n\t\r");
-    CPPUNIT_ASSERT(trimstring == "");
+    ASSERT_TRUE(trimstring == "");
     trimstring = "\n";
     trim(trimstring, " \n\t\r");
-    CPPUNIT_ASSERT(trimstring == "");
+    ASSERT_TRUE(trimstring == "");
     trimstring = "\r";
     trim(trimstring, " \n\t\r");
-    CPPUNIT_ASSERT(trimstring == "");
+    ASSERT_TRUE(trimstring == "");
     trimstring = " \r\n ";
     trim(trimstring, " \n\t\r");
-    CPPUNIT_ASSERT(trimstring == "");
+    ASSERT_TRUE(trimstring == "");
     trimstring = " \r\t\t \n ";
     trim(trimstring, " \n\t\r");
-    CPPUNIT_ASSERT(trimstring == "");
+    ASSERT_TRUE(trimstring == "");
     trimstring = "a";
     trim(trimstring, " \n\t\r");
-    CPPUNIT_ASSERT(trimstring == "a");
+    ASSERT_TRUE(trimstring == "a");
     trimstring = "\ta";
     trim(trimstring, " \n\t\r");
-    CPPUNIT_ASSERT(trimstring == "a");
+    ASSERT_TRUE(trimstring == "a");
     trimstring = "a\t";
     trim(trimstring, " \n\t\r");
-    CPPUNIT_ASSERT(trimstring == "a");
+    ASSERT_TRUE(trimstring == "a");
     trimstring = "\n\t";
     trim(trimstring, " \n\t\r");
-    CPPUNIT_ASSERT(trimstring == "");
+    ASSERT_TRUE(trimstring == "");
     trimstring = "\n";
     trim(trimstring, " \n\t\r");
-    CPPUNIT_ASSERT(trimstring == "");
+    ASSERT_TRUE(trimstring == "");
     trimstring = "\r";
     trim(trimstring, " \n\t\r");
-    CPPUNIT_ASSERT(trimstring == "");
+    ASSERT_TRUE(trimstring == "");
     trimstring = " \r\n ";
     trim(trimstring, " \n\t\r");
-    CPPUNIT_ASSERT(trimstring == "");
+    ASSERT_TRUE(trimstring == "");
     trimstring = " \r\t\t \n ";
     trim(trimstring, " \n\t\r");
-    CPPUNIT_ASSERT(trimstring == "");
+    ASSERT_TRUE(trimstring == "");
     trimstring = " \r\ta\t \n ";
     trim(trimstring, " \n\t\r");
-    CPPUNIT_ASSERT(trimstring == "a");
+    ASSERT_TRUE(trimstring == "a");
     trimstring = "\na";
     trim(trimstring, " \n\t\r");
-    CPPUNIT_ASSERT(trimstring == "a");
+    ASSERT_TRUE(trimstring == "a");
     trimstring = "a\t   ";
     trim(trimstring, " \n\t\r");
-    CPPUNIT_ASSERT(trimstring == "a");
+    ASSERT_TRUE(trimstring == "a");
     trimstring = "\t\t\t\ta     ";
     trim(trimstring, " \n\t\r");
-    CPPUNIT_ASSERT(trimstring == "a");
+    ASSERT_TRUE(trimstring == "a");
 
     T_ source = "123/3456/7890a";
     // BOOST_TEST_MESSAGE("split " << source << " into vector by '/'");
     vector<T_> result = splitIntoVector(source, '/');
-    CPPUNIT_ASSERT_EQUAL(result.size(), 3UL);
-    CPPUNIT_ASSERT(result[0] == "123");
-    CPPUNIT_ASSERT(result[1] == "3456");
-    CPPUNIT_ASSERT(result[2] == "7890a");
+    ASSERT_EQ(result.size(), 3UL);
+    ASSERT_TRUE(result[0] == "123");
+    ASSERT_TRUE(result[1] == "3456");
+    ASSERT_TRUE(result[2] == "7890a");
 
     // BOOST_TEST_MESSAGE("split " << source << " into vector by '.'");
     result = splitIntoVector(source, '.');
-    CPPUNIT_ASSERT(result.size() == 1);
-    CPPUNIT_ASSERT(result[0] == "123/3456/7890a");
+    ASSERT_TRUE(result.size() == 1);
+    ASSERT_TRUE(result[0] == "123/3456/7890a");
 
     // BOOST_TEST_MESSAGE("split " << source << " into vector by \"37\"");
     result = splitIntoVector(source, "37");
-    CPPUNIT_ASSERT(result.size() == 4);
-    CPPUNIT_ASSERT(result[0] == "12");
-    CPPUNIT_ASSERT(result[1] == "/");
-    CPPUNIT_ASSERT(result[2] == "456/");
-    CPPUNIT_ASSERT(result[3] == "890a");
+    ASSERT_TRUE(result.size() == 4);
+    ASSERT_TRUE(result[0] == "12");
+    ASSERT_TRUE(result[1] == "/");
+    ASSERT_TRUE(result[2] == "456/");
+    ASSERT_TRUE(result[3] == "890a");
 
     source = "1/4/7/1/7";
     // BOOST_TEST_MESSAGE("split " << source << " into vector by \"/\"");
     result = splitIntoVector(source, "/");
-    CPPUNIT_ASSERT(result.size() == 5UL);
-    CPPUNIT_ASSERT(result[0] == "1");
-    CPPUNIT_ASSERT(result[1] == "4");
-    CPPUNIT_ASSERT(result[2] == "7");
-    CPPUNIT_ASSERT(result[3] == "1");
-    CPPUNIT_ASSERT(result[4] == "7");
+    ASSERT_TRUE(result.size() == 5UL);
+    ASSERT_TRUE(result[0] == "1");
+    ASSERT_TRUE(result[1] == "4");
+    ASSERT_TRUE(result[2] == "7");
+    ASSERT_TRUE(result[3] == "1");
+    ASSERT_TRUE(result[4] == "7");
 
     source = "123/456/789/123/789";
     // BOOST_TEST_MESSAGE("split " + source + " into set by '/'");
     set<T_> resultSet = splitIntoSet(source, '/');
-    CPPUNIT_ASSERT(resultSet.size() == 3);
+    ASSERT_TRUE(resultSet.size() == 3);
     result = vectorFromSet(resultSet);
-    CPPUNIT_ASSERT(result.size() == 3);
-    CPPUNIT_ASSERT(result[0] == "123");
-    CPPUNIT_ASSERT(result[1] == "456");
-    CPPUNIT_ASSERT(result[2] == "789");
+    ASSERT_TRUE(result.size() == 3);
+    ASSERT_TRUE(result[0] == "123");
+    ASSERT_TRUE(result[1] == "456");
+    ASSERT_TRUE(result[2] == "789");
 
     // BOOST_TEST_MESSAGE("split " << source << " into set by '.'");
     resultSet = splitIntoSet(source, '.');
-    CPPUNIT_ASSERT(resultSet.size() == 1);
+    ASSERT_TRUE(resultSet.size() == 1);
     result = vectorFromSet(resultSet);
-    CPPUNIT_ASSERT(result.size() == 1);
-    CPPUNIT_ASSERT(result[0] == "123/456/789/123/789");
+    ASSERT_TRUE(result.size() == 1);
+    ASSERT_TRUE(result[0] == "123/456/789/123/789");
 
     // BOOST_TEST_MESSAGE("split " << source << " into set by \"37\"");
     resultSet = splitIntoSet(source, "37");
-    CPPUNIT_ASSERT(resultSet.size() == 5);
+    ASSERT_TRUE(resultSet.size() == 5);
     result = vectorFromSet(resultSet);
-    CPPUNIT_ASSERT(result.size() == 5);
-    CPPUNIT_ASSERT(result[0] == "/");
-    CPPUNIT_ASSERT(result[1] == "/456/");
-    CPPUNIT_ASSERT(result[2] == "12");
-    CPPUNIT_ASSERT(result[3] == "89");
-    CPPUNIT_ASSERT(result[4] == "89/12");
+    ASSERT_TRUE(result.size() == 5);
+    ASSERT_TRUE(result[0] == "/");
+    ASSERT_TRUE(result[1] == "/456/");
+    ASSERT_TRUE(result[2] == "12");
+    ASSERT_TRUE(result[3] == "89");
+    ASSERT_TRUE(result[4] == "89/12");
 
     const T_ stripStr  = " _ 123.456/789-0ab/_ _";
     T_       stripable = stripStr;
 
     // BOOST_TEST_MESSAGE("strip " << stripable << " of \".\"");
     strip(stripable, ".");
-    CPPUNIT_ASSERT(stripable == " _ 123456/789-0ab/_ _");
+    ASSERT_TRUE(stripable == " _ 123456/789-0ab/_ _");
     stripable = stripStr;
     // BOOST_TEST_MESSAGE("strip " << stripable << " of \"/\"");
     strip(stripable, "/");
-    CPPUNIT_ASSERT(stripable == " _ 123.456789-0ab_ _");
+    ASSERT_TRUE(stripable == " _ 123.456789-0ab_ _");
     stripable = stripStr;
     // BOOST_TEST_MESSAGE("strip " << stripable << " of \"./\"");
     strip(stripable, "./");
-    CPPUNIT_ASSERT(stripable == " _ 123456789-0ab_ _");
+    ASSERT_TRUE(stripable == " _ 123456789-0ab_ _");
 
     stripable = stripStr;
     // BOOST_TEST_MESSAGE("trim " << stripable << " of \" \"");
     trim(stripable, " ");
-    CPPUNIT_ASSERT(stripable == "_ 123.456/789-0ab/_ _");
+    ASSERT_TRUE(stripable == "_ 123.456/789-0ab/_ _");
     stripable = stripStr;
     // BOOST_TEST_MESSAGE("trim " << stripable << " of \"_\"");
     trim(stripable, "_");
-    CPPUNIT_ASSERT(stripable == " _ 123.456/789-0ab/_ ");
+    ASSERT_TRUE(stripable == " _ 123.456/789-0ab/_ ");
 
     stripable = stripStr;
     // BOOST_TEST_MESSAGE("trim " << stripable << " of \" _\"");
     trim(stripable, " _");
-    CPPUNIT_ASSERT(stripable == "123.456/789-0ab/");
+    ASSERT_TRUE(stripable == "123.456/789-0ab/");
 
     stripable = stripStr;  // " _ 123.456/789-0ab/_ _"
     // BOOST_TEST_MESSAGE("replaceChar " << stripable << " chars \"_\" with '#'");
     replaceChar(stripable, "_", '#');
-    CPPUNIT_ASSERT(stripable == " # 123.456/789-0ab/# #");
+    ASSERT_TRUE(stripable == " # 123.456/789-0ab/# #");
     stripable = stripStr;  // " _ 123.456/789-0ab/_ _"
     // BOOST_TEST_MESSAGE("replaceChar " << stripable << " chars \" _\" with '#'");
     replaceChar(stripable, "_ ", '#');
-    CPPUNIT_ASSERT(stripable == "###123.456/789-0ab/###");
+    ASSERT_TRUE(stripable == "###123.456/789-0ab/###");
 
-    CPPUNIT_ASSERT(toLower(T_("SoMeStRiNg")) == string("somestring"));
-    CPPUNIT_ASSERT(toUpper(T_("SoMeStRiNg")) == string("SOMESTRING"));
+    ASSERT_TRUE(toLower(T_("SoMeStRiNg")) == string("somestring"));
+    ASSERT_TRUE(toUpper(T_("SoMeStRiNg")) == string("SOMESTRING"));
 }
 
 template<typename T_>
@@ -516,233 +511,233 @@ void util_string_left_right_testT()
 
     T_ trimstring = "";
     trimLeft(trimstring, " \n\t\r");
-    CPPUNIT_ASSERT(trimstring == "");
+    ASSERT_TRUE(trimstring == "");
     trimstring = "";
     trimRight(trimstring, " \n\t\r");
-    CPPUNIT_ASSERT(trimstring == "");
+    ASSERT_TRUE(trimstring == "");
 
     trimstring = " ";
     trimLeft(trimstring, " \n\t\r");
-    CPPUNIT_ASSERT(trimstring == "");
+    ASSERT_TRUE(trimstring == "");
     trimstring = " ";
     trimRight(trimstring, " \n\t\r");
-    CPPUNIT_ASSERT(trimstring == "");
+    ASSERT_TRUE(trimstring == "");
 
     trimstring = "\t";
     trimLeft(trimstring, " \n\t\r");
-    CPPUNIT_ASSERT(trimstring == "");
+    ASSERT_TRUE(trimstring == "");
     trimstring = "\t";
     trimRight(trimstring, " \n\t\r");
-    CPPUNIT_ASSERT(trimstring == "");
+    ASSERT_TRUE(trimstring == "");
 
     trimstring = "\t";
     trimLeft(trimstring, " \n\t\r");
-    CPPUNIT_ASSERT(trimstring == "");
+    ASSERT_TRUE(trimstring == "");
     trimstring = "\t";
     trimRight(trimstring, " \n\t\r");
-    CPPUNIT_ASSERT(trimstring == "");
+    ASSERT_TRUE(trimstring == "");
 
     trimstring = "\t";
     trim(trimstring, " \n\t\r");
-    CPPUNIT_ASSERT(trimstring == "");
+    ASSERT_TRUE(trimstring == "");
     trimstring = "\n";
     trim(trimstring, " \n\t\r");
-    CPPUNIT_ASSERT(trimstring == "");
+    ASSERT_TRUE(trimstring == "");
     trimstring = "\r";
     trim(trimstring, " \n\t\r");
-    CPPUNIT_ASSERT(trimstring == "");
+    ASSERT_TRUE(trimstring == "");
     trimstring = " \r\n ";
     trim(trimstring, " \n\t\r");
-    CPPUNIT_ASSERT(trimstring == "");
+    ASSERT_TRUE(trimstring == "");
     trimstring = " \r\t\t \n ";
     trim(trimstring, " \n\t\r");
-    CPPUNIT_ASSERT(trimstring == "");
+    ASSERT_TRUE(trimstring == "");
     trimstring = "a";
     trim(trimstring, " \n\t\r");
-    CPPUNIT_ASSERT(trimstring == "a");
+    ASSERT_TRUE(trimstring == "a");
     trimstring = "\ta";
     trim(trimstring, " \n\t\r");
-    CPPUNIT_ASSERT(trimstring == "a");
+    ASSERT_TRUE(trimstring == "a");
     trimstring = "a\t";
     trim(trimstring, " \n\t\r");
-    CPPUNIT_ASSERT(trimstring == "a");
+    ASSERT_TRUE(trimstring == "a");
     trimstring = "\ta\n";
     trim(trimstring, " \n\t\r");
-    CPPUNIT_ASSERT(trimstring == "a");
+    ASSERT_TRUE(trimstring == "a");
     trimstring = "\na";
     trim(trimstring, " \n\t\r");
-    CPPUNIT_ASSERT(trimstring == "a");
+    ASSERT_TRUE(trimstring == "a");
     trimstring = "a\t   ";
     trim(trimstring, " \n\t\r");
-    CPPUNIT_ASSERT(trimstring == "a");
+    ASSERT_TRUE(trimstring == "a");
     trimstring = "\t\t\t\ta     ";
     trim(trimstring, " \n\t\r");
-    CPPUNIT_ASSERT(trimstring == "a");
+    ASSERT_TRUE(trimstring == "a");
 
     T_ source = "123/3456/7890a";
     // BOOST_TEST_MESSAGE("split " << source << " into vector by '/'");
     vector<T_> result = splitIntoVector(source, '/');
-    CPPUNIT_ASSERT_EQUAL(result.size(), 3UL);
-    CPPUNIT_ASSERT(result[0] == "123");
-    CPPUNIT_ASSERT(result[1] == "3456");
-    CPPUNIT_ASSERT(result[2] == "7890a");
+    ASSERT_EQ(result.size(), 3UL);
+    ASSERT_TRUE(result[0] == "123");
+    ASSERT_TRUE(result[1] == "3456");
+    ASSERT_TRUE(result[2] == "7890a");
 
     // BOOST_TEST_MESSAGE("split " << source << " into vector by '.'");
     result = splitIntoVector(source, '.');
-    CPPUNIT_ASSERT(result.size() == 1);
-    CPPUNIT_ASSERT(result[0] == "123/3456/7890a");
+    ASSERT_TRUE(result.size() == 1);
+    ASSERT_TRUE(result[0] == "123/3456/7890a");
 
     // BOOST_TEST_MESSAGE("split " << source << " into vector by \"37\"");
     result = splitIntoVector(source, "37");
-    CPPUNIT_ASSERT(result.size() == 4);
-    CPPUNIT_ASSERT(result[0] == "12");
-    CPPUNIT_ASSERT(result[1] == "/");
-    CPPUNIT_ASSERT(result[2] == "456/");
-    CPPUNIT_ASSERT(result[3] == "890a");
+    ASSERT_TRUE(result.size() == 4);
+    ASSERT_TRUE(result[0] == "12");
+    ASSERT_TRUE(result[1] == "/");
+    ASSERT_TRUE(result[2] == "456/");
+    ASSERT_TRUE(result[3] == "890a");
 
     source = "1/4/7/1/7";
     // BOOST_TEST_MESSAGE("split " << source << " into vector by \"/\"");
     result = splitIntoVector(source, "/");
-    CPPUNIT_ASSERT(result.size() == 5);
-    CPPUNIT_ASSERT(result[0] == "1");
-    CPPUNIT_ASSERT(result[1] == "4");
-    CPPUNIT_ASSERT(result[2] == "7");
-    CPPUNIT_ASSERT(result[3] == "1");
-    CPPUNIT_ASSERT(result[4] == "7");
+    ASSERT_TRUE(result.size() == 5);
+    ASSERT_TRUE(result[0] == "1");
+    ASSERT_TRUE(result[1] == "4");
+    ASSERT_TRUE(result[2] == "7");
+    ASSERT_TRUE(result[3] == "1");
+    ASSERT_TRUE(result[4] == "7");
 
     source = "123/456/789/123/789";
     // BOOST_TEST_MESSAGE("split " + source + " into set by '/'");
     set<T_> resultSet = splitIntoSet(source, '/');
-    CPPUNIT_ASSERT_EQUAL(resultSet.size(), 3UL);
+    ASSERT_EQ(resultSet.size(), 3UL);
     result = vectorFromSet(resultSet);
-    CPPUNIT_ASSERT_EQUAL(result.size(), 3UL);
-    CPPUNIT_ASSERT(result[0] == "123");
-    CPPUNIT_ASSERT(result[1] == "456");
-    CPPUNIT_ASSERT(result[2] == "789");
+    ASSERT_EQ(result.size(), 3UL);
+    ASSERT_TRUE(result[0] == "123");
+    ASSERT_TRUE(result[1] == "456");
+    ASSERT_TRUE(result[2] == "789");
 
     // BOOST_TEST_MESSAGE("split " << source << " into set by '.'");
     resultSet = splitIntoSet(source, '.');
-    CPPUNIT_ASSERT_EQUAL(resultSet.size(), 1UL);
+    ASSERT_EQ(resultSet.size(), 1UL);
     result = vectorFromSet(resultSet);
-    CPPUNIT_ASSERT_EQUAL(result.size(), 1UL);
-    CPPUNIT_ASSERT(result[0] == "123/456/789/123/789");
+    ASSERT_EQ(result.size(), 1UL);
+    ASSERT_TRUE(result[0] == "123/456/789/123/789");
 
     // BOOST_TEST_MESSAGE("split " << source << " into set by \"37\"");
     resultSet = splitIntoSet(source, "37");
-    CPPUNIT_ASSERT_EQUAL(resultSet.size(), 5UL);
+    ASSERT_EQ(resultSet.size(), 5UL);
     result = vectorFromSet(resultSet);
-    CPPUNIT_ASSERT_EQUAL(result.size(), 5UL);
-    CPPUNIT_ASSERT(result[0] == "/");
-    CPPUNIT_ASSERT(result[1] == "/456/");
-    CPPUNIT_ASSERT(result[2] == "12");
-    CPPUNIT_ASSERT(result[3] == "89");
-    CPPUNIT_ASSERT(result[4] == "89/12");
+    ASSERT_EQ(result.size(), 5UL);
+    ASSERT_TRUE(result[0] == "/");
+    ASSERT_TRUE(result[1] == "/456/");
+    ASSERT_TRUE(result[2] == "12");
+    ASSERT_TRUE(result[3] == "89");
+    ASSERT_TRUE(result[4] == "89/12");
 
     const T_ stripStr  = " _ 123.456/789-0ab/_ _";
     T_       stripable = stripStr;
 
     // BOOST_TEST_MESSAGE("strip " << stripable << " of \".\"");
     strip(stripable, ".");
-    CPPUNIT_ASSERT(stripable == " _ 123456/789-0ab/_ _");
+    ASSERT_TRUE(stripable == " _ 123456/789-0ab/_ _");
     stripable = stripStr;
     // BOOST_TEST_MESSAGE("strip " << stripable << " of \"/\"");
     strip(stripable, "/");
-    CPPUNIT_ASSERT(stripable == " _ 123.456789-0ab_ _");
+    ASSERT_TRUE(stripable == " _ 123.456789-0ab_ _");
     stripable = stripStr;
     // BOOST_TEST_MESSAGE("strip " << stripable << " of \"./\"");
     strip(stripable, "./");
-    CPPUNIT_ASSERT(stripable == " _ 123456789-0ab_ _");
+    ASSERT_TRUE(stripable == " _ 123456789-0ab_ _");
 
     stripable = stripStr;
     // BOOST_TEST_MESSAGE("trim " << stripable << " of \" \"");
     trim(stripable, " ");
-    CPPUNIT_ASSERT(stripable == "_ 123.456/789-0ab/_ _");
+    ASSERT_TRUE(stripable == "_ 123.456/789-0ab/_ _");
     stripable = stripStr;
     // BOOST_TEST_MESSAGE("trim " << stripable << " of \"_\"");
     trim(stripable, "_");
-    CPPUNIT_ASSERT(stripable == " _ 123.456/789-0ab/_ ");
+    ASSERT_TRUE(stripable == " _ 123.456/789-0ab/_ ");
 
     stripable = stripStr;
     // BOOST_TEST_MESSAGE("trim " << stripable << " of \" _\"");
     trim(stripable, " _");
-    CPPUNIT_ASSERT(stripable == "123.456/789-0ab/");
+    ASSERT_TRUE(stripable == "123.456/789-0ab/");
 
     stripable = stripStr;
     // BOOST_TEST_MESSAGE("replaceChar " << stripable << " chars \"_\" with '#'");
     replaceChar(stripable, "_", '#');
-    CPPUNIT_ASSERT(stripable == " # 123.456/789-0ab/# #");
+    ASSERT_TRUE(stripable == " # 123.456/789-0ab/# #");
     stripable = stripStr;
     // BOOST_TEST_MESSAGE("replaceChar " << stripable << " chars \" _\" with '#'");
     replaceChar(stripable, "_ ", '#');
-    CPPUNIT_ASSERT(stripable == "###123.456/789-0ab/###");
+    ASSERT_TRUE(stripable == "###123.456/789-0ab/###");
 }
 
-void stringutilTest::util_ci_string_test()
+TEST_F(StringUtilTest, util_ci_string_test)
 {
     // BOOST_TEST_MESSAGE("");
     // BOOST_TEST_MESSAGE("====== Testing util ci_string case insensitivity functions ========");
 
     ci_string trimstring = "";
     trim(trimstring, "aBZd");
-    CPPUNIT_ASSERT_EQUAL(trimstring, ci_string(""));
+    ASSERT_EQ(trimstring, ci_string(""));
     trimstring = "aA";
     trim(trimstring, "aBZd");
-    CPPUNIT_ASSERT_EQUAL(trimstring, ci_string(""));
+    ASSERT_EQ(trimstring, ci_string(""));
     trimstring = "BaAb";
     trim(trimstring, "aBZd");
-    CPPUNIT_ASSERT_EQUAL(trimstring, ci_string(""));
+    ASSERT_EQ(trimstring, ci_string(""));
 
     trimstring = "zBaAZb";
     trim(trimstring, "aBZd");
-    CPPUNIT_ASSERT_EQUAL(trimstring, ci_string(""));
+    ASSERT_EQ(trimstring, ci_string(""));
 
     trimstring = "zBadDDdAZb";
     trim(trimstring, "aBZd");
-    CPPUNIT_ASSERT_EQUAL(trimstring, ci_string(""));
+    ASSERT_EQ(trimstring, ci_string(""));
 
     trimstring = "zB<SOMETHING>adDD</SOMETHING>dAZb";
     trim(trimstring, "aBZd");
-    CPPUNIT_ASSERT_EQUAL(trimstring, ci_string("<SOMETHING>adDD</SOMETHING>"));
+    ASSERT_EQ(trimstring, ci_string("<SOMETHING>adDD</SOMETHING>"));
 
     ci_string source = "123a456B789c78A";
     // BOOST_TEST_MESSAGE("split " << source << " into vector by 'a'");
     vector<ci_string> result = splitIntoVector(source, 'a');
-    CPPUNIT_ASSERT_EQUAL(result.size(), 3UL);
-    CPPUNIT_ASSERT_EQUAL(result[0], ci_string("123"));
-    CPPUNIT_ASSERT_EQUAL(result[1], ci_string("456B789c78"));
-    CPPUNIT_ASSERT_EQUAL(result[2], ci_string(""));
+    ASSERT_EQ(result.size(), 3UL);
+    ASSERT_EQ(result[0], ci_string("123"));
+    ASSERT_EQ(result[1], ci_string("456B789c78"));
+    ASSERT_EQ(result[2], ci_string(""));
 
     source = "123a456B789c78A";
     // BOOST_TEST_MESSAGE("split " << source << " into vector by 'A'");
     result = splitIntoVector(source, 'A');
-    CPPUNIT_ASSERT_EQUAL(result.size(), 3UL);
-    CPPUNIT_ASSERT_EQUAL(result[0], ci_string("123"));
-    CPPUNIT_ASSERT_EQUAL(result[1], ci_string("456B789c78"));
-    CPPUNIT_ASSERT_EQUAL(result[2], ci_string(""));
+    ASSERT_EQ(result.size(), 3UL);
+    ASSERT_EQ(result[0], ci_string("123"));
+    ASSERT_EQ(result[1], ci_string("456B789c78"));
+    ASSERT_EQ(result[2], ci_string(""));
 
     source = "xxxAXxXbxXxC";
     // BOOST_TEST_MESSAGE("split " + source + " into set by \"abc\"");
     set<ci_string> resultSet = splitIntoSet(source, ci_string("abc"));
-    CPPUNIT_ASSERT_EQUAL(resultSet.size(), 2UL);
+    ASSERT_EQ(resultSet.size(), 2UL);
     result = vectorFromSet(resultSet);
-    CPPUNIT_ASSERT_EQUAL(result.size(), 2UL);
-    CPPUNIT_ASSERT_EQUAL(result[0], ci_string(""));
-    CPPUNIT_ASSERT_EQUAL(result[1], ci_string("xxx"));
+    ASSERT_EQ(result.size(), 2UL);
+    ASSERT_EQ(result[0], ci_string(""));
+    ASSERT_EQ(result[1], ci_string("xxx"));
 
     const ci_string stripStr  = "abCaaAxxxabcxxxcBA";
     ci_string       stripable = stripStr;
 
     // BOOST_TEST_MESSAGE("strip " << stripable << " of \"abc\"");
     strip(stripable, ci_string("abc"));
-    CPPUNIT_ASSERT_EQUAL(stripable, ci_string("xxxxxx"));
+    ASSERT_EQ(stripable, ci_string("xxxxxx"));
 
     stripable = stripStr;
     // BOOST_TEST_MESSAGE("replaceChar " << stripable << " chars \"abc\" with '#'");
     replaceChar(stripable, "abc", '#');
-    CPPUNIT_ASSERT_EQUAL(stripable, ci_string("######xxx###xxx###"));
+    ASSERT_EQ(stripable, ci_string("######xxx###xxx###"));
 }
 
-void stringutilTest::util_string_test()
+TEST_F(StringUtilTest, util_string_test)
 {
     util_string_testT<string>();
     util_string_testT<ci_string>();

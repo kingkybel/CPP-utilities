@@ -1,7 +1,8 @@
 /*
  * File Name:   primes.h
  * Description: some simple prime calculation routines
- * Copyright (C) 2019 Dieter J Kybelksties
+ * 
+ * Copyright (C) 2023 Dieter J Kybelksties <github@kybelksties.com>
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -17,7 +18,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
- * @date: 2019-11-17
+ * @date: 2023-08-28
  * @author: Dieter J Kybelksties
  */
 
@@ -290,7 +291,7 @@ class prime_checker
 
     bool isPrime(unsigned long long n)
     {
-        //static bool madePartial = makePartialSieve();
+        // static bool madePartial = makePartialSieve();
 
         if(n < SIZE_ULL)
             return (sieve[n]);
@@ -298,7 +299,7 @@ class prime_checker
         if(sieve[n % partialSieveSize] == false)
             return (false);
 
-        //unsigned long long currentStepIndex = 1;
+        // unsigned long long currentStepIndex = 1;
 
         for(unsigned long long divisor = 2; divisor < ROOT_SIZE_ULL; divisor++)
         {

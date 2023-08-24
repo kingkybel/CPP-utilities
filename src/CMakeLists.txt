@@ -1,15 +1,15 @@
 add_library(dkutils STATIC
   anyutil.cc
-  bayesutil.cc
+  stringutil.cc
+  iosutil.cc
   csvutil.cc
   dateutil.cc
-  floatingpoint.cc
   graphutil.cc
-  iosutil.cc
+  floatingpoint.cc
   limited_int.cc
   primes.cc
   statutil.cc
-  stringutil.cc
+  bayesutil.cc
 )
 
-target_link_libraries(dkutils PRIVATE boost_filesystem)
+target_link_libraries(dkutils PRIVATE gmp boost_filesystem)

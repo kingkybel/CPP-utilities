@@ -2,7 +2,7 @@
  * File Name:   stringutil.h
  * Description: string utility functions
  *
- * Copyright (C) 2019 Dieter J Kybelksties
+ * Copyright (C) 2023 Dieter J Kybelksties <github@kybelksties.com>
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -18,7 +18,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
- * @date: 2014-01-28
+ * @date: 2023-08-28
  * @author: Dieter J Kybelksties
  */
 
@@ -40,10 +40,7 @@
 #include <unordered_map>
 #include <unordered_set>
 #include <vector>
-
-#ifndef DO_TRACE_
-    #define DO_TRACE_
-#endif
+//#define DO_TRACE_
 #include "traceutil.h"
 
 namespace util
@@ -441,7 +438,7 @@ void strip(ci_string &v, const ci_string &stripChars = "\t \r\n", StripTrimMode 
  * Replace occurrences of chars left and/or right  and/or interior of
  * standard string with replacement char.
  */
-void replaceChar(std::string &      v,
+void replaceChar(std::string       &v,
                  const std::string &stripChars = "\t \r\n",
                  char               repl       = ' ',
                  StripTrimMode      m          = StripTrimMode::ALL);
@@ -450,7 +447,7 @@ void replaceChar(std::string &      v,
  * Replace occurrences of chars left and/or right  and/or interior of case
  *  insensitive string with replacement char.
  */
-void replaceChar(ci_string &      v,
+void replaceChar(ci_string       &v,
                  const ci_string &stripChars = "\t \r\n",
                  char             repl       = ' ',
                  StripTrimMode    m          = StripTrimMode::ALL);

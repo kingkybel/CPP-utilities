@@ -2,7 +2,7 @@
  * File Name:   grid.h
  * Description: a template structure to hold data in a rectangular scheme
  *
- * Copyright (C) 2019 Dieter J Kybelksties
+ * Copyright (C) 2023 Dieter J Kybelksties <github@kybelksties.com>
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -18,7 +18,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
- * @date: 2019-05-06
+ * @date: 2023-08-28
  * @author: Dieter J Kybelksties
  */
 
@@ -74,8 +74,8 @@ class gridItf
     {
     }
 
-    gridItf(const gridItf<EL_TYPE> &rhs) = default;
-    virtual ~gridItf()                   = default;
+    gridItf(const gridItf<EL_TYPE> &rhs)            = default;
+    virtual ~gridItf()                              = default;
     gridItf &operator=(const gridItf<EL_TYPE> &rhs) = default;
 
     /**
@@ -160,8 +160,8 @@ class index_pair : public std::pair<size_t, size_t>
     {
     }
 
-    index_pair(const index_pair &rhs) = default;
-    virtual ~index_pair()             = default;
+    index_pair(const index_pair &rhs)           = default;
+    virtual ~index_pair()                       = default;
     index_pair operator=(const index_pair &rhs) = default;
 
     /**
@@ -453,8 +453,8 @@ class sparse_grid : public gridItf<EL_TYPE>
         setMode(mode);
     }
 
-    sparse_grid(const sparse_grid<EL_TYPE> &rhs) = default;
-    virtual ~sparse_grid()                       = default;
+    sparse_grid(const sparse_grid<EL_TYPE> &rhs)                    = default;
+    virtual ~sparse_grid()                                          = default;
     sparse_grid<EL_TYPE> operator=(const sparse_grid<EL_TYPE> &rhs) = default;
 
     /**
@@ -964,8 +964,8 @@ class grid : public gridItf<EL_TYPE>
         }
     }
 
-    grid(const grid<EL_TYPE> &rhs) = default;
-    virtual ~grid()                = default;
+    grid(const grid<EL_TYPE> &rhs)                     = default;
+    virtual ~grid()                                    = default;
     grid<EL_TYPE> &operator=(const grid<EL_TYPE> &rhs) = default;
 
     /**

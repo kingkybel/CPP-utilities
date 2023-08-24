@@ -1,7 +1,7 @@
 /*
  * File Name:   FFT.h
  * Description: Fast Fourier implementation
- * Copyright (C) 2019 Dieter J Kybelksties
+ * Copyright (C) 2023 Dieter J Kybelksties <github@kybelksties.com>
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -17,21 +17,21 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
- * @date: 2019-04-30
+ * @date: 2023-08-28
  * @author: Dieter J Kybelksties
  */
 
-#if !defined(NS_UTIL_FFT_H_INCLUDED)
-    #define NS_UTIL_FFT_H_INCLUDED
+#ifndef NS_UTIL_FFT_H_INCLUDED
+#define NS_UTIL_FFT_H_INCLUDED
 
-    #include "constants.h"
+#include "constants.h"
 
-    #include <algorithm>
-    #include <assert.h>
-    #include <cmath>
-    #include <complex>
-    #include <numbers>
-    #include <vector>
+#include <algorithm>
+#include <assert.h>
+#include <cmath>
+#include <complex>
+#include <numbers>
+#include <vector>
 
 namespace util
 {
@@ -131,7 +131,7 @@ class FFT
         bitReverseVector_[numOfPoints_ - 1] = numOfPoints_ - 1;
     }
 
-    FFT(const FFT &lhs) = default;
+    FFT(const FFT &lhs)            = default;
     FFT &operator=(const FFT &lhs) = default;
 
     INTTYPE numberOfPoints() const

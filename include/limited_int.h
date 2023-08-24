@@ -2,7 +2,8 @@
  * File Name:   limited_int.h
  * Description: Integers than can only assume values between a minimum and a
  *              maximum.
- * Copyright (C) 2020 Dieter J Kybelksties
+ * 
+ * Copyright (C) 2023 Dieter J Kybelksties <github@kybelksties.com>
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -18,17 +19,21 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
- * @date: 2020-06-02
+ * @date: 2023-08-28
  * @author: Dieter J Kybelksties
  */
 
 #ifndef LIMITED_INT_H_INCLUDED
 #define LIMITED_INT_H_INCLUDED
 
+//#define DO_TRACE_
+#include "traceutil.h"
+
 #include <exception>
 #include <iostream>
 #include <limits>
 #include <sstream>
+#include <type_traits>
 #include <typeinfo>
 
 namespace util
@@ -65,7 +70,7 @@ struct resolve_throw
     template<typename T_>
     static bool resolve(T_ min, T_ max, T_ &val, T_ invalid)
     {
-        std::stringstream ss;
+         std::stringstream ss;
 
         ss << "resolve_throw::resolve() limited_int<" << typeid(T_).name() << "," << min << "," << max << ">(" << val
            << ") out of range.";
@@ -249,10 +254,17 @@ struct limited_int_traits
         return (Converter::convertFrom(min_, max_, rhs));
     }
 
-    template<typename LimitedInt_>
-    static LimitedInt_ nth_next(const LimitedInt_ &val, const decltype(val.val()) &n)
+    template<typename LimitedInt_, typename SummandType_>
+    static LimitedInt_ nth_next(const LimitedInt_ &val, const SummandType_ &n, bool isReverse)
     {
-        return (val.val() + n);
+        constexpr bool is_int_unsigned = std::is_unsigned<LimitedInt_>();
+        constexpr bool is_summand_signed = std::is_signed<SummandType_>();
+        if constexpr(is_int_unsigned && is_summand_signed)
+        {  //
+            n = -n;
+            return isReverse ? (val.val() + n) : (val.val() - n);
+        }
+        return isReverse ? (val.val() - n) : (val.val() + n);
     }
 };
 
@@ -396,16 +408,7 @@ class limited_int_iterator
 
     void makeStep(IntType n_step, bool isReverse)
     {
-        try
-        {
-            // TODO: Check whether next line is correct
-            // IntType n_step = isReverse_ ? IntType(-1) : IntType(1);
-            iterEl_ = LimitedInt::TraitsType::nth_next(iterEl_, n_step);
-        }
-        catch(std::out_of_range &e)
-        {
-            iterEl_ = LimitedInt::invalid();
-        }
+        iterEl_ = LimitedInt::TraitsType::nth_next(iterEl_, n_step, isReverse);
     }
 
     public:

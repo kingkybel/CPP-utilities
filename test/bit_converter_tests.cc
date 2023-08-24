@@ -1,5 +1,8 @@
 /*
- * Copyright (C) 2019 Dieter J Kybelksties
+ * File:		bit_converter_tests.cc
+ * Description:         Unit tests for bit converter.
+ * 
+ * Copyright (C) 2023 Dieter J Kybelksties <github@kybelksties.com>
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -15,30 +18,33 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
- * @date: 2020-11-08
+ * @date: 2023-08-28
  * @author: Dieter J Kybelksties
  */
+#include "bit_converter.h"
+#include <cstdlib>
+#include <gtest/gtest.h>
+#include <iostream>
+#include <string>
 
-#ifndef PRIMESTEST_H
-#define PRIMESTEST_H
+using namespace std;
+using namespace util;
 
-#include <cppunit/extensions/HelperMacros.h>
-
-class primesTest : public CPPUNIT_NS::TestFixture
+class BitConverterTest : public ::testing::Test
 {
-    CPPUNIT_TEST_SUITE(primesTest);
+    protected:
+    void SetUp() override
+    {
+    }
 
-    CPPUNIT_TEST(testPrimesConstruction);
-    CPPUNIT_TEST_SUITE_END();
-
-    public:
-    primesTest();
-    virtual ~primesTest();
-    void setUp();
-    void tearDown();
-
-    private:
-    void testPrimesConstruction();
+    void TearDown() override
+    {
+    }
 };
 
-#endif /* PRIMESTEST_H */
+TEST_F(BitConverterTest, construction_test)
+{
+    bit_converter<int64_t> defaultBC{int64_t{0}};
+    string                 zero_64 = "0000000000000000000000000000000000000000000000000000000000000000";
+    ASSERT_EQ(zero_64, string{defaultBC.asBitset().to_string()});
+}

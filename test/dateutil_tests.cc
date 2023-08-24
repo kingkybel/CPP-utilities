@@ -1,13 +1,13 @@
 /*
- * File:		dateutilTest.cc
- * Description:         Unit tests for string utilities
+ * File:		dateutil_tests.cc
+ * Description:         Unit tests for date utilities.
+ * 
+ * Copyright (C) 2023 Dieter J Kybelksties <github@kybelksties.com>
  *
- * Copyright (C) 2020 Dieter J Kybelksties <github@kybelksties.com>
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -15,30 +15,31 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
- * @date: 2020-06-17
+ * @date: 2023-08-28
  * @author: Dieter J Kybelksties
  */
 
-#include "dateutilTest.h"
+#include "anyutil.h"
+#include "bayesutil.h"
+#include "csvutil.h"
+#include "dateutil.h"
+#include "graphutil.h"
+#include "statutil.h"
+#include "stringutil.h"
 
 #include <boost/assign/std/vector.hpp>
 #include <boost/bind.hpp>
+#include <gtest/gtest.h>
 #define BOOST_NO_CXX11_SCOPED_ENUMS
 #include <boost/filesystem.hpp>
 #undef BOOST_NO_CXX11_SCOPED_ENUMS
-#include <anyutil.h>
-#include <bayesutil.h>
 #include <cmath>
 #include <cstdlib>
-#include <csvutil.h>
-#include <dateutil.h>
-#include <graphutil.h>
 #include <iostream>
-#include <statutil.h>
 #include <string>
-#include <stringutil.h>
 
 using namespace std;
 using namespace util;
@@ -50,25 +51,19 @@ using namespace boost::filesystem;
 
 const string filename = "/tmp/test.csv";
 
-CPPUNIT_TEST_SUITE_REGISTRATION(dateutilTest);
-
-dateutilTest::dateutilTest()
+class DateUtilTest : public ::testing::Test
 {
-}
+    protected:
+    void SetUp() override
+    {
+    }
 
-dateutilTest::~dateutilTest()
-{
-}
-
-void dateutilTest::setUp()
-{
-}
-
-void dateutilTest::tearDown()
-{
-    resetDateFormats();
-    initDateFormats(DateFormatPreference::USA);
-}
+    void TearDown() override
+    {
+        resetDateFormats();
+        initDateFormats(DateFormatPreference::USA);
+    }
+};
 
 struct DR
 {
@@ -89,7 +84,7 @@ struct DR
     size_t line_;
 };
 
-void dateutilTest::util_date_european_test()
+TEST_F(DateUtilTest, util_date_european_test)
 {
     resetDateFormats();
     initDateFormats(DateFormatPreference::European);
@@ -234,27 +229,27 @@ void dateutilTest::util_date_european_test()
     };
     for(size_t i = 0; i < sizeof(scanResults) / sizeof(DR); i++)
     {
-        CPPUNIT_ASSERT(scanResults[i].correctResult());
+        ASSERT_TRUE(scanResults[i].correctResult());
     }
 
     resetDateFormats();
     addDateFormat("%H:%M:%S");
     addDateFormat("%H:%M");
     ptime dt = scanDate("12:34:56");
-    CPPUNIT_ASSERT_EQUAL(string("12:34:56"), asString(dt.time_of_day()));
+    ASSERT_EQ(string("12:34:56"), asString(dt.time_of_day()));
     dt = scanDate("12:34");
-    CPPUNIT_ASSERT_EQUAL(string("12:34:00"), asString(dt.time_of_day()));
+    ASSERT_EQ(string("12:34:00"), asString(dt.time_of_day()));
 
     resetDateFormats();
     for(size_t i = 0; i < sizeof(scanResults) / sizeof(DR); i++)
     {
-        CPPUNIT_ASSERT_EQUAL(string("not-a-date-time"), asString(scanDate(scanResults[i].param_)));
+        ASSERT_EQ(string("not-a-date-time"), asString(scanDate(scanResults[i].param_)));
     }
     addDateFormat("%H:%Y");
-    CPPUNIT_ASSERT_EQUAL(string("2013-Jan-01 13:00:00"), asString(scanDate("13:2013")));
+    ASSERT_EQ(string("2013-Jan-01 13:00:00"), asString(scanDate("13:2013")));
 }
 
-void dateutilTest::util_date_american_test()
+TEST_F(DateUtilTest, util_date_american_test)
 {
     resetDateFormats();
     initDateFormats(DateFormatPreference::USA);
@@ -399,6 +394,6 @@ void dateutilTest::util_date_american_test()
     };
     for(size_t i = 0; i < sizeof(scanResults) / sizeof(DR); i++)
     {
-        CPPUNIT_ASSERT(scanResults[i].correctResult());
+        ASSERT_TRUE(scanResults[i].correctResult());
     }
 }

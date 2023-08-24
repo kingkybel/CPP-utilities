@@ -1,5 +1,8 @@
 /*
- * Copyright (C) 2019 Dieter J Kybelksties
+ * File Name:   matrix.h
+ * Description: A template for matrix operations.
+ * 
+ * Copyright (C) 2023 Dieter J Kybelksties <github@kybelksties.com>
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -15,30 +18,30 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
- * @date: 2019-04-30
+ * @date: 2023-08-28
  * @author: Dieter J Kybelksties
  */
 
-#if !defined(NS_UTIL_MATRIX_H_INCLUDED)
-    #define NS_UTIL_MATRIX_H_INCLUDED
+#ifndef NS_UTIL_MATRIX_H_INCLUDED
+#define NS_UTIL_MATRIX_H_INCLUDED
 
-    #include "stringutil.h"
+#include "stringutil.h"
+//#define DO_TRACE_
+#include "traceutil.h"
 
-    #include <cmath>
-    #include <complex>
-    #include <cstdio>
-    #include <cstdlib>
-    #include <initializer_list>
-    #include <ios>
-    #include <iostream>
-    #include <limits>
-    #include <sstream>
-    #include <stdexcept>
-    #include <string>
-    #include <utility>
-    #include <vector>
-    #define DO_TRACE_
-    #include "traceutil.h"
+#include <cmath>
+#include <complex>
+#include <cstdio>
+#include <cstdlib>
+#include <initializer_list>
+#include <ios>
+#include <iostream>
+#include <limits>
+#include <sstream>
+#include <stdexcept>
+#include <string>
+#include <utility>
+#include <vector>
 
 namespace util
 {
@@ -256,8 +259,8 @@ void checkBounds<false>(const matrix_interface &lhs, size_t x, size_t y, const s
  * operations as overloaded operators and methods. It is assumed that
  * users of this class are familiar with matrix algebra. We have not
  * defined any specialization of this template here, so all the instances
- * of matrix will be created implicitly by the compiler. . Note that this class is not
- * optimized for performance.
+ * of matrix will be created implicitly by the compiler.
+ * Note that this class is not optimized for performance.
  *
  * @param T                 value-type, tested with float, double, long double,
  *                          complex<float>, complex<double> and complex<long double>
@@ -344,7 +347,7 @@ class matrix : public matrix_interface
         rhs.initializeData();
     }
 
-    ~matrix()       = default;
+    ~matrix()                            = default;
     matrix &operator=(const matrix &rhs) = default;
 
     /**
@@ -464,8 +467,8 @@ class matrix : public matrix_interface
      */
     static void assertCompatibleSizes(const matrix<T, enableBoundsCheck> &lhs,
                                       const matrix<T, enableBoundsCheck> &rhs,
-                                      const operType &                    operation,
-                                      const std::string &                 location)
+                                      const operType                     &operation,
+                                      const std::string                  &location)
     {
         if(operation == operType::MatrixAdd || operation == operType::MatrixSub)
         {
@@ -1027,7 +1030,7 @@ class matrix : public matrix_interface
         return (solutions);
     }
 
-    #if defined HAVE_LEGACY_DETERMINANT_METHOD
+#if defined HAVE_LEGACY_DETERMINANT_METHOD
 
     /**
      *
@@ -1068,7 +1071,7 @@ class matrix : public matrix_interface
 
         return (reval);
     }
-    #endif  // defined HAVE_LEGACY_DETERMINANT_METHOD
+#endif  // defined HAVE_LEGACY_DETERMINANT_METHOD
 
     private:  // make the recursive method private
     /**
@@ -1468,7 +1471,7 @@ class matrix : public matrix_interface
     }
 };
 
-template<bool enable = false>
+template<bool enable>
 inline void checkBounds(const matrix_interface &lhs, size_t x, size_t y, const std::string &location)
 {
     if(!lhs.withinBounds(x, y))

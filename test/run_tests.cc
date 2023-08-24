@@ -1,5 +1,8 @@
 /*
- * Copyright (C) 2019 Dieter J Kybelksties
+ * File:		run_tests.cc
+ * Description: Main entry point for unit tests.
+ *
+ * Copyright (C) 2023 Dieter J Kybelksties <github@kybelksties.com>
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -15,31 +18,14 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
- * @date: 2019-10-19
+ * @date: 2023-08-28
  * @author: Dieter J Kybelksties
  */
 
-#ifndef LOGVALTEST_H_INCLUDED
-#define LOGVALTEST_H_INCLUDED
+#include <gtest/gtest.h>
 
-#include <cppunit/extensions/HelperMacros.h>
-
-class logValTest : public CPPUNIT_NS::TestFixture
+int main(int argc, char **argv)
 {
-    CPPUNIT_TEST_SUITE(logValTest);
-
-    CPPUNIT_TEST(testLogVal);
-
-    CPPUNIT_TEST_SUITE_END();
-
-    public:
-    logValTest();
-    virtual ~logValTest();
-    void setUp();
-    void tearDown();
-
-    private:
-    void testLogVal();
-};
-
-#endif  // LOGVALTEST_H_INCLUDED
+    ::testing::InitGoogleTest(&argc, argv);
+    return RUN_ALL_TESTS();
+}

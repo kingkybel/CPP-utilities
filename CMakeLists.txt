@@ -38,21 +38,62 @@ find_library(SSL_LIB NAMES libssl.a ssl)
 find_library(PTHREAD_LIB NAMES libpthread.a pthread)
 find_package(Boost 1.83.0 REQUIRED)
 message("Boost_INCLUDE_DIRS '${Boost_INCLUDE_DIRS}'")
-message("Boost_LIBRARY_DIR_RELEASE '${Boost_LIBRARY_DIR_RELEASE}'")
+
+# include(FetchContent)
+# FetchContent_Declare(
+#   googletest
+#   # Specify the commit you depend on and update it regularly.
+#   URL https://github.com/google/googletest/archive/5376968f6948923e2411081fd9372e71a59d8e77.zip
+#)
+# For Windows: Prevent overriding the parent project's compiler/linker settings
+set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
+#FetchContent_MakeAvailable(googletest)
+
 project(DKUtil CXX)
 include_directories(
   ${Boost_INCLUDE_DIRS}
-  ${CMAKE_HOME_DIRECTORY}/include
+  BEFORE SYSTEM ${CMAKE_SOURCE_DIR}/include
   system
   )
 link_directories(
+  BEFORE SYSTEM ${CMAKE_SOURCE_DIR}/build/lib
+  /usr/local/lib
   ${Boost_LIBRARY_DIR_RELEASE}
   system
   )
 
 
   add_subdirectory(src)
-  add_subdirectory(tests)
+  # add_subdirectory(tests)
+  add_subdirectory(test)
 
-
+install(FILES
+    "include/anyutil.h"
+    "include/anyutil.h"
+    "include/bayesutil.h"
+    "include/bit_converter.h"
+    "include/brackets.h"
+    "include/constants.h"
+    "include/csvutil.h"
+    "include/dateutil.h"
+    "include/degree_conversion.h"
+    "include/FFT.h"
+    "include/floatingpoint.h"
+    "include/graphutil.h"
+    "include/grid.h"
+    "include/heap.h"
+    "include/instance_pool.h"
+    "include/iosutil.h"
+    "include/limited_int.h"
+    "include/logvalue.h"
+    "include/matrix.h"
+    "include/primes.h"
+    "include/statutil.h"
+    "include/stringutil.h"
+    "include/timer.h"
+    "include/tinytea.h"
+    "include/traceutil.h"
+    "include/traits.h"
+    "include/type_bracket_map.h"
+    DESTINATION /usr/local/include)
 

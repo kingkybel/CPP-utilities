@@ -1,5 +1,8 @@
 /*
- * Copyright (C) 2019 Dieter J Kybelksties
+ * File:		matrix_tests.cc
+ * Description: Unit tests for matrix utilities
+ * 
+ * Copyright (C) 2023 Dieter J Kybelksties <github@kybelksties.com>
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -15,52 +18,37 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
- * @date: 2019-10-13
+ * @date: 2023-08-28
  * @author: Dieter J Kybelksties
  */
 
-#include "matrixTest.h"
+#include "logvalue.h"
+#include "matrix.h"
 
 #include <complex>
+#include <gtest/gtest.h>
 #include <initializer_list>
 #include <ios>
 #include <iostream>
-#include <logvalue.h>
-#include <matrix.h>
-#ifdef IN_DEVELOPMENT
-    #define TEST_HEADER(tp, v0)                                            \
-        {                                                                  \
-            std::cout << __func__ << " " << #tp << "=" << tp << std::endl; \
-        }
-#else
-    #define TEST_HEADER(tp, v0)
-#endif
 
 using namespace std;
 using namespace util;
 
-CPPUNIT_TEST_SUITE_REGISTRATION(matrixTest);
-
-matrixTest::matrixTest()
+class MatrixTest : public ::testing::Test
 {
-}
+    protected:
+    void SetUp() override
+    {
+    }
 
-matrixTest::~matrixTest()
-{
-}
-
-void matrixTest::setUp()
-{
-}
-
-void matrixTest::tearDown()
-{
-}
+    void TearDown() override
+    {
+    }
+};
 
 template<typename T_, bool enableBoundsCheck = false>
 void testMatrixConstructionT(initializer_list<T_> initList)
 {
-    TEST_HEADER(typeid(T_).name(), enableBoundsCheck);
     vector<T_> val;
     auto       it = initList.begin();
     while(it != initList.end())
@@ -68,209 +56,209 @@ void testMatrixConstructionT(initializer_list<T_> initList)
         val.push_back(*it);
         it++;
     }
-    CPPUNIT_ASSERT(val.size() >= 4);
+    ASSERT_TRUE(val.size() >= 4);
 
     matrix<T_, enableBoundsCheck> m;
-    CPPUNIT_ASSERT_EQUAL(size_t(1), m.sizeX());
-    CPPUNIT_ASSERT_EQUAL(size_t(1), m.sizeY());
-    CPPUNIT_ASSERT_EQUAL(T_(0), m(0, 0));
-    CPPUNIT_ASSERT(m.isDiagonal());
-    CPPUNIT_ASSERT(m.isHVector());
-    CPPUNIT_ASSERT(m.isVVector());
-    CPPUNIT_ASSERT(m.isLowerTriangular());
-    CPPUNIT_ASSERT(m.isScalar());
-    CPPUNIT_ASSERT(m.isSingular());
-    CPPUNIT_ASSERT(m.isSquare());
-    CPPUNIT_ASSERT(m.isSymmetric());
-    CPPUNIT_ASSERT(m.isSkewSymmetric());
-    CPPUNIT_ASSERT(!m.isUnit());
-    CPPUNIT_ASSERT(m.isUpperTriangular());
+    ASSERT_EQ(size_t(1), m.sizeX());
+    ASSERT_EQ(size_t(1), m.sizeY());
+    ASSERT_EQ(T_(0), m(0, 0));
+    ASSERT_TRUE(m.isDiagonal());
+    ASSERT_TRUE(m.isHVector());
+    ASSERT_TRUE(m.isVVector());
+    ASSERT_TRUE(m.isLowerTriangular());
+    ASSERT_TRUE(m.isScalar());
+    ASSERT_TRUE(m.isSingular());
+    ASSERT_TRUE(m.isSquare());
+    ASSERT_TRUE(m.isSymmetric());
+    ASSERT_TRUE(m.isSkewSymmetric());
+    ASSERT_TRUE(!m.isUnit());
+    ASSERT_TRUE(m.isUpperTriangular());
 
     auto m2 = m;
-    CPPUNIT_ASSERT_EQUAL(size_t(1), m2.sizeX());
-    CPPUNIT_ASSERT_EQUAL(size_t(1), m2.sizeY());
-    CPPUNIT_ASSERT_EQUAL(T_(0), m2(0, 0));
-    CPPUNIT_ASSERT(m2.isDiagonal());
-    CPPUNIT_ASSERT(m2.isHVector());
-    CPPUNIT_ASSERT(m2.isVVector());
-    CPPUNIT_ASSERT(m2.isLowerTriangular());
-    CPPUNIT_ASSERT(m2.isScalar());
-    CPPUNIT_ASSERT(m2.isSingular());
-    CPPUNIT_ASSERT(m2.isSquare());
-    CPPUNIT_ASSERT(m2.isSymmetric());
-    CPPUNIT_ASSERT(m2.isSkewSymmetric());
-    CPPUNIT_ASSERT(!m2.isUnit());
-    CPPUNIT_ASSERT(m2.isUpperTriangular());
+    ASSERT_EQ(size_t(1), m2.sizeX());
+    ASSERT_EQ(size_t(1), m2.sizeY());
+    ASSERT_EQ(T_(0), m2(0, 0));
+    ASSERT_TRUE(m2.isDiagonal());
+    ASSERT_TRUE(m2.isHVector());
+    ASSERT_TRUE(m2.isVVector());
+    ASSERT_TRUE(m2.isLowerTriangular());
+    ASSERT_TRUE(m2.isScalar());
+    ASSERT_TRUE(m2.isSingular());
+    ASSERT_TRUE(m2.isSquare());
+    ASSERT_TRUE(m2.isSymmetric());
+    ASSERT_TRUE(m2.isSkewSymmetric());
+    ASSERT_TRUE(!m2.isUnit());
+    ASSERT_TRUE(m2.isUpperTriangular());
 
     size_t rootSize = sqrt(val.size());
     auto   m3       = matrix<T_, enableBoundsCheck>(rootSize, rootSize);
-    CPPUNIT_ASSERT_EQUAL(rootSize, m3.sizeX());
-    CPPUNIT_ASSERT_EQUAL(rootSize, m3.sizeY());
+    ASSERT_EQ(rootSize, m3.sizeX());
+    ASSERT_EQ(rootSize, m3.sizeY());
     for(size_t y = 0; y < m3.sizeY(); y++)
         for(size_t x = 0; x < m3.sizeX(); x++)
-            CPPUNIT_ASSERT_EQUAL(T_(0), m3(y, y));
-    CPPUNIT_ASSERT(m3.isDiagonal());
-    CPPUNIT_ASSERT(!m3.isHVector());
-    CPPUNIT_ASSERT(!m3.isVVector());
-    CPPUNIT_ASSERT(m3.isLowerTriangular());
-    CPPUNIT_ASSERT(m3.isScalar());
-    CPPUNIT_ASSERT(m3.isSingular());
-    CPPUNIT_ASSERT(m3.isSquare());
-    CPPUNIT_ASSERT(m3.isSymmetric());
-    CPPUNIT_ASSERT(m3.isSkewSymmetric());
-    CPPUNIT_ASSERT(!m3.isUnit());
-    CPPUNIT_ASSERT(m3.isUpperTriangular());
+            ASSERT_EQ(T_(0), m3(y, y));
+    ASSERT_TRUE(m3.isDiagonal());
+    ASSERT_TRUE(!m3.isHVector());
+    ASSERT_TRUE(!m3.isVVector());
+    ASSERT_TRUE(m3.isLowerTriangular());
+    ASSERT_TRUE(m3.isScalar());
+    ASSERT_TRUE(m3.isSingular());
+    ASSERT_TRUE(m3.isSquare());
+    ASSERT_TRUE(m3.isSymmetric());
+    ASSERT_TRUE(m3.isSkewSymmetric());
+    ASSERT_TRUE(!m3.isUnit());
+    ASSERT_TRUE(m3.isUpperTriangular());
 
     auto m4 = matrix<T_, enableBoundsCheck>(rootSize, rootSize, initList);
-    CPPUNIT_ASSERT_EQUAL(rootSize, m4.sizeX());
-    CPPUNIT_ASSERT_EQUAL(rootSize, m4.sizeY());
+    ASSERT_EQ(rootSize, m4.sizeX());
+    ASSERT_EQ(rootSize, m4.sizeY());
     size_t valInd = 0;
     for(size_t y = 0; y < m3.sizeY(); y++)
         for(size_t x = 0; x < m3.sizeX(); x++)
         {
-            CPPUNIT_ASSERT_EQUAL(val[valInd], m4(x, y));
+            ASSERT_EQ(val[valInd], m4(x, y));
             valInd++;
         }
 
-    CPPUNIT_ASSERT(!m4.isDiagonal());
-    CPPUNIT_ASSERT(!m4.isHVector());
-    CPPUNIT_ASSERT(!m4.isVVector());
-    CPPUNIT_ASSERT(!m4.isLowerTriangular());
-    CPPUNIT_ASSERT(!m4.isScalar());
-    CPPUNIT_ASSERT(!m4.isSingular());
-    CPPUNIT_ASSERT(m4.isSquare());
-    CPPUNIT_ASSERT(!m4.isSymmetric());
-    CPPUNIT_ASSERT(!m4.isSkewSymmetric());
-    CPPUNIT_ASSERT(!m4.isUnit());
-    CPPUNIT_ASSERT(!m4.isUpperTriangular());
+    ASSERT_TRUE(!m4.isDiagonal());
+    ASSERT_TRUE(!m4.isHVector());
+    ASSERT_TRUE(!m4.isVVector());
+    ASSERT_TRUE(!m4.isLowerTriangular());
+    ASSERT_TRUE(!m4.isScalar());
+    ASSERT_TRUE(!m4.isSingular());
+    ASSERT_TRUE(m4.isSquare());
+    ASSERT_TRUE(!m4.isSymmetric());
+    ASSERT_TRUE(!m4.isSkewSymmetric());
+    ASSERT_TRUE(!m4.isUnit());
+    ASSERT_TRUE(!m4.isUpperTriangular());
 
     m3 = m4;
-    CPPUNIT_ASSERT_EQUAL(rootSize, m4.sizeX());
-    CPPUNIT_ASSERT_EQUAL(rootSize, m4.sizeY());
+    ASSERT_EQ(rootSize, m4.sizeX());
+    ASSERT_EQ(rootSize, m4.sizeY());
     valInd = 0;
     for(size_t y = 0; y < m3.sizeY(); y++)
         for(size_t x = 0; x < m3.sizeX(); x++)
         {
-            CPPUNIT_ASSERT_EQUAL(val[valInd], m3(x, y));
+            ASSERT_EQ(val[valInd], m3(x, y));
             valInd++;
         }
 
-    CPPUNIT_ASSERT(!m3.isDiagonal());
-    CPPUNIT_ASSERT(!m3.isHVector());
-    CPPUNIT_ASSERT(!m3.isVVector());
-    CPPUNIT_ASSERT(!m3.isLowerTriangular());
-    CPPUNIT_ASSERT(!m3.isScalar());
-    CPPUNIT_ASSERT(!m3.isSingular());
-    CPPUNIT_ASSERT(m3.isSquare());
-    CPPUNIT_ASSERT(!m3.isSymmetric());
-    CPPUNIT_ASSERT(!m3.isSkewSymmetric());
-    CPPUNIT_ASSERT(!m3.isUnit());
-    CPPUNIT_ASSERT(!m3.isUpperTriangular());
+    ASSERT_TRUE(!m3.isDiagonal());
+    ASSERT_TRUE(!m3.isHVector());
+    ASSERT_TRUE(!m3.isVVector());
+    ASSERT_TRUE(!m3.isLowerTriangular());
+    ASSERT_TRUE(!m3.isScalar());
+    ASSERT_TRUE(!m3.isSingular());
+    ASSERT_TRUE(m3.isSquare());
+    ASSERT_TRUE(!m3.isSymmetric());
+    ASSERT_TRUE(!m3.isSkewSymmetric());
+    ASSERT_TRUE(!m3.isUnit());
+    ASSERT_TRUE(!m3.isUpperTriangular());
 
     m3 = matrix<T_, enableBoundsCheck>::diag(initList);
-    CPPUNIT_ASSERT_EQUAL(val.size(), m3.sizeX());
-    CPPUNIT_ASSERT_EQUAL(val.size(), m3.sizeY());
+    ASSERT_EQ(val.size(), m3.sizeX());
+    ASSERT_EQ(val.size(), m3.sizeY());
     for(size_t y = 0; y < m3.sizeY(); y++)
         for(size_t x = 0; x < m3.sizeX(); x++)
             if(x == y)
-                CPPUNIT_ASSERT_EQUAL(val[y], m3(y, y));
+                ASSERT_EQ(val[y], m3(y, y));
             else
-                CPPUNIT_ASSERT_EQUAL(T_(0), m3(x, y));
+                ASSERT_EQ(T_(0), m3(x, y));
 
-    CPPUNIT_ASSERT(m3.isDiagonal());
-    CPPUNIT_ASSERT(!m3.isHVector());
-    CPPUNIT_ASSERT(!m3.isVVector());
-    CPPUNIT_ASSERT(m3.isLowerTriangular());
-    CPPUNIT_ASSERT(!m3.isScalar());
-    CPPUNIT_ASSERT(!m3.isSingular());
-    CPPUNIT_ASSERT(m3.isSquare());
-    CPPUNIT_ASSERT(m3.isSymmetric());
-    CPPUNIT_ASSERT(m3.isSkewSymmetric());
-    CPPUNIT_ASSERT(!m3.isUnit());
-    CPPUNIT_ASSERT(m3.isUpperTriangular());
+    ASSERT_TRUE(m3.isDiagonal());
+    ASSERT_TRUE(!m3.isHVector());
+    ASSERT_TRUE(!m3.isVVector());
+    ASSERT_TRUE(m3.isLowerTriangular());
+    ASSERT_TRUE(!m3.isScalar());
+    ASSERT_TRUE(!m3.isSingular());
+    ASSERT_TRUE(m3.isSquare());
+    ASSERT_TRUE(m3.isSymmetric());
+    ASSERT_TRUE(m3.isSkewSymmetric());
+    ASSERT_TRUE(!m3.isUnit());
+    ASSERT_TRUE(m3.isUpperTriangular());
 
     m3 = matrix<T_, enableBoundsCheck>::scalar(val.size(), val[val.size() - 1]);
-    CPPUNIT_ASSERT_EQUAL(val.size(), m3.sizeX());
-    CPPUNIT_ASSERT_EQUAL(val.size(), m3.sizeY());
+    ASSERT_EQ(val.size(), m3.sizeX());
+    ASSERT_EQ(val.size(), m3.sizeY());
     for(size_t y = 0; y < m3.sizeY(); y++)
         for(size_t x = 0; x < m3.sizeX(); x++)
-            CPPUNIT_ASSERT((x == y && m3(x, y) == val[val.size() - 1]) || m3(x, y) == (T_)(0));
-    CPPUNIT_ASSERT(m3.isDiagonal());
-    CPPUNIT_ASSERT(!m3.isHVector());
-    CPPUNIT_ASSERT(!m3.isVVector());
-    CPPUNIT_ASSERT(m3.isLowerTriangular());
-    CPPUNIT_ASSERT(m3.isScalar());
-    CPPUNIT_ASSERT(!m3.isSingular());
-    CPPUNIT_ASSERT(m3.isSquare());
-    CPPUNIT_ASSERT(m3.isSymmetric());
-    CPPUNIT_ASSERT(m3.isSkewSymmetric());
-    CPPUNIT_ASSERT(!m3.isUnit());
-    CPPUNIT_ASSERT(m3.isUpperTriangular());
+            ASSERT_TRUE((x == y && m3(x, y) == val[val.size() - 1]) || m3(x, y) == (T_)(0));
+    ASSERT_TRUE(m3.isDiagonal());
+    ASSERT_TRUE(!m3.isHVector());
+    ASSERT_TRUE(!m3.isVVector());
+    ASSERT_TRUE(m3.isLowerTriangular());
+    ASSERT_TRUE(m3.isScalar());
+    ASSERT_TRUE(!m3.isSingular());
+    ASSERT_TRUE(m3.isSquare());
+    ASSERT_TRUE(m3.isSymmetric());
+    ASSERT_TRUE(m3.isSkewSymmetric());
+    ASSERT_TRUE(!m3.isUnit());
+    ASSERT_TRUE(m3.isUpperTriangular());
 
     m3 = matrix<T_, enableBoundsCheck>::hvect(initList);
-    CPPUNIT_ASSERT_EQUAL(val.size(), m3.sizeX());
-    CPPUNIT_ASSERT_EQUAL(size_t(1), m3.sizeY());
+    ASSERT_EQ(val.size(), m3.sizeX());
+    ASSERT_EQ(size_t(1), m3.sizeY());
     for(size_t x = 0; x < m3.sizeX(); x++)
-        CPPUNIT_ASSERT_EQUAL(val[x], m3(x, 0));
+        ASSERT_EQ(val[x], m3(x, 0));
 
-    CPPUNIT_ASSERT(!m3.isDiagonal());
-    CPPUNIT_ASSERT(m3.isHVector());
-    CPPUNIT_ASSERT(!m3.isVVector());
-    CPPUNIT_ASSERT(!m3.isLowerTriangular());
-    CPPUNIT_ASSERT(!m3.isScalar());
-    CPPUNIT_ASSERT(m3.isSingular());
-    CPPUNIT_ASSERT(!m3.isSquare());
-    CPPUNIT_ASSERT(!m3.isSymmetric());
-    CPPUNIT_ASSERT(!m3.isSkewSymmetric());
-    CPPUNIT_ASSERT(!m3.isUnit());
-    CPPUNIT_ASSERT(!m3.isUpperTriangular());
+    ASSERT_TRUE(!m3.isDiagonal());
+    ASSERT_TRUE(m3.isHVector());
+    ASSERT_TRUE(!m3.isVVector());
+    ASSERT_TRUE(!m3.isLowerTriangular());
+    ASSERT_TRUE(!m3.isScalar());
+    ASSERT_TRUE(m3.isSingular());
+    ASSERT_TRUE(!m3.isSquare());
+    ASSERT_TRUE(!m3.isSymmetric());
+    ASSERT_TRUE(!m3.isSkewSymmetric());
+    ASSERT_TRUE(!m3.isUnit());
+    ASSERT_TRUE(!m3.isUpperTriangular());
 
     m3 = matrix<T_, enableBoundsCheck>::vvect(initList);
-    CPPUNIT_ASSERT_EQUAL(size_t(1), m3.sizeX());
-    CPPUNIT_ASSERT_EQUAL(val.size(), m3.sizeY());
+    ASSERT_EQ(size_t(1), m3.sizeX());
+    ASSERT_EQ(val.size(), m3.sizeY());
     for(size_t y = 0; y < m3.sizeY(); y++)
-        CPPUNIT_ASSERT_EQUAL(val[y], m3(0, y));
+        ASSERT_EQ(val[y], m3(0, y));
 
-    CPPUNIT_ASSERT(!m3.isDiagonal());
-    CPPUNIT_ASSERT(!m3.isHVector());
-    CPPUNIT_ASSERT(m3.isVVector());
-    CPPUNIT_ASSERT(!m3.isLowerTriangular());
-    CPPUNIT_ASSERT(!m3.isScalar());
-    CPPUNIT_ASSERT(!m3.isSquare());
-    CPPUNIT_ASSERT(m3.isSingular());
-    CPPUNIT_ASSERT(!m3.isSymmetric());
-    CPPUNIT_ASSERT(!m3.isSkewSymmetric());
-    CPPUNIT_ASSERT(!m3.isUnit());
-    CPPUNIT_ASSERT(!m3.isUpperTriangular());
+    ASSERT_TRUE(!m3.isDiagonal());
+    ASSERT_TRUE(!m3.isHVector());
+    ASSERT_TRUE(m3.isVVector());
+    ASSERT_TRUE(!m3.isLowerTriangular());
+    ASSERT_TRUE(!m3.isScalar());
+    ASSERT_TRUE(!m3.isSquare());
+    ASSERT_TRUE(m3.isSingular());
+    ASSERT_TRUE(!m3.isSymmetric());
+    ASSERT_TRUE(!m3.isSkewSymmetric());
+    ASSERT_TRUE(!m3.isUnit());
+    ASSERT_TRUE(!m3.isUpperTriangular());
 
     m3 = matrix<T_, enableBoundsCheck>(rootSize, rootSize + 1, initList);
-    CPPUNIT_ASSERT_EQUAL(rootSize, m3.sizeX());
-    CPPUNIT_ASSERT_EQUAL(rootSize + 1, m3.sizeY());
+    ASSERT_EQ(rootSize, m3.sizeX());
+    ASSERT_EQ(rootSize + 1, m3.sizeY());
     valInd = 0;
     for(size_t y = 0; y < m3.sizeY(); y++)
         for(size_t x = 0; x < m3.sizeX(); x++)
         {
             if(valInd < val.size())
-                CPPUNIT_ASSERT_EQUAL(val[valInd], m3(x, y));
+                ASSERT_EQ(val[valInd], m3(x, y));
             else
-                CPPUNIT_ASSERT_EQUAL(T_(0), m3(x, y));
+                ASSERT_EQ(T_(0), m3(x, y));
             valInd++;
         }
 
-    CPPUNIT_ASSERT(!m3.isDiagonal());
-    CPPUNIT_ASSERT(!m3.isHVector());
-    CPPUNIT_ASSERT(!m3.isVVector());
-    CPPUNIT_ASSERT(!m3.isLowerTriangular());
-    CPPUNIT_ASSERT(!m3.isScalar());
-    CPPUNIT_ASSERT(!m3.isSquare());
-    CPPUNIT_ASSERT(m3.isSingular());
-    CPPUNIT_ASSERT(!m3.isSymmetric());
-    CPPUNIT_ASSERT(!m3.isSkewSymmetric());
-    CPPUNIT_ASSERT(!m3.isUnit());
-    //    CPPUNIT_ASSERT(!m3.isUpperTriangular());
+    ASSERT_TRUE(!m3.isDiagonal());
+    ASSERT_TRUE(!m3.isHVector());
+    ASSERT_TRUE(!m3.isVVector());
+    ASSERT_TRUE(!m3.isLowerTriangular());
+    ASSERT_TRUE(!m3.isScalar());
+    ASSERT_TRUE(!m3.isSquare());
+    ASSERT_TRUE(m3.isSingular());
+    ASSERT_TRUE(!m3.isSymmetric());
+    ASSERT_TRUE(!m3.isSkewSymmetric());
+    ASSERT_TRUE(!m3.isUnit());
+    //    ASSERT_TRUE(!m3.isUpperTriangular());
 }
 
-void matrixTest::testMatrixConstruction()
+TEST_F(MatrixTest, testMatrixConstruction)
 {
     testMatrixConstructionT<float>({1.0, 2.0, 3.0, 4.0});
     testMatrixConstructionT<float, true>({1.0, 2.0, 3.0, 4.0});
@@ -305,37 +293,35 @@ void matrixTest::testMatrixConstruction()
 template<typename T_, bool enableBoundsCheck = false>
 void testExceptionsT(initializer_list<T_> hVec, initializer_list<T_> vVec, initializer_list<T_> mat)
 {
-    TEST_HEADER(typeid(T_).name(), enableBoundsCheck);
     size_t dim1 = hVec.size();
     size_t dim2 = vVec.size();
-    CPPUNIT_ASSERT_MESSAGE("matrices must have minimum size of 2 for these tests",
-                           dim1 != dim2 && dim1 >= 2 && dim2 >= 2);
+    ASSERT_TRUE(dim1 != dim2 && dim1 >= 2 && dim2 >= 2) << "matrices must have minimum size of 2 for these tests";
     auto hv   = matrix<T_, enableBoundsCheck>::hvect(hVec);
     auto vv   = matrix<T_, enableBoundsCheck>::vvect(vVec);
     auto m1_2 = matrix<T_, enableBoundsCheck>(dim1 - 1, dim2 + 1, mat);
 
-    CPPUNIT_ASSERT_THROW(m1_2.det(), matrixMustBeSquare);
-    CPPUNIT_ASSERT_THROW(m1_2.adj(), matrixMustBeSquare);
-    CPPUNIT_ASSERT_THROW(m1_2.cofact(dim1 - 2, dim2 - 2), matrixMustBeSquare);
+    ASSERT_THROW(m1_2.det(), matrixMustBeSquare);
+    ASSERT_THROW(m1_2.adj(), matrixMustBeSquare);
+    ASSERT_THROW(m1_2.cofact(dim1 - 2, dim2 - 2), matrixMustBeSquare);
 
     auto singMat = ~hv * hv;
-    CPPUNIT_ASSERT_THROW(singMat.inv(), matrixIsSingular);
-    CPPUNIT_ASSERT_THROW(m1_2 * vv, matrixSizesIncompatible);
-    CPPUNIT_ASSERT_THROW(m1_2 / T_(0), matrixScalarMustNotBeZero);
-    CPPUNIT_ASSERT_NO_THROW(m1_2 / T_(5.0));
+    ASSERT_THROW(singMat.inv(), matrixIsSingular);
+    ASSERT_THROW(m1_2 * vv, matrixSizesIncompatible);
+    ASSERT_THROW(m1_2 / T_(0), matrixScalarMustNotBeZero);
+    ASSERT_NO_THROW(m1_2 / T_(5.0));
 
     if(enableBoundsCheck)
     {
         for(size_t y = 0; y < m1_2.sizeY() + 5; y++)
             for(size_t x = 0; x < m1_2.sizeX() + 5; x++)
                 if(x < m1_2.sizeX() && y < m1_2.sizeY())
-                    CPPUNIT_ASSERT_NO_THROW(m1_2(x, y));
+                    ASSERT_NO_THROW(m1_2(x, y));
                 else
-                    CPPUNIT_ASSERT_THROW(m1_2(x, y), matrixIndexOutOfBounds);
+                    ASSERT_THROW(m1_2(x, y), matrixIndexOutOfBounds);
     }
 }
 
-void matrixTest::testExceptions()
+TEST_F(MatrixTest, testExceptions)
 {
     testExceptionsT<float>({1.0, 2.0, 3.0},
                            {4.0, 2.0, 5.0, 6.0},
@@ -454,7 +440,6 @@ void matrixTest::testExceptions()
 template<typename T_, bool enableBoundsCheck = false>
 void testMatrixOperationsT(initializer_list<T_> hVec, initializer_list<T_> vVec, initializer_list<T_> mat)
 {
-    TEST_HEADER(typeid(T_).name(), enableBoundsCheck);
     size_t                              dim1 = hVec.size();
     size_t                              dim2 = vVec.size();
     const matrix<T_, enableBoundsCheck> nullMatrix1(dim1);
@@ -472,53 +457,52 @@ void testMatrixOperationsT(initializer_list<T_> hVec, initializer_list<T_> vVec,
     auto result = m1_2 * unit1;
     for(size_t y = 0; y < min(m1_2.sizeY(), unit2.sizeY()); y++)
         for(size_t x = 0; x < min(m1_2.sizeX(), unit2.sizeX()); x++)
-            CPPUNIT_ASSERT_EQUAL(m1_2(x, y), result(x, y));
+            ASSERT_EQ(m1_2(x, y), result(x, y));
 
     result = unit2 * m1_2;
     for(size_t y = 0; y < min(m1_2.sizeY(), unit1.sizeY()); y++)
         for(size_t x = 0; x < min(m1_2.sizeX(), unit1.sizeX()); x++)
         {
-            CPPUNIT_ASSERT_EQUAL(m1_2(x, y), result(x, y));
+            ASSERT_EQ(m1_2(x, y), result(x, y));
         }
 
     result = -m1_2;
     for(size_t y = 0; y < min(m1_2.sizeY(), unit1.sizeY()); y++)
         for(size_t x = 0; x < min(m1_2.sizeX(), unit1.sizeX()); x++)
         {
-            CPPUNIT_ASSERT_EQUAL(-m1_2(x, y), result(x, y));
+            ASSERT_EQ(-m1_2(x, y), result(x, y));
         }
 
     result = ~m1_2;
-    CPPUNIT_ASSERT_EQUAL(m1_2.sizeY(), result.sizeX());
-    CPPUNIT_ASSERT_EQUAL(m1_2.sizeX(), result.sizeY());
+    ASSERT_EQ(m1_2.sizeY(), result.sizeX());
+    ASSERT_EQ(m1_2.sizeX(), result.sizeY());
 
     result = ~~m1_2;
-    CPPUNIT_ASSERT_EQUAL(m1_2, result);
+    ASSERT_EQ(m1_2, result);
 
     result = ~hv * hv;
-    CPPUNIT_ASSERT(result.isSquare());
-    CPPUNIT_ASSERT(result.isSymmetric());
-    CPPUNIT_ASSERT(result.sizeX() == 1 || result.isSingular());
+    ASSERT_TRUE(result.isSquare());
+    ASSERT_TRUE(result.isSymmetric());
+    ASSERT_TRUE(result.sizeX() == 1 || result.isSingular());
 
     result = hv * ~hv;
-    CPPUNIT_ASSERT(result.isSquare());
-    CPPUNIT_ASSERT(result.isSymmetric());
-    CPPUNIT_ASSERT(result.sizeX() == 1 || result.isSingular());
+    ASSERT_TRUE(result.isSquare());
+    ASSERT_TRUE(result.isSymmetric());
+    ASSERT_TRUE(result.sizeX() == 1 || result.isSingular());
 
     result = vv * ~vv;
-    CPPUNIT_ASSERT(result.isSquare());
-    CPPUNIT_ASSERT(result.isSymmetric());
-    CPPUNIT_ASSERT(result.sizeX() == 1 || result.isSingular());
+    ASSERT_TRUE(result.isSquare());
+    ASSERT_TRUE(result.isSymmetric());
+    ASSERT_TRUE(result.sizeX() == 1 || result.isSingular());
 
     result = ~m1_2 * m1_2;
-    CPPUNIT_ASSERT(result.isSquare());
-    CPPUNIT_ASSERT(result.isSymmetric());
+    ASSERT_TRUE(result.isSquare());
+    ASSERT_TRUE(result.isSymmetric());
 
     result = m1_2 - m1_2;
-    CPPUNIT_ASSERT(result == nullMatrix1_2);
+    ASSERT_TRUE(result == nullMatrix1_2);
 
     result = m1_2 + m1_2;
-    cout << ios::scientific;
     auto t1 = m1_2 * T_(2.0);
     auto t2 = T_(2.0) * m1_2;
     for(size_t y = 0; y < t1.sizeY(); y++)
@@ -527,9 +511,9 @@ void testMatrixOperationsT(initializer_list<T_> hVec, initializer_list<T_> vVec,
             stringstream msg;
             msg.precision(40);
             msg << "[" << x << "," << y << "]\n\tt1=" << t1(x, y) << "\n\tt2=" << t2(x, y) << endl;
-            CPPUNIT_ASSERT_EQUAL_MESSAGE(msg.str(), t1(x, y), t2(x, y));
+            ASSERT_EQ(t1(x, y), t2(x, y)) << msg.str();
         }
-    CPPUNIT_ASSERT_EQUAL(T_(2.0) * m1_2, m1_2 * T_(2.0));
+    ASSERT_EQ(T_(2.0) * m1_2, m1_2 * T_(2.0));
 
     t1 = result / T_(2.0);
     t2 = m1_2;
@@ -539,17 +523,17 @@ void testMatrixOperationsT(initializer_list<T_> hVec, initializer_list<T_> vVec,
             stringstream msg;
             msg.precision(128);
             msg << "Error in [" << x << "," << y << "]\n\tt1=" << t1(x, y) << "\n\tt2=" << t2(x, y) << endl;
-            CPPUNIT_ASSERT_EQUAL_MESSAGE(msg.str(), t1(x, y), t2(x, y));
+            ASSERT_EQ(t1(x, y), t2(x, y)) << msg.str();
         }
 
-    CPPUNIT_ASSERT_EQUAL(result / T_(2.0), m1_2);
+    ASSERT_EQ(result / T_(2.0), m1_2);
 
     result = nullMatrix1_2;
     result -= m1_2;
     for(size_t y = 0; y < result.sizeY(); y++)
         for(size_t x = 0; x < result.sizeX(); x++)
         {
-            CPPUNIT_ASSERT_EQUAL(-m1_2(x, y), result(x, y));
+            ASSERT_EQ(-m1_2(x, y), result(x, y));
         }
 
     result = nullMatrix1_2;
@@ -557,11 +541,11 @@ void testMatrixOperationsT(initializer_list<T_> hVec, initializer_list<T_> vVec,
     for(size_t y = 0; y < result.sizeY(); y++)
         for(size_t x = 0; x < result.sizeX(); x++)
         {
-            CPPUNIT_ASSERT_EQUAL(m1_2(x, y), result(x, y));
+            ASSERT_EQ(m1_2(x, y), result(x, y));
         }
 }
 
-void matrixTest::testMatrixOperations()
+TEST_F(MatrixTest, testMatrixOperations)
 {
     testMatrixOperationsT<float>({1.0, 2.0, 3.0},
                                  {4.0, 2.0, 5.0, 6.0},
@@ -697,8 +681,6 @@ void testSquareMatrixOperationsT(initializer_list<T_> m1_list,
                                  initializer_list<T_> vVec,
                                  T_                   delta = numeric_limits<T_>::min())
 {
-    TEST_HEADER(typeid(T_).name(), enableBoundsCheck);
-
     size_t dim1    = sqrt(m1_list.size());
     auto   sq1     = matrix<T_, enableBoundsCheck>(dim1, dim1, m1_list);
     auto   expectd = matrix<T_, enableBoundsCheck>(dim1, dim1, expected_m1_inv);
@@ -710,12 +692,12 @@ void testSquareMatrixOperationsT(initializer_list<T_> m1_list,
     for(size_t y = 0; y < expectd.sizeX(); y++)
         for(size_t x = 0; x < expectd.sizeX(); x++)
         {
-            CPPUNIT_ASSERT(abs(expectd(x, y) - sq_inv(x, y)) < delta);
-            CPPUNIT_ASSERT(abs(unit1(x, y) - result(x, y)) < T_(0.01));
+            ASSERT_TRUE(abs(expectd(x, y) - sq_inv(x, y)) < delta);
+            ASSERT_TRUE(abs(unit1(x, y) - result(x, y)) < T_(0.01));
         }
 }
 
-void matrixTest::testSquareMatrixOperations()
+TEST_F(MatrixTest, testSquareMatrixOperations)
 {
     testSquareMatrixOperationsT<long double>({5.0, 4.0, 7.0, 6.0, 1.0, 4.0, 2.0, 2.0, 5.0},
                                              {0.09090909090909090911,

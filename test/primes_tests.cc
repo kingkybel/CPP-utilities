@@ -1,5 +1,8 @@
 /*
- * Copyright (C) 2019 Dieter J Kybelksties
+ * File:		primes_tests.cc
+ * Description: Unit tests for primes
+ * 
+ * Copyright (C) 2023 Dieter J Kybelksties <github@kybelksties.com>
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -15,36 +18,34 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
- * @date: 2019-10-13
+ * @date: 2023-08-28
  * @author: Dieter J Kybelksties
  */
 
-#ifndef MATRIXTEST_H
-#define MATRIXTEST_H
+#include "primes.h"
 
-#include <cppunit/extensions/HelperMacros.h>
+#include <gtest/gtest.h>
+#include <complex>
+#include <initializer_list>
+#include <ios>
+#include <iostream>
 
-class matrixTest : public CPPUNIT_NS::TestFixture
+using namespace std;
+using namespace util;
+
+class PrimesTest : public ::testing::Test
 {
-    CPPUNIT_TEST_SUITE(matrixTest);
+    protected:
+    void SetUp() override
+    {
+    }
 
-    CPPUNIT_TEST(testMatrixConstruction);
-    CPPUNIT_TEST(testExceptions);
-    CPPUNIT_TEST(testMatrixOperations);
-    CPPUNIT_TEST(testSquareMatrixOperations);
-    CPPUNIT_TEST_SUITE_END();
-
-    public:
-    matrixTest();
-    virtual ~matrixTest();
-    void setUp();
-    void tearDown();
-
-    private:
-    void testMatrixConstruction();
-    void testExceptions();
-    void testMatrixOperations();
-    void testSquareMatrixOperations();
+    void TearDown() override
+    {
+    }
 };
 
-#endif /* MATRIXTEST_H */
+
+TEST_F(PrimesTest, testPrimesConstruction)
+{
+}

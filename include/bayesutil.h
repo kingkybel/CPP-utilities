@@ -25,6 +25,9 @@
 #ifndef NS_UTIL_BAYESUTIL_H_INCLUDED
 #define NS_UTIL_BAYESUTIL_H_INCLUDED
 
+#include "graphutil.h"
+#include "statutil.h"
+
 #include <algorithm>
 #include <boost/graph/adjacency_list.hpp>
 #include <boost/graph/depth_first_search.hpp>
@@ -35,12 +38,10 @@
 #include <boost/utility.hpp>
 #include <exception>
 #include <functional>
-#include <graphutil.h>
 #include <iostream>
 #include <map>
 #include <set>
 #include <sstream>
-#include <statutil.h>
 #include <string>
 #include <utility>
 #include <vector>
@@ -193,8 +194,8 @@ class Node : public NodeBase
     std::string                       description_;
     EventValueRange::DistributionType distType_;
     EventValueRange                   range_;
-    ProbabilityFunction *             pDistribution_{nullptr};
-    ProbabilityFunction *             pAprioriDistribution_{nullptr};
+    ProbabilityFunction              *pDistribution_{nullptr};
+    ProbabilityFunction              *pAprioriDistribution_{nullptr};
 };
 
 /**

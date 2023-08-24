@@ -1,8 +1,8 @@
 /*
  * File Name:   floatingpoint.cc
  * Description: Re-create Solaris double_to_decimal, decimal_to_double, ...
- *
- * Copyright (C) 2019 Dieter J Kybelksties
+ * 
+ * Copyright (C) 2023 Dieter J Kybelksties <github@kybelksties.com>
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -18,12 +18,14 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
- * @date: 2011-12-13
+ * @date: 2023-08-28
  * @author: Dieter J Kybelksties
  */
 
+#include "floatingpoint.h"
+#include "stringutil.h"
+
 #include <cmath>
-#include <floatingpoint.h>
 #include <gmp.h>
 #include <gmpxx.h>
 #include <iomanip>
@@ -32,7 +34,6 @@
 #include <mpfr.h>
 #include <sstream>
 #include <string>
-#include <stringutil.h>
 
 namespace util
 {
@@ -62,15 +63,13 @@ bool                      operator==(const decimal_record &lhs, const decimal_re
 ostream &operator<<(ostream &os, const decimal_record &dr)
 {
     os << "decimal_record { ds=" << dr.ds << ", exponent=" << dr.exponent << ", fpclass="
-       << (dr.fpclass == fp_zero ?
-            "fp_zero" :
-            dr.fpclass == fp_subnormal ?
-            "fp_subnormal" :
-            dr.fpclass == fp_normal ?
-            "fp_normal" :
-            dr.fpclass == fp_infinity ?
-            "fp_infinity" :
-            dr.fpclass == fp_quiet ? "fp_quiet" : dr.fpclass == fp_signaling ? "fp_signaling" : "<unkown>")
+       << (dr.fpclass == fp_zero      ? "fp_zero" :
+           dr.fpclass == fp_subnormal ? "fp_subnormal" :
+           dr.fpclass == fp_normal    ? "fp_normal" :
+           dr.fpclass == fp_infinity  ? "fp_infinity" :
+           dr.fpclass == fp_quiet     ? "fp_quiet" :
+           dr.fpclass == fp_signaling ? "fp_signaling" :
+                                        "<unkown>")
        << ", more=" << dr.more << ", ndigits=" << dr.ndigits << ", sign=" << dr.sign << " }";
 
     return (os);
@@ -78,9 +77,10 @@ ostream &operator<<(ostream &os, const decimal_record &dr)
 ostream &operator<<(ostream &os, const decimal_mode &dm)
 {
     os << "decimal_mode {" << (dm.df == floating_form ? "floating_form" : "fixed_form") << ", "
-       << (dm.rd == fp_nearest ?
-            "fp_nearest" :
-            dm.rd == fp_tozero ? "fp_tozero" : dm.rd == fp_negative ? "fp_negative" : "fp_positive")
+       << (dm.rd == fp_nearest  ? "fp_nearest" :
+           dm.rd == fp_tozero   ? "fp_tozero" :
+           dm.rd == fp_negative ? "fp_negative" :
+                                  "fp_positive")
        << ","
        << "ndigits=" << dm.ndigits;
 

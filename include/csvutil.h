@@ -25,10 +25,12 @@
 #ifndef NS_UTIL_CSVUTIL_H_INCLUDED
 #define NS_UTIL_CSVUTIL_H_INCLUDED
 
-#include <anyutil.h>
+#include "anyutil.h"
+#include "stringutil.h"
+
 #include <boost/config/warning_disable.hpp>
-#include <boost/date_time.hpp>  // gregorian dates/posix time/...
-#include <ctime>                // for struct tm
+#include <boost/date_time.hpp>
+#include <ctime>
 #include <deque>
 #include <exception>
 #include <fstream>
@@ -36,7 +38,6 @@
 #include <iostream>
 #include <map>
 #include <sstream>
-#include <stringutil.h>
 #include <unordered_map>
 #include <vector>
 

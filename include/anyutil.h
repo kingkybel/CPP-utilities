@@ -25,16 +25,17 @@
 #ifndef NS_UTIL_ANYUTIL_H_INCLUDED
 #define NS_UTIL_ANYUTIL_H_INCLUDED
 
+#include "dateutil.h"
+#include "stringutil.h"
+
 #include <any>
 #include <boost/date_time.hpp>
 #include <cmath>
-#include <dateutil.h>  // gregorian dates/posix time/...
 #include <exception>
 #include <initializer_list>
 #include <iostream>
 #include <limits>
 #include <sstream>
-#include <stringutil.h>
 
 namespace util
 {
@@ -110,6 +111,26 @@ using VAR_DATE = boost::posix_time::ptime;
 
 /**The only character-string type allowed in Var-variants.*/
 using VAR_STRING = std::string;
+
+inline bool operator<(const VAR_STRING &lhs, const VAR_STRING &rhs)
+{
+    return lhs.compare(rhs) < 0;
+}
+
+inline bool operator<=(const VAR_STRING &lhs, const VAR_STRING &rhs)
+{
+    return lhs.compare(rhs) <= 0;
+}
+
+inline bool operator>(const VAR_STRING &lhs, const VAR_STRING &rhs)
+{
+    return lhs.compare(rhs) > 0;
+}
+
+inline bool operator>=(const VAR_STRING &lhs, const VAR_STRING &rhs)
+{
+    return lhs.compare(rhs) >= 0;
+}
 
 /**
  * Helper to check that two floating point values are within tolerance of each other.
@@ -344,7 +365,7 @@ struct Interval : public IntervalType
      * will be open. The tag "finite" will be ignored as it doesn't make sense
      * in this context.
      */
-    Interval(const T_ &                        v = minVal<T_>(),
+    Interval(const T_                         &v = minVal<T_>(),
              std::initializer_list<borderType> l = std::initializer_list<borderType>({finiteMin, leftClosed}))
     : IntervalType()
     {
@@ -364,7 +385,7 @@ struct Interval : public IntervalType
             bool leftOpenClosedSpecified  = false;
             bool rightOpenClosedSpecified = false;
 
-            //unsigned char newTraits_ = 0x00;
+            // unsigned char newTraits_ = 0x00;
 
             for(auto it: l)
             {
@@ -443,8 +464,8 @@ struct Interval : public IntervalType
      * @param v2 the other one of the interval borders
      * @param inclusivity can be used to include/exclude left or right borders
      */
-    Interval(const T_ &                        v1,
-             const T_ &                        v2,
+    Interval(const T_                         &v1,
+             const T_                         &v2,
              std::initializer_list<borderType> inclusivity = std::initializer_list<borderType>({closed, finite}))
     : IntervalType(inclusivity)
     , low_(v1 < v2 ? v1 : v2)
@@ -590,16 +611,20 @@ class Var
     }
 
     Var(const VAR_STRING &v);                  ///< Construct string variant.
-    Var(const Var &rhs) = default;             ///< Copy-construct a variant.
+    Var(const Var &rhs)            = default;  ///< Copy-construct a variant.
     Var &operator=(const Var &rhs) = default;  ///< Assign a variant.
 
     [[nodiscard]] const std::type_info &type() const;    ///< Get the typeid of the contained value.
     [[nodiscard]] bool                  empty() const;   ///< Check whether the variant is empty.
-    Var &                               swap(Var &rhs);  ///< Swap this variant with the rhs- variant.
+    Var                                &swap(Var &rhs);  ///< Swap this variant with the rhs- variant.
     [[nodiscard]] std::any              value() const;   ///< get the contained values as std::any.
 
     /**
-     *  Check whether the value has the native type.
+     * @brief Check whether the value has the native type T_.
+     * 
+     * @tparam T_ template type
+     * @param v value
+     * @return true, if the typeid of the value matches the typeid of the T_, false otherwise 
      */
     template<typename T_>
     friend bool isA(const Var &v)
@@ -622,7 +647,29 @@ class Var
     }
 
     /**
+     * @brief Check whether two vars have the same native type.
+     * 
+     * @tparam T_ a native type
+     * @param v1 first value
+     * @param v2 second value
+     * @return true, is v1 and v2 have the same type T_, false otherwise
+    */
+    template<typename T_>
+    friend bool sameType(const Var &v1, const Var &v2)
+    {
+         return (v1.type() == v2.type() && v1.type() == typeid(T_));
+    }
+
+    /**
      * Check whether two vars have the same native type.
+     */
+
+    /**
+     * @brief Check whether two vars have the same native type.
+     * 
+     * @param v1 first value
+     * @param v2 second value
+     * @return true, is v1 and v2 have the same type, false otherwise
      */
     friend bool sameType(const Var &v1, const Var &v2)
     {
@@ -638,12 +685,19 @@ class Var
      * @param lhs left-hand-side of the comparison
      * @param rhs right-hand-side of the comparison
      *
-     * @return if lhs is equal to rhs, false otherwise
+     * @return true, if lhs is equal to rhs, false otherwise
      */
     template<typename T_>
     friend bool equalT(const Var &lhs, const Var &rhs)
     {
-        return ((lhs.type() == rhs.type()) && isA<T_>(lhs) && (lhs.get<T_>() == rhs.get<T_>()));
+        try
+        {
+            return (lhs.get<T_>() == rhs.get<T_>());
+        }
+        catch(const util::cast_error& e)
+        {
+            return false;
+        }
     }
 
     /**
@@ -656,15 +710,19 @@ class Var
      * @param lhs left-hand-side of the comparison
      * @param rhs right-hand-side of the comparison
      *
-     * @return if lhs is less than rhs, false otherwise
+     * @return true, if lhs is less than rhs, false otherwise
      */
     template<typename T_>
     friend bool lessT(const Var &lhs, const Var &rhs)
     {
-        if(lhs.type() == typeid(T_) && rhs.type() == typeid(T_))
+        try
+        {
             return (lhs.get<T_>() < rhs.get<T_>());
-
-        return (false);
+        }
+        catch(const util::cast_error& e)
+        {
+            return false;
+        }
     }
 
     /**
@@ -673,33 +731,41 @@ class Var
      * @param lhs left-hand-side of the comparison
      * @param rhs right-hand-side of the comparison
      *
-     * @return if lhs is less/equal than rhs, false otherwise
+     * @return true, if lhs is less/equal than rhs, false otherwise
      */
     template<typename T_>
     friend bool lessEqualT(const Var &lhs, const Var &rhs)
     {
-        if(lhs.type() == typeid(T_) && rhs.type() == typeid(T_))
+        try
+        {
             return (lhs.get<T_>() <= rhs.get<T_>());
-
-        return (false);
+        }
+        catch(const util::cast_error& e)
+        {
+            return false;
+        }
     }
-
+    
     /**
      * Helper template for definition of global operator &gt;.
      *
      * @param lhs left-hand-side of the comparison
      * @param rhs right-hand-side of the comparison
      *
-     * @return if lhs is greater than rhs, false otherwise
+     * @return true if lhs is greater than rhs, false otherwise
      */
     template<typename T_>
     friend bool greaterT(const Var &lhs, const Var &rhs)
     {
-        if(lhs.type() == typeid(T_) && rhs.type() == typeid(T_))
+        try
+        {
             return (lhs.get<T_>() > rhs.get<T_>());
-
-        return (false);
-    }
+        }
+        catch(const util::cast_error& e)
+        {
+            return false;
+        }
+   }
 
     /**
      * Helper template for definition of global operator &ge;.
@@ -707,15 +773,19 @@ class Var
      * @param lhs left-hand-side of the comparison
      * @param rhs right-hand-side of the comparison
      *
-     * @return if lhs is greater/equal than rhs, false otherwise
+     * @return true, if lhs is greater/equal than rhs, false otherwise
      */
     template<typename T_>
     friend bool greaterEqualT(const Var &lhs, const Var &rhs)
     {
-        if(lhs.type() == typeid(T_) && rhs.type() == typeid(T_))
+        try
+        {
             return (lhs.get<T_>() >= rhs.get<T_>());
-
-        return (false);
+        }
+        catch(const util::cast_error& e)
+        {
+            return false;
+        }
     }
 
     /**

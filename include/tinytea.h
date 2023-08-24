@@ -2,7 +2,7 @@
  * File Name:   tinytea.h
  * Description: TEA encryption
  *
- * Copyright (C) 2019 Dieter J Kybelksties
+ * Copyright (C) 2023 Dieter J Kybelksties <github@kybelksties.com>
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -18,10 +18,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
- * This particular algorithm is in the public domain:
- * http://143.53.36.235:8080/source.htm
- *
- * @date: 2019-10-22
+ * @date: 2023-08-28
  * @author: Dieter J Kybelksties
  */
 

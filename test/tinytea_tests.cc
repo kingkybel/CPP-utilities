@@ -1,13 +1,13 @@
 /*
- * File:		tinyTeaTest.cc
- * Description:         Unit tests for string utilities
+ * File:		tiny_tea_tests.cc
+ * Description: Unit tests for string utilities
+ * 
+ * Copyright (C) 2023 Dieter J Kybelksties <github@kybelksties.com>
  *
- * Copyright (C) 2020 Dieter J Kybelksties <github@kybelksties.com>
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -15,43 +15,38 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
- * @date: 2020-06-17
+ * @date: 2023-08-28
  * @author: Dieter J Kybelksties
  */
 
-#include "tinyTeaTest.h"
+#include "tinytea.h"
 
 #include <cmath>
 #include <cstdlib>
+#include <gtest/gtest.h>
 #include <iostream>
 #include <string>
 #include <stringutil.h>
-#include <tinytea.h>
 
 using namespace std;
 using namespace util;
 
-CPPUNIT_TEST_SUITE_REGISTRATION(tinyTeaTest);
-
-tinyTeaTest::tinyTeaTest()
+class TinyteaTest : public ::testing::Test
 {
-}
+    protected:
+    void SetUp() override
+    {
+    }
 
-tinyTeaTest::~tinyTeaTest()
-{
-}
+    void TearDown() override
+    {
+    }
+};
 
-void tinyTeaTest::setUp()
-{
-}
-
-void tinyTeaTest::tearDown()
-{
-}
-
-void tinyTeaTest::encryption_test()
+TEST_F(TinyteaTest, encryption_test)
 {
     vector<uint64_t> keys = {1701ULL, 666ULL, 4711ULL, 42ULL, 1011ULL};
     for(uint64_t val = 0ULL; val < 10000ULL; val += 131ULL)
@@ -62,9 +57,7 @@ void tinyTeaTest::encryption_test()
             {
                 uint64_t enc = tinyTea<>::encrypt(val, key1, key2);
                 uint64_t dec = tinyTea<>::decrypt(enc, key1, key2);
-                CPPUNIT_ASSERT_EQUAL_MESSAGE("decrypt the encrypted value should result in the original value",
-                                             val,
-                                             dec);
+                ASSERT_EQ(val, dec) << "decrypt the encrypted value should result in the original value";
             }
         }
     }

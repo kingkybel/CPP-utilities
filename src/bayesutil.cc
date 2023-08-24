@@ -1,8 +1,8 @@
 /*
  * File Name:   bayesutil.cc
  * Description: Bayes net utility functions
- *
- * Copyright (C) 2019 Dieter J Kybelksties
+ * 
+ * Copyright (C) 2023 Dieter J Kybelksties <github@kybelksties.com>
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -18,11 +18,12 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
- * @date: 2014-02-04
+ * @date: 2023-08-28
  * @author: Dieter J Kybelksties
  */
 
-#include <bayesutil.h>
+#include "bayesutil.h"
+
 #include <utility>
 
 namespace util
@@ -135,13 +136,11 @@ bool Node::train(const CSVAnalyzer &csv, bool hasValue)
     delete pDistribution_;
 
     pDistribution_ =
-     (distType_ == EventValueRange::discrete) ?
-      dynamic_cast<ProbabilityFunction *>(new DiscreteProbability()) :
-      (distType_ == EventValueRange::float_uniform) ?
-      dynamic_cast<ProbabilityFunction *>(new UniformFloatFunction()) :
-      (distType_ == EventValueRange::exponential) ?
-      dynamic_cast<ProbabilityFunction *>(new ExponentialFunction()) :
-      (distType_ == EventValueRange::gaussian) ? dynamic_cast<ProbabilityFunction *>(new GaussFunction()) : nullptr;
+     (distType_ == EventValueRange::discrete)      ? dynamic_cast<ProbabilityFunction *>(new DiscreteProbability()) :
+     (distType_ == EventValueRange::float_uniform) ? dynamic_cast<ProbabilityFunction *>(new UniformFloatFunction()) :
+     (distType_ == EventValueRange::exponential)   ? dynamic_cast<ProbabilityFunction *>(new ExponentialFunction()) :
+     (distType_ == EventValueRange::gaussian)      ? dynamic_cast<ProbabilityFunction *>(new GaussFunction()) :
+                                                     nullptr;
 
     if(nullptr == pDistribution_)
         throw distribution_error("Distribution-type '" + asString(distType_)
@@ -212,9 +211,7 @@ bool Node::canonise(const VALUERANGES_TYPE &conditionValueRanges)
     if(distType_ != EventValueRange::discrete)
         return (reval);
 
-    auto *pDistribution = dynamic_cast<DiscreteProbability *>(distribution());
-
-    if(pDistribution == nullptr)
+    if(dynamic_cast<DiscreteProbability *>(distribution()) == nullptr)
     {
         VALUERANGES_TYPE eventValueRanges;
 
@@ -224,11 +221,13 @@ bool Node::canonise(const VALUERANGES_TYPE &conditionValueRanges)
         eventValueRanges[name()] = range();
         pDistribution_           = new DiscreteProbability(eventValueRanges, conditionValueRanges);
 
-        if(pDistribution == nullptr)
+        if(pDistribution_ == nullptr)
             throw bad_alloc();
+            
+        reval = dynamic_cast<DiscreteProbability *>(pDistribution_)->canonise();
     }
 
-    return (pDistribution->canonise());
+    return (reval);
 }
 
 bool Node::calculateAprioriDistribution(const set<Node> &incoming)

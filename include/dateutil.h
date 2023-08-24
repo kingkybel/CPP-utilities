@@ -52,15 +52,27 @@ namespace datescan
         European,
         USA
     };
-    extern std::vector<std::locale> formats;  ///< A sequence of formats a string is tested against.
 
     /**
-     *  Conversion of a boost::posix_time to a time_t.
+     * @brief Singleton collection of locales to use for date/time scans.
+     *
+     * @return std::vector<std::locale>
+     */
+    std::vector<std::locale> &formats();
+
+    /**
+     * @brief Conversion of a boost::posix_time to a time_t.
+     *
+     * @param pt posix time
+     * @return std::time_t
      */
     std::time_t pt_to_time_t(const val::ptime &pt);
 
     /**
-     *  Returns the seconds elapsed since the epoch (1 Jan 1900)
+     * @brief Returns the seconds elapsed since the epoch (1 Jan 1900)
+     *
+     * @param s datestring
+     * @return time_t
      */
     time_t seconds_from_epoch(const std::string &s);
 
@@ -70,7 +82,9 @@ namespace datescan
     val::ptime scanDate(const std::string &s);
 
     /**
-     *  Returns true if the string depicts a time-only format and false otherwise.
+     * @brief Returns true if the string depicts a time-only format and false otherwise.
+     * @param s datestring
+     * @return true, is string represents only a time, false otherwise
      */
     inline bool isTimeOnly(const std::string &s);
 
@@ -87,18 +101,17 @@ namespace datescan
     /**
      *  Add a format to the list of valid formats.
      */
-    void addDateFormat(const std::string &fmt, std::vector<std::locale> &formatVec = datescan::formats);
+    void addDateFormat(const std::string &fmt);
 
     /**
      *  Initialise the list of valid formats to a set of commonly used ones.
      */
-    std::vector<std::locale> initDateFormats(DateFormatPreference      pref      = DateFormatPreference::European,
-                                             std::vector<std::locale> &formatVec = datescan::formats);
+    std::vector<std::locale> &initDateFormats(DateFormatPreference pref = DateFormatPreference::European);
 
     /**
      *  Clear the list of all formats.
      */
-    void resetDateFormats(std::vector<std::locale> &fmts = datescan::formats);
+    std::vector<std::locale> &resetDateFormats();
 
     /**
      *  Create a time using year/month/day/hour/minute/seconds/milliseconds
@@ -125,7 +138,6 @@ inline bool valid(const val::ptime &pt)
 {
     return (!pt.is_infinity() && !pt.is_not_a_date_time() && (pt.date().year() >= 1900) && (pt.date().year() <= 2200));
 }
-};
-// namespace util
+};  // namespace util
 
 #endif  // NS_UTIL_DATEUTIL_H_INCLUDED

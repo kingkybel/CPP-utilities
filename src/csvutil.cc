@@ -1,8 +1,8 @@
 /*
  * File Name:   csvutil.cc
  * Description: comma separated value utility functions
- *
- * Copyright (C) 2019 Dieter J Kybelksties
+ * 
+ * Copyright (C) 2023 Dieter J Kybelksties <github@kybelksties.com>
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -18,11 +18,12 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
- * @date: 2014-01-28
+ * @date: 2023-08-28
  * @author: Dieter J Kybelksties
  */
 
-#include <csvutil.h>
+#include "csvutil.h"
+
 #include <utility>
 
 using namespace std;
@@ -196,15 +197,12 @@ string CSVAnalyzer::guessType(const string &stringVal)
         bool dummy;
 
         // start from the most complicated towards the easiest type
-        reval = (numClass == util::NONE && valid(scanAs<VAR_DATE>(stringVal))) ?
-                 CSV_COLUMN_TYPE_DATE :
-                 (numClass == util::INT) ?
-                 CSV_COLUMN_TYPE_INT :
-                 (numClass == util::UINT) ?
-                 CSV_COLUMN_TYPE_UINT :
-                 (numClass == util::FLOAT) ?
-                 CSV_COLUMN_TYPE_FLOAT :
-                 (scanBoolString(stringVal, dummy)) ? CSV_COLUMN_TYPE_BOOL : CSV_COLUMN_TYPE_STRING;
+        reval = (numClass == util::NONE && valid(scanAs<VAR_DATE>(stringVal))) ? CSV_COLUMN_TYPE_DATE :
+                (numClass == util::INT)                                        ? CSV_COLUMN_TYPE_INT :
+                (numClass == util::UINT)                                       ? CSV_COLUMN_TYPE_UINT :
+                (numClass == util::FLOAT)                                      ? CSV_COLUMN_TYPE_FLOAT :
+                (scanBoolString(stringVal, dummy))                             ? CSV_COLUMN_TYPE_BOOL :
+                                                                                 CSV_COLUMN_TYPE_STRING;
     }
 
     return (reval);
@@ -310,7 +308,9 @@ size_t CSVAnalyzer::columns() const
 
 size_t CSVAnalyzer::lines() const
 {
-    return ((columns() > 0) && (data_[0].size() > 2 ? data_[0].size() - 2 : 0));
+    if(0 == columns())
+        return 0;
+    return (data_[0].size() > 2) ? data_[0].size() - 2 : 0;
 }
 
 string CSVAnalyzer::header(size_t col) const

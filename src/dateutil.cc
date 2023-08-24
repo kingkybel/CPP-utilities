@@ -1,8 +1,8 @@
 /*
  * File Name:   dateutil.cc
  * Description: date utility functions
- *
- * Copyright (C) 2019 Dieter J Kybelksties
+ * 
+ * Copyright (C) 2023 Dieter J Kybelksties <github@kybelksties.com>
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -18,13 +18,15 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
- * @date: 2014-01-28
+ * @date: 2023-08-28
  * @author: Dieter J Kybelksties
  */
 
+#include "dateutil.h"
+
+#include "stringutil.h"
+
 #include <array>
-#include <dateutil.h>
-#include <stringutil.h>
 #include <sys/time.h>
 #include <utility>
 
@@ -35,10 +37,14 @@ namespace datescan
     using namespace std;
     using namespace boost::posix_time;
     using namespace boost::gregorian;
-    vector<locale> formats = initDateFormats();
+    vector<locale> &formats()
+    {
+        static auto fmts = vector<locale>();
+        return fmts;
+    }
 
     /*
-     *  boost POSIX library cannot scan string representations with single-digit
+     * boost POSIX library cannot scan string representations with single-digit
      * month/day fields. This function adds leading 0s into the string.
      * 3/8/1989 -> 03/08/1989
      */
@@ -73,7 +79,7 @@ namespace datescan
     }
 
     /*
-     *  convert a POSIX-time into a time_t representation
+     * convert a POSIX-time into a time_t representation
      */
     time_t pt_to_time_t(const ptime &pt)
     {
@@ -84,7 +90,7 @@ namespace datescan
     }
 
     /*
-     *  check whether we got a time only formatted time-string
+     * check whether we got a time only formatted time-string
      */
     inline bool isTimeOnly(const string &s)
     {
@@ -94,7 +100,7 @@ namespace datescan
     }
 
     /*
-     *  scans a string into a posix time representation using the configured
+     * scans a string into a posix time representation using the configured
      * formats
      */
     ptime scanDate(const string &s)
@@ -103,7 +109,7 @@ namespace datescan
         static ptime nullTime;
         string       withZeros = addLeadingZeros(s);
 
-        for(auto &format: formats)
+        for(auto &format: formats())
         {
             istringstream is(withZeros);
             is.imbue(format);
@@ -141,39 +147,29 @@ namespace datescan
      * of %b in the format-string fmt are changed to %B, but
      * occurrences of %B are unchanged
      */
-    string changeCaseOfFormatFlag(const string &fmt, char flag)
+    string setABYFlag(const string &fmt, char flag_letter)
     {
-        const string changeableFlags = "aAbByY";
+        string flag = "%";
+        flag += flag_letter;
+        const string changeableFlags = "%a%A%b%B%y%Y";
         string       reval           = fmt;
 
         if(changeableFlags.find(flag) == string::npos)
             return (reval);
 
-        string fullFormatFlag = "%";
-
-        fullFormatFlag += flag;
-
         string::size_type pos = 0;
-
-        do
+        while((pos = toLower(reval).find(toLower(flag), pos)) != std::string::npos)
         {
-            pos = reval.find(fullFormatFlag, pos);
-
-            if(pos != string::npos)
-            {
-                if(islower(reval[pos + 1]))
-                    reval[pos + 1] = static_cast<char>(toupper(reval[pos + 1]));
-                else
-                    reval[pos + 1] = static_cast<char>(reval[pos + 1]);
-            }
-        } while(pos != string::npos);
+            reval.replace(pos, flag.length(), flag);
+            pos += flag.length();  // Move past the replacement
+        }
 
         return (reval);
     }
 
-    void addDateFormat(const string &fmt, vector<locale> &formatVec)
+    void addDateFormat(const string &fmt)
     {
-        formatVec.push_back(locale(locale::classic(), new time_input_facet(fmt)));
+        formats().push_back(locale(locale::classic(), new time_input_facet(fmt)));
     }
 
     /*
@@ -184,107 +180,106 @@ namespace datescan
      * ambiguous and can give wrong or no results like "%m/%d/%Y %H:%M:%S"
      * and "%d/%m/%Y %H:%M:%S" one being the preferred format in the US the
      * other one from Europe the string "02/05/2014 12:34:56" would resolve
-     * to the 5th February in US and the 2nd May in Europe the parameter
-     * pref defaults to European
+     * to the 5th February in US and the 2nd May in Europe.
+     * @parameter pref resolution preference, defaults to European
      */
-    vector<locale> initDateFormats(DateFormatPreference pref, vector<locale> &fmts)
+    vector<locale> &initDateFormats(DateFormatPreference pref)
     {
-        resetDateFormats(fmts);
-
+        auto &fmts = formats();
+        fmts.clear();
+        
         struct FmtType
         {
-            FmtType(string fmt, bool american) : fmt_(std::move(fmt)), american_(american)
-            {
-            }
-
             string fmt_;
             bool   american_;
         };
 
-        std::array timeFormats{
+        // in the following array every American format string (indicated by "true") is immediately followed by
+        // the equivalent string in Europen format.
+        FmtType rawFormats[] = {
          // Formats that include a time component
-         FmtType("%Y-%B-%d %H:%M:%S", false),      // 1967-November-10 12:34:56
-         FmtType("%B %d %Y %H:%M:%S", true),       // "November 10 1967 12:34:56" American Format
-         FmtType("%d %B %Y %H:%M:%S", false),      // "10 November 1967 12:34:56"
-         FmtType("%A %B %d, %Y %H:%M:%S", true),   // "Friday November 10, 1967 12:34:56" American Format
-         FmtType("%A %d %B, %Y %H:%M:%S", false),  // "Friday 10 November, 1967 12:34:56"
-         FmtType("%m/%d/%Y %H:%M:%S", true),       // "10/28/1967 12:34:56" American Format
-         FmtType("%d/%m/%Y %H:%M:%S", false),      // "28/11/1967 12:34:56"
-         FmtType("%Y%m%d_%H%M%S", false),          // "19671110_123456"
-         FmtType("%H:%M:%S", false),               // "12:34:56" time only
-         FmtType("%H:%M", false),                  // "12:34" time only
+         {"%Y-%B-%d %H:%M:%S", false},      // 1967-November-10 12:34:56
+         {"%B %d %Y %H:%M:%S", true},       // "November 10 1967 12:34:56" American Format
+         {"%d %B %Y %H:%M:%S", false},      // "10 November 1967 12:34:56"
+         {"%A %B %d, %Y %H:%M:%S", true},   // "Friday November 10, 1967 12:34:56" American Format
+         {"%A %d %B, %Y %H:%M:%S", false},  // "Friday 10 November, 1967 12:34:56"
+         {"%m/%d/%Y %H:%M:%S", true},       // "10/28/1967 12:34:56" American Format
+         {"%d/%m/%Y %H:%M:%S", false},      // "28/11/1967 12:34:56"
+         {"%Y%m%d_%H%M%S", false},          // "19671110_123456"
+         {"%H:%M:%S", false},               // "12:34:56" time only
+         {"%H:%M", false},                  // "12:34" time only
 
          // Formats that only have a date component
-         FmtType("%B %d %Y", true),       // "November 10 1967" American Format
-         FmtType("%d %B %Y", false),      // "10 November 1967"
-         FmtType("%A %d %B, %Y", false),  // "Friday 10 November, 1967"
-         FmtType("%m/%d/%Y", true),       // "10/28/1967" American Format
-         FmtType("%d/%m/%Y", false),      // "28/11/1967"
-         FmtType("%Y%m%d", false)         // "19671110"
+         {"%B %d %Y", true},       // "November 10 1967" American Format
+         {"%d %B %Y", false},      // "10 November 1967"
+         {"%A %d %B, %Y", false},  // "Friday 10 November, 1967"
+         {"%m/%d/%Y", true},       // "10/28/1967" American Format
+         {"%d/%m/%Y", false},      // "28/11/1967"
+         {"%Y%m%d", false}         // "19671110"
         };
 
+        // now order the formats according to preference:
+        // - first try European, or
+        // - first try American
         vector<string> disambiguatedFormats;
-
-        for(size_t i = 0; i < sizeof(timeFormats) / sizeof(FmtType); i++)
+        size_t         num_formats = sizeof(rawFormats) / sizeof(FmtType);
+        for(size_t i = 0; i < num_formats; i++)
         {
             if(pref == DateFormatPreference::European)
             {
-                if(timeFormats[i].american_ == true)
+                if(rawFormats[i].american_ == true)
                 {
                     // swap American and European format
-                    disambiguatedFormats.push_back(timeFormats[i + 1].fmt_);
-                    disambiguatedFormats.push_back(timeFormats[i].fmt_);
+                    disambiguatedFormats.push_back(rawFormats[i + 1].fmt_);
+                    disambiguatedFormats.push_back(rawFormats[i].fmt_);
                     i++;
                 }
                 else
                 {
-                    disambiguatedFormats.push_back(timeFormats[i].fmt_);
+                    disambiguatedFormats.push_back(rawFormats[i].fmt_);
                 }
             }
             else
             {
-                disambiguatedFormats.push_back(timeFormats[i].fmt_);
+                disambiguatedFormats.push_back(rawFormats[i].fmt_);
             }
         }
 #if defined DEBUG_
         for(size_t i = 0; i < disambiguatedFormats.size(); i++)
             cout << "Disambiguated Format :" << disambiguatedFormats[i] << endl;
 #endif
+        // now declinate all the formats:
+        // if there is a Weekday-flag (%a, %A) make sure the "long" weekday (Monday before Mon) is tried
+        // before the short one, etc.
         for(auto fmt: disambiguatedFormats)
         {
             // add all permutations of the format string that
             // contain flags %a,%A, %b, %B, %y, %Y
-            const int y_max    = fmt.find("%Y") != string::npos ? 2 : 1;
-            const int a_max    = fmt.find("%A") != string::npos ? 2 : 1;
-            const int b_max    = fmt.find("%B") != string::npos ? 2 : 1;
-            bool      finished = false;
-
-            for(int y = 0; !finished && y < y_max; y++)  // try first all where the year has 4 digits
+            for(const auto &y: {'Y', 'y'})  // try first all where the year has 4 digits
             {
-                for(int a = 0; !finished && a < a_max; a++)  // First "Monday", then "Mon"
+                fmt = setABYFlag(fmt, y);
+                for(const auto &a: {'A', 'a'})  // First "Monday", then "Mon"
                 {
-                    for(int b = 0; !finished && b < b_max; b++)  // First "February" then "Feb"
+                    fmt = setABYFlag(fmt, a);
+                    for(const auto b: {'B', 'b'})  // First "February" then "Feb"
                     {
-                        addDateFormat(fmt, fmts);
+                        fmt = setABYFlag(fmt, b);
+                        addDateFormat(fmt);
 #if defined DEBUG_
                         cout << "Declinated Format :" << fmt << endl;
 #endif
-                        fmt = changeCaseOfFormatFlag(fmt, b == 0 ? 'B' : 'b');
                     }
-
-                    fmt = changeCaseOfFormatFlag(fmt, a == 0 ? 'A' : 'a');
                 }
-
-                fmt = changeCaseOfFormatFlag(fmt, y == 0 ? 'Y' : 'y');
             }
         }
 
         return (fmts);
     }
 
-    void resetDateFormats(vector<locale> &fmts)
+    vector<locale> &resetDateFormats()
     {
-        fmts.resize(0);
+        formats().resize(0);
+        return formats();
     }
 
     void imbueDateFormat(ostream &os, const string &fmt)
@@ -323,7 +318,5 @@ namespace datescan
         return (reval);
     }
 
-};
-// namespace datescan
-};
-// namespace util
+};  // namespace datescan
+};  // namespace util

@@ -1,8 +1,8 @@
 /*
  * File Name:   anyutil.cc
  * Description: std::any utility functions
- *
- * Copyright (C) 2019 Dieter J Kybelksties
+ * 
+ * Copyright (C) 2023 Dieter J Kybelksties <github@kybelksties.com>
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -18,11 +18,13 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
- * @date: 2014-01-28
+ * @date: 2023-08-28
  * @author: Dieter J Kybelksties
  */
 
-#include <anyutil.h>
+#include "anyutil.h"
+//#define DO_TRACE_
+#include "traceutil.h"
 
 namespace util
 {
@@ -102,12 +104,35 @@ bool operator==(const Var &lhs, const Var &rhs)
 
 bool operator<(const Var &lhs, const Var &rhs)
 {
-    return (lessT<VAR_BOOL>(lhs, rhs) || lessT<VAR_CHAR>(lhs, rhs) || lessT<VAR_INT>(lhs, rhs)
-            || lessT<VAR_UINT>(lhs, rhs) || lessT<VAR_FLOAT>(lhs, rhs) || lessT<VAR_DATE>(lhs, rhs)
-            || lessT<VAR_STRING>(lhs, rhs) || lessT<VAR_BOOL_INTERVAL>(lhs, rhs) || lessT<VAR_CHAR_INTERVAL>(lhs, rhs)
-            || lessT<VAR_INT_INTERVAL>(lhs, rhs) || lessT<VAR_UINT_INTERVAL>(lhs, rhs)
-            || lessT<VAR_DATE_INTERVAL>(lhs, rhs) || lessT<VAR_FLOAT_INTERVAL>(lhs, rhs)
-            || (asString(lhs) < asString(rhs)));
+    if(isA<VAR_BOOL>(lhs))
+        return lessT<VAR_BOOL>(lhs, rhs);
+    if(isA<VAR_CHAR>(lhs))
+        return lessT<VAR_CHAR>(lhs, rhs);
+    if(isA<VAR_INT>(lhs))
+        return lessT<VAR_INT>(lhs, rhs);
+    if(isA<VAR_UINT>(lhs))
+        return lessT<VAR_UINT>(lhs, rhs);
+    if(isA<VAR_FLOAT>(lhs))
+        return lessT<VAR_FLOAT>(lhs, rhs);
+    if(isA<VAR_DATE>(lhs))
+        return lessT<VAR_DATE>(lhs, rhs);
+    if(isA<VAR_STRING>(lhs))
+        return lessT<VAR_STRING>(lhs, rhs);
+
+    if(isA<VAR_BOOL_INTERVAL>(lhs))
+        return lessT<VAR_BOOL_INTERVAL>(lhs, rhs);
+    if(isA<VAR_CHAR_INTERVAL>(lhs))
+        return lessT<VAR_CHAR_INTERVAL>(lhs, rhs);
+    if(isA<VAR_INT_INTERVAL>(lhs))
+        return lessT<VAR_INT_INTERVAL>(lhs, rhs);
+    if(isA<VAR_UINT_INTERVAL>(lhs))
+        return lessT<VAR_UINT_INTERVAL>(lhs, rhs);
+    if(isA<VAR_DATE_INTERVAL>(lhs))
+        return lessT<VAR_DATE_INTERVAL>(lhs, rhs);
+    if(isA<VAR_FLOAT_INTERVAL>(lhs))
+        return lessT<VAR_FLOAT_INTERVAL>(lhs, rhs);
+    
+    return (asString(lhs) < asString(rhs));
 }
 
 bool operator<=(const Var &lhs, const Var &rhs)
@@ -117,7 +142,7 @@ bool operator<=(const Var &lhs, const Var &rhs)
             || lessEqualT<VAR_STRING>(lhs, rhs) || lessEqualT<VAR_BOOL_INTERVAL>(lhs, rhs)
             || lessEqualT<VAR_CHAR_INTERVAL>(lhs, rhs) || lessEqualT<VAR_INT_INTERVAL>(lhs, rhs)
             || lessEqualT<VAR_UINT_INTERVAL>(lhs, rhs) || lessEqualT<VAR_DATE_INTERVAL>(lhs, rhs)
-            || lessEqualT<VAR_FLOAT_INTERVAL>(lhs, rhs) || (asString(lhs) < asString(rhs)));
+            || lessEqualT<VAR_FLOAT_INTERVAL>(lhs, rhs) || (asString(lhs) <= asString(rhs)));
 }
 
 bool operator>(const Var &lhs, const Var &rhs)
@@ -127,7 +152,7 @@ bool operator>(const Var &lhs, const Var &rhs)
             || greaterT<VAR_STRING>(lhs, rhs) || greaterT<VAR_BOOL_INTERVAL>(lhs, rhs)
             || greaterT<VAR_CHAR_INTERVAL>(lhs, rhs) || greaterT<VAR_INT_INTERVAL>(lhs, rhs)
             || greaterT<VAR_UINT_INTERVAL>(lhs, rhs) || greaterT<VAR_DATE_INTERVAL>(lhs, rhs)
-            || greaterT<VAR_FLOAT_INTERVAL>(lhs, rhs) || (asString(lhs) < asString(rhs)));
+            || greaterT<VAR_FLOAT_INTERVAL>(lhs, rhs) || (asString(lhs) > asString(rhs)));
 }
 
 bool operator>=(const Var &lhs, const Var &rhs)
@@ -138,7 +163,7 @@ bool operator>=(const Var &lhs, const Var &rhs)
             || greaterEqualT<VAR_BOOL_INTERVAL>(lhs, rhs) || greaterEqualT<VAR_CHAR_INTERVAL>(lhs, rhs)
             || greaterEqualT<VAR_INT_INTERVAL>(lhs, rhs) || greaterEqualT<VAR_UINT_INTERVAL>(lhs, rhs)
             || greaterEqualT<VAR_DATE_INTERVAL>(lhs, rhs) || greaterEqualT<VAR_FLOAT_INTERVAL>(lhs, rhs)
-            || (asString(lhs) < asString(rhs)));
+            || (asString(lhs) >= asString(rhs)));
 }
 
 bool Less::leftMatchesRight(const Var &lhs, const Var &rhs) const
@@ -227,6 +252,7 @@ string IsElementOf::desc(const Var &itvl) const
 
 bool PlaceHolderOp::leftMatchesRight(const Var &elem, const Var &itvl) const
 {
+
     return (false);
 }
 
@@ -238,5 +264,4 @@ string PlaceHolderOp::desc(const Var &itvl) const
 
     return (ss.str());
 }
-};
-// namespace util
+};  // namespace util

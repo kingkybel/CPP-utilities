@@ -21,15 +21,15 @@
  * @author: Dieter J Kybelksties
  */
 
-#if !defined(NS_UTIL_BIT_CONVERTER_H_INCLUDED)
-    #define NS_UTIL_BIT_CONVERTER_H_INCLUDED
+#ifndef NS_UTIL_BIT_CONVERTER_H_INCLUDED
+#define NS_UTIL_BIT_CONVERTER_H_INCLUDED
 
-    #include <algorithm>
-    #include <bitset>
-    #include <cstdlib>
-    #include <initializer_list>
-    #include <iostream>
-    #include <limits.h>
+#include <algorithm>
+#include <bitset>
+#include <cstdlib>
+#include <initializer_list>
+#include <iostream>
+#include <limits.h>
 
 namespace util
 {
@@ -44,7 +44,7 @@ union bit_converter
     DataType data_;
     uint8_t  byte[BYTES_IN_DATA];
 
-    bit_converter(DataType data = T_()) : data_(data)
+    bit_converter(DataType data = T_{}) : data_(data)
     {
     }
 
@@ -166,7 +166,6 @@ union bit_converter
             byte[byteIdx] &= ~mask;
     }
 };
-};
-// namespace util
+};  // namespace util
 
 #endif  // NS_UTIL_BIT_CONVERTER_H_INCLUDED

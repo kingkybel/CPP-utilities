@@ -1,7 +1,8 @@
 /*
  * File Name:   type_bracket_map.h
  * Description: Brackets mapped per type for streaming output
- * Copyright (C) 2019 Dieter J Kybelksties
+ * 
+ * Copyright (C) 2023 Dieter J Kybelksties <github@kybelksties.com>
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -17,14 +18,15 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
- * @date: 2019-04-25
+ * @date: 2023-08-28
  * @author: Dieter J Kybelksties
  */
 
 #ifndef NS_UTIL_TYPE_BRACKET_MAP_H_INCLUDED
 #define NS_UTIL_TYPE_BRACKET_MAP_H_INCLUDED
 
-#include <brackets.h>
+#include "brackets.h"
+
 #include <string>
 #include <typeinfo>
 #include <unordered_map>
