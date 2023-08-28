@@ -69,7 +69,6 @@ link_directories(
 
 install(FILES
     "include/anyutil.h"
-    "include/anyutil.h"
     "include/bayesutil.h"
     "include/bit_converter.h"
     "include/brackets.h"
