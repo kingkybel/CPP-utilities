@@ -5,6 +5,7 @@ add_executable(run_tests
                 stringutil_tests.cc
                 dateutil_tests.cc
                 anyutil_tests.cc
+                container_convert_tests.cc
                 csvutil_tests.cc
                 graphutil_tests.cc
                 matrix_tests.cc

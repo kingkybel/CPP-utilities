@@ -160,9 +160,9 @@ class index_pair : public std::pair<size_t, size_t>
     {
     }
 
-    index_pair(const index_pair &rhs)           = default;
-    virtual ~index_pair()                       = default;
-    index_pair operator=(const index_pair &rhs) = default;
+    index_pair(const index_pair &rhs)            = default;
+    virtual ~index_pair()                        = default;
+    index_pair &operator=(const index_pair &rhs) = default;
 
     /**
      * Get the x-component.
@@ -329,6 +329,7 @@ class sparse_grid : public gridItf<EL_TYPE>
     };
 
     public:
+    using gridItf;
     using iterator  = typename DATA_CONTAINER::iterator;
     using iteratorX = INDEXSET::iterator;
     using iteratorY = INDEXSET::iterator;
@@ -783,7 +784,7 @@ class sparse_grid : public gridItf<EL_TYPE>
      *
      * @return the element at position (x, y)
      */
-    EL_TYPE &operator()(string s, const size_t x, const size_t y)
+    EL_TYPE &operator()(const size_t x, const size_t y)
     {
         if(x >= sizeX() || y >= sizeY())
         {
@@ -1127,7 +1128,6 @@ class grid : public gridItf<EL_TYPE>
     }
 };
 
-};
-// namepace util
+};  // namepace util
 
 #endif  // NS_UTIL_GRID_H_INCLUDED

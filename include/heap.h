@@ -31,6 +31,8 @@
 #include <stdexcept>
 #include <vector>
 
+namespace util
+{
 /**
  * @class heap
  */
@@ -253,5 +255,6 @@ class std_heap
         std::push_heap(arr.begin(), arr.begin() + last, Compare());
     }
 };
+};  // namepace util
 
 #endif  // HEAP_H_INCLUDED
