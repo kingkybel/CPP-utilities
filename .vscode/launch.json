@@ -7,7 +7,7 @@
       "request": "launch",
       "program": "${workspaceFolder}/build/bin/run_tests",
       "args": [
-        "--gtest_filter=BayesUtilTest.util_bayes_manually_defined_test"
+        // "--gtest_filter=BracketsTest.custom_decoration"
       ],
       "stopAtEntry": false,
       "cwd": "${workspaceFolder}",

@@ -6,6 +6,8 @@ add_executable(run_tests
                 dateutil_tests.cc
                 anyutil_tests.cc
                 container_convert_tests.cc
+                brackets_tests.cc
+                # decorator_tests.cc
                 csvutil_tests.cc
                 graphutil_tests.cc
                 matrix_tests.cc
@@ -19,5 +21,5 @@ add_executable(run_tests
 
 target_link_libraries(run_tests gtest gtest_main gmp dkutils)
 add_test(NAME run_tests COMMAND run_tests)
-
+include(Dart)
 

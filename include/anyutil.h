@@ -506,29 +506,17 @@ struct Interval : public IntervalType
      */
     [[nodiscard]] bool isSubIntervalOf(const Interval &rhs) const
     {
-        //            std::cout << std::boolalpha
-        //                << rhs
-        //                << "rhs.contains("
-        //                << low_
-        //                << ")="
-        //                << rhs.contains(low_)
-        //                << " rhs.contains("
-        //                << high_
-        //                << ")="
-        //                << rhs.contains(high_)
-        //                << std::endl;
-
         return (rhs.contains(low_) && rhs.contains(high_));
     }
 
-    [[nodiscard]] std::string verboseAsString() const
+    [[nodiscard]] std::string verbosetoString() const
     {
         std::string reval = "";
 
         reval += (isLeftClosed()) ? "leftClosed[ " : "leftOpen (";
-        reval += isLeftInfinite() ? "leftInf '" + asString(minVal<T_>()) + "' " : "leftMin '" + asString(low_) + "' ";
+        reval += isLeftInfinite() ? "leftInf '" + toString(minVal<T_>()) + "' " : "leftMin '" + toString(low_) + "' ";
         reval +=
-         isRightInfinite() ? "rightInf '-" + asString(maxVal<T_>()) + "' " : "rightMax '" + asString(high_) + "' ";
+         isRightInfinite() ? "rightInf '-" + toString(maxVal<T_>()) + "' " : "rightMax '" + toString(high_) + "' ";
         reval += (isRightClosed()) ? "] rightClosed " : ") rightOpen";
 
         return (reval);

@@ -59,8 +59,8 @@ struct index_error : public std::logic_error
     }
 
     index_error(idx_type tp, size_t idx, size_t high)
-    : std::logic_error(std::string(tp == idx_type::col ? "Column" : "Row") + " index " + asString(idx)
-                       + " out of range [0.." + asString(high) + "] in csv")
+    : std::logic_error(std::string(tp == idx_type::col ? "Column" : "Row") + " index " + toString(idx)
+                       + " out of range [0.." + toString(high) + "] in csv")
     {
     }
 };
@@ -71,7 +71,7 @@ struct index_error : public std::logic_error
 struct column_type_error : public std::logic_error
 {
     column_type_error(size_t col, const std::string &expected, const std::string &got)
-    : std::logic_error("Wrong type in column " + asString(col) + ": expected '" + expected + "' but got '" + got + "'")
+    : std::logic_error("Wrong type in column " + toString(col) + ": expected '" + expected + "' but got '" + got + "'")
     {
     }
 };
@@ -578,7 +578,7 @@ std::ostream &operator<<(std::ostream &os, const CSVAnalyzer &csv);
  * template specialisation of string conversion for CSVs.
  */
 template<>
-inline std::string asString(const CSVAnalyzer &csv)
+inline std::string toString(const CSVAnalyzer &csv)
 {
     std::stringstream ss;
     ss << CSVAnalyzer::verbosityType::displayAll << csv;

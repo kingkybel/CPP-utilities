@@ -574,13 +574,13 @@ class DirectedGraph
                 if(endNode.second)
                     removeNode(node2);
 
-                throw circle_error(asString(node1), asString(node2));
+                throw circle_error(toString(node1), toString(node2));
             }
             edges_.insert(p);
         }
         else
         {
-            throw parallel_error(asString(node1), asString(node2) + " [" + asString(edges_) + "]");
+            throw parallel_error(toString(node1), toString(node2) + " [" + toString(edges_) + "]");
         }
 
         return (reval);

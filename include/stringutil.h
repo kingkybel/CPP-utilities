@@ -68,7 +68,7 @@ enum class StripTrimMode : unsigned char
  * Convert objects to a string, provided a ostream - &lt;&lt; operator is defined.
  */
 template<typename T_>
-inline std::string asString(const T_ &v)
+inline std::string toString(const T_ &v)
 {
     std::stringstream ss;
     ss << v;

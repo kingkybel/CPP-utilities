@@ -40,6 +40,8 @@
 #include <unordered_set>
 #include <vector>
 
+namespace util
+{
 template<typename StringT1_, typename StringT2_ = std::string>
 StringT1_ convert(const StringT2_ &from)
 {
@@ -50,7 +52,10 @@ StringT1_ convert(const StringT2_ &from)
     static_assert(std::is_integral_v<CharT1_>, "Type CharT1_ must be integral.");
     static_assert(std::is_integral_v<CharT2_>, "Type CharT2_ must be integral.");
 
-    std::transform(from.begin(), from.end(), std::back_inserter(to), [](const auto& c) { return (static_cast<CharT2_>(c)); });
+    std::transform(from.begin(),
+                   from.end(),
+                   std::back_inserter(to),
+                   [](const auto &c) { return (static_cast<CharT2_>(c)); });
 
     return (to);
 }
@@ -59,13 +64,13 @@ StringT1_ convert(const StringT2_ &from)
  * Convert objects to a string, provided a ostream - &lt;&lt; operator is defined.
  */
 template<typename T_>
-inline std::string asString(const T_ &v);
+inline std::string toString(const T_ &v);
 
 /**
  * Convert objects to a wstring, provided a ostream - &lt;&lt; operator is defined.
  */
 template<typename T_>
-inline std::wstring asWString(const T_ &v);
+inline std::wstring toWString(const T_ &v);
 
 /**
  * Default decoration: just stream as is with no further adjustment.
@@ -88,14 +93,14 @@ void decorate(std::basic_ostream<CharT_, Traits_> &os, const Value_ &value)
 template<typename CharT_, typename Traits_>
 void decorate(std::basic_ostream<CharT_, Traits_> &os, const bool &value)
 {
-    auto                    decoConfig = decorator<CharT_, Traits_>::instance();
-    auto                    bracket    = decoConfig.get(value, decorator<CharT_, Traits_>::KEY_CHAR);
+    auto                    decoConfig = util::decorator<CharT_, Traits_>::instance();
+    auto                    bracket    = decoConfig.get(value, util::decorator<CharT_, Traits_>::KEY_CHAR);
     auto                    alpha      = decoConfig.getBoolAlpha();
     std::ios_base::fmtflags f(os.flags());
 
-    if(alpha != decorator<CharT_, Traits_>::intFmt::ignore)
+    if(alpha != util::decorator<CharT_, Traits_>::intFmt::ignore)
     {
-        if(alpha == decorator<CharT_, Traits_>::intFmt::is_set)
+        if(alpha == util::decorator<CharT_, Traits_>::intFmt::is_set)
             os << std::boolalpha;
         else
             os << std::noboolalpha;
@@ -115,18 +120,18 @@ void decorate(std::basic_ostream<CharT_, Traits_> &os, const bool &value)
 template<typename IntT_, typename CharT_, typename Traits_>
 void decorateInt(std::basic_ostream<CharT_, Traits_> &os, const std::basic_string<CharT_, Traits_> &key, IntT_ &value)
 {
-    auto                    decoConfig = decorator<CharT_, Traits_>::instance();
+    auto                    decoConfig = util::decorator<CharT_, Traits_>::instance();
     auto                    bracket    = decoConfig.template getBracket<IntT_>(key);
     auto                    fmt        = decoConfig.template getIntFmt<IntT_>();
     std::ios_base::fmtflags f(os.flags());
 
-    if(fmt != decorator<CharT_, Traits_>::intFmt::ignore)
+    if(fmt != util::decorator<CharT_, Traits_>::intFmt::ignore)
     {
-        if(fmt == decorator<CharT_, Traits_>::intFmt::hexadecimal)
+        if(fmt == util::decorator<CharT_, Traits_>::intFmt::hexadecimal)
             os << std::hex;
-        else if(fmt == decorator<CharT_, Traits_>::intFmt::decimal)
+        else if(fmt == util::decorator<CharT_, Traits_>::intFmt::decimal)
             os << std::dec;
-        else if(fmt == decorator<CharT_, Traits_>::intFmt::octal)
+        else if(fmt == util::decorator<CharT_, Traits_>::intFmt::octal)
             os << std::oct;
     }
 
@@ -143,7 +148,7 @@ void decorateInt(std::basic_ostream<CharT_, Traits_> &os, const std::basic_strin
 template<typename CharT_, typename Traits_>
 void decorate(std::basic_ostream<CharT_, Traits_> &os, const char &value)
 {
-    decorateInt(os, decorator<CharT_, Traits_>::KEY_CHAR, value);
+    decorateInt(os, util::decorator<CharT_, Traits_>::KEY_CHAR, value);
 }
 
 /**
@@ -155,7 +160,7 @@ void decorate(std::basic_ostream<CharT_, Traits_> &os, const char &value)
 template<typename CharT_, typename Traits_>
 void decorate(std::basic_ostream<CharT_, Traits_> &os, const wchar_t &value)
 {
-    decorateInt(os, decorator<CharT_, Traits_>::KEY_CHAR, value);
+    decorateInt(os, util::decorator<CharT_, Traits_>::KEY_CHAR, value);
 }
 
 /**
@@ -167,7 +172,7 @@ void decorate(std::basic_ostream<CharT_, Traits_> &os, const wchar_t &value)
 template<typename CharT_, typename Traits_>
 void decorate(std::basic_ostream<CharT_, Traits_> &os, const int8_t &value)
 {
-    decorateInt(os, decorator<CharT_, Traits_>::KEY_INT, value);
+    decorateInt(os, util::decorator<CharT_, Traits_>::KEY_INT, value);
 }
 
 /**
@@ -179,7 +184,7 @@ void decorate(std::basic_ostream<CharT_, Traits_> &os, const int8_t &value)
 template<typename CharT_, typename Traits_>
 void decorate(std::basic_ostream<CharT_, Traits_> &os, const int16_t &value)
 {
-    decorateInt(os, decorator<CharT_, Traits_>::KEY_INT, value);
+    decorateInt(os, util::decorator<CharT_, Traits_>::KEY_INT, value);
 }
 
 /**
@@ -191,7 +196,7 @@ void decorate(std::basic_ostream<CharT_, Traits_> &os, const int16_t &value)
 template<typename CharT_, typename Traits_>
 void decorate(std::basic_ostream<CharT_, Traits_> &os, const int32_t &value)
 {
-    decorateInt(os, decorator<CharT_, Traits_>::KEY_INT, value);
+    decorateInt(os, util::decorator<CharT_, Traits_>::KEY_INT, value);
 }
 
 /**
@@ -203,7 +208,7 @@ void decorate(std::basic_ostream<CharT_, Traits_> &os, const int32_t &value)
 template<typename CharT_, typename Traits_>
 void decorate(std::basic_ostream<CharT_, Traits_> &os, const int64_t &value)
 {
-    decorateInt(os, decorator<CharT_, Traits_>::KEY_INT, value);
+    decorateInt(os, util::decorator<CharT_, Traits_>::KEY_INT, value);
 }
 
 /**
@@ -215,7 +220,7 @@ void decorate(std::basic_ostream<CharT_, Traits_> &os, const int64_t &value)
 template<typename CharT_, typename Traits_>
 void decorate(std::basic_ostream<CharT_, Traits_> &os, const uint8_t &value)
 {
-    decorateInt(os, decorator<CharT_, Traits_>::KEY_INT, value);
+    decorateInt(os, util::decorator<CharT_, Traits_>::KEY_INT, value);
 }
 
 /**
@@ -227,7 +232,7 @@ void decorate(std::basic_ostream<CharT_, Traits_> &os, const uint8_t &value)
 template<typename CharT_, typename Traits_>
 void decorate(std::basic_ostream<CharT_, Traits_> &os, const uint16_t &value)
 {
-    decorateInt(os, decorator<CharT_, Traits_>::KEY_INT, value);
+    decorateInt(os, util::decorator<CharT_, Traits_>::KEY_INT, value);
 }
 
 /**
@@ -239,7 +244,7 @@ void decorate(std::basic_ostream<CharT_, Traits_> &os, const uint16_t &value)
 template<typename CharT_, typename Traits_>
 void decorate(std::basic_ostream<CharT_, Traits_> &os, const uint32_t &value)
 {
-    decorateInt(os, decorator<CharT_, Traits_>::KEY_INT, value);
+    decorateInt(os, util::decorator<CharT_, Traits_>::KEY_INT, value);
 }
 
 /**
@@ -251,7 +256,7 @@ void decorate(std::basic_ostream<CharT_, Traits_> &os, const uint32_t &value)
 template<typename CharT_, typename Traits_>
 void decorate(std::basic_ostream<CharT_, Traits_> &os, const uint64_t &value)
 {
-    decorateInt(os, decorator<CharT_, Traits_>::KEY_INT, value);
+    decorateInt(os, util::decorator<CharT_, Traits_>::KEY_INT, value);
 }
 
 /**
@@ -262,11 +267,11 @@ void decorate(std::basic_ostream<CharT_, Traits_> &os, const uint64_t &value)
  * @param value the value to decorate
  */
 template<typename FloatT_, typename CharT_, typename Traits_>
-void decorateFloat(std::basic_ostream<CharT_, Traits_> &     os,
+void decorateFloat(std::basic_ostream<CharT_, Traits_>      &os,
                    const std::basic_string<CharT_, Traits_> &key,
-                   FloatT_ &                                 value)
+                   FloatT_                                  &value)
 {
-    auto                    decoConfig = decorator<CharT_, Traits_>::instance();
+    auto                    decoConfig = util::decorator<CharT_, Traits_>::instance();
     auto                    bracket    = decoConfig.template getBracket<FloatT_>(key);
     auto                    fmt        = decoConfig.template getFloatFmt<FloatT_>();
     std::ios_base::fmtflags f(os.flags());
@@ -287,7 +292,7 @@ void decorateFloat(std::basic_ostream<CharT_, Traits_> &     os,
 template<typename CharT_, typename Traits_>
 void decorate(std::basic_ostream<CharT_, Traits_> &os, const float &value)
 {
-    decorateFloat(os, decorator<CharT_, Traits_>::KEY_FLOAT, value);
+    decorateFloat(os, util::decorator<CharT_, Traits_>::KEY_FLOAT, value);
 }
 
 /**
@@ -299,7 +304,7 @@ void decorate(std::basic_ostream<CharT_, Traits_> &os, const float &value)
 template<typename CharT_, typename Traits_>
 void decorate(std::basic_ostream<CharT_, Traits_> &os, const double &value)
 {
-    decorateFloat(os, decorator<CharT_, Traits_>::KEY_FLOAT, value);
+    decorateFloat(os, util::decorator<CharT_, Traits_>::KEY_FLOAT, value);
 }
 
 /**
@@ -311,7 +316,7 @@ void decorate(std::basic_ostream<CharT_, Traits_> &os, const double &value)
 template<typename CharT_, typename Traits_>
 void decorate(std::basic_ostream<CharT_, Traits_> &os, const long double &value)
 {
-    decorateFloat(os, decorator<CharT_, Traits_>::KEY_FLOAT, value);
+    decorateFloat(os, util::decorator<CharT_, Traits_>::KEY_FLOAT, value);
 }
 
 /**
@@ -323,9 +328,9 @@ void decorate(std::basic_ostream<CharT_, Traits_> &os, const long double &value)
 template<typename CharT_, typename Traits_>
 void decorate(std::basic_ostream<CharT_, Traits_> &os, const std::basic_string<CharT_, Traits_> &value)
 {
-    auto decoConfig = decorator<CharT_, Traits_>::instance();
+    auto decoConfig = util::decorator<CharT_, Traits_>::instance();
     auto bracket =
-     decoConfig.template getBracket<std::basic_string<CharT_, Traits_>>(decorator<CharT_, Traits_>::KEY_STRING);
+     decoConfig.template getBracket<std::basic_string<CharT_, Traits_>>(util::decorator<CharT_, Traits_>::KEY_STRING);
 
     os << bracket.left() << value << bracket.right();
 }
@@ -339,11 +344,11 @@ void decorate(std::basic_ostream<CharT_, Traits_> &os, const std::basic_string<C
  * @param defaultBracketId  an ID to select a bracket if no special bracket is defined for the container
  */
 template<typename ContainerType_, typename CharT_, typename Traits_>
-void decorate(std::basic_ostream<CharT_, Traits_> &     os,
+void decorate(std::basic_ostream<CharT_, Traits_>      &os,
               ContainerType_                            container,
               const std::basic_string<CharT_, Traits_> &defaultBracketId)
 {
-    auto decoConfig = decorator<CharT_, Traits_>::instance();
+    auto decoConfig = util::decorator<CharT_, Traits_>::instance();
     auto bracket    = decoConfig.template getBracket<ContainerType_>(defaultBracketId);
 
     os << bracket.left();
@@ -375,9 +380,9 @@ void decorate(std::basic_ostream<CharT_, Traits_> &     os,
  */
 template<typename T_, typename Alloc_, typename CharT_, typename Traits_>
 inline std::basic_ostream<CharT_, Traits_> &operator<<(std::basic_ostream<CharT_, Traits_> &os,
-                                                       const std::vector<T_, Alloc_> &      vec)
+                                                       const std::vector<T_, Alloc_>       &vec)
 {
-    decorate(os, vec, decorator<CharT_, Traits_>::KEY_VECTOR);
+    decorate(os, vec, util::decorator<CharT_, Traits_>::KEY_VECTOR);
 
     return (os);
 }
@@ -392,9 +397,9 @@ inline std::basic_ostream<CharT_, Traits_> &operator<<(std::basic_ostream<CharT_
  */
 template<typename T_, typename Alloc_, typename CharT_, typename Traits_>
 inline std::basic_ostream<CharT_, Traits_> &operator<<(std::basic_ostream<CharT_, Traits_> &os,
-                                                       const std::deque<T_, Alloc_> &       dblEndQueue)
+                                                       const std::deque<T_, Alloc_>        &dblEndQueue)
 {
-    decorate(os, dblEndQueue, decorator<CharT_, Traits_>::KEY_DEQUE);
+    decorate(os, dblEndQueue, util::decorator<CharT_, Traits_>::KEY_DEQUE);
 
     return (os);
 }
@@ -411,7 +416,7 @@ template<typename Key, typename Compare, typename Alloc, typename CharT_, typena
 inline std::basic_ostream<CharT_, Traits_> &operator<<(std::basic_ostream<CharT_, Traits_> &os,
                                                        const std::set<Key, Compare, Alloc> &sortedSet)
 {
-    decorate(os, sortedSet, decorator<CharT_, Traits_>::KEY_SET);
+    decorate(os, sortedSet, util::decorator<CharT_, Traits_>::KEY_SET);
 
     return (os);
 }
@@ -425,10 +430,10 @@ inline std::basic_ostream<CharT_, Traits_> &operator<<(std::basic_ostream<CharT_
  * @return the modified stream
  */
 template<typename Value, typename Hash, typename Pred, typename Alloc, typename CharT_, typename Traits_>
-inline std::basic_ostream<CharT_, Traits_> &operator<<(std::basic_ostream<CharT_, Traits_> &               os,
+inline std::basic_ostream<CharT_, Traits_> &operator<<(std::basic_ostream<CharT_, Traits_>                &os,
                                                        const std::unordered_set<Value, Hash, Pred, Alloc> &unordSet)
 {
-    decorate(os, unordSet, decorator<CharT_, Traits_>::KEY_UNORDERED_SET);
+    decorate(os, unordSet, util::decorator<CharT_, Traits_>::KEY_UNORDERED_SET);
 
     return (os);
 }
@@ -443,11 +448,11 @@ inline std::basic_ostream<CharT_, Traits_> &operator<<(std::basic_ostream<CharT_
  */
 template<typename T1_, typename T2_, typename CharT_, typename Traits_>
 inline std::basic_ostream<CharT_, Traits_> &operator<<(std::basic_ostream<CharT_, Traits_> &os,
-                                                       const std::pair<T1_, T2_> &          pair1st2nd)
+                                                       const std::pair<T1_, T2_>           &pair1st2nd)
 {
     using Pair_ = std::pair<T1_, T2_>;
 
-    auto decoConfig = decorator<CharT_, Traits_>::instance();
+    auto decoConfig = util::decorator<CharT_, Traits_>::instance();
     auto bracket    = decoConfig.template getBracket<Pair_>(decoConfig.KEY_PAIR);
 
     os << bracket.left();
@@ -471,7 +476,7 @@ template<typename Key, typename Value, typename Hash, typename Pred, typename Al
 inline std::basic_ostream<CharT_, Traits_> &
  operator<<(std::basic_ostream<CharT_, Traits_> &os, const std::unordered_map<Key, Value, Hash, Pred, Alloc> &unordMap)
 {
-    decorate(os, unordMap, decorator<CharT_, Traits_>::KEY_UNORDERED_MAP);
+    decorate(os, unordMap, util::decorator<CharT_, Traits_>::KEY_UNORDERED_MAP);
 
     return (os);
 }
@@ -485,10 +490,10 @@ inline std::basic_ostream<CharT_, Traits_> &
  * @return the modified stream
  */
 template<typename T1_, typename T2_, typename Compare_, typename Alloc_, typename CharT_, typename Traits_>
-inline std::basic_ostream<CharT_, Traits_> &operator<<(std::basic_ostream<CharT_, Traits_> &       os,
+inline std::basic_ostream<CharT_, Traits_> &operator<<(std::basic_ostream<CharT_, Traits_>        &os,
                                                        const std::map<T1_, T2_, Compare_, Alloc_> &sortedMap)
 {
-    decorate(os, sortedMap, decorator<CharT_, Traits_>::KEY_MAP);
+    decorate(os, sortedMap, util::decorator<CharT_, Traits_>::KEY_MAP);
 
     return (os);
 }
@@ -507,7 +512,7 @@ inline std::string as(const T_ &v)
  * Convert objects to a string, provided a ostream - &lt;&lt; operator is defined.
  */
 template<typename T_>
-inline std::string asString(const T_ &v)
+inline std::string toString(const T_ &v)
 {
     std::stringstream ss;
 
@@ -520,7 +525,7 @@ inline std::string asString(const T_ &v)
  * Convert objects to a wstring, provided a ostream - &lt;&lt; operator is defined.
  */
 template<typename T_>
-inline std::wstring asWString(const T_ &v)
+inline std::wstring toWString(const T_ &v)
 {
     std::wstringstream ss;
 
@@ -528,5 +533,7 @@ inline std::wstring asWString(const T_ &v)
 
     return (ss.str());
 }
+
+};  // namespace util
 
 #endif  // STREAM_DECORATE_H_INCLUDED

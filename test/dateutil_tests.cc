@@ -73,10 +73,10 @@ struct DR
 
     bool correctResult()
     {
-        bool reval = (result_ == asString(datescan::scanDate(param_)));
+        bool reval = (result_ == toString(datescan::scanDate(param_)));
         if(!reval)
             cout << " Line " << line_ << ": " << quoted(result_)
-                 << " != " << quoted(asString(util::datescan::scanDate(param_))) << " " << ends;
+                 << " != " << quoted(toString(util::datescan::scanDate(param_))) << " " << ends;
         return reval;
     }
     string param_;
@@ -236,17 +236,17 @@ TEST_F(DateUtilTest, util_date_european_test)
     addDateFormat("%H:%M:%S");
     addDateFormat("%H:%M");
     ptime dt = scanDate("12:34:56");
-    ASSERT_EQ(string("12:34:56"), asString(dt.time_of_day()));
+    ASSERT_EQ(string("12:34:56"), toString(dt.time_of_day()));
     dt = scanDate("12:34");
-    ASSERT_EQ(string("12:34:00"), asString(dt.time_of_day()));
+    ASSERT_EQ(string("12:34:00"), toString(dt.time_of_day()));
 
     resetDateFormats();
     for(size_t i = 0; i < sizeof(scanResults) / sizeof(DR); i++)
     {
-        ASSERT_EQ(string("not-a-date-time"), asString(scanDate(scanResults[i].param_)));
+        ASSERT_EQ(string("not-a-date-time"), toString(scanDate(scanResults[i].param_)));
     }
     addDateFormat("%H:%Y");
-    ASSERT_EQ(string("2013-Jan-01 13:00:00"), asString(scanDate("13:2013")));
+    ASSERT_EQ(string("2013-Jan-01 13:00:00"), toString(scanDate("13:2013")));
 }
 
 TEST_F(DateUtilTest, util_date_american_test)

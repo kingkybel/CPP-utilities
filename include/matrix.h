@@ -473,21 +473,21 @@ class matrix : public matrix_interface
         if(operation == operType::MatrixAdd || operation == operType::MatrixSub)
         {
             if(!lhs.isAddCompatible(rhs))
-                throw matrixSizesIncompatible(location + ": matrix-size lhs (" + asString(lhs.sizeX()) + ","
-                                              + asString(lhs.sizeY()) + ") is not equal matrix-size rhs("
-                                              + asString(rhs.sizeX()) + "," + asString(rhs.sizeY()) + ").");
+                throw matrixSizesIncompatible(location + ": matrix-size lhs (" + toString(lhs.sizeX()) + ","
+                                              + toString(lhs.sizeY()) + ") is not equal matrix-size rhs("
+                                              + toString(rhs.sizeX()) + "," + toString(rhs.sizeY()) + ").");
         }
         else if(operation == operType::MatrixMult)
         {
             if(lhs.sizeX() != rhs.sizeY())
-                throw matrixSizesIncompatible(location + ": x-dimension of lhs-matrix (" + asString(lhs.sizeX())
-                                              + ") is not equal to y-dimension rhs (" + asString(rhs.sizeY()) + ").");
+                throw matrixSizesIncompatible(location + ": x-dimension of lhs-matrix (" + toString(lhs.sizeX())
+                                              + ") is not equal to y-dimension rhs (" + toString(rhs.sizeY()) + ").");
         }
         else if(operation == operType::MatrixSolve)
         {
             if(lhs.sizeY() != rhs.sizeY())
-                throw matrixSizesIncompatible(location + ": matrix-y-dimension lhs " + asString(lhs.sizeY())
-                                              + " is not equal matrix-y-dimension rhs " + asString(rhs.sizeY()) + ".");
+                throw matrixSizesIncompatible(location + ": matrix-y-dimension lhs " + toString(lhs.sizeY())
+                                              + " is not equal matrix-y-dimension rhs " + toString(rhs.sizeY()) + ".");
         }
     }
 
@@ -500,7 +500,7 @@ class matrix : public matrix_interface
     static void assertNotZero(T c, const std::string &location)
     {
         if(c == T(0))
-            throw matrixScalarMustNotBeZero(location + ": scalar " + asString(c) + "must not be 0(Zero).");
+            throw matrixScalarMustNotBeZero(location + ": scalar " + toString(c) + "must not be 0(Zero).");
     }
 
     /**

@@ -41,8 +41,8 @@ namespace util
 template<typename T_>
 NumberClass classifyNumberStringT(const T_ &str)
 {
-    static size_t maxIntLen  = asString(numeric_limits<int64_t>::max()).size();
-    static size_t maxUintLen = asString(numeric_limits<uint64_t>::max()).size();
+    static size_t maxIntLen  = toString(numeric_limits<int64_t>::max()).size();
+    static size_t maxUintLen = toString(numeric_limits<uint64_t>::max()).size();
 
     if(str.empty() || str.find_first_not_of("0123456789+-.eElL") != T_::npos)
         return (NONE);

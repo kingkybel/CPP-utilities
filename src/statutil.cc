@@ -41,13 +41,13 @@ using namespace boost;
  */
 eventlist_conflict_error::eventlist_conflict_error(eventlist_conflict_error::conflict_type tp,
                                                    const EventCatenation                  &e1)
-: std::logic_error(string(tp == eventlist_conflict_error::evt ? "Event-list " : "Condition-list") + asString(e1)
+: std::logic_error(string(tp == eventlist_conflict_error::evt ? "Event-list " : "Condition-list") + toString(e1)
                    + " has conflicting events")
 {
 }
 
 eventlist_conflict_error::eventlist_conflict_error(const EventCatenation &e1, const EventCatenation &e2)
-: std::logic_error("Event-list " + asString(e1) + " and Condition-list " + asString(e2) + " have conflicting events")
+: std::logic_error("Event-list " + toString(e1) + " and Condition-list " + toString(e2) + " have conflicting events")
 {
 }
 
@@ -924,8 +924,8 @@ bool ProbabilityFunction::possibleCondEvent(const CondEvent &ce, string &error) 
 
         if(!found->second.validValue(evIt->varValue()))
         {
-            error = "p(" + asString(ce) + "): Event value '" + asString(evIt->varValue()) + "' of Event '"
-                    + evIt->name() + "' has incorrect type or invalid value: " + asString(found->second) + ".";
+            error = "p(" + toString(ce) + "): Event value '" + toString(evIt->varValue()) + "' of Event '"
+                    + evIt->name() + "' has incorrect type or invalid value: " + toString(found->second) + ".";
 
             return (false);
         }
@@ -937,15 +937,15 @@ bool ProbabilityFunction::possibleCondEvent(const CondEvent &ce, string &error) 
 
         if(found == conditionValueRanges_.end())
         {
-            error = "p(" + asString(ce) + "): Condition '" + condIt->name() + "' not a valid probability variable.";
+            error = "p(" + toString(ce) + "): Condition '" + condIt->name() + "' not a valid probability variable.";
 
             return (false);
         }
 
         if(!found->second.validType(condIt->varValue()))
         {
-            error = "Condition value '" + asString(condIt->varValue()) + "' of Condition '" + condIt->name()
-                    + "' has incorrect type or invalid value: " + asString(found->second) + ".";
+            error = "Condition value '" + toString(condIt->varValue()) + "' of Condition '" + condIt->name()
+                    + "' has incorrect type or invalid value: " + toString(found->second) + ".";
 
             return (false);
         }

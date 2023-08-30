@@ -24,13 +24,14 @@
 
 #ifndef NS_UTIL_IOSUTIL_H_INCLUDED
 #define NS_UTIL_IOSUTIL_H_INCLUDED
+
+//#define DO_TRACE_
+#include "traceutil.h"
+
 #include <iomanip>
 #include <ios>
 #include <iostream>
 #include <map>
-
-//#define DO_TRACE_
-#include "traceutil.h"
 
 namespace util
 {
@@ -108,48 +109,48 @@ inline std::ostream& operator<<(std::ostream& os, stream_mode sm)
  * separate the stream formatting of the util-library from the the
  * formatting of objects outside
  */
-const static int backup_fmtflags_xalloc_index = std::ios_base::xalloc();
+// const static int backup_fmtflags_xalloc_index = std::ios_base::xalloc();
 
-struct floatFmt
-{
-    floatFmt() : isScientific_(true)
-    {
-    }
+// struct floatFmt
+// {
+//     floatFmt() : isScientific_(true)
+//     {
+//     }
 
-    floatFmt(size_t width, size_t precision = 5, char fill = '0', bool isFixed = false)
-    : width_(width)
-    , precision_(precision)
-    , fill_(fill)
-    , isFixed_(isFixed)
-    , isScientific_(false)
-    {
-    }
+//     floatFmt(size_t width, size_t precision = 5, char fill = '0', bool isFixed = false)
+//     : width_(width)
+//     , precision_(precision)
+//     , fill_(fill)
+//     , isFixed_(isFixed)
+//     , isScientific_(false)
+//     {
+//     }
 
-    size_t width_;
-    size_t precision_;
-    char   fill_;
-    bool   isFixed_;
-    bool   isScientific_;
-};
+//     size_t width_;
+//     size_t precision_;
+//     char   fill_;
+//     bool   isFixed_;
+//     bool   isScientific_;
+// };
 
-inline std::ostream& operator<<(std::ostream& os, const floatFmt& fmt)
-{
-    TRACE1(fmt.isScientific_)
-    if(fmt.isScientific_)
-    {
-        os << std::ios::scientific;
-    }
-    else
-    {
-        TRACE1(fmt.fill_);
-        TRACE1(fmt.width_);
-        os.fill(fmt.fill_);
-        os.width(fmt.width_);
-        if(fmt.isFixed_)
-            os << std::fixed;
-    }
-    return os;
-}
+// inline std::ostream& operator<<(std::ostream& os, const floatFmt& fmt)
+// {
+//     TRACE1(fmt.isScientific_)
+//     if(fmt.isScientific_)
+//     {
+//         os << std::ios::scientific;
+//     }
+//     else
+//     {
+//         TRACE1(fmt.fill_);
+//         TRACE1(fmt.width_);
+//         os.fill(fmt.fill_);
+//         os.width(fmt.width_);
+//         if(fmt.isFixed_)
+//             os << std::fixed;
+//     }
+//     return os;
+// }
 
 };
 

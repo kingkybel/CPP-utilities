@@ -55,8 +55,8 @@ struct event_range_error : public std::logic_error
     };
 
     event_range_error(VAR_FLOAT f, size_t rangeDescriptors)
-    : std::logic_error("Floatrange-test for '" + asString(f) + "': the float description"
-                       + " must be empty or exactly min and max values. Found " + asString(rangeDescriptors))
+    : std::logic_error("Floatrange-test for '" + toString(f) + "': the float description"
+                       + " must be empty or exactly min and max values. Found " + toString(rangeDescriptors))
     {
     }
 
@@ -65,9 +65,9 @@ struct event_range_error : public std::logic_error
     }
 
     event_range_error(conflict_type tp, VAR_FLOAT f1, VAR_FLOAT f2 = 0.0L, VAR_FLOAT f3 = 0.0L)
-    : std::logic_error(tp == exponential_range ? "Range for exponential function is [0..oo) but found " + asString(f1) :
-                       tp == uniform_range ? "Range for exponential function is [" + asString(f1) + ".." + asString(f2)
-                                              + "] but found " + asString(f3) :
+    : std::logic_error(tp == exponential_range ? "Range for exponential function is [0..oo) but found " + toString(f1) :
+                       tp == uniform_range ? "Range for exponential function is [" + toString(f1) + ".." + toString(f2)
+                                              + "] but found " + toString(f3) :
                                              "Invalid range.")
     {
     }
@@ -84,7 +84,7 @@ struct event_error : public std::logic_error
 
     event_error(const std::type_info &t1, const std::type_info &t2)
     : std::logic_error(
-     event_error("Cannot get interval of type " + asString(t1.name()) + " from Event of type " + asString(t2.name())))
+     event_error("Cannot get interval of type " + toString(t1.name()) + " from Event of type " + toString(t2.name())))
     {
     }
 };
@@ -133,7 +133,7 @@ struct distribution_error : public std::logic_error
     }
 
     distribution_error(long double val)
-    : std::logic_error("Probability value " + asString(val) + " is outside range [0.0..1.0]")
+    : std::logic_error("Probability value " + toString(val) + " is outside range [0.0..1.0]")
     {
     }
 };

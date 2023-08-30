@@ -442,7 +442,7 @@ void testIteratorT()
     }
     catch(exception &e)
     {
-        FAIL() << asString("Limited int with set-invalid policy should not throw when "
+        FAIL() << toString("Limited int with set-invalid policy should not throw when "
                            "iterator reaches end: ")
                    + e.what();
     }
@@ -469,7 +469,7 @@ void testIteratorT()
     }
     catch(exception &e)
     {
-        FAIL() << asString("Iterator should always be valid:") + e.what();
+        FAIL() << toString("Iterator should always be valid:") + e.what();
     }
     try
     {
@@ -484,7 +484,7 @@ void testIteratorT()
     }
     catch(exception &e)
     {
-        FAIL() << asString("Iterator should always be valid:") + e.what();
+        FAIL() << toString("Iterator should always be valid:") + e.what();
     }
 
     /////////////////// REVERSE/////////////////////////////////////////////////
@@ -649,8 +649,8 @@ TEST_F(LimitedIntTest, testDegreeConversion)
         Deg180 deg180 = m.first;
         Rad2Pi rad2Pi = m.second;
         if(deg180.val() < Deg180::min() || deg180.val() > Deg180::max())
-            FAIL() << "Deg180 values as key of map is invalid:" + asString(deg180);
+            FAIL() << "Deg180 values as key of map is invalid:" + toString(deg180);
         if(rad2Pi.val() < Rad2Pi::min() || rad2Pi.val() > Rad2Pi::max())
-            FAIL() << "Rad2Pi values as value of map is invalid:" + asString(rad2Pi);
+            FAIL() << "Rad2Pi values as value of map is invalid:" + toString(rad2Pi);
     }
 }

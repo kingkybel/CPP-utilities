@@ -132,7 +132,7 @@ bool operator<(const Var &lhs, const Var &rhs)
     if(isA<VAR_FLOAT_INTERVAL>(lhs))
         return lessT<VAR_FLOAT_INTERVAL>(lhs, rhs);
     
-    return (asString(lhs) < asString(rhs));
+    return (toString(lhs) < toString(rhs));
 }
 
 bool operator<=(const Var &lhs, const Var &rhs)
@@ -142,7 +142,7 @@ bool operator<=(const Var &lhs, const Var &rhs)
             || lessEqualT<VAR_STRING>(lhs, rhs) || lessEqualT<VAR_BOOL_INTERVAL>(lhs, rhs)
             || lessEqualT<VAR_CHAR_INTERVAL>(lhs, rhs) || lessEqualT<VAR_INT_INTERVAL>(lhs, rhs)
             || lessEqualT<VAR_UINT_INTERVAL>(lhs, rhs) || lessEqualT<VAR_DATE_INTERVAL>(lhs, rhs)
-            || lessEqualT<VAR_FLOAT_INTERVAL>(lhs, rhs) || (asString(lhs) <= asString(rhs)));
+            || lessEqualT<VAR_FLOAT_INTERVAL>(lhs, rhs) || (toString(lhs) <= toString(rhs)));
 }
 
 bool operator>(const Var &lhs, const Var &rhs)
@@ -152,7 +152,7 @@ bool operator>(const Var &lhs, const Var &rhs)
             || greaterT<VAR_STRING>(lhs, rhs) || greaterT<VAR_BOOL_INTERVAL>(lhs, rhs)
             || greaterT<VAR_CHAR_INTERVAL>(lhs, rhs) || greaterT<VAR_INT_INTERVAL>(lhs, rhs)
             || greaterT<VAR_UINT_INTERVAL>(lhs, rhs) || greaterT<VAR_DATE_INTERVAL>(lhs, rhs)
-            || greaterT<VAR_FLOAT_INTERVAL>(lhs, rhs) || (asString(lhs) > asString(rhs)));
+            || greaterT<VAR_FLOAT_INTERVAL>(lhs, rhs) || (toString(lhs) > toString(rhs)));
 }
 
 bool operator>=(const Var &lhs, const Var &rhs)
@@ -163,7 +163,7 @@ bool operator>=(const Var &lhs, const Var &rhs)
             || greaterEqualT<VAR_BOOL_INTERVAL>(lhs, rhs) || greaterEqualT<VAR_CHAR_INTERVAL>(lhs, rhs)
             || greaterEqualT<VAR_INT_INTERVAL>(lhs, rhs) || greaterEqualT<VAR_UINT_INTERVAL>(lhs, rhs)
             || greaterEqualT<VAR_DATE_INTERVAL>(lhs, rhs) || greaterEqualT<VAR_FLOAT_INTERVAL>(lhs, rhs)
-            || (asString(lhs) >= asString(rhs)));
+            || (toString(lhs) >= toString(rhs)));
 }
 
 bool Less::leftMatchesRight(const Var &lhs, const Var &rhs) const

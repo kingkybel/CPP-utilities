@@ -21,18 +21,20 @@
  * @author: Dieter J Kybelksties
  */
 
-#ifndef DECORATOR_H_INCLUDED
-#define DECORATOR_H_INCLUDED
+#ifndef NS_UTIL_DECORATOR_H_INCLUDED
+#define NS_UTIL_DECORATOR_H_INCLUDED
 
+#include "brackets.h"
 #include "stream_decorate.h"
 #include "stringutil.h"
 
-#include <brackets.h>
 #include <ios>
 #include <map>
 #include <string>
 #include <typeinfo>
 
+namespace util
+{
 template<typename CharT_>
 struct floatFmt
 {
@@ -90,7 +92,7 @@ class decorator
 {
     public:
     using StringT_     = std::basic_string<CharT_, TraitsT_>;
-    using BracketsType = BracketsT<StringT_>;
+    using BracketsType = util::BracketsT<StringT_>;
 
     template<typename T_>
     StringT_ typeString()
@@ -386,4 +388,6 @@ const std::basic_string<CharT_, TraitsT_>
 template<typename CharT_, typename TraitsT_>
 decorator<CharT_, TraitsT_> decorator<CharT_, TraitsT_>::theInstance;
 
-#endif  // DECORATOR_H_INCLUDED
+};  // namespace util
+
+#endif  // NS_UTIL_DECORATOR_H_INCLUDED

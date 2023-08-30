@@ -143,7 +143,7 @@ bool Node::train(const CSVAnalyzer &csv, bool hasValue)
                                                      nullptr;
 
     if(nullptr == pDistribution_)
-        throw distribution_error("Distribution-type '" + asString(distType_)
+        throw distribution_error("Distribution-type '" + toString(distType_)
                                  + "' could not be created or is not implemented.");
 
     reval &= pDistribution_->train(csv, hasValue);

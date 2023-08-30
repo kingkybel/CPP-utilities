@@ -497,7 +497,7 @@ class sparse_grid : public gridItf<EL_TYPE>
         }
         else
         {
-            throw grid_error("Set a value at " + asString(index_pair) + " out of bounds" + asString(dims_) + ".");
+            throw grid_error("Set a value at " + toString(index_pair) + " out of bounds" + toString(dims_) + ".");
         }
     }
 
@@ -526,7 +526,7 @@ class sparse_grid : public gridItf<EL_TYPE>
         }
         else
         {
-            throw grid_error("Get a value at " + asString(ind) + " out of bounds" + asString(dims_) + ".");
+            throw grid_error("Get a value at " + toString(ind) + " out of bounds" + toString(dims_) + ".");
         }
 
         return (iter->second);
@@ -792,7 +792,7 @@ class sparse_grid : public gridItf<EL_TYPE>
 
             if((mode | Mode::AutoGrow) != Mode::AutoGrow)
             {
-                throw grid_error("Get a value at " + asString(index_pair(x, y)) + " out of bounds" + asString(dims_)
+                throw grid_error("Get a value at " + toString(index_pair(x, y)) + " out of bounds" + toString(dims_)
                                  + ".");
             }
         }
@@ -919,7 +919,7 @@ class sparse_grid : public gridItf<EL_TYPE>
         }
         else
         {
-            throw grid_error("Set a value at " + asString(index_pair(x, y)) + " out of bounds" + asString(dims_) + ".");
+            throw grid_error("Set a value at " + toString(index_pair(x, y)) + " out of bounds" + toString(dims_) + ".");
         }
     }
 
@@ -1099,7 +1099,7 @@ class grid : public gridItf<EL_TYPE>
     {
         if(x >= sizeX() || y >= sizeY())
         {
-            throw grid_error("Get a value at " + asString(index_pair(x, y)) + " out of bounds" + asString(dims_) + ".");
+            throw grid_error("Get a value at " + toString(index_pair(x, y)) + " out of bounds" + toString(dims_) + ".");
         }
 
         return ((values_[x])[y]);

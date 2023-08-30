@@ -155,14 +155,14 @@ bool CSVAnalyzer::setTypes(const string &typeString, const string &inSeparator)
 
         while(types.size() > data_.size())
         {
-            newColumn[0] = scanAs<string>("Column" + asString(data_.size() + 1));
+            newColumn[0] = scanAs<string>("Column" + toString(data_.size() + 1));
             data_.push_back(newColumn);
         }
     }
 
     for(size_t i = 0; i < types.size(); i++)
     {
-        string originalType = asString(data_[i][1]);
+        string originalType = toString(data_[i][1]);
 
         if(originalType != types[i])
         {
@@ -213,7 +213,7 @@ bool CSVAnalyzer::createDefaultHeader(const vector<string> &values)
     string header = "";
 
     for(size_t i = 0; i < values.size(); i++)
-        header += "Column" + asString(i) + (i == values.size() - 1 ? "" : ",");
+        header += "Column" + toString(i) + (i == values.size() - 1 ? "" : ",");
 
     return (setHeaders(header));
 }
@@ -264,14 +264,14 @@ bool CSVAnalyzer::setValues(const string &valueString, bool preserveRows, const 
 
         while(values.size() > data_.size())
         {
-            newColumn[0] = scanAs<string>("Column" + asString(data_.size() + 1));
+            newColumn[0] = scanAs<string>("Column" + toString(data_.size() + 1));
             data_.push_back(newColumn);
         }
     }
 
     for(size_t i = 0; i < values.size(); i++)
     {
-        string tp = asString(data_[i][1]);
+        string tp = toString(data_[i][1]);
         if(tp == CSV_COLUMN_TYPE_BOOL)
             data_[i].push_back(scanAs<VAR_BOOL>(values[i]));
         else if(tp == CSV_COLUMN_TYPE_CHAR)
@@ -315,12 +315,12 @@ size_t CSVAnalyzer::lines() const
 
 string CSVAnalyzer::header(size_t col) const
 {
-    return (headerPresent() ? asString(data_[col][0]) : "");
+    return (headerPresent() ? toString(data_[col][0]) : "");
 }
 
 string CSVAnalyzer::type(size_t col) const
 {
-    return (typesPresent() ? asString(data_[col][1]) : "");
+    return (typesPresent() ? toString(data_[col][1]) : "");
 }
 
 void CSVAnalyzer::appendColumn(const string &header, const string &tp, const Var &defaultValue)
@@ -517,7 +517,7 @@ bool CSVAnalyzer::write(const string &filename, const string &outDelimiter, file
     {
         for(size_t i = 0; i < columns(); i++)
         {
-            ofs << asString(data_[i][0]) << (i == columns() - 1 ? "" : outDelimiter);
+            ofs << toString(data_[i][0]) << (i == columns() - 1 ? "" : outDelimiter);
         }
         ofs << endl;
     }
@@ -526,7 +526,7 @@ bool CSVAnalyzer::write(const string &filename, const string &outDelimiter, file
     {
         for(size_t i = 0; i < columns(); i++)
         {
-            ofs << asString(data_[i][1]) << (i == columns() - 1 ? "" : outDelimiter);
+            ofs << toString(data_[i][1]) << (i == columns() - 1 ? "" : outDelimiter);
         }
         ofs << endl;
     }
@@ -535,7 +535,7 @@ bool CSVAnalyzer::write(const string &filename, const string &outDelimiter, file
     {
         for(size_t i = 0; i < columns(); i++)
         {
-            ofs << asString(data_[i][row]) << (i == columns() - 1 ? "" : outDelimiter);
+            ofs << toString(data_[i][row]) << (i == columns() - 1 ? "" : outDelimiter);
         }
         ofs << endl;
     }
@@ -605,7 +605,7 @@ CSVAnalyzer &CSVAnalyzer::operator<<(const string &row)
 
 void CSVAnalyzer::convert(size_t i, size_t row, const string &tp)
 {
-    string value = asString(getVar(i, row));
+    string value = toString(getVar(i, row));
 
     if(tp == CSV_COLUMN_TYPE_BOOL)
         data_[i][row + 2] = scanAs<VAR_BOOL>(value);
@@ -665,7 +665,7 @@ ostream &operator<<(ostream &os, const CSVAnalyzer &csv)
     {
         for(size_t i = 0; i < csv.columns(); i++)
         {
-            os << asString(csv.data_[i][0]) << (i < csv.columns() - 1 ? csv.outSeparator_ : "");
+            os << toString(csv.data_[i][0]) << (i < csv.columns() - 1 ? csv.outSeparator_ : "");
         }
 
         os << endl;
@@ -677,7 +677,7 @@ ostream &operator<<(ostream &os, const CSVAnalyzer &csv)
     {
         for(size_t i = 0; i < csv.columns(); i++)
         {
-            types.push_back(asString(csv.data_[i][1]));
+            types.push_back(toString(csv.data_[i][1]));
             os << types[i] << (i < csv.columns() - 1 ? csv.outSeparator_ : "");
         }
 

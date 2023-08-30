@@ -45,15 +45,15 @@ using Deg360Traits =
 using Deg360 = limited_int<int64_t, DEGREE_360_MIN, DEGREE_360_MAX, Deg360Traits>;
 
 using Rad2PiTraits =
- limited_int_traits<int64_t, MICRO_RAD_2PI_MIN, MICRO_RAD_2PI_MAX, resolve_modulo, convert_circular_scale>;
-using Rad2Pi = limited_int<int64_t, 0, MICRO_RAD_2PI_MAX, Rad2PiTraits>;
+ limited_int_traits<int64_t, MICRO_RAD_MIN, MICRO_RAD_2PI, resolve_modulo, convert_circular_scale>;
+using Rad2Pi = limited_int<int64_t, 0, MICRO_RAD_2PI, Rad2PiTraits>;
 
-using MilliMTraits = limited_int_traits<int64_t, -FACTOR_M_TO_MM, FACTOR_M_TO_MM, resolve_invalid, convert_scale>;
-using MilliM       = limited_int<int64_t, -FACTOR_M_TO_MM, FACTOR_M_TO_MM, MilliMTraits>;
+using MilliMTraits = limited_int_traits<int64_t, -FACTOR_METER_TO_MILLI_METER, FACTOR_METER_TO_MILLI_METER, resolve_invalid, convert_scale>;
+using MilliM       = limited_int<int64_t, -FACTOR_METER_TO_MILLI_METER, FACTOR_METER_TO_MILLI_METER, MilliMTraits>;
 
 using MicroMTraits =
- limited_int_traits<int64_t, -FACTOR_M_TO_MICRO_METER, FACTOR_M_TO_MICRO_METER, resolve_invalid, convert_scale>;
-using MicroM = limited_int<int64_t, -FACTOR_M_TO_MICRO_METER, FACTOR_M_TO_MICRO_METER, MicroMTraits>;
+ limited_int_traits<int64_t, -FACTOR_METER_TO_MICRO_METER, FACTOR_METER_TO_MICRO_METER, resolve_invalid, convert_scale>;
+using MicroM = limited_int<int64_t, -FACTOR_METER_TO_MICRO_METER, FACTOR_METER_TO_MICRO_METER, MicroMTraits>;
 
 using MilliM2MillionTraits =
  limited_int_traits<int64_t, TWO_MILLION_MM_MIN, TWO_MILLION_MM_MAX, resolve_invalid, convert_scale>;

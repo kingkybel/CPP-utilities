@@ -1,7 +1,7 @@
 /*
  * File Name:   brackets.h
  * Description: standard bracket types
- * 
+ *
  * Copyright (C) 2023 Dieter J Kybelksties
  *
  * This program is free software; you can redistribute it and/or
@@ -28,7 +28,9 @@
 #include <string>
 namespace util
 {
-class Brackets
+
+template<typename StringT_ = std::string>
+class BracketsT
 {
     public:
     /**
@@ -41,31 +43,31 @@ class Brackets
          */
         NONE,
         /**
-         * Curly brackets: "{", "}".
+         * Curly brackets: "{", ",", "}".
          */
         BRACE,
         /**
-         * Square brackets: "[", "]".
+         * Square brackets: "[", ",", "]".
          */
         BRACKET,
         /**
-         * Chevron brackets: "<", ">".
+         * Chevron brackets: "<", ",", ">".
          */
         CHEFRON,
         /**
-         * Round brackets: "(", ")".
+         * Round brackets: "(", ",", ")".
          */
         ROUND,
         /**
-         * Pipe brackets: "|", "|".
+         * Pipe brackets: "|", "|", "|".
          */
         PIPE,
         /**
-         * Slash brackets: "/","/".
+         * Slash brackets: "/", "/", "/".
          */
         SLASH,
         /**
-         * Backslash brackets: "\","\".
+         * Backslash brackets: "\", "\", "\".
          */
         BACKSLASH,
         /**
@@ -94,7 +96,7 @@ class Brackets
      * Default constructor.
      * @param type standard type of bracket. defaulted to NONE.
      */
-    Brackets(Type type = NONE)
+    BracketsT(Type type = NONE)
     : type_(type)
     , left_(type == NONE         ? "" :
             type == BRACE        ? "{" :
@@ -145,7 +147,7 @@ class Brackets
      * @param inner inner bracket string
      * @param right right bracket string
      */
-    Brackets(const std::string &left, const std::string &inner, const std::string &right)
+    BracketsT(const std::string &left, const std::string &inner, const std::string &right)
     : type_(USER)
     , left_(left)
     , inner_(inner)
@@ -153,8 +155,7 @@ class Brackets
     {
     }
 
-    Brackets(const Brackets &rhs)           = default;
-    Brackets& operator=(const Brackets &rhs) = default;
+    BracketsT(const BracketsT &rhs) = default;
 
     /**
      * Get the left (opening) bracket.
@@ -163,7 +164,7 @@ class Brackets
      *
      * @return the left bracket as string.
      */
-    const std::string &left(const std::string &customLeft = "", const std::string &customRight = "") const
+    const std::string left(const std::string &customLeft = "", const std::string &customRight = "") const
     {
         return (customLeft + left_ + customRight);
     }
@@ -175,7 +176,7 @@ class Brackets
      *
      * @return the left bracket as string.
      */
-    const std::string &inner(const std::string &customLeft = "", const std::string &customRight = "") const
+    const std::string inner(const std::string &customLeft = "", const std::string &customRight = "") const
     {
         return (customLeft + inner_ + customRight);
     }
@@ -187,18 +188,17 @@ class Brackets
      *
      * @return the right bracket as string.
      */
-    const std::string &right(const std::string &customLeft = "", const std::string &customRight = "") const
+    const std::string right(const std::string &customLeft = "", const std::string &customRight = "") const
     {
         return (customLeft + right_ + customRight);
     }
 
     private:
-    const Type         type_;
-    const std::string &left_;
-    const std::string &inner_;
-    const std::string &right_;
+    const Type        type_;
+    const std::string left_;
+    const std::string inner_;
+    const std::string right_;
 };
-};
-// namespace util
+};  // namespace util
 
 #endif  // NS_UTIL_BRACKETS_H_INCLUDED

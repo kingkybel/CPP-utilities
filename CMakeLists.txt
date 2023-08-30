@@ -33,11 +33,6 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 set(CMAKE_FIND_LIBRARY_PREFIXES lib)
 set(CMAKE_FIND_LIBRARY_SUFFIXES .a)
-find_library(DL_LIB NAMES libdl.a dl)
-find_library(SSL_LIB NAMES libssl.a ssl)
-find_library(PTHREAD_LIB NAMES libpthread.a pthread)
-find_package(Boost 1.83.0 REQUIRED)
-message("Boost_INCLUDE_DIRS '${Boost_INCLUDE_DIRS}'")
 
 # include(FetchContent)
 # FetchContent_Declare(
@@ -46,8 +41,22 @@ message("Boost_INCLUDE_DIRS '${Boost_INCLUDE_DIRS}'")
 #   URL https://github.com/google/googletest/archive/5376968f6948923e2411081fd9372e71a59d8e77.zip
 #)
 # For Windows: Prevent overriding the parent project's compiler/linker settings
-set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
+#set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
 #FetchContent_MakeAvailable(googletest)
+
+# include(FetchContent)
+# FetchContent_Declare(
+#   Boost
+#   GIT_REPOSITORY https://github.com/boostorg/boost.git
+#   GIT_TAG boost-1.83.0
+# )
+# FetchContent_MakeAvailable(Boost)
+
+find_library(DL_LIB NAMES libdl.a dl)
+find_library(SSL_LIB NAMES libssl.a ssl)
+find_library(PTHREAD_LIB NAMES libpthread.a pthread)
+find_package(Boost 1.83.0 REQUIRED)
+message("Boost_INCLUDE_DIRS '${Boost_INCLUDE_DIRS}'")
 
 project(DKUtil CXX)
 include_directories(
@@ -73,6 +82,7 @@ install(FILES
     "include/bit_converter.h"
     "include/brackets.h"
     "include/constants.h"
+    "container_convert.h"
     "include/csvutil.h"
     "include/dateutil.h"
     "include/degree_conversion.h"
@@ -88,6 +98,7 @@ install(FILES
     "include/matrix.h"
     "include/primes.h"
     "include/statutil.h"
+    "stream_decorate.h"
     "include/stringutil.h"
     "include/timer.h"
     "include/tinytea.h"
