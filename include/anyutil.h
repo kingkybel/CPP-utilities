@@ -63,12 +63,12 @@ template<typename T_>
 bool greaterEqualT(const Var &lhs, const Var &rhs);
 
 /**
- *  Error handling for any-cast for variants.
+ *  @brief Error handling for any-cast for variants.
  */
 struct cast_error : public std::logic_error
 {
     /**
-     * Construct given the incompatible type-names,
+     * @brief Construct given the incompatible type-names
      * @param from type to cast from
      * @param to type to cast to
      */
@@ -79,12 +79,12 @@ struct cast_error : public std::logic_error
 };
 
 /**
- *  Error handling for string-to-boolean conversion.
+ *  @brief Error handling for string-to-boolean conversion.
  */
 struct boolstr_error : public std::logic_error
 {
     /**
-     * Construct with the string that cannot be parsed into a boolean value.
+     * @brief Construct with the string that cannot be parsed into a boolean value.
      * @param boolstr the failing string
      */
     boolstr_error(const std::string &boolstr) : std::logic_error("Cannot parse '" + boolstr + "' into valid bool")
@@ -92,48 +92,78 @@ struct boolstr_error : public std::logic_error
     }
 };
 
-/** The only boolean type allowed in Var-variants. */
+/** @brief The only boolean type allowed in Var-variants. */
 using VAR_BOOL = bool;
 
-/** The only character type allowed in Var-variants. */
+/** @brief The only character type allowed in Var-variants. */
 using VAR_CHAR = char;
 
-/** The only integer type allowed in Var-variants. */
+/** @brief The only integer type allowed in Var-variants. */
 using VAR_INT = long long;
 
-/**The only unsigned integer type allowed in Var-variants. */
+/** @brief The only unsigned integer type allowed in Var-variants. */
 using VAR_UINT = unsigned long long;
 
-/** The only floating point type allowed in Var-variants. */
+/** @brief The only floating point type allowed in Var-variants. */
 using VAR_FLOAT = long double;
-/** The only date type allowed in Var-variants. */
+
+/** @brief The only date type allowed in Var-variants. */
 using VAR_DATE = boost::posix_time::ptime;
 
-/**The only character-string type allowed in Var-variants.*/
+/** @brief The only character-string type allowed in Var-variants.*/
 using VAR_STRING = std::string;
 
+/**
+ * @brief less-than operator for VAR_STRING
+ *
+ * @param lhs left-hand-side value
+ * @param rhs right-hand-side value
+ * @return true, if left hand side value is less right-hand-side value
+ */
 inline bool operator<(const VAR_STRING &lhs, const VAR_STRING &rhs)
 {
     return lhs.compare(rhs) < 0;
 }
 
+/**
+ * @brief less/equal operator for VAR_STRING
+ *
+ * @param lhs left-hand-side value
+ * @param rhs right-hand-side value
+ * @return true, if left hand side value is less/equal right-hand-side value
+ */
 inline bool operator<=(const VAR_STRING &lhs, const VAR_STRING &rhs)
 {
     return lhs.compare(rhs) <= 0;
 }
 
+/**
+ * @brief greater than operator for VAR_STRING
+ *
+ * @param lhs left-hand-side value
+ * @param rhs right-hand-side value
+ * @return true, if left hand side value is greater right-hand-side value
+ */
 inline bool operator>(const VAR_STRING &lhs, const VAR_STRING &rhs)
 {
     return lhs.compare(rhs) > 0;
 }
 
+/**
+ * @brief greater/equal than operator for VAR_STRING
+ *
+ * @param lhs left-hand-side value
+ * @param rhs right-hand-side value
+ * @return true, if left hand side value is greater/equal right-hand-side value
+ */
 inline bool operator>=(const VAR_STRING &lhs, const VAR_STRING &rhs)
 {
     return lhs.compare(rhs) >= 0;
 }
 
 /**
- * Helper to check that two floating point values are within tolerance of each other.
+ * @brief Helper to check that two floating point values are within tolerance of each other.
+ *
  * @param v1 value1
  * @param v2 value2
  * @param tolerance a permissible deviation between v1 and v2
@@ -145,7 +175,8 @@ inline bool withinTolerance(VAR_FLOAT v1, VAR_FLOAT v2, VAR_FLOAT tolerance = 1e
 }
 
 /**
- * Minimal (range) value for allowable Var-types.
+ * @brief Minimal (range) value for allowable Var-types.
+ *
  * @return the minimal value for the template type T_
  */
 template<typename T_>
@@ -155,7 +186,8 @@ inline T_ minVal()
 }
 
 /**
- * Maximal (range) value for allowable Var-types.
+ * @brief Maximal (range) value for allowable Var-types.
+ *
  * @return the maximal value for the template type T_
  */
 template<typename T_>
@@ -165,7 +197,8 @@ inline T_ maxVal()
 }
 
 /**
- * Minimal (range) value specialised for dates.
+ * @brief Minimal (range) value specialised for dates.
+ *
  * @return the minimal value for the date
  */
 template<>
@@ -175,7 +208,8 @@ inline VAR_DATE minVal<VAR_DATE>()
 }
 
 /**
- * Maximal (range) value specialised for dates.
+ * @brief Maximal (range) value specialised for dates.
+ *
  * @return the maximal value for the date
  */
 template<>
@@ -184,6 +218,9 @@ inline VAR_DATE maxVal<VAR_DATE>()
     return (VAR_DATE(boost::posix_time::max_date_time));
 }
 
+/**
+ * @brief enum for type of interval-borders
+ */
 enum class borderType : unsigned char
 {
     /** a non-infinite minimum specified */
@@ -208,17 +245,38 @@ enum class borderType : unsigned char
     open        = leftOpen | rightOpen
 };
 
+/**
+ * @brief bit-wise and-operator for borderType
+ *
+ * @param lhs left-hand-side value
+ * @param rhs right-hand-side value
+ * @return unsigned char bit-wise 'and' result
+ */
 inline unsigned char operator&(const borderType &lhs, const borderType &rhs)
 {
     return (lhs & lhs);
 }
 
+/**
+ * @brief bit-wise or-operator for borderType
+ *
+ * @param lhs left-hand-side value
+ * @param rhs right-hand-side value
+ * @return unsigned char bit-wise 'or' result
+ */
 inline unsigned char operator|(const borderType &lhs, const borderType &rhs)
 {
     return (lhs | lhs);
 }
 
-inline unsigned char operator<(const borderType &lhs, const borderType &rhs)
+/**
+ * @brief less operator for borderType
+ *
+ * @param lhs left-hand-side value
+ * @param rhs right-hand-side value
+ * @return bool true if lhs less than rhs, false otherwise
+ */
+inline bool operator<(const borderType &lhs, const borderType &rhs)
 {
     return (static_cast<unsigned char>(lhs) < static_cast<unsigned char>(lhs));
 }
@@ -237,8 +295,16 @@ constexpr borderType leftOpen    = borderType::leftOpen;
 constexpr borderType rightOpen   = borderType::rightOpen;
 constexpr borderType open        = borderType::open;
 
+/**
+ * @brief A class to formalize intervalls
+ */
 struct IntervalType
 {
+    /**
+     * @brief Set the borderType for the interval
+     *
+     * @param bt border type
+     */
     void setFlag(const borderType &bt)
     {
         if(bt == finiteMin || bt == finiteMax || bt == finite || bt == leftClosed || bt == rightClosed || bt == closed)
@@ -247,87 +313,174 @@ struct IntervalType
             traits_ &= static_cast<unsigned char>(bt);
     }
 
+    /**
+     * @brief Default construct a new Interval Type object
+     *
+     * @param l initializer list
+     */
     IntervalType(std::initializer_list<borderType> l = std::initializer_list<borderType>({closed, finite}))
     {
         for(auto it: l)
             setFlag(it);
     }
 
+    /**
+     * @brief reset the traits of the interval
+     */
     void resetTraits()
     {
         traits_ = 0x0;
     }
 
+    /**
+     * @brief Check whether left border is finite
+     *
+     * @return true, if so, false otherwise
+     */
     [[nodiscard]] bool isLeftFinite() const
     {
         return ((traits_ & static_cast<unsigned char>(finiteMin)) == static_cast<unsigned char>(finiteMin));
     }
 
+    /**
+     * @brief Check whether left border is infinite
+     *
+     * @return true, if so, false otherwise
+     */
     [[nodiscard]] bool isLeftInfinite() const
     {
         return (!isLeftFinite());
     }
 
+    /**
+     * @brief Check whether right border is finite
+     *
+     * @return true, if so, false otherwise
+     */
     [[nodiscard]] bool isRightFinite() const
     {
         return ((traits_ & static_cast<unsigned char>(finiteMax)) == static_cast<unsigned char>(finiteMax));
     }
 
+    /**
+     * @brief Check whether right border is infinite
+     *
+     * @return true, if so, false otherwise
+     */
     [[nodiscard]] bool isRightInfinite() const
     {
         return (!isRightFinite());
     }
 
+    /**
+     * @brief Check whether both borders are infinite
+     *
+     * @return true, if so, false otherwise
+     */
     [[nodiscard]] bool isInfinite() const
     {
         return (isLeftInfinite() && isRightInfinite());
     }
 
+    /**
+     * @brief Check whether both borders are finite
+     *
+     * @return true, if so, false otherwise
+     */
     [[nodiscard]] bool isFinite() const
     {
         return (!isInfinite());
     }
 
+    /**
+     * @brief Check whether left border is closed
+     *
+     * @return true, if so, false otherwise
+     */
     [[nodiscard]] bool isLeftClosed() const
     {
         return ((traits_ & static_cast<unsigned char>(leftClosed)) == static_cast<unsigned char>(leftClosed));
     }
 
+    /**
+     * @brief Check whether right border is closed
+     *
+     * @return true, if so, false otherwise
+     */
     [[nodiscard]] bool isRightClosed() const
     {
         return ((traits_ & static_cast<unsigned char>(rightClosed)) == static_cast<unsigned char>(rightClosed));
     }
 
+    /**
+     * @brief Check whether both borders are closed
+     *
+     * @return true, if so, false otherwise
+     */
     [[nodiscard]] bool isClosed() const
     {
         return (isLeftClosed() && isRightClosed());
     }
 
+    /**
+     * @brief Check whether left border is open
+     *
+     * @return true, if so, false otherwise
+     */
     [[nodiscard]] bool isLeftOpen() const
     {
         return (!isLeftClosed());
     }
 
+    /**
+     * @brief Check whether right border is open
+     *
+     * @return true, if so, false otherwise
+     */
     [[nodiscard]] bool isRightOpen() const
     {
         return (!isRightClosed());
     }
 
+    /**
+     * @brief Check whether both borders are open
+     *
+     * @return true, if so, false otherwise
+     */
     [[nodiscard]] bool isOpen() const
     {
         return (!isClosed());
     }
 
+    /**
+     * @brief Retrieve the traits of this interval
+     *
+     * @return unsigned char flags as unsigned char
+     */
     [[nodiscard]] unsigned char traits() const
     {
         return (traits_);
     }
 
+    /**
+     * @brief Check whether 2 intervals are equal
+     *
+     * @param lhs left-hand-side interval
+     * @param rhs  right-hand-side interval
+     * @return true, if left interval equals right interval, false otherwise
+     */
     friend bool operator==(const IntervalType &lhs, const IntervalType &rhs)
     {
         return (lhs.traits_ == rhs.traits_);
     }
 
+    /**
+     * @brief Check whether left interval is less-than right interval
+     *
+     * @param lhs left-hand-side interval
+     * @param rhs  right-hand-side interval
+     * @return true, if left interval is less right interval, false otherwise
+     */
     friend bool operator<(const IntervalType &lhs, const IntervalType &rhs)
     {
         return (lhs.traits_ < rhs.traits_);
@@ -338,13 +491,13 @@ struct IntervalType
 };
 
 /**
- *  Numeric/date intervals than can be half- or fully- open or closed.
+ *  @brief Numeric/date intervals than can be half- or fully- open or closed.
  */
 template<typename T_>
 struct Interval : public IntervalType
 {
     /**
-     * Default construct a left- or right- finite interval interval.
+     * @brief Default construct a left- or right- finite interval interval.
      * The tags finiteMin and infiniteMax in this context mean the same: the
      * interval is infinite on the right side and finite on the left. Conversely
      * the tags infiniteMin and  finiteMax mean that the
@@ -459,7 +612,7 @@ struct Interval : public IntervalType
     }
 
     /**
-     * Construct a closed interval [v1,v2].
+     * @brief Construct a closed interval [v1,v2].
      * @param v1 one of the interval borders
      * @param v2 the other one of the interval borders
      * @param inclusivity can be used to include/exclude left or right borders
@@ -473,20 +626,30 @@ struct Interval : public IntervalType
     {
     }
 
+    /**
+     * @brief Get the left of the interval
+     *
+     * @return T_ the lower bound
+     */
     [[nodiscard]] T_ left() const
     {
         return (Interval<T_>::isLeftInfinite() ? minVal<T_>() : low_);
     }
 
+    /**
+     * @brief Get the right of the interval
+     *
+     * @return T_  the upper bound
+     */
     [[nodiscard]] T_ right() const
     {
         return (Interval<T_>::isRightInfinite() ? maxVal<T_>() : high_);
     }
 
     /**
-     * Check whether the interval contains value v.
+     * @brief Check whether the interval contains value v.
      * @param v value to check
-     * @return true if v is contained in the interval, false otherwise
+     * @return true, if v is contained in the interval, false otherwise
      */
     [[nodiscard]] bool contains(const T_ &v) const
     {
@@ -498,7 +661,7 @@ struct Interval : public IntervalType
     }
 
     /**
-     * Check whether the interval is wholly included in this interval.
+     * @brief Check whether the interval is wholly included in this interval.
      * @param rhs the interval to check
      *
      * @return true if the given interval is fully covered in this interval,
@@ -509,6 +672,11 @@ struct Interval : public IntervalType
         return (rhs.contains(low_) && rhs.contains(high_));
     }
 
+    /**
+     * @brief a verbose string representing the interval
+     *
+     * @return std::string the verbose string
+     */
     [[nodiscard]] std::string verbosetoString() const
     {
         std::string reval = "";
@@ -555,7 +723,7 @@ using VAR_FLOAT_INTERVAL = Interval<VAR_FLOAT>;
 using VAR_DATE_INTERVAL = Interval<VAR_DATE>;
 
 /**
- *  Restricted type variant.
+ *  @brief Restricted type variant.
  *  Only the longest integer and floating point types, dates and strings
  *  and intervals are allowed.
  */
@@ -591,7 +759,10 @@ class Var
     Var(const VAR_DATE &v);   ///< Construct date variant.
 
     /**
-     *  Construct an T_-type interval variant.
+     * @brief Construct a new T_-type interval Var object
+     *
+     * @tparam T_ underlying value type of the interval
+     * @param itvl an interval
      */
     template<typename T_>
     Var(const Interval<T_> &itvl) : value_(itvl)
@@ -609,10 +780,10 @@ class Var
 
     /**
      * @brief Check whether the value has the native type T_.
-     * 
+     *
      * @tparam T_ template type
      * @param v value
-     * @return true, if the typeid of the value matches the typeid of the T_, false otherwise 
+     * @return true, if the typeid of the value matches the typeid of the T_, false otherwise
      */
     template<typename T_>
     friend bool isA(const Var &v)
@@ -621,7 +792,11 @@ class Var
     }
 
     /**
-     *  Get the value as the native type.
+     * @brief Retrieve the contained value
+     *
+     * @tparam T_ the type of the contained value
+     * @return T_ the contained value, if possible
+     * @throw if the underlying value cannot be cast to T_
      */
     template<typename T_>
     [[nodiscard]] T_ get() const
@@ -636,25 +811,21 @@ class Var
 
     /**
      * @brief Check whether two vars have the same native type.
-     * 
+     *
      * @tparam T_ a native type
      * @param v1 first value
      * @param v2 second value
      * @return true, is v1 and v2 have the same type T_, false otherwise
-    */
+     */
     template<typename T_>
     friend bool sameType(const Var &v1, const Var &v2)
     {
-         return (v1.type() == v2.type() && v1.type() == typeid(T_));
+        return (v1.type() == v2.type() && v1.type() == typeid(T_));
     }
 
     /**
-     * Check whether two vars have the same native type.
-     */
-
-    /**
      * @brief Check whether two vars have the same native type.
-     * 
+     *
      * @param v1 first value
      * @param v2 second value
      * @return true, is v1 and v2 have the same type, false otherwise
@@ -665,7 +836,7 @@ class Var
     }
 
     /**
-     * Template equalT is needed to ensure that Var's can be put in
+     * @brief Template equalT is needed to ensure that Var's can be put in
      * associative containers.
      * The other comparison functions only will be used to transcend their
      * native type's operators.
@@ -682,14 +853,14 @@ class Var
         {
             return (lhs.get<T_>() == rhs.get<T_>());
         }
-        catch(const util::cast_error& e)
+        catch(const util::cast_error &e)
         {
             return false;
         }
     }
 
     /**
-     * Template lessT is needed to ensure that Var's can be put in
+     * @brief Template lessT is needed to ensure that Var's can be put in
      * associative containers.
      * The other comparison functions only will be used to transcend their
      * native type's operators.
@@ -707,14 +878,14 @@ class Var
         {
             return (lhs.get<T_>() < rhs.get<T_>());
         }
-        catch(const util::cast_error& e)
+        catch(const util::cast_error &e)
         {
             return false;
         }
     }
 
     /**
-     * Helper template for definition of global operator &le;.
+     * @brief Helper template for definition of global operator &le;.
      *
      * @param lhs left-hand-side of the comparison
      * @param rhs right-hand-side of the comparison
@@ -728,14 +899,14 @@ class Var
         {
             return (lhs.get<T_>() <= rhs.get<T_>());
         }
-        catch(const util::cast_error& e)
+        catch(const util::cast_error &e)
         {
             return false;
         }
     }
-    
+
     /**
-     * Helper template for definition of global operator &gt;.
+     * @brief Helper template for definition of global operator &gt;.
      *
      * @param lhs left-hand-side of the comparison
      * @param rhs right-hand-side of the comparison
@@ -749,14 +920,14 @@ class Var
         {
             return (lhs.get<T_>() > rhs.get<T_>());
         }
-        catch(const util::cast_error& e)
+        catch(const util::cast_error &e)
         {
             return false;
         }
-   }
+    }
 
     /**
-     * Helper template for definition of global operator &ge;.
+     * @brief Helper template for definition of global operator &ge;.
      *
      * @param lhs left-hand-side of the comparison
      * @param rhs right-hand-side of the comparison
@@ -770,14 +941,14 @@ class Var
         {
             return (lhs.get<T_>() >= rhs.get<T_>());
         }
-        catch(const util::cast_error& e)
+        catch(const util::cast_error &e)
         {
             return false;
         }
     }
 
     /**
-     * Helper template for definition of global containment check.
+     * @brief Helper template for definition of global containment check.
      *
      * @param lhs left-hand-side of the comparison
      * @param rhs right-hand-side of the comparison
@@ -796,7 +967,7 @@ class Var
     }
 
     /**
-     * Check whether an Interval - Variant contains a value.
+     * @brief Check whether an Interval - Variant contains a value.
      * Non-Interval variants are treated as Intervals containing only one value.
      *
      * @param val value to check
@@ -806,7 +977,7 @@ class Var
     [[nodiscard]] bool contains(const Var &val) const;
 
     /**
-     * Variant equality.
+     * @brief Variant equality.
      * Transcends to native type operator.
      *
      * @param lhs left-hand-side of the comparison
@@ -817,7 +988,7 @@ class Var
     friend bool operator==(const Var &lhs, const Var &rhs);
 
     /**
-     * Variant less than.
+     * @brief Variant less than.
      * Transcends to native type operator.
      *
      * @param lhs left-hand-side of the comparison
@@ -828,7 +999,7 @@ class Var
     friend bool operator<(const Var &lhs, const Var &rhs);
 
     /**
-     * Variant less/equality.
+     * @brief Variant less/equality.
      * Transcends to native type operator.
      *
      * @param lhs left-hand-side of the comparison
@@ -839,7 +1010,7 @@ class Var
     friend bool operator<=(const Var &lhs, const Var &rhs);
 
     /**
-     * Variant greater.
+     * @brief Variant greater.
      * Transcends to native type operator.
      *
      * @param lhs left-hand-side of the comparison
@@ -850,7 +1021,7 @@ class Var
     friend bool operator>(const Var &lhs, const Var &rhs);
 
     /**
-     * Variant greater/equality.
+     * @brief Variant greater/equality.
      * Transcends to native type operator.
      *
      * @param lhs left-hand-side of the comparison
@@ -860,7 +1031,7 @@ class Var
     friend bool operator>=(const Var &lhs, const Var &rhs);
 
     /**
-     * Out-stream operator for variant stream modifiers.
+     * @brief Out-stream operator for variant stream modifiers.
      *
      * @param os the ostream for output
      * @param sm the modifier
@@ -870,7 +1041,7 @@ class Var
     friend std::ostream &operator<<(std::ostream &os, Var::StreamMode sm);
 
     /**
-     * Out-stream operator for variants.
+     * @brief Out-stream operator for variants.
      *
      * @param os the ostream for output
      * @param v the variant to output
@@ -898,7 +1069,7 @@ class Var
     }
 
     /**
-     * Out-stream operator for intervals.
+     * @brief Out-stream operator for intervals.
      *
      * @param os the ostream for output
      * @param itvl the interval to output
@@ -914,14 +1085,14 @@ class Var
 };
 
 /**
- * Abstract base class for (match-)operations.
+ * @brief Abstract base class for (match-)operations.
  */
 struct Operation
 {
     virtual ~Operation() = default;
 
     /**
-     * Check whether the left hand Var matches the right hand side.
+     * @brief Check whether the left hand Var matches the right hand side.
      * This operation is not symmetric:
      * <ul>
      * <li>operator is taken from right-hand side</li>
@@ -936,7 +1107,7 @@ struct Operation
     [[nodiscard]] virtual bool leftMatchesRight(const Var &lhs, const Var &rhs) const = 0;
 
     /**
-     * Provide a description of the operation for stream-operators.
+     * @brief Provide a description of the operation for stream-operators.
      *
      * @param v the variant to get a description for
      *
@@ -946,7 +1117,7 @@ struct Operation
 };
 
 /**
- *  Operation to check whether two Variant are equal.
+ * @brief Operation to check whether two Variant are equal.
  */
 struct Equals : public Operation
 {
@@ -957,7 +1128,7 @@ struct Equals : public Operation
 };
 
 /**
- *  Operation to check whether one Variant is less than another.
+ * @brief Operation to check whether one Variant is less than another.
  */
 struct Less : public Operation
 {
@@ -968,7 +1139,7 @@ struct Less : public Operation
 };
 
 /**
- *  Operation to check whether one Variant is less-equal than another.
+ * @brief Operation to check whether one Variant is less-equal than another.
  */
 struct LessEqual : public Operation
 {
@@ -979,7 +1150,7 @@ struct LessEqual : public Operation
 };
 
 /**
- *  Operation to check whether one Variant is greater than another.
+ * @brief Operation to check whether one Variant is greater than another.
  */
 struct Greater : public Operation
 {
@@ -990,7 +1161,7 @@ struct Greater : public Operation
 };
 
 /**
- *  Operation to check whether one Variant is greater-equal than another.
+ * @brief Operation to check whether one Variant is greater-equal than another.
  */
 struct GreaterEqual : public Operation
 {
@@ -1001,7 +1172,7 @@ struct GreaterEqual : public Operation
 };
 
 /**
- *  Operation to check whether one Variant contained in an interval-typed Variant.
+ * @brief Operation to check whether one Variant contained in an interval-typed Variant.
  */
 struct IsElementOf : public Operation
 {
@@ -1012,7 +1183,7 @@ struct IsElementOf : public Operation
 };
 
 /**
- *  Empty Operation that always returns false (used as placeholder for plumbing).
+ * @brief Empty Operation that always returns false (used as placeholder for plumbing).
  */
 struct PlaceHolderOp : public Operation
 {
@@ -1023,7 +1194,7 @@ struct PlaceHolderOp : public Operation
 };
 
 /**
- * Less than operator for intervals in order to enable Intervals as elements
+ * @brief Less than operator for intervals in order to enable Intervals as elements
  * of associative containers.
  *
  * @param lhs left-hand-side of comparison
@@ -1046,7 +1217,7 @@ inline bool operator<(const Interval<T1_> &lhs, const Interval<T2_> &rhs)
 }
 
 /**
- * Equality operator for intervals in order to enable Intervals as elements
+ * @brief Equality operator for intervals in order to enable Intervals as elements
  * of associative containers.
  *
  * @param lhs left-hand-side of comparison
@@ -1062,7 +1233,7 @@ bool operator==(const Interval<T1_> &lhs, const Interval<T2_> &rhs)
 }
 
 /**
- * Inequality operator for intervals in order to enable Intervals as elements
+ * @brief Inequality operator for intervals in order to enable Intervals as elements
  * of associative containers.
  *
  * @param lhs left-hand-side of comparison
@@ -1077,7 +1248,7 @@ bool operator!=(const Interval<T1_> &lhs, const Interval<T2_> &rhs)
 }
 
 /**
- * Generic Out-stream - &lt;&lt; operator for Interval's.
+ * @brief Generic Out-stream - &lt;&lt; operator for Interval's.
  *
  * @param os the ostream for output
  * @param itvl the interval to output
@@ -1125,7 +1296,7 @@ std::ostream &operator<<(std::ostream &os, const Interval<T_> &itvl)
 }
 
 /**
- * Scan a string and convert to the template-type.
+ * @brief Scan a string and convert to the template-type.
  *
  * @param strVal the string-representation
  *
@@ -1144,7 +1315,7 @@ inline T_ scanAs(const VAR_STRING &strVal)
 }
 
 /**
- * Scan a string and convert to the template-type specialised for VAR_BOOL.
+ * @brief Scan a string and convert to the template-type specialised for VAR_BOOL.
  *
  * @param strVal the string-representation
  *
@@ -1163,7 +1334,7 @@ inline VAR_BOOL scanAs<VAR_BOOL>(const VAR_STRING &strVal)
 }
 
 /**
- * Scan a string and convert to the template-type specialised for string.
+ * @brief Scan a string and convert to the template-type specialised for string.
  *
  * @param strVal the string-representation
  *
@@ -1176,7 +1347,7 @@ inline VAR_STRING scanAs<VAR_STRING>(const VAR_STRING &strVal)
 }
 
 /**
- * Scan a string and convert to the template-type specialised for date.
+ * @brief Scan a string and convert to the template-type specialised for date.
  *
  * @param strVal the string-representation
  *
@@ -1189,7 +1360,7 @@ inline VAR_DATE scanAs<VAR_DATE>(const VAR_STRING &strVal)
 }
 
 /**
- * Create a Var from any type using the most appropriate constructor.
+ * @brief Create a Var from any type using the most appropriate constructor.
  *
  * @param val the POD value
  *
@@ -1202,7 +1373,7 @@ Var asVar(const T_ val)
 }
 
 /**
- * Create a Var from a string using the template type constructor.
+ * @brief Create a Var from a string using the template type constructor.
  * @param strVal the string-representation
  *
  * @return the constructed Var
@@ -1214,7 +1385,7 @@ inline Var scanAsVar(const VAR_STRING &strVal)
 }
 
 /**
- * Convert a Var to its native (underlying) type if possible.
+ * @brief Convert a Var to its native (underlying) type if possible.
  *
  * @param val the Var value
  *
@@ -1229,7 +1400,6 @@ T_ toNative(const Var &val)
     return (val.get<T_>());
 }
 
-};
-// namespace util
+};  // namespace util
 
 #endif  // NS_UTIL_ANYUTIL_H_INCLUDED

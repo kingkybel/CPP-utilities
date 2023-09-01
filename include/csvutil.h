@@ -44,7 +44,7 @@
 namespace util
 {
 /**
- * Error handling for CSV index errors.
+ * @brief Error handling for CSV index errors.
  */
 struct index_error : public std::logic_error
 {
@@ -66,7 +66,7 @@ struct index_error : public std::logic_error
 };
 
 /**
- * Error handling for column-type mismatches in CSVs.
+ * @brief Error handling for column-type mismatches in CSVs.
  */
 struct column_type_error : public std::logic_error
 {
@@ -77,7 +77,7 @@ struct column_type_error : public std::logic_error
 };
 
 /**
- * Error handling for errors when opening a CSV-file.
+ * @brief Error handling for errors when opening a CSV-file.
  */
 struct fileopen_error : public std::logic_error
 {
@@ -97,7 +97,7 @@ extern const std::string CSV_COLUMN_TYPE_GAUSSIAN;
 extern const std::string CSV_COLUMN_TYPE_EXPONENTIAL;
 
 /**
- * Read/write comma-separated files and hold an in-homogenous table
+ * @brief Read/write comma-separated files and hold an in-homogenous table
  * with typed columns.
  * Types can be
  * <table>
@@ -128,7 +128,7 @@ class CSVAnalyzer
     using COLUMN_RANGE     = std::set<Var>;
 
     /**
-     * Output configuration for CSVs
+     * @brief Output configuration for CSVs
      */
     enum verbosityType : char
     {
@@ -140,7 +140,7 @@ class CSVAnalyzer
     };
 
     /**
-     * Configuration for in-stream operator
+     * @brief Configuration for in-stream operator
      */
     enum rowInputType : char
     {
@@ -153,7 +153,7 @@ class CSVAnalyzer
     };
 
     /**
-     * Read-file configuration
+     * @brief Read-file configuration
      */
     enum fileFormatType : char
     {
@@ -165,15 +165,21 @@ class CSVAnalyzer
     };
 
     /**
-     * Default construct the comma separated header-string, type-string
+     * @brief Default construct the comma separated header-string, type-string
      * and out-separator.
+     *
+     * @param headerStr string with comma separated headers
+     * @param typeStr string with comma-separated types
+     * @param outSeparator separator for output
      */
     explicit CSVAnalyzer(const std::string &headerStr    = "",
                          const std::string &typeStr      = "",
                          std::string        outSeparator = ", ");
 
     /**
-     * Reset the CSV.
+     * @brief Reset the CSV.
+     *
+     * @return true always
      */
     bool clear()
     {
@@ -185,26 +191,46 @@ class CSVAnalyzer
     }
 
     /**
-     * Check whether there are any data-rows other than header and type-row.
+     * @brief Check whether there are any data-rows other than header and type-row.
+     *
+     * @return true, if csv is empty, false otherwise
      */
     bool empty() const;
 
     /**
-     * Read csv from file-system.
+     * @brief Read csv from file-system.
+     *
+     * @param filename file from which to read the csv
+     * @param inDelimiter delimiter of fields
+     * @return true, if successful, false otherwise
      */
     bool read(const std::string &filename    = "",
               const std::string &inDelimiter = ",",
               fileFormatType                 = fileFormatType::defaultFileFormat);
 
     /**
-     * Write to file-system.
+     *
+     */
+
+    /**
+     * @brief Write to file-system.
+     *
+     * @param filename file to which to write the csv
+     * @param outDelimiter delimiter of fields
+     * @param fileFormat format of the file
+     * @return true, if successful, false otherwise
      */
     bool write(const std::string &filename     = "",
                const std::string &outDelimiter = ",",
-               fileFormatType     tp           = fileFormatType::defaultFileFormat);
+               fileFormatType     fileFormat   = fileFormatType::defaultFileFormat);
 
     /**
-     * Split a delimited line-string into string tokens.
+     * @brief plit a delimited line-string into string tokens.
+     *
+     * @param str original string
+     * @param result string-vector
+     * @param inSeparator delimiter of fields
+     * @return true, if successful, false otherwise
      */
     static bool
      splitLine(const std::string &str, std::vector<std::string> &result, const std::string &inSeparator = ",");
@@ -212,41 +238,73 @@ class CSVAnalyzer
     /**
      * Use a delimited string to populate the headers of the csv.
      */
+
+    /**
+     * @brief Use a delimited string to populate the headers of the csv.
+     *
+     * @param headerString comma-separated headers
+     * @param replaceHeaders if set to false, then append the headers, otherwise reset the headers with the given ones
+     * @param inSeparator delimiter of fields
+     * @return true, if successful, false otherwise
+     */
     bool setHeaders(const std::string &headerString, bool replaceHeaders = true, const std::string &inSeparator = ",");
 
     /**
-     * Use a delimited string to configure the column-types of the csv.
+     * @brief Use a delimited string to configure the column-types of the csv.
+     *
+     * @param typeString comma-separated type
+     * @param inSeparator delimiter of fields
+     * @return true, if successful, false otherwise
      */
     bool setTypes(const std::string &typeString, const std::string &inSeparator = ",");
 
     /**
-     * Use a delimited string set a row of values in the csv.
+     * @brief Use a delimited string set a row of values in the csv.
+     *
+     * @param valueString comma-separated line of values
+     * @param preserveRows if set to true, then append a new line, otherwise reset the rows with the given ones
+     * @param inSeparator delimiter of fields
+     * @return true, if successful, false otherwise
      */
     bool setValues(const std::string &valueString, bool preserveRows = true, const std::string &inSeparator = ",");
 
     /**
-     * Resolves an allowed type-alias in the correct type.
+     * @brief Resolves an allowed type-alias in the correct type.
+     *
+     * @param type string to interpret
+     * @return true, if successful, false otherwise
      */
     static bool resolveTypeAlias(std::string &type);
 
     /**
-     * Guess the type of a value from the string representation.
+     * @brief Guess the type of a value from the string representation.
+     *
+     * @param stringVal the string to interpret
+     * @return std::string a type string
      */
     static std::string guessType(const std::string &stringVal);
 
     /**
-     * Set header-strings to unique default-headers per column.
+     * @brief Create a Default Headers for the csv
+     *
+     * @param values a vector of header-strings
+     * @return true, if successful, false otherwise
      */
     bool createDefaultHeader(const std::vector<std::string> &values);
 
     /**
-     * Use a vector of value strings to guess the types of corresponding
+     * @brief Use a vector of value strings to guess the types of corresponding
      * columns.
+     *
+     * @param values a vector of value-strings
+     * @return true, if successful, false otherwise
      */
     bool createTypesFromValues(const std::vector<std::string> &values);
 
     /**
-     * Retrieve the configured separator string used for output.
+     * @brief Set the configured separator string used for output.
+     *
+     * @param outSeparator the ne separator
      */
     void setOutSeparator(const std::string &outSeparator)
     {
@@ -254,50 +312,81 @@ class CSVAnalyzer
     }
 
     /**
-     * Configure how the csv will be in-streamed.
+     * @brief Configure how the csv will be in-streamed.
+     *
+     * @param rowType header/type/value
+     * @return CSVAnalyzer& self
      */
     CSVAnalyzer &operator<<(rowInputType rowType);
 
     /**
-     * In-stream a string as -header/type/values.
+     * @brief In-stream a string as -header/type/values.
+     *
+     * @param row a row to add
+     * @return CSVAnalyzer& self
      */
     CSVAnalyzer &operator<<(const std::string &row);
 
     /**
-     * Check whether there is a header present in the csv.
+     * @brief Check whether there is a header present in the csv.
+     *
+     * @return true, if so, false otherwise
      */
     bool headerPresent() const;
 
     /**
-     * Check whether there is a column-types are all defined.
+     * @brief Check whether there is a column-types are all defined.
+     *
+     * @return true, if so, false otherwise
      */
     bool typesPresent() const;
 
     /**
-     * Retrieve the number of columns of the csv.
+     * @brief Retrieve the number of columns of the csv.
+     *
+     * @return size_t number of columns
      */
     size_t columns() const;
 
     /**
-     * Retrieve the number of *data* lines.
+     * @brief Retrieve the number of *data* lines.
+     *
+     * @return size_t number of lines (excluding header and type lines)
      */
     size_t lines() const;
 
     /**
-     * Retrieve the header string at column col.
+     * @brief Retrieve the header string at column col.
+     *
+     * @param col column index
+     * @return std::string the header
      */
     std::string header(size_t col) const;
 
     /**
-     * Retrieve the type of column col.
+     * @brief Retrieve the type of column col.
+     *
+     * @param col column index
+     * @return std::string the type
      */
     std::string type(size_t col) const;
 
     /**
-     * Append a column with header, type and values to the csv.
+     * @brief Append a column with header, type and default-values to the csv.
+     *
+     * @param header header string
+     * @param tp type-string
+     * @param defaultValue default value
      */
     void appendColumn(const std::string &header, const std::string &tp, const Var &defaultValue = Var());
 
+    /**
+     * @brief Append a column with header, type and values to the csv.
+     *
+     * @tparam T_ type of the values
+     * @param header header string
+     * @param values vector of values
+     */
     template<typename T_>
     void appendColumn(const std::string &header, const std::vector<T_> &values)
     {
@@ -318,7 +407,12 @@ class CSVAnalyzer
     }
 
     /**
-     * Get the value at position [column, line] as template type if possible.
+     * @brief Get the value at position [column, line] as template type if possible.
+     *
+     * @tparam T_ type of the value
+     * @param column column of the
+     * @param line line of the value
+     * @return T_ the value
      */
     template<typename T_>
     T_ get(size_t column, size_t line) const
@@ -337,7 +431,12 @@ class CSVAnalyzer
     }
 
     /**
-     * Get the value at position [header, line] as template type if possible.
+     * @brief Get the value at position [header, line] as template type if possible.
+     *
+     * @tparam T_ type of the value
+     * @param header column of the value identified by the header-string
+     * @param line line of the value
+     * @return T_ the value
      */
     template<typename T_>
     T_ get(const std::string &header, size_t line) const
@@ -355,7 +454,11 @@ class CSVAnalyzer
     }
 
     /**
-     * Get the value at position [column, line] as boolean if possible.
+     * @brief Get the value at position [column, line] as boolean if possible.
+     *
+     * @param column column of the value
+     * @param line line of the value
+     * @return VAR_BOOL the value as bool
      */
     inline VAR_BOOL getBool(size_t column, size_t line) const
     {
@@ -363,7 +466,11 @@ class CSVAnalyzer
     }
 
     /**
-     * Get the value at position [header, line] as boolean if possible.
+     * @brief Get the value at position [column, line] as boolean if possible.
+     *
+     * @param header column of the value identified by the header-string
+     * @param line line of the value
+     * @return VAR_BOOL the value as bool
      */
     inline VAR_BOOL getBool(const std::string &header, size_t line) const
     {
@@ -371,7 +478,11 @@ class CSVAnalyzer
     }
 
     /**
-     * Get the value at position [column, line] as character if possible.
+     * @brief Get the value at position [column, line] as character if possible.
+     *
+     * @param column column of the value
+     * @param line line of the value
+     * @return VAR_CHAR the value as char
      */
     inline VAR_CHAR getChar(size_t column, size_t line) const
     {
@@ -379,7 +490,11 @@ class CSVAnalyzer
     }
 
     /**
-     * Get the value at position [header, line] as character if possible.
+     * @brief Get the value at position [header, line] as character if possible.
+     *
+     * @param header column of the value identified by the header-string
+     * @param line line of the value
+     * @return VAR_CHAR the value as char
      */
     inline VAR_CHAR getChar(const std::string &header, size_t line) const
     {
@@ -387,7 +502,11 @@ class CSVAnalyzer
     }
 
     /**
-     * Get the value at position [column, line] as integer if possible.
+     * @brief Get the value at position [column, line] as integer if possible.
+     *
+     * @param column column of the value
+     * @param line line of the value
+     * @return VAR_INT the value as int
      */
     inline VAR_INT getInt(size_t column, size_t line) const
     {
@@ -395,7 +514,11 @@ class CSVAnalyzer
     }
 
     /**
-     * Get the value at position [header, line] as integer if possible.
+     * @brief Get the value at position [header, line] as integer if possible.
+     *
+     * @param header column of the value identified by the header-string
+     * @param line line of the value
+     * @return VAR_INT the value as int
      */
     inline VAR_INT getInt(const std::string &header, size_t line) const
     {
@@ -403,7 +526,11 @@ class CSVAnalyzer
     }
 
     /**
-     * Get the value at position [column, line] as unsigned integer if possible.
+     * @brief Get the value at position [column, line] as unsigned integer if possible.
+     *
+     * @param column column of the value
+     * @param line line of the value
+     * @return VAR_UINT the value as unsined int
      */
     inline VAR_UINT getUint(size_t column, size_t line) const
     {
@@ -411,7 +538,11 @@ class CSVAnalyzer
     }
 
     /**
-     * Get the value at position [header, line] as unsigned integer if possible.
+     * @brief Get the value at position [header, line] as unsigned integer if possible.
+     *
+     * @param header column of the value identified by the header-string
+     * @param line line of the value
+     * @return VAR_UINT the value as unsined int
      */
     inline VAR_UINT getUint(const std::string &header, size_t line) const
     {
@@ -419,7 +550,11 @@ class CSVAnalyzer
     }
 
     /**
-     * Get the value at position [column, line] as real if possible.
+     * @brief Get the value at position [column, line] as real if possible.
+     *
+     * @param column column of the value
+     * @param line line of the value
+     * @return VAR_FLOAT the value as floating point
      */
     inline VAR_FLOAT getFloat(size_t column, size_t line) const
     {
@@ -427,7 +562,11 @@ class CSVAnalyzer
     }
 
     /**
-     * Get the value at position [header, line] as real if possible.
+     * @brief Get the value at position [header, line] as real if possible.
+     *
+     * @param header column of the value identified by the header-string
+     * @param line line of the value
+     * @return VAR_FLOAT the value as floating point
      */
     inline VAR_FLOAT getFloat(const std::string &header, size_t line) const
     {
@@ -435,7 +574,11 @@ class CSVAnalyzer
     }
 
     /**
-     * Get the value at position [column, line] as date if possible.
+     * @brief Get the value at position [column, line] as date if possible.
+     *
+     * @param column column of the value
+     * @param line line of the value
+     * @return VAR_DATE the value as date
      */
     inline VAR_DATE getDate(size_t column, size_t line) const
     {
@@ -443,7 +586,11 @@ class CSVAnalyzer
     }
 
     /**
-     * Get the value at position [header, line] as date if possible.
+     * @brief Get the value at position [header, line] as date if possible.
+     *
+     * @param header column of the value identified by the header-string
+     * @param line line of the value
+     * @return VAR_DATE the value as date
      */
     inline VAR_DATE getDate(const std::string &header, size_t line) const
     {
@@ -451,7 +598,11 @@ class CSVAnalyzer
     }
 
     /**
-     * Get the value at position [column, line] as string if possible.
+     * @brief Get the value at position [column, line] as string if possible.
+     *
+     * @param column column of the value
+     * @param line line of the value
+     * @return VAR_STRING the value as string
      */
     inline VAR_STRING getString(size_t column, size_t line) const
     {
@@ -459,7 +610,11 @@ class CSVAnalyzer
     }
 
     /**
-     * Get the value at position [header, line] as string if possible.
+     * @brief Get the value at position [header, line] as string if possible.
+     *
+     * @param header column of the value identified by the header-string
+     * @param line line of the value
+     * @return VAR_STRING the value as string
      */
     inline VAR_STRING getString(const std::string &header, size_t line) const
     {
@@ -467,94 +622,157 @@ class CSVAnalyzer
     }
 
     /**
-     * Get the value at position [column, line] as variant if possible.
+     * @brief Get the value at position [column, line] as variant if possible.
+     *
+     * @param column column of the value
+     * @param line line of the value
+     * @return Var the value as variant
      */
     Var getVar(size_t column, size_t line) const;
 
     /**
      * Get the value at position [header, line] as variant if possible.
      */
+
+    /**
+     * @brief  Get the value at position [header, line] as variant if possible.
+     *
+     * @param header column of the value identified by the header-string
+     * @param line line of the value
+     * @return Var the value as variant
+     */
     Var getVar(const std::string &header, size_t line) const;
 
     /**
-     * Get all data-values of column as float-values in a vector if possible.
+     * @brief Get all data-values of column as float-values in a vector if possible.
+     *
+     * @param column column to get
+     * @return std::vector<VAR_FLOAT>
      */
     std::vector<VAR_FLOAT> getFloatVector(size_t column) const;
 
     /**
-     * Get all data-values of column as float-values in a vector if possible.
+     * @brief Get all data-values of column as float-values in a vector if possible.
+     *
+     * @param header column to get identified by the header-string
+     * @return std::vector<VAR_FLOAT> all floats of the column
      */
     std::vector<VAR_FLOAT> getFloatVector(const std::string &header) const;
 
     /**
-     * Retrieve the range of values in column.
+     * @brief Retrieve the range of values in column.
+     *
+     * @param column column to extract values from
+     * @return COLUMN_RANGE a set of values occurrung in the column
      */
     COLUMN_RANGE getRange(size_t column) const;
 
     /**
-     * Begin-iterator for column.
+     * @brief Begin-iterator for column.
+     *
+     * @param column the column to iterate
+     * @return COLUMN_TYPE_ITER iterator pointing to the begin of the values of the columns
      */
     COLUMN_TYPE_ITER begin(size_t column);
 
     /**
-     * End-iterator for column.
+     * @brief End-iterator for column.
+     *
+     * @param column the column to iterate
+     * @return COLUMN_TYPE_ITER  iterator pointing to the end of the values of the columns
      */
     COLUMN_TYPE_ITER end(size_t column);
 
     /**
-     * Begin-iterator for header.
+     * @brief Begin-iterator for column.
+     *
+     * @param header the column to iterate, identified by its header
+     * @return COLUMN_TYPE_ITER iterator pointing to the begin of the values of the columns
      */
     COLUMN_TYPE_ITER begin(const std::string &header);
 
     /**
-     * End-iterator for header.
+     * @brief End-iterator for header.
+     *
+     * @param header the column to iterate, identified by its header
+     * @return COLUMN_TYPE_ITER iterator pointing to the end of the values of the columns
      */
     COLUMN_TYPE_ITER end(const std::string &header);
 
     /**
-     * Convert a value to a different type if possible.
+     * @brief Convert a value to a different type if possible.
+     *
+     * @param col column of the value
+     * @param row row of the value
+     * @param tp the new type
      */
-    void convert(size_t i, size_t row, const std::string &tp);
+    void convert(size_t col, size_t row, const std::string &tp);
 
     /**
-     * Extract a sub-csv given a list of header-names.
-     */
-    CSVAnalyzer getSub(const std::vector<std::string> &headers) const;
-
-    /**
-     * Extract a sub-csv convenience function.
-     */
-    CSVAnalyzer getSub(std::initializer_list<std::string> iniList) const;
-
-    /**
-     * Extract a sub-csv given a list of column indices.
+     * @brief Extract a sub-csv given a list of column indices.
+     *
+     * @param columns vector of column indices
+     * @return CSVAnalyzer a new csv with only the columns in columns
      */
     CSVAnalyzer getSub(const std::vector<size_t> &columns) const;
 
     /**
-     * Extract a sub-csv convenience function.
+     * @brief Extract a sub-csv given a list of header-names.
+     *
+     * @param headers a vector of header-strings of the columns to extract
+     * @return CSVAnalyzer a new csv with only the columns in headers
+     */
+    CSVAnalyzer getSub(const std::vector<std::string> &headers) const;
+
+    /**
+     * @brief Extract a sub-csv convenience function.
+     *
+     * @param iniList columns defined by initializer_list
+     * @return CSVAnalyzer  a new csv with only the columns in colulmns
      */
     CSVAnalyzer getSub(std::initializer_list<size_t> iniList) const;
 
     /**
-     * Remove column col from the csv.
+     * @brief Extract a sub-csv convenience function.
+     *
+     * @param iniList columns defined by initializer_list
+     * @return CSVAnalyzer a new csv with only the columns in headers
+     */
+    CSVAnalyzer getSub(std::initializer_list<std::string> iniList) const;
+
+    /**
+     * @brief Remove column col from the csv.
+     *
+     * @param col column to erase
+     * @return true, if successful, false otherwise
      */
     bool eraseColumn(size_t col);
 
     /**
-     *  Remove column header from the csv.
+     * @brief
+     *
+     * @param header column to erase, identified by its header
+     * @return true, if successful, false otherwise
      */
     bool eraseColumn(const std::string &header);
 
     /**
-     * configure how the csv is displayed.
+     * @brief configure how the csv is displayed.
+     *
+     * @param os output stream
+     * @param vt verbosity configuration
+     * @return std::ostream&
      */
     friend std::ostream &operator<<(std::ostream &os, CSVAnalyzer::verbosityType vt);
 
     /**
-     * Generic ostream - &lt;&lt; operator for CSVAnalyzer.
+     * @brief Generic ostream - &lt;&lt; operator for CSVAnalyzer.
+     *
+     * @param os output stream
+     * @param csv the csv object to stream
+     * @return std::ostream&
      */
-    friend std::ostream &operator<<(std::ostream &os, const CSVAnalyzer &err);
+    friend std::ostream &operator<<(std::ostream &os, const CSVAnalyzer &csv);
 
     private:
     CSV_TYPE             data_;                            ///< Rectangular variant data container.
@@ -565,12 +783,20 @@ class CSVAnalyzer
 };
 
 /**
- * Configure the output of a CSV.
+ * @brief configure how the csv is displayed.
+ *
+ * @param os output stream
+ * @param vt verbosity configuration
+ * @return std::ostream&
  */
 std::ostream &operator<<(std::ostream &os, CSVAnalyzer::verbosityType vt);
 
 /**
- * Generic ostream - &lt;&lt; operator for CSVAnalyzer.
+ * @brief Generic ostream - &lt;&lt; operator for CSVAnalyzer.
+ *
+ * @param os output stream
+ * @param csv the csv object to stream
+ * @return std::ostream&
  */
 std::ostream &operator<<(std::ostream &os, const CSVAnalyzer &csv);
 
@@ -585,7 +811,6 @@ inline std::string toString(const CSVAnalyzer &csv)
     return (ss.str());
 }
 
-};
-// namespace util
+};  // namespace util
 
 #endif  // NS_UTIL_CSVUTIL_H_INCLUDED

@@ -1,7 +1,7 @@
 /*
  * File Name:   csvutil.cc
  * Description: comma separated value utility functions
- * 
+ *
  * Copyright (C) 2023 Dieter J Kybelksties <github@kybelksties.com>
  *
  * This program is free software; you can redistribute it and/or
@@ -23,6 +23,7 @@
  */
 
 #include "csvutil.h"
+
 #include "to_string.h"
 
 #include <utility>
@@ -604,24 +605,24 @@ CSVAnalyzer &CSVAnalyzer::operator<<(const string &row)
     return (*this);
 }
 
-void CSVAnalyzer::convert(size_t i, size_t row, const string &tp)
+void CSVAnalyzer::convert(size_t col, size_t row, const string &tp)
 {
-    string value = toString(getVar(i, row));
+    string value = toString(getVar(col, row));
 
     if(tp == CSV_COLUMN_TYPE_BOOL)
-        data_[i][row + 2] = scanAs<VAR_BOOL>(value);
+        data_[col][row + 2] = scanAs<VAR_BOOL>(value);
     else if(tp == CSV_COLUMN_TYPE_CHAR)
-        data_[i][row + 2] = scanAs<VAR_CHAR>(value);
+        data_[col][row + 2] = scanAs<VAR_CHAR>(value);
     else if(tp == CSV_COLUMN_TYPE_INT)
-        data_[i][row + 2] = scanAs<VAR_INT>(value);
+        data_[col][row + 2] = scanAs<VAR_INT>(value);
     else if(tp == CSV_COLUMN_TYPE_UINT)
-        data_[i][row + 2] = scanAs<VAR_UINT>(value);
+        data_[col][row + 2] = scanAs<VAR_UINT>(value);
     else if(tp == CSV_COLUMN_TYPE_FLOAT || tp == CSV_COLUMN_TYPE_GAUSSIAN || tp == CSV_COLUMN_TYPE_EXPONENTIAL)
-        data_[i][row + 2] = scanAs<VAR_FLOAT>(value);
+        data_[col][row + 2] = scanAs<VAR_FLOAT>(value);
     else if(tp == CSV_COLUMN_TYPE_STRING)
-        data_[i][row + 2] = scanAs<VAR_STRING>(value);
+        data_[col][row + 2] = scanAs<VAR_STRING>(value);
     else if(tp == CSV_COLUMN_TYPE_DATE)
-        data_[i][row + 2] = scanAs<VAR_DATE>(value);
+        data_[col][row + 2] = scanAs<VAR_DATE>(value);
 }
 
 bool CSVAnalyzer::eraseColumn(size_t col)
@@ -714,6 +715,4 @@ ostream &operator<<(ostream &os, const CSVAnalyzer &csv)
 
     return (os);
 }
-}
-
-// namespace util
+}  // namespace util

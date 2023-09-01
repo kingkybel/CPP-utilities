@@ -1,7 +1,7 @@
 /*
  * File Name:   bit_converter.h
  * Description: Utility to access bits and bytes of arbitrary objects.
- * 
+ *
  * Copyright (C) 2023 Dieter J Kybelksties
  *
  * This program is free software; you can redistribute it and/or
@@ -34,6 +34,11 @@
 
 namespace util
 {
+/**
+ * @brief a struct to convert any binary object into its bit-pattern
+ *
+ * @tparam T_ type of the object to convert
+ */
 template<typename T_>
 union bit_converter
 {
@@ -45,10 +50,23 @@ union bit_converter
     DataType data_;
     uint8_t  byte[BYTES_IN_DATA];
 
+    /**
+     * @brief Construct a new bit converter object.
+     * If T_ does not have a default constructor then parameter data has to be provided.
+     *
+     * @param data object to convert
+     */
     bit_converter(DataType data = T_{}) : data_(data)
     {
     }
 
+    /**
+     * @brief convert from a homogenous initializer list of type FT_
+     *
+     * @tparam FT_ type of elements of the  initializer list
+     * @param ftList the initializer list
+     * @return bit_converter the converter object
+     */
     template<typename FT_>
     static bit_converter from(std::initializer_list<FT_> ftList)
     {
@@ -68,11 +86,23 @@ union bit_converter
         return (reval);
     }
 
+    /**
+     * @brief cast operator to the DataType
+     *
+     * @return DataType this cast to the DataType
+     */
     operator DataType()
     {
         return (data_);
     }
 
+    /**
+     * @brief convert to a bitset
+     *
+     * @tparam NumberOfBits_ number of bits of the object
+     * @param StartBit_ bit where to start the conversion
+     * @return std::bitset<NumberOfBits_> the bitset
+     */
     template<long long NumberOfBits_ = BITS_IN_DATA>
     std::bitset<NumberOfBits_> asBitset(long long StartBit_ = 0LL) const
     {
@@ -99,6 +129,11 @@ union bit_converter
         return (reval);
     }
 
+    /**
+     * @brief Rotate the bits of a the object
+     *
+     * @param bitsToShift number of position to shift, negative numbers means shift to right
+     */
     void rotate(long long bitsToShift)
     {
         if(bitsToShift != 0LL)
@@ -132,21 +167,45 @@ union bit_converter
         }
     }
 
+    /**
+     * @brief Get a byte from the object
+     *
+     * @param n number of the byte
+     * @return uint8_t& the byte
+     */
     uint8_t& operator[](long long n)
     {
         return (byte[n]);
     }
 
+    /**
+     * @brief Get a byte from the object
+     *
+     * @param n number of the byte
+     * @return uint8_t the byte
+     */
     uint8_t getByte(long long n) const
     {
         return (byte[n]);
     }
 
+    /**
+     * @brief Set a byte in the object
+     *
+     * @param n number of the byte
+     * @param val the new byte for position n
+     */
     void setByte(long long n, uint8_t val)
     {
         byte[n] = val;
     }
 
+    /**
+     * @brief Get the bit value at bitIntex
+     *
+     * @param bitIndex index of the bit
+     * @return true, if bit at the index is set, false otherwise
+     */
     bool getBit(long long bitIndex) const
     {
         long long byteIdx = bitIndex / 8;
@@ -156,6 +215,12 @@ union bit_converter
         return ((byte[byteIdx] & mask) == mask);
     }
 
+    /**
+     * @brief Set the bit at bitIntex
+     *
+     * @param bitIndex index of the bit
+     * @param b new bit value
+     */
     void setBit(long long bitIndex, bool b = true)
     {
         long long byteIdx = bitIndex >> 3;

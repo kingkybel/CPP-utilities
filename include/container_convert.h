@@ -62,7 +62,7 @@ struct true_pred
  * @param destination destination vector
  * @param pred precicate object
  */
-template<typename Value_, typename Alloc_, typename Pred_ = true_pred<Value_> >
+template<typename Value_, typename Alloc_, typename Pred_ = true_pred<Value_>>
 void moveElementsTo(std::vector<Value_, Alloc_> &source, std::vector<Value_, Alloc_> &destination, Pred_ pred = Pred_{})
 {
     for(auto it = source.begin(); it != source.end();)
@@ -223,7 +223,12 @@ inline std::map<Key_, Value_, std::less<Key_>, Alloc_>
  * @param uMap the unordered set of comparable elements to convert from
  * @return std::set<Key_, std::less<Key_>, Alloc_> an ordered set of all keys of the unordered map
  */
-template<typename Key_, typename Value_, typename Hash_, typename Pred_, typename Alloc_, typename AllocRet_ = std::allocator<Key_>>
+template<typename Key_,
+         typename Value_,
+         typename Hash_,
+         typename Pred_,
+         typename Alloc_,
+         typename AllocRet_ = std::allocator<Key_>>
 inline std::set<Key_, std::less<Key_>, AllocRet_>
  toOrderedKeySet(const std::unordered_map<Key_, Value_, Hash_, Pred_, Alloc_> &uMap)
 {

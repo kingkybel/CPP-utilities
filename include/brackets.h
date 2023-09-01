@@ -86,7 +86,7 @@ class Brackets
 {
     public:
     /**
-     * Default constructor.
+     * @brief Default constructor.
      * @param type standard type of bracket. defaulted to NONE.
      */
     Brackets(util::BracketKey::Type type = util::BracketKey::NONE)
@@ -103,7 +103,7 @@ class Brackets
     }
 
     /**
-     * Custom brackets constructor.
+     * @brief Custom brackets constructor.
      *
      * @param left left bracket string
      * @param inner inner bracket string
@@ -120,7 +120,7 @@ class Brackets
     Brackets(const Brackets &rhs) = default;
 
     /**
-     * Get the left (opening) bracket.
+     * @brief Get the left (opening) bracket.
      * @param customLeft custom string to tack to the left of the separator
      * @param customRight custom string to tack to the right of the separator
      *
@@ -132,7 +132,7 @@ class Brackets
     }
 
     /**
-     * Get the inner separator.
+     * @brief Get the inner separator.
      * @param customLeft custom string to tack to the left of the separator
      * @param customRight custom string to tack to the right of the separator
      *
@@ -144,7 +144,7 @@ class Brackets
     }
 
     /**
-     * Get the right (closing) bracket.
+     * @brief Get the right (closing) bracket.
      * @param customLeft custom string to tack to the left of the separator
      * @param customRight custom string to tack to the right of the separator
      *
