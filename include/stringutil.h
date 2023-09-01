@@ -673,7 +673,6 @@ struct hash<util::ci_string>
         return (hasher(util::toLower(s)));
     }
 };
-};
-// namespace std
+};  // namespace std
 
 #endif  // NS_UTIL_STRINGUTIL_H_INCLUDED

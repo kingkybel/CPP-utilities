@@ -157,7 +157,6 @@ union multiTea
         return (reval);
     }
 };
-};
-// namespace util
+};  // namespace util
 
 #endif  // TINYTEA_H_INCLUDED

@@ -1,7 +1,7 @@
 /*
  * File:		bayesutilTest.cc
  * Description: Unit tests for string utilities
- * 
+ *
  * Copyright (C) 2023 Dieter J Kybelksties <github@kybelksties.com>
  *
  * This program is free software; you can redistribute it and/or
@@ -234,4 +234,3 @@ TEST_F(BayesUtilTest, util_bayes_ball_algorithm_test)
     ASSERT_TRUE(ce.containsCondition("5"));
     e = bn.bayesBallAlgorithm(ce, irrelevant);
 }
-

@@ -1,7 +1,7 @@
 /*
  * File:		matrix_tests.cc
  * Description: Unit tests for matrix utilities
- * 
+ *
  * Copyright (C) 2023 Dieter J Kybelksties <github@kybelksties.com>
  *
  * This program is free software; you can redistribute it and/or
@@ -502,7 +502,7 @@ void testMatrixOperationsT(initializer_list<T_> hVec, initializer_list<T_> vVec,
     result = m1_2 - m1_2;
     ASSERT_TRUE(result == nullMatrix1_2);
 
-    result = m1_2 + m1_2;
+    result  = m1_2 + m1_2;
     auto t1 = m1_2 * T_(2.0);
     auto t2 = T_(2.0) * m1_2;
     for(size_t y = 0; y < t1.sizeY(); y++)

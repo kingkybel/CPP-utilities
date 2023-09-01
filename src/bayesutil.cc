@@ -1,7 +1,7 @@
 /*
  * File Name:   bayesutil.cc
  * Description: Bayes net utility functions
- * 
+ *
  * Copyright (C) 2023 Dieter J Kybelksties <github@kybelksties.com>
  *
  * This program is free software; you can redistribute it and/or
@@ -23,6 +23,7 @@
  */
 
 #include "bayesutil.h"
+
 #include "to_string.h"
 
 #include <utility>
@@ -224,7 +225,7 @@ bool Node::canonise(const VALUERANGES_TYPE &conditionValueRanges)
 
         if(pDistribution_ == nullptr)
             throw bad_alloc();
-            
+
         reval = dynamic_cast<DiscreteProbability *>(pDistribution_)->canonise();
     }
 

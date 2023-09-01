@@ -47,7 +47,7 @@ TEST_F(BracketsTest, brackets_creation)
     ASSERT_EQ(b.inner(), ",");
     ASSERT_EQ(b.right(), "}");
 
-    Brackets custom {"MyQueue", string("^"), string("."), string("$")};
+    Brackets custom{"MyQueue", string("^"), string("."), string("$")};
     ASSERT_EQ(custom.left(), "^");
     ASSERT_EQ(custom.inner(), ".");
     ASSERT_EQ(custom.right(), "$");
@@ -56,12 +56,12 @@ TEST_F(BracketsTest, brackets_creation)
 TEST_F(BracketsTest, custom_decoration)
 {
     Brackets b{util::BracketKey::PIPE};
-    ASSERT_EQ(b.left("=","-"), "=|-");
+    ASSERT_EQ(b.left("=", "-"), "=|-");
     ASSERT_EQ(b.inner(".", "."), ".|.");
     ASSERT_EQ(b.right("\\", "+"), "\\|+");
 
-    Brackets custom {"MyEBNF", "::=", "->", "<END>"};
+    Brackets custom{"MyEBNF", "::=", "->", "<END>"};
     ASSERT_EQ(custom.left("X "), "X ::=");
-    ASSERT_EQ(custom.inner("-",">"), "-->>");
-    ASSERT_EQ(custom.right("<",">"), "<<END>>");
+    ASSERT_EQ(custom.inner("-", ">"), "-->>");
+    ASSERT_EQ(custom.right("<", ">"), "<<END>>");
 }

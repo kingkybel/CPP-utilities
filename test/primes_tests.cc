@@ -1,7 +1,7 @@
 /*
  * File:		primes_tests.cc
  * Description: Unit tests for primes
- * 
+ *
  * Copyright (C) 2023 Dieter J Kybelksties <github@kybelksties.com>
  *
  * This program is free software; you can redistribute it and/or
@@ -24,8 +24,8 @@
 
 #include "primes.h"
 
-#include <gtest/gtest.h>
 #include <complex>
+#include <gtest/gtest.h>
 #include <initializer_list>
 #include <ios>
 #include <iostream>
@@ -44,7 +44,6 @@ class PrimesTest : public ::testing::Test
     {
     }
 };
-
 
 TEST_F(PrimesTest, testPrimesConstruction)
 {

@@ -148,8 +148,8 @@ inline std::deque<Value_, Alloc_> toDeque(const std::vector<Value_, Alloc_> &vec
 template<typename Value_, typename Alloc_>
 inline std::set<Value_, std::less<Value_>, Alloc_> toSet(const std::vector<Value_, Alloc_> &vec)
 {
-    static_assert(has_operator_less<Value_>::value, "Ordered set elements must be less-than comparable");
-    static_assert(has_operator_equal<Value_>::value, "Ordered set elements must be equal comparable");
+    static_assert(util::has_operator_less<Value_>::value, "Ordered set elements must be less-than comparable");
+    static_assert(util::has_operator_equal<Value_>::value, "Ordered set elements must be equal comparable");
 
     std::set<Value_, std::less<Value_>, Alloc_> reval;
 
@@ -172,8 +172,8 @@ inline std::set<Value_, std::less<Value_>, Alloc_> toSet(const std::vector<Value
 template<typename Value_, typename Hash_, typename Pred_, typename Alloc_>
 inline std::set<Value_, std::less<Value_>, Alloc_> toSet(const std::unordered_set<Value_, Hash_, Pred_, Alloc_> &uSet)
 {
-    static_assert(has_operator_less<Value_>::value, "Ordered set elements must be less-than comparable");
-    static_assert(has_operator_equal<Value_>::value, "Ordered set elements must be equal comparable");
+    static_assert(util::has_operator_less<Value_>::value, "Ordered set elements must be less-than comparable");
+    static_assert(util::has_operator_equal<Value_>::value, "Ordered set elements must be equal comparable");
 
     std::set<Value_, std::less<Value_>, Alloc_> reval;
 
@@ -198,8 +198,8 @@ template<typename Key_, typename Value_, typename Hash_, typename Pred_, typenam
 inline std::map<Key_, Value_, std::less<Key_>, Alloc_>
  toMap(const std::unordered_map<Key_, Value_, Hash_, Pred_, Alloc_> &uMap)
 {
-    static_assert(has_operator_less<Key_>::value, "Ordered map keys must be less-than comparable");
-    static_assert(has_operator_equal<Key_>::value, "Ordered map keys must be equal comparable");
+    static_assert(util::has_operator_less<Key_>::value, "Ordered map keys must be less-than comparable");
+    static_assert(util::has_operator_equal<Key_>::value, "Ordered map keys must be equal comparable");
 
     std::map<Key_, Value_, std::less<Key_>, Alloc_> reval;
 
@@ -232,8 +232,8 @@ template<typename Key_,
 inline std::set<Key_, std::less<Key_>, AllocRet_>
  toOrderedKeySet(const std::unordered_map<Key_, Value_, Hash_, Pred_, Alloc_> &uMap)
 {
-    static_assert(has_operator_less<Key_>::value, "Ordered set elements need to be less-than comparable");
-    static_assert(has_operator_equal<Key_>::value, "Ordered set elements keys need to be equal comparable");
+    static_assert(util::has_operator_less<Key_>::value, "Ordered set elements need to be less-than comparable");
+    static_assert(util::has_operator_equal<Key_>::value, "Ordered set elements keys need to be equal comparable");
 
     std::set<Key_, std::less<Key_>, AllocRet_> reval;
 

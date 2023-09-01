@@ -49,7 +49,6 @@ class timer
         return (std::chrono::duration_cast<nanosecond_t>(clock_t::now() - start_).count());
     }
 };
-};
-// namespace util
+};  // namespace util
 
 #endif  // TIMER_H_INCLUDED

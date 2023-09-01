@@ -1,7 +1,7 @@
 /*
  * File Name:   anyutil.cc
  * Description: std::any utility functions
- * 
+ *
  * Copyright (C) 2023 Dieter J Kybelksties <github@kybelksties.com>
  *
  * This program is free software; you can redistribute it and/or
@@ -23,8 +23,9 @@
  */
 
 #include "anyutil.h"
-#include "to_string.h"
+
 #include "stringutil.h"
+#include "to_string.h"
 //#define DO_TRACE_
 #include "traceutil.h"
 
@@ -134,7 +135,7 @@ bool operator<(const Var &lhs, const Var &rhs)
         return lessT<VAR_DATE_INTERVAL>(lhs, rhs);
     if(isA<VAR_FLOAT_INTERVAL>(lhs))
         return lessT<VAR_FLOAT_INTERVAL>(lhs, rhs);
-    
+
     return (toString(lhs) < toString(rhs));
 }
 
@@ -255,7 +256,6 @@ string IsElementOf::desc(const Var &itvl) const
 
 bool PlaceHolderOp::leftMatchesRight(const Var &elem, const Var &itvl) const
 {
-
     return (false);
 }
 

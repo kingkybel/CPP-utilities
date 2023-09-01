@@ -120,7 +120,7 @@ struct hash<NonPodType>
         return (hasher_i(v.i) + hasher_d(v.d));
     }
 };
-};
+};  //  namespace std
 
 TEST_F(ContainerConvertTest, toSet_test)
 {
@@ -141,7 +141,7 @@ TEST_F(ContainerConvertTest, toSet_test)
 
 TEST_F(ContainerConvertTest, toMap_test)
 {
-    auto strIntMap = unordered_map<string, int>{{"Ground", 1}, {"Floor", 666}, {"Table", -3}};
+    auto strIntMap  = unordered_map<string, int>{{"Ground", 1}, {"Floor", 666}, {"Table", -3}};
     auto strIntUMap = toMap(strIntMap);
     ASSERT_EQ(strIntMap.size(), strIntUMap.size());
     for(const auto& kv: strIntMap)
@@ -151,7 +151,7 @@ TEST_F(ContainerConvertTest, toMap_test)
 TEST_F(ContainerConvertTest, toOrderedKeySet_test)
 {
     auto strIntUMap = unordered_map<string, int>{{"Ground", 1}, {"Floor", 666}, {"Table", -3}};
-    auto strSet = toOrderedKeySet(strIntUMap);
+    auto strSet     = toOrderedKeySet(strIntUMap);
     ASSERT_EQ(strSet.size(), strIntUMap.size());
     for(const auto& kv: strIntUMap)
         ASSERT_NE(strSet.find(kv.first), strSet.end());

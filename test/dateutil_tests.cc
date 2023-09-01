@@ -1,7 +1,7 @@
 /*
  * File:		dateutil_tests.cc
  * Description:         Unit tests for date utilities.
- * 
+ *
  * Copyright (C) 2023 Dieter J Kybelksties <github@kybelksties.com>
  *
  * This program is free software; you can redistribute it and/or

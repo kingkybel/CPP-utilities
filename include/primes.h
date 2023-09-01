@@ -1,7 +1,7 @@
 /*
  * File Name:   primes.h
  * Description: some simple prime calculation routines
- * 
+ *
  * Copyright (C) 2023 Dieter J Kybelksties <github@kybelksties.com>
  *
  * This program is free software; you can redistribute it and/or
@@ -266,7 +266,7 @@ class prime_checker
     //    }
 
     static constexpr unsigned long long SIZE_ULL      = 2'000'000;  // 22'347'494;
-    static constexpr unsigned long long ROOT_SIZE_ULL = sqrt(SIZE_ULL) + 1;
+    static constexpr unsigned long long ROOT_SIZE_ULL = std::sqrt(SIZE_ULL) + 1;
     std::bitset<SIZE_ULL>               sieve;
     unsigned long long                  partialSieveSize = 2;
 
@@ -310,6 +310,6 @@ class prime_checker
         return (true);
     }
 };
-};
+};  // namespace util
 
 #endif  // PRIMES_H_INCLUDED

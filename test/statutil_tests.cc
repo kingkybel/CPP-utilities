@@ -1,7 +1,7 @@
 /*
  * File:		statutilTest.cc
  * Description: Unit tests for statistics utilities
- * 
+ *
  * Copyright (C) 2023 Dieter J Kybelksties <github@kybelksties.com>
  *
  * This program is free software; you can redistribute it and/or
@@ -300,7 +300,7 @@ TEST_F(StatUtilTest, util_event_POD_matcher_test)
     // are not less than false: {false, true}
     ASSERT_FALSE(Event("E2", VAR_BOOL(false)).matches(bool_lt_false));
     ASSERT_FALSE(Event("E2", VAR_BOOL(true)).matches(bool_lt_false));
-    // are not less than 11: {11, 12} 
+    // are not less than 11: {11, 12}
     Event bool_lt_true = Event("E2", VAR_BOOL(true), &Event::less);
     ASSERT_TRUE(Event("E2", VAR_BOOL(false)).matches(bool_lt_true));
     ASSERT_FALSE(Event("E2", VAR_BOOL(true)).matches(bool_lt_true));
@@ -311,7 +311,7 @@ TEST_F(StatUtilTest, util_event_POD_matcher_test)
     // are less than 11: {4, 10}
     ASSERT_TRUE(Event("E2", VAR_INT(4)).matches(comparator_lt));
     ASSERT_TRUE(Event("E2", VAR_INT(10)).matches(comparator_lt));
-    // are not less than 11: {11, 12} 
+    // are not less than 11: {11, 12}
     ASSERT_FALSE(Event("E2", VAR_INT(11)).matches(comparator_lt));
     ASSERT_FALSE(Event("E2", VAR_INT(12)).matches(comparator_lt));
     // --------
@@ -326,7 +326,7 @@ TEST_F(StatUtilTest, util_event_POD_matcher_test)
     ASSERT_FALSE(Event("E3", VAR_UINT(12)).matches(comparator_le));
     ASSERT_FALSE(Event("E3", VAR_UINT(113)).matches(comparator_le));
     // --------
- 
+
     // "match char with greater-operator";
     Event comparator_gt = Event("E4", VAR_CHAR('t'), &Event::greater);
     // are not greater to 't': {'a', 't'}
@@ -343,7 +343,7 @@ TEST_F(StatUtilTest, util_event_POD_matcher_test)
     ASSERT_TRUE(Event("E5", VAR_STRING("dieter")).matches(comparator_ge));
     ASSERT_TRUE(Event("E5", VAR_STRING("freedom")).matches(comparator_ge));
     // are not greater or equal to "dieter": {"diet", "angry"}
-    ASSERT_FALSE(Event("E5", VAR_STRING("diet")).matches(comparator_ge)); // "diet" not >= "dieter"
+    ASSERT_FALSE(Event("E5", VAR_STRING("diet")).matches(comparator_ge));  // "diet" not >= "dieter"
     ASSERT_FALSE(Event("E5", VAR_STRING("angry")).matches(comparator_ge));
 }
 
@@ -513,7 +513,9 @@ TEST_F(StatUtilTest, util_continuous_stat_test)
 
     ASSERT_DOUBLE_EQ(norm.P(Event("E", Interval<long double>(norm.mu(), {infiniteMin}))), 0.5L);
 
-    ASSERT_LE(norm.P(Event("E", Interval<long double>(norm.mu() - norm.sigma(), norm.mu() + norm.sigma()))) - p_m_var_prob, 1E-10);
+    ASSERT_LE(norm.P(Event("E", Interval<long double>(norm.mu() - norm.sigma(), norm.mu() + norm.sigma())))
+               - p_m_var_prob,
+              1E-10);
 
     ExponentialFunction ed(1.0L);
     ASSERT_DOUBLE_EQ(ed.P(Event("E", Interval<long double>(0.0L))), 1.0L);

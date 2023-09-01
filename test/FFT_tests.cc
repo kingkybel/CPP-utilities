@@ -1,7 +1,7 @@
 /*
  * File:		FFTTest.cc
  * Description:         Unit tests for Fast Fourier Transform.
- * 
+ *
  * Copyright (C) 2023 Dieter J Kybelksties <github@kybelksties.com>
  *
  * This program is free software; you can redistribute it and/or
@@ -53,8 +53,9 @@ class FFTTest : public ::testing::Test
     void TearDown() override
     {
     }
+
     private:
-        vector<FFT::FLOATTYPE> sampleVec;
+    vector<FFT::FLOATTYPE> sampleVec;
 };
 
 // 1.Input random data

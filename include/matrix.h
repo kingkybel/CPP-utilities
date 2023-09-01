@@ -1,7 +1,7 @@
 /*
  * File Name:   matrix.h
  * Description: A template for matrix operations.
- * 
+ *
  * Copyright (C) 2023 Dieter J Kybelksties <github@kybelksties.com>
  *
  * This program is free software; you can redistribute it and/or
@@ -1489,7 +1489,6 @@ inline void checkBounds<false>(const matrix_interface &lhs, size_t x, size_t y, 
 {
 }
 
-};
-// namespace util
+};  // namespace util
 
 #endif  // NS_UTIL_MATRIX_H_INCLUDED

@@ -1,7 +1,7 @@
 /*
  * File:		instance_pool_tests.cc
  * Description: Unit tests for the instant pool
- * 
+ *
  * Copyright (C) 2023 Dieter J Kybelksties <github@kybelksties.com>
  *
  * This program is free software; you can redistribute it and/or

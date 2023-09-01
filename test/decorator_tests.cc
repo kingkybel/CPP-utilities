@@ -51,13 +51,14 @@ class DecoratorTest : public ::testing::Test
 
 TEST_F(DecoratorTest, bracket_initialisation_test)
 {
-    auto decInst = decorator<>::instance();
+    auto decInst       = decorator<>::instance();
     auto dequeBrackets = decInst.getBracket(util::BracketKey::DEQUE);
     ASSERT_EQ(dequeBrackets.left(), "^");
     decInst.clearBrackets();
     dequeBrackets = decInst.getBracket(util::BracketKey::DEQUE);
     ASSERT_EQ(dequeBrackets.left(), "");
-    decInst.setBracketForKey(util::BracketKey::DEQUE, util::Brackets{util::BracketKey::DEQUE, "new_left", "new_inner", "new_right"});
+    decInst.setBracketForKey(util::BracketKey::DEQUE,
+                             util::Brackets{util::BracketKey::DEQUE, "new_left", "new_inner", "new_right"});
     dequeBrackets = decInst.getBracket(util::BracketKey::DEQUE);
     ASSERT_EQ(dequeBrackets.left(), "new_left");
     decInst.initializeBrackets();

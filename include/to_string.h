@@ -29,8 +29,8 @@
 //#define DO_TRACE_
 #include "traceutil.h"
 
-#include <string>
 #include <sstream>
+#include <string>
 
 namespace util
 {
@@ -69,6 +69,6 @@ inline std::wstring toWString(const Value &value)
     return (ss.str());
 }
 
-};  // namespace std
+};  // namespace util
 
 #endif  // NS_UTIL_TO_STRING_H_INCLUDED

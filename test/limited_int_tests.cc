@@ -1,7 +1,7 @@
 /*
  * File:		limited_int_tests.cc
  * Description: Unit tests for limited_values -templates
- * 
+ *
  * Copyright (C) 2023 Dieter J Kybelksties <github@kybelksties.com>
  *
  * This program is free software; you can redistribute it and/or
@@ -490,7 +490,7 @@ void testIteratorT()
     /////////////////// REVERSE/////////////////////////////////////////////////
     try
     {
-        for(auto iter = testedTypeThrow::rbegin(max-5); iter != testedTypeThrow::rend(max-10); iter++)
+        for(auto iter = testedTypeThrow::rbegin(max - 5); iter != testedTypeThrow::rend(max - 10); iter++)
         {
             // independent of Policy: whilst iterating through valid range *iter should be valid
             ASSERT_TRUE(iter->isValid());
@@ -540,7 +540,8 @@ void testIteratorT()
     catch(exception &e)
     {
         FAIL() << "Limited int with set-invalid policy should not throw when "
-                  "iterator starting at rbegin and staying in valid range: " << e.what();
+                  "iterator starting at rbegin and staying in valid range: "
+               << e.what();
     }
 
     try
@@ -553,7 +554,8 @@ void testIteratorT()
     catch(exception &e)
     {
         FAIL() << "Limited int with set-invalid policy should not throw when "
-                  "iterator reaches end: " << e.what();
+                  "iterator reaches end: "
+               << e.what();
     }
     try
     {
@@ -567,7 +569,8 @@ void testIteratorT()
     catch(exception &e)
     {
         FAIL() << "Limited int with set-invalid policy should not throw when "
-                  "iterator reaches end: " << e.what();
+                  "iterator reaches end: "
+               << e.what();
     }
 
     ////////////////////////////////////////////////////////////////////////////

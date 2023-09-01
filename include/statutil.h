@@ -1794,7 +1794,6 @@ class DiscreteProbability : public ProbabilityFunction
     mutable bool hasBeenModified_{false};
     PROB_TABLE   values_;
 };
-};
-// namespace util
+};  // namespace util
 
 #endif  // NS_UTIL_STATUTIL_H_INCLUDED

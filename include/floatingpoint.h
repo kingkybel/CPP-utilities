@@ -1,7 +1,7 @@
 /*
  * File Name:   floatingpoint.h
  * Description: Re-create Solaris double_to_decimal, decimal_to_double, ...
- * 
+ *
  * Copyright (C) 2023 Dieter J Kybelksties <github@kybelksties.com>
  *
  * This program is free software; you can redistribute it and/or

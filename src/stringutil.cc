@@ -1,7 +1,7 @@
 /*
  * File Name:   stringutil.cc
  * Description: string utility functions
- * 
+ *
  * Copyright (C) 2023 Dieter J Kybelksties <github@kybelksties.com>
  *
  * This program is free software; you can redistribute it and/or
@@ -23,6 +23,7 @@
  */
 
 #include "stringutil.h"
+
 #include "to_string.h"
 
 #include <limits>

@@ -1,7 +1,7 @@
 /*
  * File Name:   statutil.cc
  * Description: statistic utility functions
- * 
+ *
  * Copyright (C) 2023 Dieter J Kybelksties <github@kybelksties.com>
  *
  * This program is free software; you can redistribute it and/or
@@ -23,6 +23,7 @@
  */
 
 #include "statutil.h"
+
 #include "to_string.h"
 //#define DO_TRACE_
 #include "traceutil.h"
@@ -628,8 +629,8 @@ bool operator<(const EventCatenation &lhs, const EventCatenation &rhs)
 
     for(; itLhs != lhs.cend() && itRhs != rhs.cend(); itLhs++, itRhs++)
     {
-        const auto& left = *itLhs;
-        const auto& right = *itRhs;
+        const auto &left  = *itLhs;
+        const auto &right = *itRhs;
         TRACE2(left, right);
         // all left Events are equal because we break at first difference
         if(left > right)  // rhs is smaller so we are *BIGGER* -> return false
@@ -649,7 +650,7 @@ bool operator<(const EventCatenation &lhs, const EventCatenation &rhs)
 
     // lhs is wholly contained in rhs, if rhs is longer then lhs is smaller
     // otherwise rhs is smaller
-     if(!foundDiff)
+    if(!foundDiff)
         reval = lhs.size() < rhs.size();
 
     return (reval);
@@ -814,7 +815,7 @@ bool CondEvent::chainRule(CondEvent::CONDEVENT_LIST &cel, const string &name) co
     // if(cel.empty())
     //     cel.push_back(*this);
 
-    bool            reval = true;
+    bool reval = true;
     // EventCatenation newEl;
     // EventCatenation newCond = cel.back().condList_;
 

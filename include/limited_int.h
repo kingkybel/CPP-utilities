@@ -2,7 +2,7 @@
  * File Name:   limited_int.h
  * Description: Integers than can only assume values between a minimum and a
  *              maximum.
- * 
+ *
  * Copyright (C) 2023 Dieter J Kybelksties <github@kybelksties.com>
  *
  * This program is free software; you can redistribute it and/or
@@ -70,7 +70,7 @@ struct resolve_throw
     template<typename T_>
     static bool resolve(T_ min, T_ max, T_ &val, T_ invalid)
     {
-         std::stringstream ss;
+        std::stringstream ss;
 
         ss << "resolve_throw::resolve() limited_int<" << typeid(T_).name() << "," << min << "," << max << ">(" << val
            << ") out of range.";
@@ -257,7 +257,7 @@ struct limited_int_traits
     template<typename LimitedInt_, typename SummandType_>
     static LimitedInt_ nth_next(const LimitedInt_ &val, const SummandType_ &n, bool isReverse)
     {
-        constexpr bool is_int_unsigned = std::is_unsigned<LimitedInt_>();
+        constexpr bool is_int_unsigned   = std::is_unsigned<LimitedInt_>();
         constexpr bool is_summand_signed = std::is_signed<SummandType_>();
         if constexpr(is_int_unsigned && is_summand_signed)
         {  //

@@ -25,7 +25,7 @@
 #ifndef NS_UTIL_GRID_H_INCLUDED
 #define NS_UTIL_GRID_H_INCLUDED
 
-#include "stringutil.h"
+#include "to_string.h"
 
 #include <iostream>
 #include <map>
@@ -360,8 +360,8 @@ class index_pair : public std::pair<size_t, size_t>
 
 /**
  * @brief Specialisation of the gridBase class that is used for sparse population
- * 
- * @tparam EL_TYPE element-type 
+ *
+ * @tparam EL_TYPE element-type
  */
 template<typename EL_TYPE = long double>
 class sparse_grid : public gridBase<EL_TYPE>
@@ -445,7 +445,7 @@ class sparse_grid : public gridBase<EL_TYPE>
 
     /**
      * @brief Check whether the given X-dimension-iterator is valid or not
-     * 
+     *
      * @param iter the X-dimension iterator
      * @return true, if valid, false otherwise
      */
@@ -456,7 +456,7 @@ class sparse_grid : public gridBase<EL_TYPE>
 
     /**
      * @brief Check whether the given Y-dimension-iterator is valid or not
-     * 
+     *
      * @param iter the Y-dimension iterator
      * @return true, if valid, false otherwise
      */
@@ -679,10 +679,9 @@ class sparse_grid : public gridBase<EL_TYPE>
         return (dims_.y());
     }
 
-
     /**
      * @brief Show the grid on cout stream
-     * 
+     *
      * @param mode display mode
      */
     void show(typename util::gridBase<EL_TYPE>::DisplayMode mode = util::gridBase<EL_TYPE>::DisplayMode::Stats)
@@ -910,7 +909,7 @@ class sparse_grid : public gridBase<EL_TYPE>
 
     /**
      * @brief Output information about index-set (x, y).
-     * 
+     *
      * @param x X-coordinate
      * @param y Y-coordinate
      */
@@ -991,8 +990,8 @@ class sparse_grid : public gridBase<EL_TYPE>
 
 /**
  * @brief Specialisation of the gridBase class that expexts to be non-sparsely populated
- * 
- * @tparam EL_TYPE element-type 
+ *
+ * @tparam EL_TYPE element-type
  */
 template<typename EL_TYPE = long double>
 class grid : public gridBase<EL_TYPE>

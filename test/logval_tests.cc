@@ -1,7 +1,7 @@
 /*
  * File:		logval_tests.cc
  * Description: Unit tests for log-values
- * 
+ *
  * Copyright (C) 2023 Dieter J Kybelksties <github@kybelksties.com>
  *
  * This program is free software; you can redistribute it and/or
@@ -92,11 +92,13 @@ TEST_F(LogvalTest, testLogVal)
 
         result++;
         result_l++;
-        ASSERT_LE(result - result_l.toReal(), abs(result / 1e8)) << failMessage("()++", a, b, result, l_a, l_b, result_l);
+        ASSERT_LE(result - result_l.toReal(), abs(result / 1e8))
+         << failMessage("()++", a, b, result, l_a, l_b, result_l);
 
         ++result;
         ++result_l;
-        ASSERT_LE(result - result_l.toReal(), abs(result / 1e8)) << failMessage("++()", a, b, result, l_a, l_b, result_l);
+        ASSERT_LE(result - result_l.toReal(), abs(result / 1e8))
+         << failMessage("++()", a, b, result, l_a, l_b, result_l);
 
         result   = a - b;
         result_l = l_a - l_b;
@@ -104,11 +106,13 @@ TEST_F(LogvalTest, testLogVal)
 
         result--;
         result_l--;
-        ASSERT_LE(result - result_l.toReal(), abs(result / 1e8)) << failMessage("()--", a, b, result, l_a, l_b, result_l);
+        ASSERT_LE(result - result_l.toReal(), abs(result / 1e8))
+         << failMessage("()--", a, b, result, l_a, l_b, result_l);
 
         --result;
         --result_l;
-        ASSERT_LE(result - result_l.toReal(), abs(result / 1e8)) << failMessage("--()", a, b, result, l_a, l_b, result_l);
+        ASSERT_LE(result - result_l.toReal(), abs(result / 1e8))
+         << failMessage("--()", a, b, result, l_a, l_b, result_l);
 
         result = a;
         result -= b;
@@ -130,13 +134,15 @@ TEST_F(LogvalTest, testLogVal)
         {
             result   = a / b;
             result_l = l_a / l_b;
-            ASSERT_LE(result - result_l.toReal(), abs(result / 1e8)) << failMessage("/", a, b, result, l_a, l_b, result_l);
+            ASSERT_LE(result - result_l.toReal(), abs(result / 1e8))
+             << failMessage("/", a, b, result, l_a, l_b, result_l);
 
             result = a;
             result /= b;
             result_l = l_a;
             result_l /= l_b;
-            ASSERT_LE(result - result_l.toReal(), abs(result / 1e8)) << failMessage("/=", a, b, result, l_a, l_b, result_l);
+            ASSERT_LE(result - result_l.toReal(), abs(result / 1e8))
+             << failMessage("/=", a, b, result, l_a, l_b, result_l);
         }
     }
 

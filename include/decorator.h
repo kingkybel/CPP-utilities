@@ -960,7 +960,7 @@ template<typename TupleType_,
          typename CharT_,
          typename Traits_,
          std::size_t Index = 0,
-         typename          = std::enable_if<is_tuple<TupleType_>::value>>
+         typename          = std::enable_if<util::is_tuple<TupleType_>::value>>
 
 void iterateTuple(std::basic_ostream<CharT_, Traits_> &os, const TupleType_ &tuple, const util::Brackets &bracket)
 {
@@ -972,7 +972,7 @@ void iterateTuple(std::basic_ostream<CharT_, Traits_> &os, const TupleType_ &tup
     }
 }
 
-template<typename TupleType_, typename CharT_, typename Traits_, typename = std::enable_if<is_tuple<TupleType_>::value>>
+template<typename TupleType_, typename CharT_, typename Traits_, typename = std::enable_if<util::is_tuple<TupleType_>::value>>
 typename std::enable_if<std::is_same<TupleType_, std::tuple<typename TupleType_::value_type>>::value, void>::type
  decorate(std::basic_ostream<CharT_, Traits_>      &os,
           const TupleType_                         &tuple_obj,

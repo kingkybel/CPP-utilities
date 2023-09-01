@@ -29,6 +29,8 @@
 #include <type_traits>
 #include <utility>
 
+namespace util
+{
 template<class T, class EqualTo>
 struct has_operator_equal_impl
 {
@@ -159,5 +161,7 @@ struct is_tuple<std::tuple<T...>> : std::true_type
 //
 // cout << has_some_func<test1, int(std::string)>::value << endl; // --> 1
 // cout << has_some_func<test2, int(std::string)>::value << endl; // --> 0
+
+};  //  namespace util
 
 #endif  // TRAITS_H_INCLUDED
