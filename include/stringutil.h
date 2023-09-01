@@ -664,7 +664,7 @@ namespace std
  * enable ci_strings as elements in hash containers
  */
 template<>
-struct hash<util::ci_string> : public unary_function<util::ci_string, size_t>
+struct hash<util::ci_string>
 {
     std::size_t operator()(const util::ci_string &s) const
     {

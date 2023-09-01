@@ -1,21 +1,29 @@
-/autom4te.cache/
-/src/.deps/
-/src/.dirstamp
+# Build directory
+/build
 /src/*.o
-/tests/*.o
-/tests/.deps
-/tests/.dirstamp
-/nbproject/
-/nbproject/*
+/test/*.o
+
+# doxygen output directory
+/doxygen
+
+# autoconf created files
+.deps
+.dirstamp
+/autom4te.cache/
+/aclocal.m4
+/ar-lib
+/compile
+/config.h
+/config.h.in
+/config.h.in~
+/configure~
+/missing
+/test-driver
+/depcomp
+/install-sh
 /Makefile.in
 /Makefile
-/testrunner.trs
-/testrunner.log
 /config.log
-/test-suite.log
 /configure
 /config.status
 /stamp-h1
-/testrunner
-/build
-/doxygen

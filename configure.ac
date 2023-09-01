@@ -1,3 +1,9 @@
+# automake input file
+# Note: automake for this project is no longer maintained
+#       use 'cmake' instead
+#       Last tested 01/09/2023
+#       
+#       BOOST - path hard-coded and not auto-detected
 #                                               -*- Autoconf -*-
 # Process this file with autoconf to produce a configure script.
 
@@ -16,8 +22,8 @@ AC_PROG_CC
 AC_PROG_RANLIB
 
 # Checks for libraries.
-AX_BOOST_BASE
-AX_BOOST_FILESYSTEM
+# AX_BOOST_BASE
+# AX_BOOST_FILESYSTEM
 
 # Checks for header files.
 AC_CHECK_HEADERS([string.h sys/time.h])
