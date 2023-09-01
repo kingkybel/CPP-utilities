@@ -1,6 +1,6 @@
 /*
  * File:		csvutil_test.cc
- * Description:         Unit tests for CSV utilities
+ * Description: Unit tests for CSV utilities
  *
  * Copyright (C) 2020 Dieter J Kybelksties <github@kybelksties.com>
  *

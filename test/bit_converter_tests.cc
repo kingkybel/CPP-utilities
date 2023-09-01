@@ -1,6 +1,6 @@
 /*
  * File:		bit_converter_tests.cc
- * Description:         Unit tests for bit converter.
+ * Description: Unit tests for bit converter.
  *
  * Copyright (C) 2023 Dieter J Kybelksties <github@kybelksties.com>
  *
