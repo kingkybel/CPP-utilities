@@ -23,8 +23,7 @@
  */
 #include "container_convert.h"
 #include "decorator.h"
-#include "dateutil.h"
-#include "stringutil.h"
+#include "to_string.h"
 
 #include <algorithm>
 #include <gtest/gtest.h>
@@ -37,7 +36,6 @@
 
 using namespace std;
 using namespace util;
-using namespace util::datescan;
 
 class DecoratorTest : public ::testing::Test
 {
@@ -51,44 +49,46 @@ class DecoratorTest : public ::testing::Test
     }
 };
 
+TEST_F(DecoratorTest, bracket_initialisation_test)
+{
+    auto decInst = decorator<>::instance();
+    auto dequeBrackets = decInst.getBracket(util::BracketKey::DEQUE);
+    ASSERT_EQ(dequeBrackets.left(), "^");
+    decInst.clearBrackets();
+    dequeBrackets = decInst.getBracket(util::BracketKey::DEQUE);
+    ASSERT_EQ(dequeBrackets.left(), "");
+    decInst.setBracketForKey(util::BracketKey::DEQUE, util::Brackets{util::BracketKey::DEQUE, "new_left", "new_inner", "new_right"});
+    dequeBrackets = decInst.getBracket(util::BracketKey::DEQUE);
+    ASSERT_EQ(dequeBrackets.left(), "new_left");
+    decInst.initializeBrackets();
+    dequeBrackets = decInst.getBracket(util::BracketKey::DEQUE);
+    ASSERT_EQ(dequeBrackets.left(), "^");
+}
+
+TEST_F(DecoratorTest, int_format_initialisation_test)
+{
+    auto decInst = decorator<>::instance();
+    ASSERT_EQ(decInst.getIntFmt<int8_t>(), util::intFmt::decimal);
+    ASSERT_EQ(decInst.getIntFmt<char>(), util::intFmt::print_char);
+    ASSERT_EQ(decInst.getIntFmt<unsigned char>(), util::intFmt::decimal);
+    decInst.clearIntFormat();
+}
+
 TEST_F(DecoratorTest, default_decoration_test)
 {
-   vector<int> intVec = {1, 5, 2, 5, 7, 1, 4, 8};
-
-    cout << intVec << endl;
-
-    auto intSet = toSet(intVec);
-
-    cout << intSet << endl;
-
-#ifdef DEMONSTRATE_COMPILATION_ERROR
-    // Following will not compile which is what we want
-    struct x  // x is neither comparable by "==" nor "<"
-    {
-    };
-
-    vector<x> xVec;
-
-    auto xSet = toSet(xVec);  // this requires comparability
-#endif
-
-    unordered_set<string> strUSet = {"All", "is", "quiet", "on", "the", "western", "front"};
-    cout << strUSet << endl;
-
-    auto strSet = toSet(strUSet);
-    cout << strSet << endl;
+    auto decInst = decorator<>::instance();
 
     unordered_map<int, char> uMap = {{12, 'a'}, {2, 'b'}, {3, 'c'}, {24, 'd'}, {5, 'e'}, {6, 'f'}};
     cout << uMap << endl;
-
     auto ordMap = toMap(uMap);
     cout << "1:" << ordMap << endl;
-    decorator<char>::instance().setBracket(ordMap, "[left]", "[inner]", "[right]");
+
+    decInst.setBracketForObject(ordMap, "[left]", "[inner]", "[right]");
     cout << "2:" << ordMap << endl;
 
     deque<double> deq = {3.1415, 47.11, 1e-10, 2e10, 123.456};
-    cout << deq << endl;
+    cout << "deque:" << deq << endl;
 
-    cout << toString(char('a')) << "\t" << toString(string("Hello")) << endl;
-    wcout << toWString(wchar_t('a')) << L"\t" << toWString(wstring(L"Hello")) << endl;
+    cout << toString('a') << "\t" << toString("Hello") << endl;
+    wcout << toWString("a") << endl;
 }

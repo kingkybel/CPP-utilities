@@ -24,7 +24,7 @@
 
 #include "degree_conversion.h"
 #include "limited_int.h"
-#include "stringutil.h"
+#include "to_string.h"
 //#define DO_TRACE_
 #include "traceutil.h"
 

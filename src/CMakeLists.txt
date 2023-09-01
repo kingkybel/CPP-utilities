@@ -1,7 +1,6 @@
 add_library(dkutils STATIC
   anyutil.cc
   stringutil.cc
-  iosutil.cc
   csvutil.cc
   dateutil.cc
   graphutil.cc

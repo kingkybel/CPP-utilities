@@ -26,118 +26,80 @@
 #define NS_UTIL_BRACKETS_H_INCLUDED
 
 #include <string>
+#include <unordered_map>
 namespace util
 {
 
-template<typename StringT_ = std::string>
-class BracketsT
+namespace BracketKey
 {
-    public:
-    /**
-     * Enumeration of common bracket types.
-     */
-    enum Type
+    using Type                   = std::string_view;
+    constexpr Type NONE          = "";
+    constexpr Type BOOL          = "bool";
+    constexpr Type CHAR          = "char";
+    constexpr Type INT           = "int";
+    constexpr Type FLOAT         = "float";
+    constexpr Type STRING        = "string";
+    constexpr Type VECTOR        = "vector";
+    constexpr Type DEQUE         = "deque";
+    constexpr Type PAIR          = "pair";
+    constexpr Type TUPLE         = "tuple";
+    constexpr Type SET           = "set";
+    constexpr Type MAP           = "map";
+    constexpr Type UNORDERED_SET = "unordered_set";
+    constexpr Type UNORDERED_MAP = "unordered_map";
+    constexpr Type SLASH         = "slash";
+    constexpr Type BACKSLASH     = "backslash";
+    constexpr Type PIPE          = "pipe";
+};
+namespace
+{
+    struct LeftInnerRight
     {
-        /**
-         * No brackets.
-         */
-        NONE,
-        /**
-         * Curly brackets: "{", ",", "}".
-         */
-        BRACE,
-        /**
-         * Square brackets: "[", ",", "]".
-         */
-        BRACKET,
-        /**
-         * Chevron brackets: "<", ",", ">".
-         */
-        CHEFRON,
-        /**
-         * Round brackets: "(", ",", ")".
-         */
-        ROUND,
-        /**
-         * Pipe brackets: "|", "|", "|".
-         */
-        PIPE,
-        /**
-         * Slash brackets: "/", "/", "/".
-         */
-        SLASH,
-        /**
-         * Backslash brackets: "\", "\", "\".
-         */
-        BACKSLASH,
-        /**
-         * UNIX-path brackets.
-         */
-        UNIXPATH,
-        /**
-         * Windows-path brackets.
-         */
-        WINDOWSPATH,
-        /**
-         * Singles quotes "\'".
-         */
-        SINGLEQUOTES,
-        /**
-         * Double quotes "\"".
-         */
-        DOUBLEQUOTES,
-        /**
-         * user defined brackets.
-         */
-        USER
+        std::string left;
+        std::string inner;
+        std::string right;
     };
 
+    const auto &DEFAULT_BRACKETS = std::unordered_map<util::BracketKey::Type, LeftInnerRight>{{
+     {util::BracketKey::NONE, {"", " ", ""}},
+     {util::BracketKey::BOOL, {"", " ", ""}},
+     {util::BracketKey::CHAR, {"'", " ", "'"}},
+     {util::BracketKey::INT, {"", " ", ""}},
+     {util::BracketKey::FLOAT, {"", " ", ""}},
+     {util::BracketKey::STRING, {"\"", ",", "\""}},
+     {util::BracketKey::VECTOR, {"<", ",", ">"}},
+     {util::BracketKey::DEQUE, {"^", "<-", "$"}},
+     {util::BracketKey::PAIR, {"(", ",", ")"}},
+     {util::BracketKey::TUPLE, {"(", " ", ")"}},
+     {util::BracketKey::SET, {"{", ",", "}"}},
+     {util::BracketKey::MAP, {"[", ",", "]"}},
+     {util::BracketKey::UNORDERED_SET, {"{~", ",", "~}"}},
+     {util::BracketKey::UNORDERED_MAP, {"[~", ",", "~]"}},
+     {util::BracketKey::SLASH, {"/", "/", ""}},
+     {util::BracketKey::BACKSLASH, {"\\", "\\", ""}},
+     {util::BracketKey::PIPE, {"|", "|", "|"}},
+    }};
+
+};
+
+class Brackets
+{
+    public:
     /**
      * Default constructor.
      * @param type standard type of bracket. defaulted to NONE.
      */
-    BracketsT(Type type = NONE)
-    : type_(type)
-    , left_(type == NONE         ? "" :
-            type == BRACE        ? "{" :
-            type == BRACKET      ? "[" :
-            type == CHEFRON      ? "<" :
-            type == ROUND        ? "(" :
-            type == PIPE         ? "|" :
-            type == SLASH        ? "/" :
-            type == BACKSLASH    ? "\\" :
-            type == UNIXPATH     ? "/" :
-            type == WINDOWSPATH  ? ":\\" :
-            type == SINGLEQUOTES ? "\'" :
-            type == DOUBLEQUOTES ? "\"" :
-                                   "")
-    , inner_(type == NONE         ? " " :
-             type == BRACE        ? "," :
-             type == BRACKET      ? "," :
-             type == CHEFRON      ? "," :
-             type == ROUND        ? "," :
-             type == PIPE         ? "|" :
-             type == SLASH        ? "/" :
-             type == BACKSLASH    ? "\\" :
-             type == UNIXPATH     ? "/" :
-             type == WINDOWSPATH  ? "\\" :
-             type == SINGLEQUOTES ? "" :
-             type == DOUBLEQUOTES ? "" :
-                                    "")
-    , right_(type == NONE         ? "" :
-             type == BRACE        ? "}" :
-             type == BRACKET      ? "]" :
-             type == CHEFRON      ? ">" :
-             type == ROUND        ? ")" :
-             type == PIPE         ? "|" :
-             type == SLASH        ? "/" :
-             type == BACKSLASH    ? "\\" :
-             type == UNIXPATH     ? "" :
-             type == WINDOWSPATH  ? "" :
-             type == SINGLEQUOTES ? "\'" :
-             type == DOUBLEQUOTES ? "\"" :
-                                    "")
+    Brackets(util::BracketKey::Type type = util::BracketKey::NONE)
     {
+        auto found = util::DEFAULT_BRACKETS.find(type);
+        // only accept default bracket-keys in this constructor
+        if(found != util::DEFAULT_BRACKETS.end())
+        {
+            type_  = std::string{type};
+            left_  = std::string{found->second.left};
+            inner_ = std::string{found->second.inner};
+            right_ = std::string{found->second.right};
+        }
     }
 
     /**
@@ -147,15 +109,15 @@ class BracketsT
      * @param inner inner bracket string
      * @param right right bracket string
      */
-    BracketsT(const std::string &left, const std::string &inner, const std::string &right)
-    : type_(USER)
+    Brackets(util::BracketKey::Type type, const std::string &left, const std::string &inner, const std::string &right)
+    : type_(std::string{type})
     , left_(left)
     , inner_(inner)
     , right_(right)
     {
     }
 
-    BracketsT(const BracketsT &rhs) = default;
+    Brackets(const Brackets &rhs) = default;
 
     /**
      * Get the left (opening) bracket.
@@ -194,10 +156,11 @@ class BracketsT
     }
 
     private:
-    const Type        type_;
-    const std::string left_;
-    const std::string inner_;
-    const std::string right_;
+    // save the values as std::string and convert to different string types when required
+    std::string type_;
+    std::string left_;
+    std::string inner_;
+    std::string right_;
 };
 };  // namespace util
 

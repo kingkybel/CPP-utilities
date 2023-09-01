@@ -26,6 +26,7 @@
 #define NS_UTIL_MATRIX_H_INCLUDED
 
 #include "stringutil.h"
+#include "to_string.h"
 //#define DO_TRACE_
 #include "traceutil.h"
 

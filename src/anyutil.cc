@@ -23,9 +23,12 @@
  */
 
 #include "anyutil.h"
+#include "to_string.h"
+#include "stringutil.h"
 //#define DO_TRACE_
 #include "traceutil.h"
 
+using namespace util;
 namespace util
 {
 using namespace std;

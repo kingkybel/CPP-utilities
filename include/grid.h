@@ -38,7 +38,7 @@
 namespace util
 {
 /**
- * General grid exception.
+ * @brief General grid exception.
  */
 class grid_error : public std::out_of_range
 {
@@ -48,10 +48,18 @@ class grid_error : public std::out_of_range
     }
 };
 
+/**
+ * @brief Base class for grid-shaped containers (2-dimensional)
+ *
+ * @tparam EL_TYPE element-type
+ */
 template<class EL_TYPE>
-class gridItf
+class gridBase
 {
     public:
+    /**
+     * @brief enumeration of modes for growing the grid
+     */
     enum class Mode
     {
         NoAutoGrow = 0x0,
@@ -60,6 +68,9 @@ class gridItf
         AutoGrow   = Mode::AutoGrowX | Mode::AutoGrowY
     };
 
+    /**
+     * @brief display modes
+     */
     enum class DisplayMode
     {
         Sparse = 0x01,
@@ -68,18 +79,18 @@ class gridItf
     };
 
     /**
-     * Default constructor.
+     * @brief Default constructor.
      */
-    gridItf(EL_TYPE defaultValue = EL_TYPE()) : defaultValue_(defaultValue), mode_(Mode::AutoGrow)
+    gridBase(EL_TYPE defaultValue = EL_TYPE()) : defaultValue_(defaultValue), mode_(Mode::AutoGrow)
     {
     }
 
-    gridItf(const gridItf<EL_TYPE> &rhs)            = default;
-    virtual ~gridItf()                              = default;
-    gridItf &operator=(const gridItf<EL_TYPE> &rhs) = default;
+    gridBase(const gridBase<EL_TYPE> &rhs)            = default;
+    virtual ~gridBase()                               = default;
+    gridBase &operator=(const gridBase<EL_TYPE> &rhs) = default;
 
     /**
-     * Set the mode to a new one.
+     * @brief Set the mode to a new one.
      *
      * @param mode the new mode
      */
@@ -89,13 +100,43 @@ class gridItf
     }
 
     /**
-     * Retrieve the currently set mode.
+     * @brief Retrieve the currently set mode.
      *
      * @return the currently set mode
      */
     Mode getMode() const
     {
         return (mode_);
+    }
+
+    /**
+     * @brief Check whether autogrow in X-dimention is set.
+     *
+     * @return true, if set, false otherwise
+     */
+    Mode isAutoGrowX() const
+    {
+        return ((mode_ | Mode::AutoGrowX) == Mode::AutoGrowX);
+    }
+
+    /**
+     * @brief Check whether autogrow in Y-dimention is set.
+     *
+     * @return true, if set, false otherwise
+     */
+    Mode isAutoGrowY() const
+    {
+        return ((mode_ | Mode::AutoGrowY) == Mode::AutoGrowY);
+    }
+
+    /**
+     * @brief Check whether autogrow in X- and Y-dimention is set.
+     *
+     * @return true, if set, false otherwise
+     */
+    Mode isAutoGrow() const
+    {
+        return ((mode_ | Mode::AutoGrow) == Mode::AutoGrow);
     }
 
     ////////////////////////////////////////////////////////////////////////
@@ -114,7 +155,7 @@ class gridItf
     ////////////////////////////////////////////////////////////////////////
 
     /**
-     * Retrieve the default value used if an element is not explicitly set.
+     * @brief Retrieve the default value used if an element is not explicitly set.
      *
      * @return the default value.
      */
@@ -124,7 +165,7 @@ class gridItf
     }
 
     /**
-     * Retrieve a reference to the default value used if an element is not explicitly set.
+     * @brief Retrieve a reference to the default value used if an element is not explicitly set.
      *
      * @return  reference to the default value.
      */
@@ -134,7 +175,7 @@ class gridItf
     }
 
     /**
-     * Set the default value used if an element is not explicitly set.
+     * @brief Set the default value used if an element is not explicitly set.
      *
      * @param defaultValue new default value
      */
@@ -148,11 +189,14 @@ class gridItf
     Mode    mode_;
 };
 
+/**
+ * @brief index-class for 2-dimensional container (grid)
+ */
 class index_pair : public std::pair<size_t, size_t>
 {
     public:
     /**
-     * Default constructor.
+     * @brief Default constructor.
      * @param x x-coordinate
      * @param y y-coordinate
      */
@@ -165,7 +209,7 @@ class index_pair : public std::pair<size_t, size_t>
     index_pair &operator=(const index_pair &rhs) = default;
 
     /**
-     * Get the x-component.
+     * @brief Get the x-component.
      *
      * @return reference to the x-component
      */
@@ -175,7 +219,7 @@ class index_pair : public std::pair<size_t, size_t>
     }
 
     /**
-     * Get the y-component.
+     * @brief Get the y-component.
      *
      * @return reference to the y-component
      */
@@ -185,7 +229,7 @@ class index_pair : public std::pair<size_t, size_t>
     }
 
     /**
-     * Get the x-component.
+     * @brief Get the x-component.
      *
      * @return value of the x-component
      */
@@ -195,7 +239,7 @@ class index_pair : public std::pair<size_t, size_t>
     }
 
     /**
-     * Get the y-component.
+     * @brief Get the y-component.
      *
      * @return value of the y-component
      */
@@ -205,7 +249,7 @@ class index_pair : public std::pair<size_t, size_t>
     }
 
     /**
-     * Lexical equality of two index_pair's.
+     * @brief Lexical equality of two index_pair's.
      *
      * @param lhs left-hand-side
      * @param rhs right-hand-side
@@ -216,7 +260,7 @@ class index_pair : public std::pair<size_t, size_t>
     }
 
     /**
-     * Lexical inequality of two index_pair's.
+     * @brief Lexical inequality of two index_pair's.
      *
      * @param lhs left-hand-side
      * @param rhs right-hand-side
@@ -227,7 +271,7 @@ class index_pair : public std::pair<size_t, size_t>
     }
 
     /**
-     * Lexical smaller than of two index_pair's.
+     * @brief Lexical smaller than of two index_pair's.
      *
      * @param lhs left-hand-side
      * @param rhs right-hand-side
@@ -238,18 +282,18 @@ class index_pair : public std::pair<size_t, size_t>
     }
 
     /**
-     * Lexical smaller or equal than of two index_pair's.
+     * @brief Lexical smaller or equal than of two index_pair's.
      *
      * @param lhs left-hand-side
      * @param rhs right-hand-side
      */
     friend bool operator<=(const index_pair &lhs, const index_pair &rhs)
     {
-        return ((y() < rhs.y()) || ((y() == rhs.y()) && (x() <= rhs.x())));
+        return ((lhs.y() < rhs.y()) || ((lhs.y() == rhs.y()) && (lhs.x() <= rhs.x())));
     }
 
     /**
-     * Lexical bigger than of two index_pair's.
+     * @brief Lexical bigger than of two index_pair's.
      *
      * @param lhs left-hand-side
      * @param rhs right-hand-side
@@ -260,7 +304,7 @@ class index_pair : public std::pair<size_t, size_t>
     }
 
     /**
-     * Lexical bigger or equal than of two index_pair's.
+     * @brief Lexical bigger or equal than of two index_pair's.
      *
      * @param lhs left-hand-side
      * @param rhs right-hand-side
@@ -271,7 +315,7 @@ class index_pair : public std::pair<size_t, size_t>
     }
 
     /**
-     * Out-stream operator.
+     * @brief Out-stream operator.
      *
      * @param os standard out-stream reference
      * @param ind the index_pair to stream
@@ -286,7 +330,7 @@ class index_pair : public std::pair<size_t, size_t>
     }
 
     /**
-     * Increment the two-dimensional index according to the given boundaries.
+     * @brief Increment the two-dimensional index according to the given boundaries.
      * Wraps around to the next row when the end of the column is reached.
      *
      * @param dims the boundaries
@@ -302,7 +346,7 @@ class index_pair : public std::pair<size_t, size_t>
     }
 
     /**
-     * Check whether this is within the given boundaries.
+     * @brief Check whether this is within the given boundaries.
      *
      * @param dims  the boundaries
      *
@@ -314,14 +358,22 @@ class index_pair : public std::pair<size_t, size_t>
     }
 };
 
+/**
+ * @brief Specialisation of the gridBase class that is used for sparse population
+ * 
+ * @tparam EL_TYPE element-type 
+ */
 template<typename EL_TYPE = long double>
-class sparse_grid : public gridItf<EL_TYPE>
+class sparse_grid : public gridBase<EL_TYPE>
 {
     private:
     using DATA_CONTAINER = std::map<index_pair, EL_TYPE>;
     using INDEXSET       = std::set<size_t>;
     using INDEXSETMAP    = std::map<size_t, INDEXSET>;
 
+    /**
+     * @brief enumeration of modes how to set an index
+     */
     enum class IndexSetOper
     {
         Insert = 0x01,
@@ -329,13 +381,12 @@ class sparse_grid : public gridItf<EL_TYPE>
     };
 
     public:
-    using gridItf;
     using iterator  = typename DATA_CONTAINER::iterator;
     using iteratorX = INDEXSET::iterator;
     using iteratorY = INDEXSET::iterator;
 
     /**
-     * Iterator into the raw underlying data container.
+     * @brief Iterator into the raw underlying data container.
      *
      * @return the begin() iterator of the underlying data
      */
@@ -345,7 +396,7 @@ class sparse_grid : public gridItf<EL_TYPE>
     }
 
     /**
-     * Just beyond the end of the raw underlying data container.
+     * @brief Just beyond the end of the raw underlying data container.
      *
      * @return the end() iterator of the underlying data
      */
@@ -355,7 +406,7 @@ class sparse_grid : public gridItf<EL_TYPE>
     }
 
     /**
-     * The iterator to the first logical non-default element in X-direction
+     * @brief The iterator to the first logical non-default element in X-direction
      * at row y.
      *
      * @param y the row index
@@ -368,7 +419,7 @@ class sparse_grid : public gridItf<EL_TYPE>
 
         if(indexIter == xIndices_.end())
         {
-            return (nullptr);
+            return (iteratorX{nullptr});
         }
 
         auto xIter = (indexIter->second).begin();
@@ -377,7 +428,7 @@ class sparse_grid : public gridItf<EL_TYPE>
     }
 
     /**
-     * Just beyond the end of the  logical non-default element in X-direction.
+     * @brief Just beyond the end of the  logical non-default element in X-direction.
      * @return the end() iterator in x-direction at y
      */
     iteratorX endX(size_t y)
@@ -386,24 +437,36 @@ class sparse_grid : public gridItf<EL_TYPE>
 
         if(indexIter == xIndices_.end())
         {
-            return (nullptr);
+            return (iteratorX{nullptr});
         }
 
         return ((indexIter->second).end());
     }
 
+    /**
+     * @brief Check whether the given X-dimension-iterator is valid or not
+     * 
+     * @param iter the X-dimension iterator
+     * @return true, if valid, false otherwise
+     */
     bool iteratorXValid(iteratorX iter)
     {
-        return ((iter == nullptr) ? false : true);
-    }
-
-    bool iteratorYValid(iteratorY iter)
-    {
-        return ((iter == nullptr) ? false : true);
+        return ((iter == iteratorX{nullptr}) ? false : true);
     }
 
     /**
-     * The iterator to the first logical non-default element in Y-direction
+     * @brief Check whether the given Y-dimension-iterator is valid or not
+     * 
+     * @param iter the Y-dimension iterator
+     * @return true, if valid, false otherwise
+     */
+    bool iteratorYValid(iteratorY iter)
+    {
+        return ((iter == iteratorY{nullptr}) ? false : true);
+    }
+
+    /**
+     * @brief The iterator to the first logical non-default element in Y-direction
      * at column x.
      * @param x the column index
      * @return iterator to the first logical non-default element in X-direction
@@ -414,7 +477,7 @@ class sparse_grid : public gridItf<EL_TYPE>
 
         if(indexIter == yIndices_.end())
         {
-            return (nullptr);
+            return (iteratorY{nullptr});
         }
 
         auto yIter = (indexIter->second).begin();
@@ -423,7 +486,7 @@ class sparse_grid : public gridItf<EL_TYPE>
     }
 
     /**
-     * Just beyond the end of the  logical non-default element in Y-direction.
+     * @brief Just beyond the end of the  logical non-default element in Y-direction.
      * @param x the column index
      * @return the end() iterator in y-direction at x
      */
@@ -433,22 +496,25 @@ class sparse_grid : public gridItf<EL_TYPE>
 
         if(indexIter == yIndices_.end())
         {
-            return (nullptr);
+            return (iteratorY{nullptr});
         }
 
         return ((indexIter->second).end());
     }
 
     /**
-     * Default constructor.
+     * @brief Default constructor.
      *
-     * @param dimX
-     * @param dimY
-     * @param defaultValue
-     * @param mode
+     * @param dimX size of X-dimension
+     * @param dimY size of Y-dimension
+     * @param defaultValue default value to return if a cell has not been set
+     * @param mode auto-grow behaviour
      */
-    sparse_grid(size_t dimX = 0, size_t dimY = 0, EL_TYPE defaultValue = EL_TYPE(), Mode mode = Mode::AutoGrow)
-    : gridItf(defaultValue)
+    sparse_grid(size_t                                 dimX         = 0,
+                size_t                                 dimY         = 0,
+                EL_TYPE                                defaultValue = EL_TYPE(),
+                typename util::gridBase<EL_TYPE>::Mode mode         = util::gridBase<EL_TYPE>::Mode::AutoGrow)
+    : util::gridBase<EL_TYPE>(defaultValue)
     , dims_(dimX, dimY)
     {
         setMode(mode);
@@ -459,7 +525,7 @@ class sparse_grid : public gridItf<EL_TYPE>
     sparse_grid<EL_TYPE> operator=(const sparse_grid<EL_TYPE> &rhs) = default;
 
     /**
-     * Set the element value at coorinates (x, y).
+     * @brief Set the element value at coorinates (x, y).
      *
      * @param x X-position
      * @param y Y-position
@@ -467,17 +533,17 @@ class sparse_grid : public gridItf<EL_TYPE>
      */
     void set(const size_t x, const size_t y, const EL_TYPE &value)
     {
-        Mode mode = getMode();
+        auto autoGrowX = this->util::gridBase<EL_TYPE>::isAutoGrowX();
+        auto autoGrowY = this->util::gridBase<EL_TYPE>::isAutoGrowY();
 
-        if((x < dims_.x() || (mode | Mode::AutoGrowX == Mode::AutoGrowX))
-           && (y < dims_.y() || (mode | Mode::AutoGrowY == Mode::AutoGrowY)))
+        if((x < dims_.x() || autoGrowX) && (y < dims_.y() || autoGrowY))
         {
             index_pair insertIndex;
 
             insertIndex.x() = x;
             insertIndex.y() = y;
 
-            if(value != getDefaultValue())
+            if(value != this->util::gridBase<EL_TYPE>::getDefaultValue())
             {
                 data_.insert(DATA_CONTAINER::value_type(insertIndex, value));
                 updateIndexSets(x, y, IndexSetOper::Insert);
@@ -497,12 +563,12 @@ class sparse_grid : public gridItf<EL_TYPE>
         }
         else
         {
-            throw grid_error("Set a value at " + toString(index_pair) + " out of bounds" + toString(dims_) + ".");
+            throw grid_error("Set a value at " + toString(index_pair(x, y)) + " out of bounds" + toString(dims_) + ".");
         }
     }
 
     /**
-     * Retrieve the element at coordinates (x,y) if possible.
+     * @brief Retrieve the element at coordinates (x,y) if possible.
      *
      * @param x X-position
      * @param y Y-position
@@ -513,14 +579,15 @@ class sparse_grid : public gridItf<EL_TYPE>
 
     {
         index_pair ind(x, y);
-        auto       iter = data_.find(ind);
+        auto       iter      = data_.find(ind);
+        auto       autoGrowX = this->util::gridBase<EL_TYPE>::isAutoGrowX();
+        auto       autoGrowY = this->util::gridBase<EL_TYPE>::isAutoGrowY();
 
-        if((x < dims_.x() || (getMode() | Mode::AutoGrowX) == Mode::AutoGrowX)
-           && (y < dims_.y() || (getMode() | Mode::AutoGrowY) == Mode::AutoGrowY))
+        if((x < dims_.x() || autoGrowX) && (y < dims_.y() || autoGrowY))
         {
             if(iter == data_.end())
             {
-                set(x, y, getDefaultValue());
+                set(x, y, this->util::gridBase<EL_TYPE>::getDefaultValue());
                 iter = data_.find(index_pair(x, y));
             }
         }
@@ -533,7 +600,7 @@ class sparse_grid : public gridItf<EL_TYPE>
     }
 
     /**
-     * Retrieve the element at coordinates (x,y) if possible.
+     * @brief Retrieve the element at coordinates (x,y) if possible.
      *
      * @param x X-position
      * @param y Y-position
@@ -548,14 +615,14 @@ class sparse_grid : public gridItf<EL_TYPE>
 
         if(iter == data_.end())
         {
-            return (getDefaultValue());
+            return (this->util::gridBase<EL_TYPE>::getDefaultValue());
         }
 
         return (iter->second);
     }
 
     /**
-     * Resize the grid to new dimensions.
+     * @brief Resize the grid to new dimensions.
      *
      * @param nNewSizeX new size in x-dimension
      * @param nNewSizeY new size in y-dimension
@@ -595,7 +662,7 @@ class sparse_grid : public gridItf<EL_TYPE>
     }
 
     /**
-     * Retrieve the size in x-dimension.
+     * @brief Retrieve the size in x-dimension.
      * @return the size in x-dimension
      */
     size_t sizeX() const
@@ -604,7 +671,7 @@ class sparse_grid : public gridItf<EL_TYPE>
     }
 
     /**
-     * Retrieve the size in y-dimension.
+     * @brief Retrieve the size in y-dimension.
      * @return the size in y-dimension
      */
     size_t sizeY() const
@@ -612,15 +679,16 @@ class sparse_grid : public gridItf<EL_TYPE>
         return (dims_.y());
     }
 
-    /**
-     *
-     * @param mode
-     */
-    void show(DisplayMode mode = DisplayMode::Stats)
-    {
-        cout << "rect Data " << dims_.x() << " x " << dims_.y() << endl;
 
-        if((mode | DisplayMode::Stats) == DisplayMode::Stats)
+    /**
+     * @brief Show the grid on cout stream
+     * 
+     * @param mode display mode
+     */
+    void show(typename util::gridBase<EL_TYPE>::DisplayMode mode = util::gridBase<EL_TYPE>::DisplayMode::Stats)
+    {
+        std::cout << "grid sizeX=" << sizeX() << "grid sizeY=" << sizeY() << std::endl;
+        if((mode | util::gridBase<EL_TYPE>::DisplayMode::Stats) == util::gridBase<EL_TYPE>::DisplayMode::Stats)
         {
             double totalValues = static_cast<double>(sizeX()) * static_cast<double>(sizeY());
             double fillPercentage;
@@ -629,12 +697,12 @@ class sparse_grid : public gridItf<EL_TYPE>
                 fillPercentage = (tatic_cast<double>((data_.size())) / (totalValues)) * 100.0;
             else
                 fillPercentage = 0.0;
-            cout << "\telements different from default value:" << fillPercentage << "%" << endl;
+            std::cout << "\telements different from default value:" << fillPercentage << "%" << std::endl;
         }
 
         auto iter = data_.begin();
 
-        if((mode | DisplayMode::Full) == DisplayMode::Full)
+        if((mode | util::gridBase<EL_TYPE>::DisplayMode::Full) == util::gridBase<EL_TYPE>::DisplayMode::Full)
         {
             index_pair runner;
             index_pair start(0, 0);
@@ -654,23 +722,23 @@ class sparse_grid : public gridItf<EL_TYPE>
                     // before end
                     for(runner = start; runner != end && runner.isWithinBounds(dims_); runner.increment(dims_))
                     {
-                        cout << getDefaultValue();
+                        std::cout << this->util::gridBase<EL_TYPE>::getDefaultValue();
                         if(runner.x() == dims_.x() - 1)
-                            cout << endl;
+                            std::cout << std::endl;
                         else
-                            cout << ",";
+                            std::cout << ",";
                     }
 
                     start = end;
                     start.increment(dims_);
                 }
 
-                cout << iter->second;
+                std::cout << iter->second;
 
                 if((iter->first).x() == dims_.x() - 1)
-                    cout << endl;
+                    std::cout << std::endl;
                 else
-                    cout << ",";
+                    std::cout << ",";
 
                 iter++;
             }
@@ -678,20 +746,20 @@ class sparse_grid : public gridItf<EL_TYPE>
             // now write the remaining fields
             for(runner = start; runner.isWithinBounds(dims_); runner.increment(dims_))
             {
-                cout << getDefaultValue();
+                std::cout << this->util::gridBase<EL_TYPE>::getDefaultValue();
                 if(runner.x() == dims_.x() - 1)
-                    cout << endl;
+                    std::cout << std::endl;
                 else
-                    cout << ",";
+                    std::cout << ",";
             }
         }
-        else if((mode | DisplayMode::Sparse) == DisplayMode::Sparse)
+        else if((mode | util::gridBase<EL_TYPE>::DisplayMode::Sparse) == util::gridBase<EL_TYPE>::DisplayMode::Sparse)
         {
             size_t line = 0;
 
             if(iter != data_.end())
             {
-                cout << "line [" << (iter->first).y() << "]\t";
+                std::cout << "line [" << (iter->first).y() << "]\t";
                 line = (iter->first).y();
             }
 
@@ -699,16 +767,16 @@ class sparse_grid : public gridItf<EL_TYPE>
             {
                 if(line != (iter->first).y())
                 {
-                    cout << endl;
+                    std::cout << std::endl;
                     line = (iter->first).y();
-                    cout << "line [" << line << "]\t";
+                    std::cout << "line [" << line << "]\t";
                 }
 
-                cout << "[" << (iter->first).x() << "]" << iter->second << " ";
+                std::cout << "[" << (iter->first).x() << "]" << iter->second << " ";
                 iter++;
             }
 
-            cout << endl;
+            std::cout << std::endl;
         }
 
         /*
@@ -754,7 +822,7 @@ class sparse_grid : public gridItf<EL_TYPE>
     }
 
     /**
-     * Clear the grid and set all values to the same value.
+     * @brief Clear the grid and set all values to the same value.
      * @param value the new value
      */
     void setAll(const EL_TYPE &value)
@@ -764,7 +832,7 @@ class sparse_grid : public gridItf<EL_TYPE>
     }
 
     /**
-     * Retrieve the element at position (x, y).
+     * @brief Retrieve the element at position (x, y).
      *
      * @param x X-position
      * @param y Y-position
@@ -777,7 +845,7 @@ class sparse_grid : public gridItf<EL_TYPE>
     }
 
     /**
-     * Retrieve the element at position (x, y) as non constant reference.
+     * @brief Retrieve the element at position (x, y) as non constant reference.
      *
      * @param x X-position
      * @param y Y-position
@@ -788,9 +856,7 @@ class sparse_grid : public gridItf<EL_TYPE>
     {
         if(x >= sizeX() || y >= sizeY())
         {
-            long mode = getMode();
-
-            if((mode | Mode::AutoGrow) != Mode::AutoGrow)
+            if(!this->util::gridBase<EL_TYPE>::isAutoGrow())
             {
                 throw grid_error("Get a value at " + toString(index_pair(x, y)) + " out of bounds" + toString(dims_)
                                  + ".");
@@ -803,7 +869,7 @@ class sparse_grid : public gridItf<EL_TYPE>
     }
 
     /**
-     * Insert or remove indices.
+     * @brief Insert or remove indices.
      *
      * @param x X-position
      * @param y Y-position
@@ -829,7 +895,7 @@ class sparse_grid : public gridItf<EL_TYPE>
 
             ((yIndices_.find(x))->second).insert(y);
         }
-        else if(mode == IndexSetOper::Remove)
+        else if(operationMode == IndexSetOper::Remove)
         {
             if(xIndices_.find(y) != xIndices_.end())
             {
@@ -843,76 +909,69 @@ class sparse_grid : public gridItf<EL_TYPE>
     }
 
     /**
-     * Output information about index-set (x, y).
+     * @brief Output information about index-set (x, y).
+     * 
+     * @param x X-coordinate
+     * @param y Y-coordinate
      */
     void indexSetInfo(size_t x, size_t y)
     {
         auto iterX = xIndices_.find(y);
         auto iterY = yIndices_.find(x);
 
-        cout << "m_xIndices=" << xIndices_.size() << " m_yIndices=" << yIndices_.size() << endl;
+        std::cout << "m_xIndices=" << xIndices_.size() << " m_yIndices=" << yIndices_.size() << std::endl;
 
         if(iterX == xIndices_.end())
-            cout << "==== row " << y << " not found,";
+            std::cout << "==== row " << y << " not found,";
         else
         {
-            cout << (iterX->second).size() << " x-Indices attached to row " << y << endl;
+            std::cout << (iterX->second).size() << " x-Indices attached to row " << y << std::endl;
 
             auto iy = (iterX->second).begin();
 
             while(iy != (iterX->second).end())
             {
-                cout << *iy << ",";
+                std::cout << *iy << ",";
                 iy++;
             }
-            cout << endl;
+            std::cout << std::endl;
         }
 
         if(iterY == yIndices_.end())
-            cout << " line " << x << " not found,";
+            std::cout << " line " << x << " not found,";
         else
         {
-            cout << (iterY->second).size() << " y-Indices attached to row " << x << endl;
+            std::cout << (iterY->second).size() << " y-Indices attached to row " << x << std::endl;
 
             auto ix = (iterY->second).begin();
 
             while(ix != (iterY->second).end())
             {
-                cout << *ix << ",";
+                std::cout << *ix << ",";
                 ix++;
             }
 
-            cout << endl;
+            std::cout << std::endl;
         }
 
-        cout << endl;
+        std::cout << std::endl;
     }
 
     /**
-     * @Name:       createDataEntry
-     * @Purpose:
-     * @Arguments:  @* x -  @nl
-     *              @* y -  @nl
-     * @Returns:    void
-     * @Description:
-     */
-    /**
-     * Create a data-entry at (x, y).
+     * @brief Create a data-entry at (x, y).
      *
      * @param x X-position
      * @param y Y-position
      */
     void createDataEntry(const size_t x, const size_t y)
     {
-        long mode = getMode();
-
-        if(((x < dims_.x()) && (y < dims_.y())) || ((mode | Mode::AutoGrow) == Mode::AutoGrow))
+        if((x < dims_.x()) && (y < dims_.y()) || this->util::gridBase<EL_TYPE>::isAutoGrow())
         {
             index_pair insertPoint;
 
             insertPoint.x() = x;
             insertPoint.y() = y;
-            data_.insert(DATA_CONTAINER::value_type(insertPoint, getDefaultValue()));
+            data_.insert(DATA_CONTAINER::value_type(insertPoint, this->util::gridBase<EL_TYPE>::getDefaultValue()));
             updateIndexSets(x, y, IndexSetOper::Insert);
             dims_.x() = std::max(dims_.x(), x + 1);
             dims_.y() = std::max(dims_.y(), y + 1);
@@ -930,8 +989,13 @@ class sparse_grid : public gridItf<EL_TYPE>
     INDEXSETMAP    yIndices_;
 };
 
+/**
+ * @brief Specialisation of the gridBase class that expexts to be non-sparsely populated
+ * 
+ * @tparam EL_TYPE element-type 
+ */
 template<typename EL_TYPE = long double>
-class grid : public gridItf<EL_TYPE>
+class grid : public gridBase<EL_TYPE>
 {
     private:
     using EL_VECT   = std::vector<EL_TYPE>;
@@ -942,15 +1006,18 @@ class grid : public gridItf<EL_TYPE>
 
     public:
     /**
-     * Default constructor.
+     * @brief Default constructor.
      *
      * @param dimX X-dimension
      * @param dimY Y-dimension
      * @param pDefaultValue default value to use when a data value has not been explicitly set
      * @param mode mode to use for this grid
      */
-    grid(const size_t dimX = 0, const size_t dimY = 0, EL_TYPE *pDefaultValue = 0, Mode mode = Mode::AutoGrow)
-    : gridItf<EL_TYPE>()
+    grid(const size_t                           dimX          = 0,
+         const size_t                           dimY          = 0,
+         EL_TYPE                               *pDefaultValue = 0,
+         typename util::gridBase<EL_TYPE>::Mode mode          = util::gridBase<EL_TYPE>::Mode::AutoGrow)
+    : gridBase<EL_TYPE>()
     {
         setMode(mode);
 
@@ -970,7 +1037,7 @@ class grid : public gridItf<EL_TYPE>
     grid<EL_TYPE> &operator=(const grid<EL_TYPE> &rhs) = default;
 
     /**
-     * Retrieve the (current) size of the grid in X-dimensiuon.
+     * @brief Retrieve the (current) size of the grid in X-dimensiuon.
      *
      * @return the size
      */
@@ -980,7 +1047,7 @@ class grid : public gridItf<EL_TYPE>
     }
 
     /**
-     * Retrieve the (current) size of the grid in Y-dimensiuon.
+     * @brief Retrieve the (current) size of the grid in Y-dimensiuon.
      *
      * @return the size; if size in X dimension is 0, then size in Y-dimension is automatically also 0.
      */
@@ -997,7 +1064,7 @@ class grid : public gridItf<EL_TYPE>
     }
 
     /**
-     * Resize the grid no new dimensions.
+     * @brief Resize the grid no new dimensions.
      *
      * @param newX new X-dimension
      * @param newY new Y-dimension
@@ -1014,7 +1081,7 @@ class grid : public gridItf<EL_TYPE>
     }
 
     /**
-     * Retrieve the element at posion (x, y).
+     * @brief Retrieve the element at posion (x, y).
      *
      * @param x X-position
      * @param y Y-position
@@ -1027,7 +1094,7 @@ class grid : public gridItf<EL_TYPE>
     }
 
     /**
-     * Set all elements to the same value.
+     * @brief Set all elements to the same value.
      *
      * @param value the new value
      */
@@ -1043,7 +1110,7 @@ class grid : public gridItf<EL_TYPE>
     }
 
     /**
-     * Set a new value for element (x, y).
+     * @brief Set a new value for element (x, y).
      *
      * @param x X-position
      * @param y Y-position
@@ -1053,9 +1120,7 @@ class grid : public gridItf<EL_TYPE>
     {
         if(x >= sizeX() || y >= sizeY())
         {
-            long mode = getMode();
-
-            if((mode | Mode::AutoGrow) == Mode::AutoGrow)
+            if(this->util::gridBase<EL_TYPE>::isAutoGrow())
             {
                 resize(std::max(x + 1, sizeX()), std::max(y + 1, sizeY()));
             }
@@ -1065,7 +1130,7 @@ class grid : public gridItf<EL_TYPE>
     }
 
     /**
-     * Retrieve a reference to the element at position (x, y).
+     * @brief Retrieve a reference to the element at position (x, y).
      *
      * @param x X-position
      * @param y Y-position
@@ -1076,9 +1141,7 @@ class grid : public gridItf<EL_TYPE>
     {
         if(x >= sizeX() || y >= sizeY())
         {
-            long mode = getMode();
-
-            if((mode | Mode::AutoGrow) == Mode::AutoGrow)
+            if(this->util::gridBase<EL_TYPE>::isAutoGrow())
             {
                 resize(std::max(x + 1, sizeX()), std::max(y + 1, sizeY()));
             }
@@ -1088,7 +1151,7 @@ class grid : public gridItf<EL_TYPE>
     }
 
     /**
-     * Retrieve the element at position (x, y).
+     * @brief Retrieve the element at position (x, y).
      *
      * @param x X-position
      * @param y Y-position
@@ -1099,32 +1162,34 @@ class grid : public gridItf<EL_TYPE>
     {
         if(x >= sizeX() || y >= sizeY())
         {
-            throw grid_error("Get a value at " + toString(index_pair(x, y)) + " out of bounds" + toString(dims_) + ".");
+            throw grid_error("Get a value at " + toString(index_pair(x, y)) + " out of bounds [" + sizeX() + ","
+                             + sizeY() + "].");
         }
 
         return ((values_[x])[y]);
     }
 
     /**
-     * Output a grid.
+     * @brief Output a grid.
      *
      * @param mode
      */
-    void show(DisplayMode mode = DisplayMode::Full /*unused*/)
+    void
+     show(typename util::gridBase<EL_TYPE>::DisplayMode mode = util::gridBase<EL_TYPE>::DisplayMode::Full /*unused*/)
     {
-        cout << "Rectangular Data (" << sizeX() << " x " << sizeY() << ")" << endl;
+        std::cout << "Rectangular Data (" << sizeX() << " x " << sizeY() << ")" << std::endl;
 
         for(size_t y = 0; y < sizeY(); y++)
         {
             for(size_t x = 0; x < sizeX(); x++)
             {
-                cout << get(x, y) << "\t";
+                std::cout << get(x, y) << "\t";
             }
 
-            cout << endl;
+            std::cout << std::endl;
         }
 
-        cout << "\n---\n" << endl;
+        std::cout << "\n---\n" << std::endl;
     }
 };
 

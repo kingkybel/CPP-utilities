@@ -156,3 +156,35 @@ TEST_F(ContainerConvertTest, toOrderedKeySet_test)
     for(const auto& kv: strIntUMap)
         ASSERT_NE(strSet.find(kv.first), strSet.end());
 }
+
+TEST_F(ContainerConvertTest, vector_toSet_compile_error_test)
+{
+#ifdef VECTOR_TO_SET_COMPILATION_ERROR
+    // Following will not compile which is what we want
+    struct x  // x is neither comparable by "==" nor "<"
+    {
+    };
+
+    vector<x> xVec;
+
+    auto xSet = toSet(xVec);  // this requires comparability
+#else
+    cout << "Pass parameter '-DVECTOR_TO_SET_COMPILATION_ERROR' to verify static assert works" << endl;
+#endif
+}
+
+TEST_F(ContainerConvertTest, unordered_set_toSet_compile_error_test)
+{
+#ifdef UNORDERED_SET_TO_SET_COMPILATION_ERROR
+    // Following will not compile which is what we want
+    struct x  // x is neither comparable by "==" nor "<"
+    {
+    };
+
+    unordered_set<x> xVec;
+
+    auto xSet = toSet(xVec);  // this requires comparability
+#else
+    cout << "Pass parameter '-DUNORDERED_SET_TO_SET_COMPILATION_ERROR' to verify static assert works" << endl;
+#endif
+}

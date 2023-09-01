@@ -25,6 +25,7 @@
 #ifndef NS_UTIL_STATUTIL_H_INCLUDED
 #define NS_UTIL_STATUTIL_H_INCLUDED
 #include "csvutil.h"
+#include "to_string.h"
 
 #include <algorithm>
 #include <anyutil.h>

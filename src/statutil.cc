@@ -23,6 +23,7 @@
  */
 
 #include "statutil.h"
+#include "to_string.h"
 //#define DO_TRACE_
 #include "traceutil.h"
 

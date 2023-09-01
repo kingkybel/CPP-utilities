@@ -25,7 +25,7 @@
 #ifndef NS_UTIL_GRAPHUTIL_H_INCLUDED
 #define NS_UTIL_GRAPHUTIL_H_INCLUDED
 
-#include "stringutil.h"
+#include "to_string.h"
 
 #include <boost/concept_check.hpp>
 #include <boost/graph/adjacency_list.hpp>

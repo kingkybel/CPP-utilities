@@ -25,10 +25,11 @@
 #ifndef NS_UTIL_STRINGUTIL_H_INCLUDED
 #define NS_UTIL_STRINGUTIL_H_INCLUDED
 
-#include "iosutil.h"
+//#define DO_TRACE_
+#include "traceutil.h"
 
 #include <algorithm>
-#include <ctime>  // for struct tm
+#include <ctime>
 #include <deque>
 #include <functional>
 #include <iostream>
@@ -40,8 +41,6 @@
 #include <unordered_map>
 #include <unordered_set>
 #include <vector>
-//#define DO_TRACE_
-#include "traceutil.h"
 
 namespace util
 {
@@ -63,18 +62,6 @@ enum class StripTrimMode : unsigned char
     OUTSIDE = FRONT | BACK,          ///< Strip or trim the left-hand-side and right-hand-side
     ALL     = FRONT | INSIDE | BACK  ///< Strip or trim all occurences in the string
 };
-
-/**
- * Convert objects to a string, provided a ostream - &lt;&lt; operator is defined.
- */
-template<typename T_>
-inline std::string toString(const T_ &v)
-{
-    std::stringstream ss;
-    ss << v;
-
-    return (ss.str());
-}
 
 /**
  * Generic ostream - &lt;&lt; operator for vectors.

@@ -74,6 +74,7 @@
         "unordered_set": "cpp",
         "*.ipp": "cpp",
         "shared_mutex": "cpp",
-        "span": "cpp"
+        "span": "cpp",
+        "*.inc": "cpp"
     }
 }

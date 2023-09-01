@@ -7,7 +7,7 @@ add_executable(run_tests
                 anyutil_tests.cc
                 container_convert_tests.cc
                 brackets_tests.cc
-                # decorator_tests.cc
+                decorator_tests.cc
                 csvutil_tests.cc
                 graphutil_tests.cc
                 matrix_tests.cc

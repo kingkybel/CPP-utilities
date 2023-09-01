@@ -61,6 +61,15 @@ struct has_operator_less : has_operator_less_impl<T, LessThan>::type
 {
 };
 
+template<typename>
+struct is_tuple : std::false_type
+{
+};
+template<typename... T>
+struct is_tuple<std::tuple<T...>> : std::true_type
+{
+};
+
 #define DEFINE_HAS_STATIC_MEMBER(traitsName, funcName, signature)                  \
     template<typename U>                                                           \
     class traitsName                                                               \

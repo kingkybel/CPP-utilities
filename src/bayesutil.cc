@@ -23,6 +23,7 @@
  */
 
 #include "bayesutil.h"
+#include "to_string.h"
 
 #include <utility>
 

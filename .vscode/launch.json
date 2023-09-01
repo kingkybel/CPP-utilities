@@ -7,7 +7,7 @@
       "request": "launch",
       "program": "${workspaceFolder}/build/bin/run_tests",
       "args": [
-        // "--gtest_filter=BracketsTest.custom_decoration"
+        "--gtest_filter=DecoratorTest.int_format_initialisation_test"
       ],
       "stopAtEntry": false,
       "cwd": "${workspaceFolder}",

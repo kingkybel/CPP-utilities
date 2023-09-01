@@ -23,6 +23,7 @@
  */
 
 #include "stringutil.h"
+#include "to_string.h"
 
 #include <limits>
 
