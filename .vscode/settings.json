@@ -14,7 +14,7 @@
         "cstdio": "cpp",
         "cstring": "cpp",
         "ctime": "cpp",
-        "cwchar": "cpp",
+        "cchar16_t": "cpp",
         "cwctype": "cpp",
         "any": "cpp",
         "array": "cpp",
@@ -75,6 +75,7 @@
         "*.ipp": "cpp",
         "shared_mutex": "cpp",
         "span": "cpp",
-        "*.inc": "cpp"
+        "*.inc": "cpp",
+        "cwchar": "cpp"
     }
 }

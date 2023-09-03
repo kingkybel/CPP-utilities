@@ -42,17 +42,22 @@ class DecoratorTest : public ::testing::Test
     protected:
     void SetUp() override
     {
+        auto &decInst = decorator<>::instance();
+        decInst.clear();
+        decInst.initialize();
     }
 
     void TearDown() override
     {
+        auto &decInst = decorator<>::instance();
+        decInst.clear();
     }
 };
 
 TEST_F(DecoratorTest, bracket_initialisation_test)
 {
-    auto decInst       = decorator<>::instance();
-    auto dequeBrackets = decInst.getBracket(util::BracketKey::DEQUE);
+    auto &decInst       = decorator<>::instance();
+    auto  dequeBrackets = decInst.getBracket(util::BracketKey::DEQUE);
     ASSERT_EQ(dequeBrackets.left(), "^");
     decInst.clearBrackets();
     dequeBrackets = decInst.getBracket(util::BracketKey::DEQUE);
@@ -64,32 +69,86 @@ TEST_F(DecoratorTest, bracket_initialisation_test)
     decInst.initializeBrackets();
     dequeBrackets = decInst.getBracket(util::BracketKey::DEQUE);
     ASSERT_EQ(dequeBrackets.left(), "^");
+    deque q{1, 3, 4, 5};
+    cout << q << endl;
 }
 
 TEST_F(DecoratorTest, int_format_initialisation_test)
 {
-    auto decInst = decorator<>::instance();
-    ASSERT_EQ(decInst.getIntFmt<int8_t>(), util::intFmt::decimal);
-    ASSERT_EQ(decInst.getIntFmt<char>(), util::intFmt::print_char);
-    ASSERT_EQ(decInst.getIntFmt<unsigned char>(), util::intFmt::decimal);
+    auto &decInst = decorator<>::instance();
+    ASSERT_EQ(toString('M'), "'M'");
+
+    auto fmt = intFmt<>{IntBase::hexadecimal};
+    decInst.setFormat<char>(fmt);
+    ASSERT_EQ(toString('M'), "'4d'");
+
+    decInst.setHexUpper<char>(true);
+    ASSERT_EQ(toString('M'), "'4D'");
+
+    decInst.setShowBase<char>(true);
+    ASSERT_EQ(toString('M'), "'0x4D'");
+
+    decInst.setWidth<char>(4);
+    ASSERT_EQ(toString('M'), "'0x004D'");
+
+    decInst.setFill<char>('-');
+    ASSERT_EQ(toString('M'), "'0x--4D'");
+
+    decInst.setBase<char>(IntBase::decimal);
+    ASSERT_EQ(toString('M'), "'--77'");
+
+    decInst.setBase<char>(IntBase::octal);
+    ASSERT_EQ(toString('M'), "'0o-115'");
+
+    // cout << decInst.showConfig();
     decInst.clearIntFormat();
+    // cout << decInst.showConfig();
+    ASSERT_EQ(toString('M'), "'M'");
+
+    decInst.initialize();
+    ASSERT_EQ(toString(int8_t{127}), "7f");
+
+    decInst.setOctBaseStr<int8_t>("(octal)");
+    ASSERT_EQ(toString(int8_t{127}), "(octal)177");
 }
 
-TEST_F(DecoratorTest, default_decoration_test)
+TEST_F(DecoratorTest, float_format_initialisation_test)
 {
-    auto decInst = decorator<>::instance();
+    auto &decInst = decorator<>::instance();
+    ASSERT_EQ(toString(0.0L), "0.000000e+00");
+    decInst.setBase<long double>(FloatBase::scientific);
+    ASSERT_EQ(toString(0.0L), "0.000000e+00");
+    decInst.setBase<long double>(FloatBase::fixed);
+    decInst.setFill<long double>('*');
+    decInst.setWidth<long double>(10);
+    decInst.setPrecision<long double>(4);
+    ASSERT_EQ(toString(0.0L), "****0.0000");
+    decInst.setBase<long double>(FloatBase::hexfloat);
+    ASSERT_EQ(toString(0.0L), "0x0p+0");
+}
 
-    unordered_map<int, char> uMap = {{12, 'a'}, {2, 'b'}, {3, 'c'}, {24, 'd'}, {5, 'e'}, {6, 'f'}};
-    cout << uMap << endl;
-    auto ordMap = toMap(uMap);
-    cout << "1:" << ordMap << endl;
+TEST_F(DecoratorTest, container_decoration_test)
+{
+    auto &decInst = decorator<>::instance();
 
-    decInst.setBracketForObject(ordMap, "[left]", "[inner]", "[right]");
-    cout << "2:" << ordMap << endl;
+    auto vec = vector<int>{};
+    ASSERT_EQ(toString(vec), "<>");
+    vec.emplace_back(1701);
+    ASSERT_EQ(toString(vec), "<1701>");
+    vec.emplace_back(1702);
+    ASSERT_EQ(toString(vec), "<1701,1702>");
+    // changing brackets for a BracketKey channges brackets for all objects that match the key
+    decInst.setBracketForKey(BracketKey::VECTOR, "|| ", " | ", " ||");
+    ASSERT_EQ(toString(vec), "|| 1701 | 1702 ||");
 
-    deque<double> deq = {3.1415, 47.11, 1e-10, 2e10, 123.456};
-    cout << "deque:" << deq << endl;
+    auto cvec = vector<char>{'a', 'b', 'c'};
+    ASSERT_EQ(toString(cvec), "|| 'a' | 'b' | 'c' ||");
+    // changing brackets for a specific object should not change the brackets for the BracketKey
+    decInst.setBracketForObject(cvec, "++ ", " * ", " ++");
+    ASSERT_EQ(toString(cvec), "++ 'a' * 'b' * 'c' ++");
+    ASSERT_EQ(toString(vec), "|| 1701 | 1702 ||");
 
-    cout << toString('a') << "\t" << toString("Hello") << endl;
-    wcout << toWString("a") << endl;
+    decInst.clearBrackets();
+    ASSERT_EQ(toString(vec), "1701 1702");
+    ASSERT_EQ(toString(cvec), "a b c");
 }
