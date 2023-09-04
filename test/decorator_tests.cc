@@ -32,6 +32,7 @@
 #include <set>
 #include <sstream>
 #include <string>
+#include <tuple>
 #include <vector>
 
 using namespace std;
@@ -69,8 +70,6 @@ TEST_F(DecoratorTest, bracket_initialisation_test)
     decInst.initializeBrackets();
     dequeBrackets = decInst.getBracket(util::BracketKey::DEQUE);
     ASSERT_EQ(dequeBrackets.left(), "^");
-    deque q{1, 3, 4, 5};
-    cout << q << endl;
 }
 
 TEST_F(DecoratorTest, int_format_initialisation_test)
@@ -127,7 +126,22 @@ TEST_F(DecoratorTest, float_format_initialisation_test)
     ASSERT_EQ(toString(0.0L), "0x0p+0");
 }
 
-TEST_F(DecoratorTest, container_decoration_test)
+TEST_F(DecoratorTest, container_container_decoration_test)
+{
+    auto &decInst = decorator<>::instance();
+    auto  omap    = map<int, int>{{1, 5}, {2, 3}, {5, 10}};
+    ASSERT_EQ(toString(omap), "[(1,5),(2,3),(5,10)]");
+    auto oset = set<char>{'z', 't', '6', 'Z'};
+    ASSERT_EQ(toString(oset), "{'6','Z','t','z'}");
+    auto q = deque<int>{1, 3, 4, 5};
+    ASSERT_EQ(toString(q), "^1<-3<-4<-5$");
+    decInst.clear();
+    ASSERT_EQ(toString(omap), "1 5 2 3 5 10");
+    ASSERT_EQ(toString(oset), "6 Z t z");
+    ASSERT_EQ(toString(q), "1 3 4 5");
+}
+
+TEST_F(DecoratorTest, container_bracket_configuration_test)
 {
     auto &decInst = decorator<>::instance();
 
@@ -160,4 +174,38 @@ TEST_F(DecoratorTest, tuple_decoration_test)
     ASSERT_EQ(toString(tup), "(123,\"abc\",6.660000e+02)");
     decInst.clear();
     ASSERT_EQ(toString(tup), "123 abc 666");
+}
+
+TEST_F(DecoratorTest, multi_container_decoration_test)
+{
+    auto &decInst = decorator<>::instance();
+    auto  mm      = multimap<int, char>{{1, 'a'}, {2, 'b'}, {2, 'B'}, {3, 'c'}};
+    ASSERT_EQ(toString(mm), "[#(1,'a'),(2,'b'),(2,'B'),(3,'c')#]");
+    auto           umm = unordered_multimap<int, char>{{1, 'a'}, {2, 'b'}, {2, 'B'}, {3, 'c'}};
+    vector<string> pairs{"(1,'a')", "(2,'b')", "(2,'B')", "(3,'c')"};
+    for(const auto &p: pairs)
+        ASSERT_NE(toString(umm).find(p), string::npos)
+         << "pair '" << p << "' wasn't found in '" << toString(umm) << "'";
+
+    auto ms = multiset<string>{"abc", "def", "ghi", "def"};
+    ASSERT_EQ(toString(ms), "{#\"abc\",\"def\",\"def\",\"ghi\"#}");
+
+    auto           ums = unordered_multiset<string>{"abc", "def", "ghi", "def"};
+    vector<string> ums_els{"\"abc\"", "\"def\",\"def\"", "\"ghi\""};
+    for(const auto &s: ums_els)
+        ASSERT_NE(toString(ums).find(s), string::npos)
+         << "string '" << s << "' was not found in '" << toString(ums) << "'";
+
+    // do the same with reset decorator
+    decInst.clear();
+    ASSERT_EQ(toString(mm), "1 a 2 b 2 B 3 c");
+    vector<string> nodec_pairs{"1 a", "2 b", "2 B", "3 c"};
+    for(const auto &p: nodec_pairs)
+        ASSERT_NE(toString(umm).find(p), string::npos)
+         << "pair '" << p << "' wasn't found in '" << toString(umm) << "'";
+    ASSERT_EQ(toString(ms), "abc def def ghi");
+    vector<string> nodec_ums_els{"abc", "def def", "ghi"};
+    for(const auto &s: nodec_ums_els)
+        ASSERT_NE(toString(ums).find(s), string::npos)
+         << "string '" << s << "' was not found in '" << toString(ums) << "'";
 }

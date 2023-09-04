@@ -50,39 +50,70 @@
 
 namespace util
 {
+///////////////////////
 // forward declarations
+
+// stream "vector"
 template<typename T_, typename Alloc_, typename CharT_, typename Traits_>
 inline std::basic_ostream<CharT_, Traits_> &operator<<(std::basic_ostream<CharT_, Traits_> &os,
                                                        const std::vector<T_, Alloc_>       &vec);
 
+// stream "deque"
 template<typename T_, typename Alloc_, typename CharT_, typename Traits_>
 inline std::basic_ostream<CharT_, Traits_> &operator<<(std::basic_ostream<CharT_, Traits_> &os,
                                                        const std::deque<T_, Alloc_>        &dblEndQueue);
 
+// stream "set"
 template<typename Key, typename Compare, typename Alloc, typename CharT_, typename Traits_>
 inline std::basic_ostream<CharT_, Traits_> &operator<<(std::basic_ostream<CharT_, Traits_> &os,
                                                        const std::set<Key, Compare, Alloc> &sortedSet);
 
+// stream "unordered_set"
 template<typename Value, typename Hash, typename Pred, typename Alloc, typename CharT_, typename Traits_>
 inline std::basic_ostream<CharT_, Traits_> &operator<<(std::basic_ostream<CharT_, Traits_>                &os,
                                                        const std::unordered_set<Value, Hash, Pred, Alloc> &unordSet);
 
-template<typename T1_, typename T2_, typename CharT_, typename Traits_>
-inline std::basic_ostream<CharT_, Traits_> &operator<<(std::basic_ostream<CharT_, Traits_> &os,
-                                                       const std::pair<T1_, T2_>           &pair1st2nd);
+// stream "multiset"
+template<typename Value, typename Compare, typename Alloc, typename CharT_, typename Traits_>
+inline std::basic_ostream<CharT_, Traits_> &operator<<(std::basic_ostream<CharT_, Traits_>        &os,
+                                                       const std::multiset<Value, Compare, Alloc> &unordSet);
 
-template<typename Key, typename Value, typename Hash, typename Pred, typename Alloc, typename CharT_, typename Traits_>
-inline std::basic_ostream<CharT_, Traits_> &
- operator<<(std::basic_ostream<CharT_, Traits_> &os, const std::unordered_map<Key, Value, Hash, Pred, Alloc> &unordMap);
+// stream "unordered_multiset"
+template<typename Value, typename Hash, typename Pred,typename Alloc, typename CharT_, typename Traits_>
+inline std::basic_ostream<CharT_, Traits_> &operator<<(std::basic_ostream<CharT_, Traits_>                  &os,
+                                                       const std::unordered_multiset<Value, Hash, Pred, Alloc> &unordSet);
 
+// stream "map"
 template<typename Key, typename Value, typename Compare_, typename Alloc_, typename CharT_, typename Traits_>
 inline std::basic_ostream<CharT_, Traits_> &operator<<(std::basic_ostream<CharT_, Traits_>          &os,
                                                        const std::map<Key, Value, Compare_, Alloc_> &sortedMap);
 
+// stream "unordered_map"
+template<typename Key, typename Value, typename Hash, typename Pred, typename Alloc, typename CharT_, typename Traits_>
+inline std::basic_ostream<CharT_, Traits_> &
+ operator<<(std::basic_ostream<CharT_, Traits_> &os, const std::unordered_map<Key, Value, Hash, Pred, Alloc> &unordMap);
+
+// stream "multimap"
+template<typename Key, typename Value, typename Compare_, typename Alloc_, typename CharT_, typename Traits_>
+inline std::basic_ostream<CharT_, Traits_> &operator<<(std::basic_ostream<CharT_, Traits_>               &os,
+                                                       const std::multimap<Key, Value, Compare_, Alloc_> &sortedMap);
+
+// stream "unordered_multimap"
+template<typename Key, typename Value, typename Compare_, typename Alloc_, typename CharT_, typename Traits_>
+inline std::basic_ostream<CharT_, Traits_> &
+ operator<<(std::basic_ostream<CharT_, Traits_>                         &os,
+            const std::unordered_multimap<Key, Value, Compare_, Alloc_> &sortedMap);
+
+// stream "pair"
+template<typename T1_, typename T2_, typename CharT_, typename Traits_>
+inline std::basic_ostream<CharT_, Traits_> &operator<<(std::basic_ostream<CharT_, Traits_> &os,
+                                                       const std::pair<T1_, T2_>           &pair1st2nd);
+
+// stream "tuple"
 template<typename CharT_, typename Traits_, typename... T>
 inline std::basic_ostream<CharT_, Traits_> &operator<<(std::basic_ostream<CharT_, Traits_> &os,
                                                        const std::tuple<T...>              &tuple_obj);
-//////////
+///////////////////////
 
 /**
  * @brief Convert a char to a different char type
@@ -1323,7 +1354,7 @@ void iterateTuple(std::basic_ostream<CharT_, Traits_> &os, const TupleType_ &tup
 }
 
 /**
- * @brief Decorator specialised for forward tuples.
+ * @brief Decorator specialised for tuples.
  *
  * @tparam TupleType_ type of tuple
  * @tparam CharT_ character type
@@ -1432,6 +1463,49 @@ inline std::basic_ostream<CharT_, Traits_> &operator<<(std::basic_ostream<CharT_
 }
 
 /**
+ * @brief  Generic ostream - &lt;&lt; operator for multisets.
+ *
+ * @tparam Value value-type
+ * @tparam Compare comparison function
+ * @tparam Alloc allocator for unordered_set
+ * @tparam CharT_ character type
+ * @tparam Traits_ string traits
+ * @param os the output-stream
+ * @param multiSet the multiset to stream
+ * @return std::basic_ostream<CharT_, Traits_>& the modified stream
+ */
+template<typename Value, typename Compare, typename Alloc, typename CharT_, typename Traits_>
+inline std::basic_ostream<CharT_, Traits_> &operator<<(std::basic_ostream<CharT_, Traits_>        &os,
+                                                       const std::multiset<Value, Compare, Alloc> &multiSet)
+{
+    decorate(os, multiSet, std::basic_string<CharT_, Traits_>{util::BracketKey::MULTISET});
+
+    return (os);
+}
+
+/**
+ * @brief Generic ostream - &lt;&lt; operator for unordered multi sets.
+ *
+ * @tparam Value value-type
+ * @tparam Hash hash-function for set-elements
+ * @tparam Pred predicate
+ * @tparam Alloc allocator for unordered_set
+ * @tparam CharT_ character type
+ * @tparam Traits_ string traits
+ * @param os the output-stream
+ * @param unordSet the unordered_set to stream
+ * @return std::basic_ostream<CharT_, Traits_>& the modified stream
+ */
+template<typename Value, typename Hash, typename Pred, typename Alloc, typename CharT_, typename Traits_>
+inline std::basic_ostream<CharT_, Traits_> &
+ operator<<(std::basic_ostream<CharT_, Traits_> &os, const std::unordered_multiset<Value, Hash, Pred, Alloc> &unordSet)
+{
+    decorate(os, unordSet, std::basic_string<CharT_, Traits_>{util::BracketKey::UNORDERED_MULTISET});
+
+    return (os);
+}
+
+/**
  * @brief Generic ostream - &lt;&lt; operator for pairs.
  *
  * @tparam T1_ type of first element
@@ -1454,6 +1528,28 @@ inline std::basic_ostream<CharT_, Traits_> &operator<<(std::basic_ostream<CharT_
     os << bracket.inner();
     decorate(os, pair1st2nd.second);
     os << bracket.right();
+
+    return (os);
+}
+
+/**
+ * @brief Generic ostream - &lt;&lt; operator for standard (ordered) maps.
+ *
+ * @tparam Key key-type
+ * @tparam Value value-type
+ * @tparam Compare_ comparison function
+ * @tparam Alloc_ allocator function for map
+ * @tparam CharT_ character type
+ * @tparam Traits_ string traits
+ * @param os the output-stream
+ * @param sortedMap the map to stream
+ * @return std::basic_ostream<CharT_, Traits_>& the modified stream
+ */
+template<typename Key, typename Value, typename Compare_, typename Alloc_, typename CharT_, typename Traits_>
+inline std::basic_ostream<CharT_, Traits_> &operator<<(std::basic_ostream<CharT_, Traits_>          &os,
+                                                       const std::map<Key, Value, Compare_, Alloc_> &sortedMap)
+{
+    decorate(os, sortedMap, std::basic_string<CharT_, Traits_>{util::BracketKey::MAP});
 
     return (os);
 }
@@ -1482,27 +1578,60 @@ inline std::basic_ostream<CharT_, Traits_> &
 }
 
 /**
- * @brief Generic ostream - &lt;&lt; operator for standard (ordered) maps.
+ * @brief Generic ostream - &lt;&lt; operator for multimaps.
  *
  * @tparam Key key-type
  * @tparam Value value-type
- * @tparam Compare_ comparison function
- * @tparam Alloc_ allocator function for map
+ * @tparam Compare comparison function
+ * @tparam Alloc allocator function for multimap
  * @tparam CharT_ character type
  * @tparam Traits_ string traits
  * @param os the output-stream
- * @param sortedMap the map to stream
+ * @param multiMap the multimap to stream
  * @return std::basic_ostream<CharT_, Traits_>& the modified stream
  */
-template<typename Key, typename Value, typename Compare_, typename Alloc_, typename CharT_, typename Traits_>
-inline std::basic_ostream<CharT_, Traits_> &operator<<(std::basic_ostream<CharT_, Traits_>          &os,
-                                                       const std::map<Key, Value, Compare_, Alloc_> &sortedMap)
+template<typename Key, typename Value, typename Compare, typename Alloc, typename CharT_, typename Traits_>
+inline std::basic_ostream<CharT_, Traits_> &operator<<(std::basic_ostream<CharT_, Traits_>             &os,
+                                                       const std::multimap<Key, Value, Compare, Alloc> &multiMap)
 {
-    decorate(os, sortedMap, std::basic_string<CharT_, Traits_>{util::BracketKey::MAP});
+    decorate(os, multiMap, std::basic_string<CharT_, Traits_>{util::BracketKey::MULTIMAP});
 
     return (os);
 }
 
+/**
+ * @brief Generic ostream - &lt;&lt; operator for unordered multimaps.
+ *
+ * @tparam Key key-type
+ * @tparam Value value-type
+ * @tparam Compare comparison function
+ * @tparam Alloc allocator function for unordered_multimap
+ * @tparam CharT_ character type
+ * @tparam Traits_ string traits
+ * @param os the output-stream
+ * @param multiMap the unordered multimap to stream
+ * @return std::basic_ostream<CharT_, Traits_>& the modified stream
+ */
+template<typename Key, typename Value, typename Compare, typename Alloc, typename CharT_, typename Traits_>
+inline std::basic_ostream<CharT_, Traits_> &
+ operator<<(std::basic_ostream<CharT_, Traits_>                       &os,
+            const std::unordered_multimap<Key, Value, Compare, Alloc> &multiMap)
+{
+    decorate(os, multiMap, std::basic_string<CharT_, Traits_>{util::BracketKey::MULTIMAP});
+
+    return (os);
+}
+
+/**
+ * @brief Generic ostream - &lt;&lt; operator for tuples.
+ *
+ * @tparam CharT_ character type
+ * @tparam Traits_ string traits
+ * @tparam T variadic tuple element types
+ * @param os the output-stream
+ * @param tuple_obj the tuple object to stream
+ * @return std::basic_ostream<CharT_, Traits_>& the modified stream
+ */
 template<typename CharT_, typename Traits_, typename... T>
 inline std::basic_ostream<CharT_, Traits_> &operator<<(std::basic_ostream<CharT_, Traits_> &os,
                                                        const std::tuple<T...>              &tuple_obj)

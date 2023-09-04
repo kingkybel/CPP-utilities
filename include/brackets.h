@@ -32,24 +32,28 @@ namespace util
 
 namespace BracketKey
 {
-    using Type                   = std::string_view;
-    constexpr Type NONE          = "";
-    constexpr Type BOOL          = "bool";
-    constexpr Type CHAR          = "char";
-    constexpr Type INT           = "int";
-    constexpr Type FLOAT         = "float";
-    constexpr Type STRING        = "string";
-    constexpr Type VECTOR        = "vector";
-    constexpr Type DEQUE         = "deque";
-    constexpr Type PAIR          = "pair";
-    constexpr Type TUPLE         = "tuple";
-    constexpr Type SET           = "set";
-    constexpr Type MAP           = "map";
-    constexpr Type UNORDERED_SET = "unordered_set";
-    constexpr Type UNORDERED_MAP = "unordered_map";
-    constexpr Type SLASH         = "slash";
-    constexpr Type BACKSLASH     = "backslash";
-    constexpr Type PIPE          = "pipe";
+    using Type                        = std::string_view;
+    constexpr Type NONE               = "";
+    constexpr Type BOOL               = "bool";
+    constexpr Type CHAR               = "char";
+    constexpr Type INT                = "int";
+    constexpr Type FLOAT              = "float";
+    constexpr Type STRING             = "string";
+    constexpr Type VECTOR             = "vector";
+    constexpr Type DEQUE              = "deque";
+    constexpr Type SET                = "set";
+    constexpr Type UNORDERED_SET      = "unordered_set";
+    constexpr Type MULTISET           = "multiset";
+    constexpr Type UNORDERED_MULTISET = "unordered_multiset";
+    constexpr Type MAP                = "map";
+    constexpr Type UNORDERED_MAP      = "unordered_map";
+    constexpr Type MULTIMAP           = "multimap";
+    constexpr Type UNORDERED_MULTIMAP = "unordered_multimap";
+    constexpr Type PAIR               = "pair";
+    constexpr Type TUPLE              = "tuple";
+    constexpr Type SLASH              = "slash";
+    constexpr Type BACKSLASH          = "backslash";
+    constexpr Type PIPE               = "pipe";
 };
 namespace
 {
@@ -69,13 +73,17 @@ namespace
      {util::BracketKey::STRING, {"\"", ",", "\""}},
      {util::BracketKey::VECTOR, {"<", ",", ">"}},
      {util::BracketKey::DEQUE, {"^", "<-", "$"}},
-     {util::BracketKey::PAIR, {"(", ",", ")"}},
-     {util::BracketKey::TUPLE, {"(", ",", ")"}},
      {util::BracketKey::SET, {"{", ",", "}"}},
-     {util::BracketKey::MAP, {"[", ",", "]"}},
      {util::BracketKey::UNORDERED_SET, {"{~", ",", "~}"}},
+     {util::BracketKey::MULTISET, {"{#", ",", "#}"}},
+     {util::BracketKey::UNORDERED_MULTISET, {"{#~", ",", "~#}"}},
+     {util::BracketKey::MAP, {"[", ",", "]"}}, 
      {util::BracketKey::UNORDERED_MAP, {"[~", ",", "~]"}},
-     {util::BracketKey::SLASH, {"/", "/", ""}},
+     {util::BracketKey::MULTIMAP, {"[#", ",", "#]"}},
+     {util::BracketKey::UNORDERED_MULTIMAP, {"[#~", ",", "~#]"}},
+     {util::BracketKey::PAIR, {"(", ",", ")"}}, 
+     {util::BracketKey::TUPLE, {"(", ",", ")"}},
+     {util::BracketKey::SLASH, {"/", "/", ""}},  
      {util::BracketKey::BACKSLASH, {"\\", "\\", ""}},
      {util::BracketKey::PIPE, {"|", "|", "|"}},
     }};
