@@ -30,6 +30,7 @@
 #include "graphutil.h"
 #include "statutil.h"
 #include "stringutil.h"
+#include "container_convert.h"
 
 #include <boost/assign/std/vector.hpp>
 #include <boost/bind.hpp>
@@ -312,30 +313,21 @@ TEST_F(StringUtilTest, util_container_conversion_test)
     // BOOST_TEST_MESSAGE("====== Testing conversion functions for containers ========");
     set<string> sSet;
     ASSERT_TRUE(sSet.empty());
-    vector<string> sVec = vectorFromSet(sSet);
+    vector<string> sVec = toVector(sSet);
     ASSERT_TRUE(sVec.empty());
-    sSet = setFromVector(sVec);
+    sSet = toSet(sVec);
     ASSERT_TRUE(sSet.empty());
 
     sSet.insert("1stString");
     sSet.insert("2ndString");
     ASSERT_TRUE(!sSet.empty());
     ASSERT_EQ(sSet.size(), 2UL);
-    sVec = vectorFromSet(sSet);
+    sVec = toVector(sSet);
     ASSERT_TRUE(!sVec.empty());
     ASSERT_EQ(sVec.size(), 2UL);
-    sSet = setFromVector(sVec);
+    sSet = toSet(sVec);
     ASSERT_TRUE(!sSet.empty());
     ASSERT_EQ(sSet.size(), 2UL);
-
-    std::unordered_set<string> uSet;
-    uSet.insert("x");
-    uSet.insert("abc");
-    uSet.insert("ngb");
-
-    sSet = setFromUnordered(uSet);
-    ASSERT_TRUE(!sSet.empty());
-    ASSERT_EQ(sSet.size(), 3UL);
 }
 
 template<typename T_>
@@ -437,7 +429,7 @@ void util_string_testT()
     // BOOST_TEST_MESSAGE("split " + source + " into set by '/'");
     set<T_> resultSet = splitIntoSet(source, '/');
     ASSERT_TRUE(resultSet.size() == 3);
-    result = vectorFromSet(resultSet);
+    result = toVector(resultSet);
     ASSERT_TRUE(result.size() == 3);
     ASSERT_TRUE(result[0] == "123");
     ASSERT_TRUE(result[1] == "456");
@@ -446,14 +438,14 @@ void util_string_testT()
     // BOOST_TEST_MESSAGE("split " << source << " into set by '.'");
     resultSet = splitIntoSet(source, '.');
     ASSERT_TRUE(resultSet.size() == 1);
-    result = vectorFromSet(resultSet);
+    result = toVector(resultSet);
     ASSERT_TRUE(result.size() == 1);
     ASSERT_TRUE(result[0] == "123/456/789/123/789");
 
     // BOOST_TEST_MESSAGE("split " << source << " into set by \"37\"");
     resultSet = splitIntoSet(source, "37");
     ASSERT_TRUE(resultSet.size() == 5);
-    result = vectorFromSet(resultSet);
+    result = toVector(resultSet);
     ASSERT_TRUE(result.size() == 5);
     ASSERT_TRUE(result[0] == "/");
     ASSERT_TRUE(result[1] == "/456/");
@@ -609,7 +601,7 @@ void util_string_left_right_testT()
     // BOOST_TEST_MESSAGE("split " + source + " into set by '/'");
     set<T_> resultSet = splitIntoSet(source, '/');
     ASSERT_EQ(resultSet.size(), 3UL);
-    result = vectorFromSet(resultSet);
+    result = toVector(resultSet);
     ASSERT_EQ(result.size(), 3UL);
     ASSERT_TRUE(result[0] == "123");
     ASSERT_TRUE(result[1] == "456");
@@ -618,14 +610,14 @@ void util_string_left_right_testT()
     // BOOST_TEST_MESSAGE("split " << source << " into set by '.'");
     resultSet = splitIntoSet(source, '.');
     ASSERT_EQ(resultSet.size(), 1UL);
-    result = vectorFromSet(resultSet);
+    result = toVector(resultSet);
     ASSERT_EQ(result.size(), 1UL);
     ASSERT_TRUE(result[0] == "123/456/789/123/789");
 
     // BOOST_TEST_MESSAGE("split " << source << " into set by \"37\"");
     resultSet = splitIntoSet(source, "37");
     ASSERT_EQ(resultSet.size(), 5UL);
-    result = vectorFromSet(resultSet);
+    result = toVector(resultSet);
     ASSERT_EQ(result.size(), 5UL);
     ASSERT_TRUE(result[0] == "/");
     ASSERT_TRUE(result[1] == "/456/");
@@ -719,7 +711,7 @@ TEST_F(StringUtilTest, util_ci_string_test)
     // BOOST_TEST_MESSAGE("split " + source + " into set by \"abc\"");
     set<ci_string> resultSet = splitIntoSet(source, ci_string("abc"));
     ASSERT_EQ(resultSet.size(), 2UL);
-    result = vectorFromSet(resultSet);
+    result = toVector(resultSet);
     ASSERT_EQ(result.size(), 2UL);
     ASSERT_EQ(result[0], ci_string(""));
     ASSERT_EQ(result[1], ci_string("xxx"));

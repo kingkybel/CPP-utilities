@@ -79,7 +79,7 @@ inline std::ostream &operator<<(std::ostream &os, const std::unordered_set<Value
  * Create a vector from a given set.
  */
 template<typename T_, typename Compare_, typename Alloc_>
-inline std::vector<T_, Alloc_> vectorFromSet(const std::set<T_, Compare_, Alloc_> &s)
+inline std::vector<T_, Alloc_> toVector(const std::set<T_, Compare_, Alloc_> &s)
 {
     std::vector<T_, Alloc_> reval;
 
@@ -97,7 +97,7 @@ inline std::ostream &operator<<(std::ostream &os, const std::set<T_, Compare_, A
 {
     if(!s.empty())
     {
-        auto vec = vectorFromSet(s);
+        auto vec = toVector(s);
 
         os << "{ ";
         std::copy(vec.begin(), vec.end() - 1, std::ostream_iterator<T_>(os, ", "));
