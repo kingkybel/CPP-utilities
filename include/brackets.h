@@ -70,7 +70,7 @@ namespace
      {util::BracketKey::VECTOR, {"<", ",", ">"}},
      {util::BracketKey::DEQUE, {"^", "<-", "$"}},
      {util::BracketKey::PAIR, {"(", ",", ")"}},
-     {util::BracketKey::TUPLE, {"(", " ", ")"}},
+     {util::BracketKey::TUPLE, {"(", ",", ")"}},
      {util::BracketKey::SET, {"{", ",", "}"}},
      {util::BracketKey::MAP, {"[", ",", "]"}},
      {util::BracketKey::UNORDERED_SET, {"{~", ",", "~}"}},

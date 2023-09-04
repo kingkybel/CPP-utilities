@@ -152,3 +152,12 @@ TEST_F(DecoratorTest, container_decoration_test)
     ASSERT_EQ(toString(vec), "1701 1702");
     ASSERT_EQ(toString(cvec), "a b c");
 }
+
+TEST_F(DecoratorTest, tuple_decoration_test)
+{
+    auto                       &decInst = decorator<>::instance();
+    tuple<long, string, double> tup{123L, string{"abc"}, double{666.0}};
+    ASSERT_EQ(toString(tup), "(123,\"abc\",6.660000e+02)");
+    decInst.clear();
+    ASSERT_EQ(toString(tup), "123 abc 666");
+}

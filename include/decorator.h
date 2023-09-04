@@ -78,6 +78,10 @@ inline std::basic_ostream<CharT_, Traits_> &
 template<typename Key, typename Value, typename Compare_, typename Alloc_, typename CharT_, typename Traits_>
 inline std::basic_ostream<CharT_, Traits_> &operator<<(std::basic_ostream<CharT_, Traits_>          &os,
                                                        const std::map<Key, Value, Compare_, Alloc_> &sortedMap);
+
+template<typename CharT_, typename Traits_, typename... T>
+inline std::basic_ostream<CharT_, Traits_> &operator<<(std::basic_ostream<CharT_, Traits_> &os,
+                                                       const std::tuple<T...>              &tuple_obj);
 //////////
 
 /**
@@ -1253,8 +1257,8 @@ void decorate(std::basic_ostream<CharT_, Traits_> &os, const std::basic_string_v
 }
 
 /**
- * @brief Iterate through a container and pushing each elements on the given output stream enclosing in left and right
- * brackets and separated by an inner separator.
+ * @brief Decorator specialised for forward iterable containers. Iterate through a container and pushing each elements
+ * on the given output stream enclosing in left and right brackets and separated by an inner separator.
  *
  * @tparam ContainerType_ type of container
  * @tparam CharT_ character type
@@ -1263,12 +1267,13 @@ void decorate(std::basic_ostream<CharT_, Traits_> &os, const std::basic_string_v
  * @param container the forward iterable container
  * @param defaultBracketId  an ID to select a bracket if no special bracket is defined for the container
  */
-template<typename ContainerType_, typename CharT_, typename Traits_>
-typename std::enable_if<!std::is_same<ContainerType_, std::tuple<typename ContainerType_::value_type>>::value,
-                        void>::type
- decorate(std::basic_ostream<CharT_, Traits_>      &os,
-          const ContainerType_                     &container,
-          const std::basic_string<CharT_, Traits_> &defaultBracketId)
+template<typename ContainerType_,
+         typename CharT_,
+         typename Traits_,
+         typename std::enable_if<!util::is_tuple<ContainerType_>::value>::type * = nullptr>
+void decorate(std::basic_ostream<CharT_, Traits_>      &os,
+              const ContainerType_                     &container,
+              const std::basic_string<CharT_, Traits_> &defaultBracketId)
 {
     auto &decoInst = util::decorator<CharT_, Traits_>::instance();
     auto  bracket  = decoInst.getBracket(container, defaultBracketId);
@@ -1291,35 +1296,55 @@ typename std::enable_if<!std::is_same<ContainerType_, std::tuple<typename Contai
     os << bracket.right();
 }
 
+/**
+ * @brief Iterate through a tuple and pushing each elements on the given output stream enclosing in left and right
+ *
+ * @tparam TupleType_ type of tuple
+ * @tparam CharT_ character type
+ * @tparam Traits_ string traits
+ * @param os output stream
+ * @param tuple_obj tuple object
+ * @param bracket brackets for this tuple object
+ */
 template<typename TupleType_,
          typename CharT_,
          typename Traits_,
-         std::size_t Index = 0,
-         typename          = std::enable_if<util::is_tuple<TupleType_>::value>>
-
-void iterateTuple(std::basic_ostream<CharT_, Traits_> &os, const TupleType_ &tuple, const util::Brackets &bracket)
+         std::size_t Index                                                  = 0,
+         typename std::enable_if<util::is_tuple<TupleType_>::value>::type * = nullptr>
+void iterateTuple(std::basic_ostream<CharT_, Traits_> &os, const TupleType_ &tuple_obj, const util::Brackets &bracket)
 {
     if constexpr(Index < std::tuple_size<TupleType_>::value)
     {
-        decorate(os, std::get<Index>(tuple));
-        os << bracket.inner();
-        iterateTuple<TupleType_, Index + 1>(tuple);
+        decorate(os, std::get<Index>(tuple_obj));
+        if constexpr(Index < std::tuple_size<TupleType_>::value - 1)
+            os << bracket.inner();
+        iterateTuple<TupleType_, CharT_, Traits_, Index + 1>(os, tuple_obj, bracket);
     }
 }
 
+/**
+ * @brief Decorator specialised for forward tuples.
+ *
+ * @tparam TupleType_ type of tuple
+ * @tparam CharT_ character type
+ * @tparam Traits_ string traits
+ * @param os output stream
+ * @param tuple_obj tuple object
+ * @param defaultBracketId  an ID to select a bracket if no special bracket is defined for the container
+ * @return std::enable_if<std::is_same<TupleType_, std::tuple<typename TupleType_::value_type>>::value, void>::type
+ */
 template<typename TupleType_,
          typename CharT_,
          typename Traits_,
-         typename = std::enable_if<util::is_tuple<TupleType_>::value>>
-typename std::enable_if<std::is_same<TupleType_, std::tuple<typename TupleType_::value_type>>::value, void>::type
- decorate(std::basic_ostream<CharT_, Traits_>      &os,
-          const TupleType_                         &tuple_obj,
-          const std::basic_string<CharT_, Traits_> &defaultBracketId)
+         typename std::enable_if<util::is_tuple<TupleType_>::value>::type * = nullptr>
+void decorate(std::basic_ostream<CharT_, Traits_>      &os,
+              const TupleType_                         &tuple_obj,
+              const std::basic_string<CharT_, Traits_> &defaultBracketId)
 {
     auto &decoInst = util::decorator<CharT_, Traits_>::instance();
     auto  bracket  = decoInst.getBracket(tuple_obj, defaultBracketId);
     os << bracket.left();
-    iterateTuple(os, tuple_obj, bracket);
+    iterateTuple<TupleType_, CharT_, Traits_>(os, tuple_obj, bracket);
     os << bracket.right();
 }
 
@@ -1474,6 +1499,15 @@ inline std::basic_ostream<CharT_, Traits_> &operator<<(std::basic_ostream<CharT_
                                                        const std::map<Key, Value, Compare_, Alloc_> &sortedMap)
 {
     decorate(os, sortedMap, std::basic_string<CharT_, Traits_>{util::BracketKey::MAP});
+
+    return (os);
+}
+
+template<typename CharT_, typename Traits_, typename... T>
+inline std::basic_ostream<CharT_, Traits_> &operator<<(std::basic_ostream<CharT_, Traits_> &os,
+                                                       const std::tuple<T...>              &tuple_obj)
+{
+    decorate(os, tuple_obj, std::basic_string<CharT_, Traits_>{util::BracketKey::TUPLE});
 
     return (os);
 }
