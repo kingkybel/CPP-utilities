@@ -25,9 +25,8 @@
 #ifndef NS_UTIL_STRINGUTIL_H_INCLUDED
 #define NS_UTIL_STRINGUTIL_H_INCLUDED
 
-//#define DO_TRACE_
 #include "to_string.h"
-#define DO_TRACE_
+//#define DO_TRACE_
 #include "traceutil.h"
 
 #include <algorithm>
