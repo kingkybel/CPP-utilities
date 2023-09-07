@@ -24,13 +24,14 @@
 
 #include "anyutil.h"
 #include "bayesutil.h"
+#include "ci_string.h"
+#include "container_convert.h"
 #include "cstdlib"
 #include "csvutil.h"
 #include "dateutil.h"
 #include "graphutil.h"
 #include "statutil.h"
 #include "stringutil.h"
-#include "container_convert.h"
 
 #include <boost/assign/std/vector.hpp>
 #include <boost/bind.hpp>
@@ -93,7 +94,12 @@ struct SR
         T_ actualResult = source_;
         if(tp_ == "trim")
         {
-            trim(actualResult, modChars_, m_);
+            if(m_ == util::StripTrimMode::LEFT)
+                trimLeft(actualResult, modChars_);
+            else if(m_ == util::StripTrimMode::RIGHT)
+                trimRight(actualResult, modChars_);
+            else
+                trim(actualResult, modChars_);
         }
         else if(tp_ == "strip")
         {
@@ -235,7 +241,7 @@ void util_string_mod_testT()
 
      // not-so-trivial case-dependent
      SR("aABbCc", "trim", StripTrimMode::ALL, "abc", char(0), "ABbC", __LINE__, true, ""),
-     SR("aABbCc", "trim", StripTrimMode::LEFT, "abc", char(0), "ABbCc", __LINE__, true, ""),
+     /**/ SR("aABbCc", "trim", StripTrimMode::LEFT, "abc", char(0), "ABbCc", __LINE__, true, ""),
      SR("aABbCc", "trim", StripTrimMode::RIGHT, "abc", char(0), "aABbC", __LINE__, true, ""),
 
      SR("aABbCc", "strip", StripTrimMode::ALL, "abc", char(0), "ABC", __LINE__, true, ""),
@@ -247,7 +253,7 @@ void util_string_mod_testT()
      SR("aABbCc", "replace", StripTrimMode::RIGHT, "abc", '#', "aABbC#", __LINE__, true, "######"),
 
      SR("a-A-B-b-c-C", "trim", StripTrimMode::ALL, "abc", char(0), "-A-B-b-c-C", __LINE__, true, "-A-B-b-c-"),
-     SR("a-A-B-b-c-C", "trim", StripTrimMode::LEFT, "abc", char(0), "-A-B-b-c-C", __LINE__, true, "-A-B-b-c-C"),
+     /**/ SR("a-A-B-b-c-C", "trim", StripTrimMode::LEFT, "abc", char(0), "-A-B-b-c-C", __LINE__, true, "-A-B-b-c-C"),
      SR("a-A-B-b-c-C", "trim", StripTrimMode::RIGHT, "abc", char(0), "a-A-B-b-c-C", __LINE__, true, "a-A-B-b-c-"),
 
      SR("a-A-B-b-c-C", "strip", StripTrimMode::ALL, "abc", char(0), "-A-B---C", __LINE__, true, "-----"),
@@ -266,8 +272,6 @@ void util_string_mod_testT()
 
 TEST_F(StringUtilTest, util_ci_traits_test)
 {
-    // BOOST_TEST_MESSAGE("");
-    // BOOST_TEST_MESSAGE("====== Testing util string functions ========");
     ci_char_traits tr;
     ASSERT_TRUE(tr.eq('a', 'a'));
     ASSERT_TRUE(tr.eq('a', 'A'));
@@ -309,8 +313,6 @@ TEST_F(StringUtilTest, util_ci_traits_test)
 
 TEST_F(StringUtilTest, util_container_conversion_test)
 {
-    // BOOST_TEST_MESSAGE("");
-    // BOOST_TEST_MESSAGE("====== Testing conversion functions for containers ========");
     set<string> sSet;
     ASSERT_TRUE(sSet.empty());
     vector<string> sVec = toVector(sSet);
@@ -333,342 +335,324 @@ TEST_F(StringUtilTest, util_container_conversion_test)
 template<typename T_>
 void util_string_testT()
 {
-    // BOOST_TEST_MESSAGE("");
-    // BOOST_TEST_MESSAGE("====== Testing util string functions ========");
-
     T_ trimstring = "";
     trim(trimstring, " \n\t\r");
-    ASSERT_TRUE(trimstring == "");
+    ASSERT_EQ(trimstring, "");
     trimstring = " ";
     trim(trimstring, " \n\t\r");
-    ASSERT_TRUE(trimstring == "");
+    ASSERT_EQ(trimstring, "");
     trimstring = "\t";
     trim(trimstring, " \n\t\r");
-    ASSERT_TRUE(trimstring == "");
+    ASSERT_EQ(trimstring, "");
     trimstring = "\n";
     trim(trimstring, " \n\t\r");
-    ASSERT_TRUE(trimstring == "");
+    ASSERT_EQ(trimstring, "");
     trimstring = "\r";
     trim(trimstring, " \n\t\r");
-    ASSERT_TRUE(trimstring == "");
+    ASSERT_EQ(trimstring, "");
     trimstring = " \r\n ";
     trim(trimstring, " \n\t\r");
-    ASSERT_TRUE(trimstring == "");
+    ASSERT_EQ(trimstring, "");
     trimstring = " \r\t\t \n ";
     trim(trimstring, " \n\t\r");
-    ASSERT_TRUE(trimstring == "");
+    ASSERT_EQ(trimstring, "");
     trimstring = "a";
     trim(trimstring, " \n\t\r");
-    ASSERT_TRUE(trimstring == "a");
+    ASSERT_EQ(trimstring, "a");
     trimstring = "\ta";
     trim(trimstring, " \n\t\r");
-    ASSERT_TRUE(trimstring == "a");
+    ASSERT_EQ(trimstring, "a");
     trimstring = "a\t";
     trim(trimstring, " \n\t\r");
-    ASSERT_TRUE(trimstring == "a");
+    ASSERT_EQ(trimstring, "a");
     trimstring = "\n\t";
     trim(trimstring, " \n\t\r");
-    ASSERT_TRUE(trimstring == "");
+    ASSERT_EQ(trimstring, "");
     trimstring = "\n";
     trim(trimstring, " \n\t\r");
-    ASSERT_TRUE(trimstring == "");
+    ASSERT_EQ(trimstring, "");
     trimstring = "\r";
     trim(trimstring, " \n\t\r");
-    ASSERT_TRUE(trimstring == "");
+    ASSERT_EQ(trimstring, "");
     trimstring = " \r\n ";
     trim(trimstring, " \n\t\r");
-    ASSERT_TRUE(trimstring == "");
+    ASSERT_EQ(trimstring, "");
     trimstring = " \r\t\t \n ";
     trim(trimstring, " \n\t\r");
-    ASSERT_TRUE(trimstring == "");
+    ASSERT_EQ(trimstring, "");
     trimstring = " \r\ta\t \n ";
     trim(trimstring, " \n\t\r");
-    ASSERT_TRUE(trimstring == "a");
+    ASSERT_EQ(trimstring, "a");
     trimstring = "\na";
     trim(trimstring, " \n\t\r");
-    ASSERT_TRUE(trimstring == "a");
+    ASSERT_EQ(trimstring, "a");
     trimstring = "a\t   ";
     trim(trimstring, " \n\t\r");
-    ASSERT_TRUE(trimstring == "a");
+    ASSERT_EQ(trimstring, "a");
     trimstring = "\t\t\t\ta     ";
     trim(trimstring, " \n\t\r");
-    ASSERT_TRUE(trimstring == "a");
+    ASSERT_EQ(trimstring, "a");
 
     T_ source = "123/3456/7890a";
-    // BOOST_TEST_MESSAGE("split " << source << " into vector by '/'");
+    // ("split " << source << " into vector by '/'");
     vector<T_> result = splitIntoVector(source, '/');
     ASSERT_EQ(result.size(), 3UL);
-    ASSERT_TRUE(result[0] == "123");
-    ASSERT_TRUE(result[1] == "3456");
-    ASSERT_TRUE(result[2] == "7890a");
+    ASSERT_EQ(result[0], "123");
+    ASSERT_EQ(result[1], "3456");
+    ASSERT_EQ(result[2], "7890a");
 
-    // BOOST_TEST_MESSAGE("split " << source << " into vector by '.'");
+    // ("split " << source << " into vector by '.'");
     result = splitIntoVector(source, '.');
-    ASSERT_TRUE(result.size() == 1);
-    ASSERT_TRUE(result[0] == "123/3456/7890a");
+    ASSERT_EQ(result.size(), 1UL);
+    ASSERT_EQ(result[0], "123/3456/7890a");
 
-    // BOOST_TEST_MESSAGE("split " << source << " into vector by \"37\"");
-    result = splitIntoVector(source, "37");
-    ASSERT_TRUE(result.size() == 4);
-    ASSERT_TRUE(result[0] == "12");
-    ASSERT_TRUE(result[1] == "/");
-    ASSERT_TRUE(result[2] == "456/");
-    ASSERT_TRUE(result[3] == "890a");
+    // ("split " << source << " into vector by \"37\"");
+    result = splitIntoVector(source, '7');
+    ASSERT_EQ(result.size(), 2UL);
+    ASSERT_EQ(result[0], "123/3456/");
+    ASSERT_EQ(result[1], "890a");
 
     source = "1/4/7/1/7";
-    // BOOST_TEST_MESSAGE("split " << source << " into vector by \"/\"");
+    // ("split " << source << " into vector by \"/\"");
     result = splitIntoVector(source, "/");
-    ASSERT_TRUE(result.size() == 5UL);
-    ASSERT_TRUE(result[0] == "1");
-    ASSERT_TRUE(result[1] == "4");
-    ASSERT_TRUE(result[2] == "7");
-    ASSERT_TRUE(result[3] == "1");
-    ASSERT_TRUE(result[4] == "7");
+    ASSERT_EQ(result.size(), 5UL);
+    ASSERT_EQ(result[0], "1");
+    ASSERT_EQ(result[1], "4");
+    ASSERT_EQ(result[2], "7");
+    ASSERT_EQ(result[3], "1");
+    ASSERT_EQ(result[4], "7");
 
     source = "123/456/789/123/789";
-    // BOOST_TEST_MESSAGE("split " + source + " into set by '/'");
+    // ("split " + source + " into set by '/'");
     set<T_> resultSet = splitIntoSet(source, '/');
-    ASSERT_TRUE(resultSet.size() == 3);
+    ASSERT_EQ(resultSet.size(), 3UL);
     result = toVector(resultSet);
-    ASSERT_TRUE(result.size() == 3);
-    ASSERT_TRUE(result[0] == "123");
-    ASSERT_TRUE(result[1] == "456");
-    ASSERT_TRUE(result[2] == "789");
+    ASSERT_EQ(result.size(), 3UL);
+    ASSERT_EQ(result[0], "123");
+    ASSERT_EQ(result[1], "456");
+    ASSERT_EQ(result[2], "789");
 
-    // BOOST_TEST_MESSAGE("split " << source << " into set by '.'");
+    // ("split " << source << " into set by '.'");
     resultSet = splitIntoSet(source, '.');
-    ASSERT_TRUE(resultSet.size() == 1);
+    ASSERT_EQ(resultSet.size(), 1UL);
     result = toVector(resultSet);
-    ASSERT_TRUE(result.size() == 1);
-    ASSERT_TRUE(result[0] == "123/456/789/123/789");
+    ASSERT_EQ(result.size(), 1);
+    ASSERT_EQ(result[0], "123/456/789/123/789");
 
-    // BOOST_TEST_MESSAGE("split " << source << " into set by \"37\"");
-    resultSet = splitIntoSet(source, "37");
-    ASSERT_TRUE(resultSet.size() == 5);
+    // ("split " << source << " into set by \"37\"");
+    resultSet = splitIntoSet(source, "1");
+    ASSERT_EQ(resultSet.size(), 3UL);
     result = toVector(resultSet);
-    ASSERT_TRUE(result.size() == 5);
-    ASSERT_TRUE(result[0] == "/");
-    ASSERT_TRUE(result[1] == "/456/");
-    ASSERT_TRUE(result[2] == "12");
-    ASSERT_TRUE(result[3] == "89");
-    ASSERT_TRUE(result[4] == "89/12");
+    ASSERT_EQ(result.size(), 3UL);
+    ASSERT_NE(resultSet.find(""), resultSet.end());
+    ASSERT_NE(resultSet.find("23/456/789/"), resultSet.end());
+    ASSERT_NE(resultSet.find("23/789"), resultSet.end());
 
     const T_ stripStr  = " _ 123.456/789-0ab/_ _";
     T_       stripable = stripStr;
 
-    // BOOST_TEST_MESSAGE("strip " << stripable << " of \".\"");
+    // ("strip " << stripable << " of \".\"");
     strip(stripable, ".");
-    ASSERT_TRUE(stripable == " _ 123456/789-0ab/_ _");
+    ASSERT_EQ(stripable, " _ 123456/789-0ab/_ _");
     stripable = stripStr;
-    // BOOST_TEST_MESSAGE("strip " << stripable << " of \"/\"");
+    // ("strip " << stripable << " of \"/\"");
     strip(stripable, "/");
-    ASSERT_TRUE(stripable == " _ 123.456789-0ab_ _");
+    ASSERT_EQ(stripable, " _ 123.456789-0ab_ _");
     stripable = stripStr;
-    // BOOST_TEST_MESSAGE("strip " << stripable << " of \"./\"");
+    // ("strip " << stripable << " of \"./\"");
     strip(stripable, "./");
-    ASSERT_TRUE(stripable == " _ 123456789-0ab_ _");
+    ASSERT_EQ(stripable, " _ 123456789-0ab_ _");
 
     stripable = stripStr;
-    // BOOST_TEST_MESSAGE("trim " << stripable << " of \" \"");
+    // ("trim " << stripable << " of \" \"");
     trim(stripable, " ");
-    ASSERT_TRUE(stripable == "_ 123.456/789-0ab/_ _");
+    ASSERT_EQ(stripable, "_ 123.456/789-0ab/_ _");
     stripable = stripStr;
-    // BOOST_TEST_MESSAGE("trim " << stripable << " of \"_\"");
+    // ("trim " << stripable << " of \"_\"");
     trim(stripable, "_");
-    ASSERT_TRUE(stripable == " _ 123.456/789-0ab/_ ");
+    ASSERT_EQ(stripable, " _ 123.456/789-0ab/_ ");
 
     stripable = stripStr;
-    // BOOST_TEST_MESSAGE("trim " << stripable << " of \" _\"");
+    // ("trim " << stripable << " of \" _\"");
     trim(stripable, " _");
-    ASSERT_TRUE(stripable == "123.456/789-0ab/");
+    ASSERT_EQ(stripable, "123.456/789-0ab/");
 
     stripable = stripStr;  // " _ 123.456/789-0ab/_ _"
-    // BOOST_TEST_MESSAGE("replaceChar " << stripable << " chars \"_\" with '#'");
+    // ("replaceChar " << stripable << " chars \"_\" with '#'");
     replaceChar(stripable, "_", '#');
-    ASSERT_TRUE(stripable == " # 123.456/789-0ab/# #");
+    ASSERT_EQ(stripable, " # 123.456/789-0ab/# #");
     stripable = stripStr;  // " _ 123.456/789-0ab/_ _"
-    // BOOST_TEST_MESSAGE("replaceChar " << stripable << " chars \" _\" with '#'");
+    // ("replaceChar " << stripable << " chars \" _\" with '#'");
     replaceChar(stripable, "_ ", '#');
-    ASSERT_TRUE(stripable == "###123.456/789-0ab/###");
+    ASSERT_EQ(stripable, "###123.456/789-0ab/###");
 
-    ASSERT_TRUE(toLower(T_("SoMeStRiNg")) == string("somestring"));
-    ASSERT_TRUE(toUpper(T_("SoMeStRiNg")) == string("SOMESTRING"));
+    ASSERT_EQ(toLower(T_("SoMeStRiNg")), T_("somestring"));
+    ASSERT_EQ(toUpper(T_("SoMeStRiNg")), T_("SOMESTRING"));
 }
 
 template<typename T_>
 void util_string_left_right_testT()
 {
-    // BOOST_TEST_MESSAGE("");
-    // BOOST_TEST_MESSAGE("====== Testing util left/right trim/strip/replace functions ========");
-
     T_ trimstring = "";
     trimLeft(trimstring, " \n\t\r");
-    ASSERT_TRUE(trimstring == "");
+    ASSERT_EQ(trimstring, "");
     trimstring = "";
     trimRight(trimstring, " \n\t\r");
-    ASSERT_TRUE(trimstring == "");
+    ASSERT_EQ(trimstring, "");
 
     trimstring = " ";
     trimLeft(trimstring, " \n\t\r");
-    ASSERT_TRUE(trimstring == "");
+    ASSERT_EQ(trimstring, "");
     trimstring = " ";
     trimRight(trimstring, " \n\t\r");
-    ASSERT_TRUE(trimstring == "");
+    ASSERT_EQ(trimstring, "");
 
     trimstring = "\t";
     trimLeft(trimstring, " \n\t\r");
-    ASSERT_TRUE(trimstring == "");
+    ASSERT_EQ(trimstring, "");
     trimstring = "\t";
     trimRight(trimstring, " \n\t\r");
-    ASSERT_TRUE(trimstring == "");
+    ASSERT_EQ(trimstring, "");
 
     trimstring = "\t";
     trimLeft(trimstring, " \n\t\r");
-    ASSERT_TRUE(trimstring == "");
+    ASSERT_EQ(trimstring, "");
     trimstring = "\t";
     trimRight(trimstring, " \n\t\r");
-    ASSERT_TRUE(trimstring == "");
+    ASSERT_EQ(trimstring, "");
 
     trimstring = "\t";
     trim(trimstring, " \n\t\r");
-    ASSERT_TRUE(trimstring == "");
+    ASSERT_EQ(trimstring, "");
     trimstring = "\n";
     trim(trimstring, " \n\t\r");
-    ASSERT_TRUE(trimstring == "");
+    ASSERT_EQ(trimstring, "");
     trimstring = "\r";
     trim(trimstring, " \n\t\r");
-    ASSERT_TRUE(trimstring == "");
+    ASSERT_EQ(trimstring, "");
     trimstring = " \r\n ";
     trim(trimstring, " \n\t\r");
-    ASSERT_TRUE(trimstring == "");
+    ASSERT_EQ(trimstring, "");
     trimstring = " \r\t\t \n ";
     trim(trimstring, " \n\t\r");
-    ASSERT_TRUE(trimstring == "");
+    ASSERT_EQ(trimstring, "");
     trimstring = "a";
     trim(trimstring, " \n\t\r");
-    ASSERT_TRUE(trimstring == "a");
+    ASSERT_EQ(trimstring, "a");
     trimstring = "\ta";
     trim(trimstring, " \n\t\r");
-    ASSERT_TRUE(trimstring == "a");
+    ASSERT_EQ(trimstring, "a");
     trimstring = "a\t";
     trim(trimstring, " \n\t\r");
-    ASSERT_TRUE(trimstring == "a");
+    ASSERT_EQ(trimstring, "a");
     trimstring = "\ta\n";
     trim(trimstring, " \n\t\r");
-    ASSERT_TRUE(trimstring == "a");
+    ASSERT_EQ(trimstring, "a");
     trimstring = "\na";
     trim(trimstring, " \n\t\r");
-    ASSERT_TRUE(trimstring == "a");
+    ASSERT_EQ(trimstring, "a");
     trimstring = "a\t   ";
     trim(trimstring, " \n\t\r");
-    ASSERT_TRUE(trimstring == "a");
+    ASSERT_EQ(trimstring, "a");
     trimstring = "\t\t\t\ta     ";
     trim(trimstring, " \n\t\r");
-    ASSERT_TRUE(trimstring == "a");
+    ASSERT_EQ(trimstring, "a");
 
     T_ source = "123/3456/7890a";
-    // BOOST_TEST_MESSAGE("split " << source << " into vector by '/'");
+    // ("split " << source << " into vector by '/'");
     vector<T_> result = splitIntoVector(source, '/');
     ASSERT_EQ(result.size(), 3UL);
-    ASSERT_TRUE(result[0] == "123");
-    ASSERT_TRUE(result[1] == "3456");
-    ASSERT_TRUE(result[2] == "7890a");
+    ASSERT_EQ(result[0], "123");
+    ASSERT_EQ(result[1], "3456");
+    ASSERT_EQ(result[2], "7890a");
 
-    // BOOST_TEST_MESSAGE("split " << source << " into vector by '.'");
+    // ("split " << source << " into vector by '.'");
     result = splitIntoVector(source, '.');
-    ASSERT_TRUE(result.size() == 1);
-    ASSERT_TRUE(result[0] == "123/3456/7890a");
+    ASSERT_EQ(result.size(), 1UL);
+    ASSERT_EQ(result[0], "123/3456/7890a");
 
-    // BOOST_TEST_MESSAGE("split " << source << " into vector by \"37\"");
-    result = splitIntoVector(source, "37");
-    ASSERT_TRUE(result.size() == 4);
-    ASSERT_TRUE(result[0] == "12");
-    ASSERT_TRUE(result[1] == "/");
-    ASSERT_TRUE(result[2] == "456/");
-    ASSERT_TRUE(result[3] == "890a");
+    // ("split " << source << " into vector by \"37\"");
+    result = splitIntoVector(source, "34");
+    ASSERT_EQ(result.size(), 2UL);
+    ASSERT_EQ(result[0], "123/");
+    ASSERT_EQ(result[1], "56/7890a");
 
     source = "1/4/7/1/7";
-    // BOOST_TEST_MESSAGE("split " << source << " into vector by \"/\"");
+    // ("split " << source << " into vector by \"/\"");
     result = splitIntoVector(source, "/");
-    ASSERT_TRUE(result.size() == 5);
-    ASSERT_TRUE(result[0] == "1");
-    ASSERT_TRUE(result[1] == "4");
-    ASSERT_TRUE(result[2] == "7");
-    ASSERT_TRUE(result[3] == "1");
-    ASSERT_TRUE(result[4] == "7");
+    ASSERT_EQ(result.size(), 5UL);
+    ASSERT_EQ(result[0], "1");
+    ASSERT_EQ(result[1], "4");
+    ASSERT_EQ(result[2], "7");
+    ASSERT_EQ(result[3], "1");
+    ASSERT_EQ(result[4], "7");
 
     source = "123/456/789/123/789";
-    // BOOST_TEST_MESSAGE("split " + source + " into set by '/'");
+    // ("split " + source + " into set by '/'");
     set<T_> resultSet = splitIntoSet(source, '/');
     ASSERT_EQ(resultSet.size(), 3UL);
     result = toVector(resultSet);
     ASSERT_EQ(result.size(), 3UL);
-    ASSERT_TRUE(result[0] == "123");
-    ASSERT_TRUE(result[1] == "456");
-    ASSERT_TRUE(result[2] == "789");
+    ASSERT_EQ(result[0], "123");
+    ASSERT_EQ(result[1], "456");
+    ASSERT_EQ(result[2], "789");
 
-    // BOOST_TEST_MESSAGE("split " << source << " into set by '.'");
+    // ("split " << source << " into set by '.'");
     resultSet = splitIntoSet(source, '.');
     ASSERT_EQ(resultSet.size(), 1UL);
     result = toVector(resultSet);
     ASSERT_EQ(result.size(), 1UL);
-    ASSERT_TRUE(result[0] == "123/456/789/123/789");
+    ASSERT_EQ(result[0], "123/456/789/123/789");
 
-    // BOOST_TEST_MESSAGE("split " << source << " into set by \"37\"");
-    resultSet = splitIntoSet(source, "37");
-    ASSERT_EQ(resultSet.size(), 5UL);
-    result = toVector(resultSet);
-    ASSERT_EQ(result.size(), 5UL);
-    ASSERT_TRUE(result[0] == "/");
-    ASSERT_TRUE(result[1] == "/456/");
-    ASSERT_TRUE(result[2] == "12");
-    ASSERT_TRUE(result[3] == "89");
-    ASSERT_TRUE(result[4] == "89/12");
-
+    // (split  source  into set by "/");
+    resultSet = splitIntoSet(source, "/");
+    ASSERT_EQ(resultSet.size(), 3UL);
+    ASSERT_EQ(resultSet.find("/"), resultSet.end());
+    ASSERT_NE(resultSet.find("123"), resultSet.end());
+    ASSERT_NE(resultSet.find("456"), resultSet.end());
+    ASSERT_NE(resultSet.find("789"), resultSet.end());
+ 
     const T_ stripStr  = " _ 123.456/789-0ab/_ _";
     T_       stripable = stripStr;
 
-    // BOOST_TEST_MESSAGE("strip " << stripable << " of \".\"");
+    // ("strip " << stripable << " of \".\"");
     strip(stripable, ".");
-    ASSERT_TRUE(stripable == " _ 123456/789-0ab/_ _");
+    ASSERT_EQ(stripable, " _ 123456/789-0ab/_ _");
     stripable = stripStr;
-    // BOOST_TEST_MESSAGE("strip " << stripable << " of \"/\"");
+    // ("strip " << stripable << " of \"/\"");
     strip(stripable, "/");
-    ASSERT_TRUE(stripable == " _ 123.456789-0ab_ _");
+    ASSERT_EQ(stripable, " _ 123.456789-0ab_ _");
     stripable = stripStr;
-    // BOOST_TEST_MESSAGE("strip " << stripable << " of \"./\"");
+    // ("strip " << stripable << " of \"./\"");
     strip(stripable, "./");
-    ASSERT_TRUE(stripable == " _ 123456789-0ab_ _");
+    ASSERT_EQ(stripable, " _ 123456789-0ab_ _");
 
     stripable = stripStr;
-    // BOOST_TEST_MESSAGE("trim " << stripable << " of \" \"");
+    // ("trim " << stripable << " of \" \"");
     trim(stripable, " ");
-    ASSERT_TRUE(stripable == "_ 123.456/789-0ab/_ _");
+    ASSERT_EQ(stripable, "_ 123.456/789-0ab/_ _");
     stripable = stripStr;
-    // BOOST_TEST_MESSAGE("trim " << stripable << " of \"_\"");
+    // ("trim " << stripable << " of \"_\"");
     trim(stripable, "_");
-    ASSERT_TRUE(stripable == " _ 123.456/789-0ab/_ ");
+    ASSERT_EQ(stripable, " _ 123.456/789-0ab/_ ");
 
     stripable = stripStr;
-    // BOOST_TEST_MESSAGE("trim " << stripable << " of \" _\"");
+    // ("trim " << stripable << " of \" _\"");
     trim(stripable, " _");
-    ASSERT_TRUE(stripable == "123.456/789-0ab/");
+    ASSERT_EQ(stripable, "123.456/789-0ab/");
 
     stripable = stripStr;
-    // BOOST_TEST_MESSAGE("replaceChar " << stripable << " chars \"_\" with '#'");
+    // ("replaceChar " << stripable << " chars \"_\" with '#'");
     replaceChar(stripable, "_", '#');
-    ASSERT_TRUE(stripable == " # 123.456/789-0ab/# #");
+    ASSERT_EQ(stripable, " # 123.456/789-0ab/# #");
     stripable = stripStr;
-    // BOOST_TEST_MESSAGE("replaceChar " << stripable << " chars \" _\" with '#'");
+    // ("replaceChar " << stripable << " chars \" _\" with '#'");
     replaceChar(stripable, "_ ", '#');
-    ASSERT_TRUE(stripable == "###123.456/789-0ab/###");
+    ASSERT_EQ(stripable, "###123.456/789-0ab/###");
 }
 
 TEST_F(StringUtilTest, util_ci_string_test)
 {
-    // BOOST_TEST_MESSAGE("");
-    // BOOST_TEST_MESSAGE("====== Testing util ci_string case insensitivity functions ========");
-
     ci_string trimstring = "";
     trim(trimstring, "aBZd");
     ASSERT_EQ(trimstring, ci_string(""));
@@ -692,7 +676,7 @@ TEST_F(StringUtilTest, util_ci_string_test)
     ASSERT_EQ(trimstring, ci_string("<SOMETHING>adDD</SOMETHING>"));
 
     ci_string source = "123a456B789c78A";
-    // BOOST_TEST_MESSAGE("split " << source << " into vector by 'a'");
+    // ("split " << source << " into vector by 'a'");
     vector<ci_string> result = splitIntoVector(source, 'a');
     ASSERT_EQ(result.size(), 3UL);
     ASSERT_EQ(result[0], ci_string("123"));
@@ -700,31 +684,30 @@ TEST_F(StringUtilTest, util_ci_string_test)
     ASSERT_EQ(result[2], ci_string(""));
 
     source = "123a456B789c78A";
-    // BOOST_TEST_MESSAGE("split " << source << " into vector by 'A'");
+    // ("split " << source << " into vector by 'A'");
     result = splitIntoVector(source, 'A');
     ASSERT_EQ(result.size(), 3UL);
     ASSERT_EQ(result[0], ci_string("123"));
     ASSERT_EQ(result[1], ci_string("456B789c78"));
     ASSERT_EQ(result[2], ci_string(""));
 
-    source = "xxxAXxXbxXxC";
-    // BOOST_TEST_MESSAGE("split " + source + " into set by \"abc\"");
-    set<ci_string> resultSet = splitIntoSet(source, ci_string("abc"));
-    ASSERT_EQ(resultSet.size(), 2UL);
-    result = toVector(resultSet);
-    ASSERT_EQ(result.size(), 2UL);
-    ASSERT_EQ(result[0], ci_string(""));
-    ASSERT_EQ(result[1], ci_string("xxx"));
+    source                   = "xxxAXxXbxXxC";
+    set<ci_string> resultSet = splitIntoSet(source, ci_string("xxx"));
+    ASSERT_EQ(resultSet.size(), 4UL);
+    ASSERT_NE(resultSet.find(""), resultSet.end());
+    ASSERT_NE(resultSet.find("a"), resultSet.end());
+    ASSERT_NE(resultSet.find("b"), resultSet.end());
+    ASSERT_NE(resultSet.find("c"), resultSet.end());
 
     const ci_string stripStr  = "abCaaAxxxabcxxxcBA";
     ci_string       stripable = stripStr;
 
-    // BOOST_TEST_MESSAGE("strip " << stripable << " of \"abc\"");
+    // ("strip " << stripable << " of \"abc\"");
     strip(stripable, ci_string("abc"));
     ASSERT_EQ(stripable, ci_string("xxxxxx"));
 
     stripable = stripStr;
-    // BOOST_TEST_MESSAGE("replaceChar " << stripable << " chars \"abc\" with '#'");
+    // ("replaceChar " << stripable << " chars \"abc\" with '#'");
     replaceChar(stripable, "abc", '#');
     ASSERT_EQ(stripable, ci_string("######xxx###xxx###"));
 }

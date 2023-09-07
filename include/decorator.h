@@ -79,9 +79,9 @@ inline std::basic_ostream<CharT_, Traits_> &operator<<(std::basic_ostream<CharT_
                                                        const std::multiset<Value, Compare, Alloc> &unordSet);
 
 // stream "unordered_multiset"
-template<typename Value, typename Hash, typename Pred,typename Alloc, typename CharT_, typename Traits_>
-inline std::basic_ostream<CharT_, Traits_> &operator<<(std::basic_ostream<CharT_, Traits_>                  &os,
-                                                       const std::unordered_multiset<Value, Hash, Pred, Alloc> &unordSet);
+template<typename Value, typename Hash, typename Pred, typename Alloc, typename CharT_, typename Traits_>
+inline std::basic_ostream<CharT_, Traits_> &
+ operator<<(std::basic_ostream<CharT_, Traits_> &os, const std::unordered_multiset<Value, Hash, Pred, Alloc> &unordSet);
 
 // stream "map"
 template<typename Key, typename Value, typename Compare_, typename Alloc_, typename CharT_, typename Traits_>
@@ -116,44 +116,26 @@ inline std::basic_ostream<CharT_, Traits_> &operator<<(std::basic_ostream<CharT_
 ///////////////////////
 
 /**
- * @brief Convert a char to a different char type
- *
- * @tparam CharTto_ type to convert to
- * @tparam CharTfrom_ type to convert from
- * @param c the char to convert
- * @return constexpr CharTto_ the converted char
- */
-template<typename CharTto_, typename CharTfrom_>
-constexpr CharTto_ charToChar(CharTto_ c)
-{
-    return static_cast<CharTfrom_>(c);
-}
-
-/**
  * @brief Convert a string type into another.
  *
- * @tparam CharT1_ char type of the result string
- * @tparam TraitsT1_ traits of the result string
- * @tparam CharT2_ char type of the original string
- * @tparam TraitsT2_ traits of the original string
+ * @tparam StringToT_ string type to convert to
+ * @tparam StringFromT_ string type to convert from
  * @param from the original string
- * @return std::basic_string<CharT1_, TraitsT1_> the converted string
+ * @return StringToT_ the converted string
  */
-template<typename CharT1_   = char16_t,
-         typename TraitsT1_ = std::char_traits<CharT1_>,
-         typename CharT2_   = char,
-         typename TraitsT2_ = std::char_traits<CharT2_>>
-std::basic_string<CharT1_, TraitsT1_> convert(const std::basic_string<CharT2_, TraitsT2_> &from)
+template<typename StringToT_,
+         typename StringFrom_,
+         typename std::enable_if<util::is_std_string<StringToT_>::value>::type * = nullptr,
+         typename std::enable_if<util::is_std_string<StringFrom_>::value>::type * = nullptr>
+StringToT_ convert(const StringFrom_ &from)
 {
-    static_assert(std::is_integral_v<CharT1_>, "Type CharT1_ must be integral.");
-    static_assert(std::is_integral_v<CharT2_>, "Type CharT2_ must be integral.");
+    StringToT_ to;
 
-    std::basic_string<CharT1_, TraitsT1_> to;
-
+    typedef typename util::is_std_string<StringFrom_>::char_type char_type_from;
     std::transform(from.begin(),
                    from.end(),
                    std::back_inserter(to),
-                   [](const auto &c) { return (static_cast<CharT2_>(c)); });
+                   [](const auto &c) { return (static_cast<char_type_from>(c)); });
 
     return (to);
 }
@@ -188,7 +170,7 @@ struct floatFmt
     explicit floatFmt(FloatBase base      = FloatBase::default_format,
                       size_t    width     = 8,
                       size_t    precision = 5,
-                      CharT_    fill      = charToChar<CharT_, char>('0'))
+                      CharT_    fill      = util::charToChar<CharT_, char>('0'))
     : base_(base)
     , width_(width)
     , precision_(precision)
@@ -228,7 +210,7 @@ struct floatFmt
     FloatBase base_      = FloatBase::scientific;
     size_t    width_     = 0UL;
     size_t    precision_ = 0UL;
-    CharT_    fill_      = charToChar<CharT_, char>('0');
+    CharT_    fill_      = util::charToChar<CharT_, char>('0');
 };
 
 /**
@@ -255,7 +237,7 @@ struct intFmt
                     size_t                                                   width      = 0UL,
                     bool                                                     showBase   = false,
                     bool                                                     hexUpper   = false,
-                    CharT_                                                   fill       = charToChar<CharT_, char>('0'),
+                    CharT_                                                   fill       = util::charToChar<CharT_, char>('0'),
                     std::basic_string_view<CharT_, std::char_traits<CharT_>> hexBaseStr = "0x",
                     std::basic_string_view<CharT_, std::char_traits<CharT_>> octBaseStr = "0o")
     : isValid_(base != IntBase::default_format)
@@ -309,7 +291,7 @@ struct intFmt
     size_t                                                   width_    = 0UL;
     bool                                                     showBase_ = false;
     bool                                                     hexUpper_ = false;
-    CharT_                                                   fill_     = charToChar<CharT_, char>('0');
+    CharT_                                                   fill_     = util::charToChar<CharT_, char>('0');
     std::basic_string_view<CharT_, std::char_traits<CharT_>> hexBaseStr_;
     std::basic_string_view<CharT_, std::char_traits<CharT_>> octBaseStr_;
 };
@@ -374,8 +356,8 @@ class decorator
         ss << "CharT_:" << typeid(CharT_).name() << " TraitsT_:" << typeid(CharT_).name() << std::endl;
         ss << "---- brackets ------" << std::endl;
         for(const auto &kv: type2brackets_)
-            ss << kv.first << " -> ('" << convert<char>(kv.second.left()) << "', '" << convert<char>(kv.second.inner())
-               << "', '" << convert<char>(kv.second.right()) << "')" << std::endl;
+            ss << kv.first << " -> ('" << convert<std::string>(kv.second.left()) << "', '" << convert<std::string>(kv.second.inner())
+               << "', '" << convert<std::string>(kv.second.right()) << "')" << std::endl;
         ss << "------ int --------" << std::endl;
         for(const auto &kv: intType2format_)
             ss << kv.first << " -> " << (kv.second.toString()) << std::endl;

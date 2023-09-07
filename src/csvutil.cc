@@ -24,6 +24,7 @@
 
 #include "csvutil.h"
 
+#include "ci_string.h"
 #include "to_string.h"
 
 #include <utility>
@@ -86,8 +87,8 @@ bool CSVAnalyzer::splitLine(const string &str, vector<string> &result, const str
 {
     result = splitIntoVector(str, inSeparator);
 
-    for(auto &i: result)
-        util::trim(i, " \t\n\r");
+    for(std::string &subStr: result)
+        util::trim(subStr, " \t\n\r");
 
     return (result.size() > 0);
 }
@@ -199,12 +200,12 @@ string CSVAnalyzer::guessType(const string &stringVal)
         bool dummy;
 
         // start from the most complicated towards the easiest type
-        reval = (numClass == util::NONE && valid(scanAs<VAR_DATE>(stringVal))) ? CSV_COLUMN_TYPE_DATE :
-                (numClass == util::INT)                                        ? CSV_COLUMN_TYPE_INT :
-                (numClass == util::UINT)                                       ? CSV_COLUMN_TYPE_UINT :
-                (numClass == util::FLOAT)                                      ? CSV_COLUMN_TYPE_FLOAT :
-                (scanBoolString(stringVal, dummy))                             ? CSV_COLUMN_TYPE_BOOL :
-                                                                                 CSV_COLUMN_TYPE_STRING;
+        reval = (numClass == util::NumberClass::NONE && valid(scanAs<VAR_DATE>(stringVal))) ? CSV_COLUMN_TYPE_DATE :
+                (numClass == util::NumberClass::INT)                                        ? CSV_COLUMN_TYPE_INT :
+                (numClass == util::NumberClass::UINT)                                       ? CSV_COLUMN_TYPE_UINT :
+                (numClass == util::NumberClass::FLOAT)                                      ? CSV_COLUMN_TYPE_FLOAT :
+                (scanBoolString(stringVal, dummy))                                          ? CSV_COLUMN_TYPE_BOOL :
+                                                                                              CSV_COLUMN_TYPE_STRING;
     }
 
     return (reval);
@@ -715,4 +716,4 @@ ostream &operator<<(ostream &os, const CSVAnalyzer &csv)
 
     return (os);
 }
-}  // namespace util
+};  // namespace util

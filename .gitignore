@@ -27,3 +27,6 @@
 /configure
 /config.status
 /stamp-h1
+
+# tryout directory
+/tryout/

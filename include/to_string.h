@@ -25,6 +25,7 @@
 #ifndef NS_UTIL_TO_STRING_H_INCLUDED
 #define NS_UTIL_TO_STRING_H_INCLUDED
 
+#include "traits.h"
 #include "decorator.h"
 //#define DO_TRACE_
 #include "traceutil.h"
@@ -34,7 +35,6 @@
 
 namespace util
 {
-
 /**
  * @brief Convert objects to a string, provided a ostream - &lt;&lt; operator is defined.
  *
@@ -68,7 +68,6 @@ inline std::wstring toWString(const Value &value)
 
     return (ss.str());
 }
-
 };  // namespace util
 
 #endif  // NS_UTIL_TO_STRING_H_INCLUDED
