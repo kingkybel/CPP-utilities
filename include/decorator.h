@@ -140,6 +140,23 @@ StringToT_ convert(const StringFrom_ &from)
     return (to);
 }
 
+template<typename CharToT_,
+         typename StringFrom_,
+         typename std::enable_if<util::is_char<CharToT_>::value>::type * = nullptr,
+         typename std::enable_if<util::is_std_string<StringFrom_>::value>::type * = nullptr>
+std::basic_string<CharToT_> convert(const StringFrom_ &from)
+{
+    std::basic_string<CharToT_> to;
+
+    typedef typename util::is_std_string<StringFrom_>::char_type char_type_from;
+    std::transform(from.begin(),
+                   from.end(),
+                   std::back_inserter(to),
+                   [](const auto &c) { return (static_cast<char_type_from>(c)); });
+
+    return (to);
+}
+
 /**
  * @brief enum to define how floats are displayed
  */
