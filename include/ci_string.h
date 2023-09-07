@@ -32,7 +32,13 @@
 
 namespace util
 {
-
+/**
+ * @brief char-trais for case-insensitive basic_strings
+ * @note This will likely not work as expected for char32_t, as characters need to be casted to wchar_t
+ *       for some functions whill might result in loss of data.
+ *
+ * @tparam CharT_ char-type
+ */
 template<typename CharT_ = char>
 struct ci_char_traits : public std::char_traits<CharT_>
 {
@@ -52,7 +58,6 @@ struct ci_char_traits : public std::char_traits<CharT_>
 
     /**
      * @brief Non-equality of two characters ignoring their case.
-     *
      * @param c1 first character
      * @param c2 second character
      * @return true, if c1 != c2 (ignoring their case), false otherwise
@@ -84,7 +89,7 @@ struct ci_char_traits : public std::char_traits<CharT_>
      * the first character == '\0'
      *
      * @param s1 char-pointer to first string
-     * @param s2  char-pointer to second string
+     * @param s2 char-pointer to second string
      * @param n number of chars to compare
      * @return int index of the first different char
      */
@@ -324,4 +329,4 @@ inline std::basic_ostream<char32_t, std::char_traits<char32_t>> &
 #endif
 };  // namespace std
 
-#endif // NS_UTIL_CI_STRING_H_INCLUDED
+#endif  // NS_UTIL_CI_STRING_H_INCLUDED
