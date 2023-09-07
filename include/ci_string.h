@@ -164,7 +164,7 @@ using ci_u32string = std::basic_string<char32_t, ci_char_traits<char32_t>, std::
 namespace std
 {
 /**
- * @brief Overlopad the standard hash function for case insensitive strings to
+ * @brief Overload the standard hash function for case insensitive strings to
  * enable ci_strings as elements in hash containers
  */
 template<>
@@ -180,7 +180,7 @@ struct hash<util::ci_string>
 };
 
 /**
- * @brief Overlopad the standard hash function for wide case insensitive strings to
+ * @brief Overload the standard hash function for wide case insensitive strings to
  * enable ci_wstrings as elements in hash containers
  */
 template<>
@@ -227,7 +227,7 @@ inline std::wostream &operator<<(std::wostream &os, const util::ci_wstring &str)
 #ifdef _GLIBCXX_USE_CHAR8_T
 
 /**
- * @brief Overlopad the standard hash function for wide case insensitive strings to
+ * @brief Overload the standard hash function for wide case insensitive strings to
  * enable ci_u8strings as elements in hash containers
  */
 template<>
@@ -261,7 +261,7 @@ inline std::basic_ostream<char8_t, std::char_traits<char8_t>> &
 #if __cplusplus >= 201103L
 
 /**
- * @brief Overlopad the standard hash function for wide case insensitive strings to
+ * @brief Overload the standard hash function for wide case insensitive strings to
  * enable ci_u16strings as elements in hash containers
  */
 template<>
@@ -292,7 +292,7 @@ inline std::basic_ostream<char16_t, std::char_traits<char16_t>> &
 }
 
 /**
- * @brief Overlopad the standard hash function for wide case insensitive strings to
+ * @brief Overload the standard hash function for wide case insensitive strings to
  * enable ci_u32strings as elements in hash containers
  */
 template<>
