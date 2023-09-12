@@ -1,5 +1,6 @@
 add_executable(run_tests
                 run_tests.cc
+                threadutil_tests.cc
                 bit_converter_tests.cc
                 limited_int_tests.cc
                 stringutil_tests.cc
@@ -17,7 +18,8 @@ add_executable(run_tests
                 FFT_tests.cc
                 primes_tests.cc
                 statutil_tests.cc
-                bayesutil_tests.cc)
+                bayesutil_tests.cc
+                )
 
 target_link_libraries(run_tests gtest gtest_main gmp dkutils)
 add_test(NAME run_tests COMMAND run_tests)

@@ -48,6 +48,54 @@ class ContainerConvertTest : public ::testing::Test
     }
 };
 
+TEST_F(ContainerConvertTest, erase_remove_test)
+{
+    auto que = deque<int>{5, 3, 6, 2, 7, 1, 4};
+    util::eraseRemove(que, [](int i) { return i < 4; });
+    auto expected_que = deque<int>{5, 6, 7, 4};
+    ASSERT_EQ(que.size(), expected_que.size());
+    for(size_t i = 0; i < expected_que.size(); ++i)
+        ASSERT_EQ(que[i], expected_que[i]);
+
+    auto vec = vector<int>{5, 3, 6, 2, 7, 1, 4};
+    util::eraseRemove(que, [](int i) { return i < 4; });
+    auto expected_vec = deque<int>{5, 6, 7, 4};
+    ASSERT_EQ(que.size(), expected_vec.size());
+    for(size_t i = 0; i < expected_vec.size(); ++i)
+        ASSERT_EQ(que[i], expected_vec[i]);
+
+}
+
+TEST_F(ContainerConvertTest, erase_test)
+{
+    auto str_int_map = map<string, int>{{"one", 1}, {"two", 2}, {"three", 3}, {"four", 4}, {"five", 5}};
+    ASSERT_NE(str_int_map.find("one"), str_int_map.end());
+    ASSERT_NE(str_int_map.find("two"), str_int_map.end());
+    ASSERT_NE(str_int_map.find("three"), str_int_map.end());
+    ASSERT_NE(str_int_map.find("four"), str_int_map.end());
+    ASSERT_NE(str_int_map.find("five"), str_int_map.end());
+    // remove all where key contains 'o'
+    eraseByKey(str_int_map, [](const std::string& key) { return key.find('o') != string::npos; });
+    ASSERT_EQ(str_int_map.find("one"), str_int_map.end());
+    ASSERT_EQ(str_int_map.find("two"), str_int_map.end());
+    ASSERT_NE(str_int_map.find("three"), str_int_map.end());
+    ASSERT_EQ(str_int_map.find("four"), str_int_map.end());
+    ASSERT_NE(str_int_map.find("five"), str_int_map.end());
+
+    str_int_map = map<string, int>{{"one", 1}, {"two", 2}, {"three", 3}, {"four", 4}, {"five", 5}};
+    ASSERT_NE(str_int_map.find("one"), str_int_map.end());
+    ASSERT_NE(str_int_map.find("two"), str_int_map.end());
+    ASSERT_NE(str_int_map.find("three"), str_int_map.end());
+    ASSERT_NE(str_int_map.find("four"), str_int_map.end());
+    ASSERT_NE(str_int_map.find("five"), str_int_map.end());
+    eraseByValue(str_int_map, [](const int& value) { return value < 3; });
+    ASSERT_EQ(str_int_map.find("one"), str_int_map.end());
+    ASSERT_EQ(str_int_map.find("two"), str_int_map.end());
+    ASSERT_NE(str_int_map.find("three"), str_int_map.end());
+    ASSERT_NE(str_int_map.find("four"), str_int_map.end());
+    ASSERT_NE(str_int_map.find("five"), str_int_map.end());
+}
+
 TEST_F(ContainerConvertTest, moveElementsTo_test)
 {
     auto vec1 = vector<int>{{1, 2, 4, 8, 16, 32, 64, 128, 256}};

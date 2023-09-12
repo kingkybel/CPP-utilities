@@ -53,6 +53,80 @@ struct true_pred
 };
 
 /**
+ * @brief Erase remove from forward-iterable containers
+ * 
+ * @tparam Container type of container
+ * @tparam Predicate predicate
+ * @param container the container to remove from
+ * @param pred predicate to decide which elements to remove
+ */
+template<typename Container, typename Predicate>
+void eraseRemove(Container &container, Predicate pred)
+{
+    container.erase(std::remove_if(container.begin(), container.end(), pred), container.end());
+}
+
+/**
+ * @brief Remove key-value-pairs from a map, if the key matches the given predicate.
+ *
+ * @tparam Key_ key-type
+ * @tparam Value_ value-type
+ * @tparam Compare_ comparison function
+ * @tparam Alloc_ allocator for map-elements
+ * @tparam KeyPred_ predicate function for keys
+ * @param map2filter map-bject
+ * @param pred key-predicate on which to filter
+ */
+template<typename Key_, typename Value_, typename Compare_, typename Alloc_, typename KeyPred_>
+void eraseByKey(std::map<Key_, Value_, Compare_, Alloc_> &map2filter, KeyPred_ pred = true_pred<Key_>{})
+{
+    auto it = map2filter.begin();
+    while(it != map2filter.end())
+    {
+        if(pred(it->first))
+        {
+            it = map2filter.erase(it);
+        }
+        else
+        {
+            ++it;
+        }
+    }
+    // since C++-11 this does no longer work because of explicitly removed assignmentfor pairs:
+    // map2filter.erase(std::remove_if(map2filter.begin(), map2filter.end(), removeCondition), map2filter.end());
+}
+
+/**
+ * @brief Remove key-value-pairs from a map, if the value matches the given predicate.
+ *
+ * @tparam Key_ key-type
+ * @tparam Value_ value-type
+ * @tparam Compare_ comparison function
+ * @tparam Alloc_ allocator for map-elements
+ * @tparam KeyPred_ predicate function for keys
+ * @param map2filter map-bject
+ * @param pred value-predicate on which to filter
+ */
+template<typename Key_, typename Value_, typename Compare_, typename Alloc_, typename ValuePred_>
+void eraseByValue(std::map<Key_, Value_, Compare_, Alloc_> &map2filter, ValuePred_ pred = true_pred<Value_>{})
+{
+    auto it = map2filter.begin();
+    while(it != map2filter.end())
+    {
+        if(pred(it->second))
+        {
+            it = map2filter.erase(it);
+        }
+        else
+        {
+            ++it;
+        }
+    }
+    // since C++-11 this does no longer work because of explicitly removed assignmentfor pairs:
+    // map2filter.erase(std::remove_if(map2filter.begin(), map2filter.end(), removeCondition), map2filter.end());
+}
+
+/**
  * @brief  Function to move elements of one vector meeting the predicate to the end of another vector
  *
  * @tparam Value_  type of the container elements
