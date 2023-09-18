@@ -58,6 +58,44 @@ constexpr int64_t powTwo[] = {
  1LL << 48LL, 1LL << 49LL, 1LL << 50LL, 1LL << 51LL, 1LL << 52LL, 1LL << 53LL, 1LL << 54LL, 1LL << 55LL,
  1LL << 56LL, 1LL << 57LL, 1LL << 58LL, 1LL << 59LL, 1LL << 60LL, 1LL << 61LL, 1LL << 62LL, 1LL << 63LL};
 
+/*
+template<uint64_t n>
+uint64_t constexpr nth_fibo()
+{
+    return nth_fibo<n - 1>() + nth_fibo<n - 2>();
+}
+
+template<>
+uint64_t constexpr nth_fibo<0ULL>()
+{
+    return 1ULL;
+}
+
+template<>
+uint64_t constexpr nth_fibo<1ULL>()
+{
+    return 1ULL;
+}
+
+// clang-format off
+constexpr uint64_t fibonacci[] = {
+ nth_fibo<0ULL>(), nth_fibo<1ULL>(), nth_fibo<2ULL>(), nth_fibo<3ULL>(), nth_fibo<4ULL>(),
+ nth_fibo<5ULL>(), nth_fibo<6ULL>(), nth_fibo<7ULL>(), nth_fibo<8ULL>(), nth_fibo<9ULL>(),
+ nth_fibo<10ULL>(), nth_fibo<11ULL>(), nth_fibo<12ULL>(), nth_fibo<13ULL>(), nth_fibo<14ULL>(),
+ nth_fibo<15ULL>(), nth_fibo<16ULL>(), nth_fibo<17ULL>(), nth_fibo<18ULL>(), nth_fibo<19ULL>(),
+ nth_fibo<20ULL>(), nth_fibo<21ULL>(), nth_fibo<22ULL>(), nth_fibo<23ULL>(), nth_fibo<24ULL>(),
+ nth_fibo<25ULL>(), nth_fibo<26ULL>(), nth_fibo<27ULL>(), nth_fibo<28ULL>(), nth_fibo<29ULL>(),
+ nth_fibo<30ULL>(), nth_fibo<31ULL>(), nth_fibo<32ULL>(), nth_fibo<33ULL>(), nth_fibo<34ULL>(),
+ nth_fibo<35ULL>(), nth_fibo<36ULL>(), nth_fibo<37ULL>(), nth_fibo<38ULL>(), nth_fibo<39ULL>(),
+ nth_fibo<40ULL>(), nth_fibo<41ULL>(), nth_fibo<42ULL>(), nth_fibo<43ULL>(), nth_fibo<44ULL>(),
+ nth_fibo<45ULL>(), nth_fibo<46ULL>(), nth_fibo<47ULL>(), nth_fibo<48ULL>(), nth_fibo<49ULL>(),
+ nth_fibo<50ULL>(), nth_fibo<51ULL>(), nth_fibo<52ULL>(), nth_fibo<53ULL>(), nth_fibo<54ULL>(),
+ nth_fibo<55ULL>(), nth_fibo<56ULL>(), nth_fibo<57ULL>(), nth_fibo<58ULL>(), nth_fibo<59ULL>(),
+ nth_fibo<60ULL>(), nth_fibo<61ULL>(), nth_fibo<62ULL>(), nth_fibo<63ULL>(), nth_fibo<64ULL>(),
+ nth_fibo<65ULL>(), nth_fibo<66ULL>(), nth_fibo<67ULL>(), nth_fibo<68ULL>(), nth_fibo<69ULL>()
+};
+// clang-format on
+*/
 };  // namespace util
 
 #endif  // NS_UTIL_CONTANTS_H_INCLUDED
