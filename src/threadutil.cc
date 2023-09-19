@@ -64,8 +64,6 @@ void ThreadScheduler::processQueueThread()
 
     while(true)
     {
-        std::cout << "threadID=" << std::this_thread::get_id() << " while(true) treminanted=" << terminate_
-                  << " priority_thread_queue_.empty()=" << priority_thread_queue_.empty() << std::endl;
         std::unique_lock<std::mutex> processQueueLock{mutex_};
 
         // Wait for a thread to be available or the termination signal
@@ -103,8 +101,6 @@ void ThreadScheduler::processQueueThread()
                 ++it;
             }
         }
-        std::cout << "Started " << num_added << " thread and joined " << num_rejoined
-                  << " thread(s). Total running now: " << thread_pool.size() << std::endl;
     }
 
     // Wait for all remaining threads in the pool to finish

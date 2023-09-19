@@ -34,10 +34,10 @@
 
 namespace util
 {
-template<class T, class EqualTo>
+template<typename T, typename EqualTo>
 struct has_operator_equal_impl
 {
-    template<class U, class V>
+    template<typename U, typename V>
     static auto test(U*) -> decltype(std::declval<U>() == std::declval<V>());
     template<typename, typename>
     static auto test(...) -> std::false_type;
@@ -45,10 +45,10 @@ struct has_operator_equal_impl
     using type = typename std::is_same<bool, decltype(test<T, EqualTo>(0))>::type;
 };
 
-template<class T, class LessThan>
+template<typename T, typename LessThan>
 struct has_operator_less_impl
 {
-    template<class U, class V>
+    template<typename U, typename V>
     static auto test(U*) -> decltype(std::declval<U>() < std::declval<V>());
     template<typename, typename>
     static auto test(...) -> std::false_type;
@@ -56,12 +56,12 @@ struct has_operator_less_impl
     using type = typename std::is_same<bool, decltype(test<T, LessThan>(0))>::type;
 };
 
-template<class T, class EqualTo = T>
+template<typename T, typename EqualTo = T>
 struct has_operator_equal : has_operator_equal_impl<T, EqualTo>::type
 {
 };
 
-template<class T, class LessThan = T>
+template<typename T, typename LessThan = T>
 struct has_operator_less : has_operator_less_impl<T, LessThan>::type
 {
 };

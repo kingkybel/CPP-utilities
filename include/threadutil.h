@@ -289,7 +289,7 @@ class ThreadScheduler
      * @param id thread id
      * @param priority initial priority of the thread
      * @param func thread function
-     * @param args aruuments for the thread function
+     * @param args arguments for the thread function
      */
     template<typename Func_, typename... Args_>
     void addThread(uint64_t id, uint64_t priority, Func_&& func, Args_&&... args)
