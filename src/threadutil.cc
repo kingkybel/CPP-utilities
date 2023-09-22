@@ -76,7 +76,6 @@ void ThreadScheduler::processQueueThread()
         }
 
         // Fill the thread pool
-        size_t num_added = 0UL;
         while(thread_pool.size() < pool_size_ && !priority_thread_queue_.empty())
         {
             auto priority_thread = priority_thread_queue_.top();
@@ -86,15 +85,13 @@ void ThreadScheduler::processQueueThread()
             priority_thread_queue_.pop();
         }
 
-        size_t num_rejoined = 0UL;
-        // Check if any threads in the pool have finished
+         // Check if any threads in the pool have finished
         for(auto it = thread_pool.begin(); it != thread_pool.end();)
         {
             if(it->joinable())
             {
                 it->join();
                 it = thread_pool.erase(it);
-                num_rejoined++;
             }
             else
             {

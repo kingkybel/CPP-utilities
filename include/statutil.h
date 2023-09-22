@@ -24,11 +24,12 @@
 
 #ifndef NS_UTIL_STATUTIL_H_INCLUDED
 #define NS_UTIL_STATUTIL_H_INCLUDED
+
+#include "anyutil.h"
 #include "csvutil.h"
 #include "to_string.h"
 
 #include <algorithm>
-#include <anyutil.h>
 #include <boost/math/distributions/exponential.hpp>
 #include <boost/math/distributions/normal.hpp>
 #include <cmath>

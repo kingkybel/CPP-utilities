@@ -39,6 +39,7 @@ set(CMAKE_FIND_LIBRARY_SUFFIXES .a)
 #   # Specify the commit you depend on and update it regularly.
 #   URL https://github.com/google/googletest/archive/5376968f6948923e2411081fd9372e71a59d8e77.zip
 #)
+# set(FETCHCONTENT_QUIET OFF)
 # For Windows: Prevent overriding the parent project's compiler/linker settings
 #set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
 #FetchContent_MakeAvailable(googletest)
@@ -71,9 +72,10 @@ link_directories(
   )
 
 
-  add_subdirectory(src)
-  # add_subdirectory(tests)
-  add_subdirectory(test)
+add_subdirectory(src)
+add_subdirectory(test)
+
+set(CMAKE_CXX_CLANG_TIDY "clang-tidy;-checks=* -p ${CMAKE_SOURCE_DIR}/build")
 
 install(FILES
     "include/anyutil.h"
