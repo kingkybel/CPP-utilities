@@ -17,3 +17,9 @@ sudo make install
 ./configure
 make
 ```
+
+## Build docker-container
+```
+docker-compose build
+```
+If the build - subdirectory already exists rename it before executing docker-compose.
