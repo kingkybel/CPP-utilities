@@ -1,0 +1,26 @@
+#!/usr/bin/bash
+[[ "${0}" != "${BASH_SOURCE[0]}" ]] && THIS_FILE="${BASH_SOURCE[0]}" || THIS_FILE="${0}"
+THIS_DIR=$(realpath "$(dirname ${THIS_FILE})")
+BASE_DIR=$1
+BUILD_DIR=$2
+
+function setValidAbsoluteDir() {
+	DIR=$1
+	[[ "${DIR}" != "INVALID_"* ]] || DIR="${DIR}"
+	[ "${DIR}X" != "X" ] || DIR="INVALID_EMPTY"
+	[ "${DIR}X" != "/X" ] || DIR="INVALID_ROOT"
+	[[ "${DIR}" != "INVALID_"* ]] && realpath "${DIR}" >/dev/null 2>&1 && DIR=$(realpath ${DIR})
+	[[ "${DIR}" != "INVALID_"* ]] && DIR="$(dirname "${DIR}")/$(basename "${DIR}")"
+	echo "${DIR}/"
+}
+
+BASE_DIR=${BASE_DIR:=${THIS_DIR}}
+BASE_DIR=$(setValidAbsoluteDir "${BASE_DIR}")
+BUILD_DIR=${BUILD_DIR:="${BASE_DIR}/build"}
+
+echo "BUILD_DIR=${BUILD_DIR} BASE_DIR=${BASE_DIR}" 
+mkdir -p "${BUILD_DIR}"
+pushd "${BUILD_DIR}"
+cmake ${BASE_DIR}
+make -j $(nproc)
+popd
