@@ -28,8 +28,6 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    ports:
-      - ${PORT}:${PORT}
     command: /app/scripts/do_build /app/src
     volumes:
       - ${SOURCE_PATH}:/app/src:rw

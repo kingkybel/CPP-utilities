@@ -7,7 +7,7 @@
       "request": "launch",
       "program": "${workspaceFolder}/build/bin/run_tests",
       "args": [
-        // "--gtest_filter=DecoratorTest.container_decoration_test"
+        // "--gtest_filter=TimerTest.correct_performance_measurement"
       ],
       "stopAtEntry": false,
       "cwd": "${workspaceFolder}",

@@ -1,6 +1,6 @@
 /*
- * File:		tiny_tea_tests.cc
- * Description: Unit tests for tiny tea
+ * File:		performance_timer_tests.cc
+ * Description: Unit tests for perfomance test utilities
  *
  * Copyright (C) 2023 Dieter J Kybelksties <github@kybelksties.com>
  *
@@ -22,19 +22,21 @@
  * @author: Dieter J Kybelksties
  */
 
-#include "tinytea.h"
+#include "stringutil.h"
+#define DO_PERFORMANCE_
+#include "performance_timer.h"
 
 #include <cmath>
 #include <cstdlib>
 #include <gtest/gtest.h>
 #include <iostream>
 #include <string>
-#include <stringutil.h>
+#include <thread>
 
 using namespace std;
 using namespace util;
 
-class TinyteaTest : public ::testing::Test
+class TimerTest : public ::testing::Test
 {
     protected:
     void SetUp() override
@@ -46,28 +48,33 @@ class TinyteaTest : public ::testing::Test
     }
 };
 
-TEST_F(TinyteaTest, encryption_test)
+TEST_F(TimerTest, correct_performance_measurement)
 {
-    vector<uint64_t> keys = {1701ULL, 666ULL, 4711ULL, 42ULL, 1011ULL};
-    for(uint64_t val = 0ULL; val < 10000ULL; val += 131ULL)
+    #ifdef DO_PERFORMANCE_
+    RESET_PERF
+    auto& tmr = util::performance_timer::instance();
+    ASSERT_EQ(tmr.get_stats().size(), 0UL);
+    try
     {
-        for(auto key1: keys)
+        START_PERF
+        for(int j = 0; j < 30; j++)
         {
-            for(auto key2: keys)
+            START_PERF
+            for(int i = 0; i < 1000; i++)
             {
-                uint64_t enc = tinyTea<>::encrypt(val, key1, key2);
-                uint64_t dec = tinyTea<>::decrypt(enc, key1, key2);
-                ASSERT_EQ(val, dec) << "decrypt the encrypted value should result in the original value";
+                int x = i * j;
+                x     = x * x;
             }
+            std::this_thread::sleep_for(std::chrono::milliseconds(500));
+            END_PERF
         }
+        END_PERF
     }
-
-    //    multiTea<long double> enc = multiTea<long double>::encrypt(1234.4112L, "hasdkjghfdskjghlsdk");
-    //    cout << (long double)enc << endl;
-    //    cout << multiTea<long double>::decrypt(enc, "hasdkjghfdskjghlsdk") << endl;
-
-    //    string strValue = "Unencrypted value";
-    //    multiTea<string> encStr = multiTea<string>::encrypt(strValue, "hasdkjghfdskjghlsdk");
-    //    cout << (string)encStr << endl;
-    //    cout << multiTea<string>::decrypt(encStr, "hasdkjghfdskjghlsdk") << endl;
+    catch(const std::exception& e)
+    {
+        FAIL() << "Well formed performance measurement should not have thrown";
+    }
+    ASSERT_EQ(tmr.get_stats().size(), 2UL);
+    ASSERT_EQ(tmr.get_stack().size(), 0UL);
+    #endif
 }

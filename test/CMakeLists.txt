@@ -19,6 +19,7 @@ add_executable(run_tests
                 primes_tests.cc
                 statutil_tests.cc
                 bayesutil_tests.cc
+                performance_timer_tests.cc
                 )
 
 target_link_libraries(run_tests gtest gtest_main gmp dkutils)
