@@ -34,12 +34,21 @@ namespace util
 class logVal;
 long double abs(const logVal &val);
 
+/**
+ * @brief Class to store floating point values in the log domain.
+ */
 class logVal
 {
     private:
     long double val_;
     bool        isPositive_;
 
+    /**
+     * @brief Private construction of a new log Val object
+     *
+     * @param logDomainVal value in the log-domain
+     * @param isPositive flag to indicate whether the value is positive
+     */
     logVal(long double logDomainVal, bool isPositive)
     : val_(logDomainVal)
     , isPositive_(logDomainVal == 0.0L ? true : isPositive)  // @suppress("Direct float comparison")
@@ -47,6 +56,11 @@ class logVal
     }
 
     public:
+    /**
+     * @brief Check whether the value is zero.
+     *
+     * @return true, if so, false  otherwise
+     */
     bool isZero() const
     {
         return (val_ == -INFINITY);  // @suppress("Direct float comparison")
@@ -57,11 +71,23 @@ class logVal
         return (realDomainVal >= 0.0L ? logVal(log(realDomainVal), true) : logVal(log(-realDomainVal), false));
     }
 
+    /**
+     * @brief Convert a value from the log-domain to the real-domain.
+     *
+     * @param logDomainVal value in the log-domain
+     * @param isPositive flag to indicat positive (true) or negative (false)
+     * @return logVal the value translated
+     */
     static logVal fromLog(long double logDomainVal, bool isPositive = true)
     {
         return (logVal(logDomainVal, isPositive));
     }
 
+    /**
+     * @brief Default-construct a new log Val object
+     *
+     * @param realDomainVal value in the real domain
+     */
     logVal(long double realDomainVal = 0.0L)
     : val_(log(realDomainVal >= 0.0L ? realDomainVal : -realDomainVal))
     , isPositive_(realDomainVal >= 0.0L)
@@ -71,18 +97,28 @@ class logVal
     logVal &operator=(const logVal &rhs) = default;
     ~logVal()                            = default;
 
+    /**
+     * @brief Conversion to a long double.
+     *
+     * @return long double converted value
+     */
     long double toReal() const
     {
         return (isPositive_ ? exp(val_) : -exp(val_));
     }
 
+    /**
+     * @brief Conversion to a long double.
+     *
+     * @return long double converted value
+     */
     explicit operator long double()
     {
         return (toReal());
     }
 
     /**
-     * Takes two values in the logarithmic domain and adds them together.
+     * @brief Takes two values in the logarithmic domain and adds them together.
      *
      * @param lhs left-hand-side value in logarithmic domain
      * @param rhs right-hand-side value in logarithmic domain
@@ -98,7 +134,7 @@ class logVal
     }
 
     /**
-     * Takes two values in the logarithmic domain and adds them together.
+     * @brief Takes two values in the logarithmic domain and adds them together.
      *
      * @param rhs right-hand-side value in logarithmic domain
      *
@@ -114,7 +150,7 @@ class logVal
     }
 
     /**
-     * Increment the value val++.
+     * @brief Increment the value val++.
      *
      * @param dummy dummy-value
      *
@@ -130,7 +166,8 @@ class logVal
     }
 
     /**
-     * Pre-increment the value ++val.
+     * @brief Pre-increment the value ++val.
+     *
      * @return incremented value
      */
     logVal &operator++(int dummy)
@@ -143,7 +180,8 @@ class logVal
     }
 
     /**
-     * Unary minus operator.
+     * @brief Unary minus operator.
+     *
      * @param lhs left-hand-side value in logarithmic domain
      * @return negative value of lhs converted back into the logarithmic domain
      */
@@ -153,7 +191,7 @@ class logVal
     }
 
     /**
-     * Takes two values in the logarithmic domain and subtracts the second
+     * @brief Takes two values in the logarithmic domain and subtracts the second
      * from the first.
      *
      * @param lhs left-hand-side value in logarithmic domain
@@ -170,7 +208,7 @@ class logVal
     }
 
     /**
-     * Takes two values in the logarithmic domain and subtracts the second
+     * @brief Takes two values in the logarithmic domain and subtracts the second
      * from the first.
      *
      * @param lhs left-hand-side value in logarithmic domain
@@ -188,7 +226,8 @@ class logVal
     }
 
     /**
-     * Decrement the value val--.
+     * @brief Decrement the value val--.
+     *
      * @param dummy dummy-value
      * @return decremented value
      */
@@ -202,7 +241,8 @@ class logVal
     }
 
     /**
-     * Pre-decrement the value --val.
+     * @brief Pre-decrement the value --val.
+     *
      * @return decremented value
      */
     logVal &operator--(int dummy)
@@ -215,7 +255,8 @@ class logVal
     }
 
     /**
-     * Takes two values in the logarithmic domain and multiplies them.
+     * @brief Takes two values in the logarithmic domain and multiplies them.
+     *
      * @param lhs left-hand-side value in logarithmic domain
      * @param rhs right-hand-side value in logarithmic domain
      * @return product of two values converted back into the logarithmic domain
@@ -227,7 +268,8 @@ class logVal
     }
 
     /**
-     * Takes two values in the logarithmic domain and multiplies them.
+     * @brief Takes two values in the logarithmic domain and multiplies them.
+     *
      * @param lhs left-hand-side value in logarithmic domain
      * @param rhs right-hand-side value in logarithmic domain
      * @return product of two values converted back into the logarithmic domain
@@ -242,7 +284,8 @@ class logVal
     }
 
     /**
-     * Takes two values in the logarithmic domain and divides them.
+     * @brief Takes two values in the logarithmic domain and divides them.
+     *
      * @param lhs left-hand-side value in logarithmic domain
      * @param rhs right-hand-side value in logarithmic domain
      * @return quotient of two values converted back into the logarithmic domain
@@ -258,7 +301,8 @@ class logVal
     }
 
     /**
-     * Takes two values in the logarithmic domain and divides the first by the second.
+     * @brief Takes two values in the logarithmic domain and divides the first by the second.
+     *
      * @param rhs right-hand-side value in logarithmic domain
      * @return quotient of two values converted back into the logarithmic domain
      */
@@ -272,7 +316,8 @@ class logVal
     }
 
     /**
-     * Equality comparison operator.
+     * @brief Equality comparison operator.
+     *
      * @param lhs left-hand-side value in logarithmic domain
      * @param rhs right-hand-side value in logarithmic domain
      * @return true if lhs equals rhs, false otherwise
@@ -287,7 +332,8 @@ class logVal
     }
 
     /**
-     * Inequality comparison operator.
+     * @brief Inequality comparison operator.
+     *
      * @param lhs left-hand-side value in logarithmic domain
      * @param rhs right-hand-side value in logarithmic domain
      * @return true if lhs not equal rhs, false otherwise
@@ -298,7 +344,8 @@ class logVal
     }
 
     /**
-     * Less-than comparison operator.
+     * @brief Less-than comparison operator.
+     *
      * @param lhs left-hand-side value in logarithmic domain
      * @param rhs right-hand-side value in logarithmic domain
      * @return true if lhs less than rhs, false otherwise
@@ -315,7 +362,8 @@ class logVal
     }
 
     /**
-     * Less-than-or-equal comparison operator.
+     * @brief Less-than-or-equal comparison operator.
+     *
      * @param lhs left-hand-side value in logarithmic domain
      * @param rhs right-hand-side value in logarithmic domain
      * @return true if lhs less than or equal rhs, false otherwise
@@ -332,7 +380,7 @@ class logVal
     }
 
     /**
-     * Greater-than comparison operator.
+     * @brief Greater-than comparison operator.
      *
      * @param lhs left-hand-side value in logarithmic domain
      * @param rhs right-hand-side value in logarithmic domain
@@ -351,7 +399,8 @@ class logVal
     }
 
     /**
-     * Less-than-or-equal comparison operator.
+     * @brief Less-than-or-equal comparison operator.
+     *
      * @param lhs left-hand-side value in logarithmic domain
      * @param rhs right-hand-side value in logarithmic domain
      * @return true if lhs greater than or equal rhs, false otherwise
@@ -368,7 +417,8 @@ class logVal
     }
 
     /**
-     * Stream operator for logVal.
+     * @brief Stream operator for logVal.
+     *
      * @param os stream to writes to
      * @param val value to be written
      * @return the modified stream
@@ -380,11 +430,16 @@ class logVal
     }
 };
 
+/**
+ * @brief Absolute value of a logVal.
+ *
+ * @param val the value
+ * @return long double absolute value
+ */
 inline long double abs(const logVal &val)
 {
     return (std::abs(val.toReal()));
 }
-};
-// namespace util
+};  // namespace util
 
 #endif  // NS_UTIL_LOGVALUE_H_INCLUDED
