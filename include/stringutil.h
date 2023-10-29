@@ -30,6 +30,7 @@
 #include "traceutil.h"
 
 #include <algorithm>
+#include <cstdint>
 #include <ctime>
 #include <deque>
 #include <functional>

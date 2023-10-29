@@ -27,6 +27,7 @@
 
 #include <algorithm>
 #include <bitset>
+#include <cstdint>
 #include <cstdlib>
 #include <initializer_list>
 #include <iostream>

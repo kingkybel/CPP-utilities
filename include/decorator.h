@@ -30,6 +30,7 @@
 #include "traceutil.h"
 
 #include <algorithm>
+#include <cstdint>
 #include <deque>
 #include <iomanip>
 #include <ios>
