@@ -22,7 +22,7 @@ add_executable(run_tests
                 performance_timer_tests.cc
                 )
 
-target_link_libraries(run_tests gtest gtest_main gmp dkutils)
+target_link_libraries(run_tests gtest gtest_main gmp dkanyutil dkbayesutil dkcsvutil dkdateutil dkfloatingpoint dkprimes dkstatutil dkthreadutil)
 add_test(NAME run_tests COMMAND run_tests)
 include(Dart)
 

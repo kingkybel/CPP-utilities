@@ -209,10 +209,6 @@ class CSVAnalyzer
               fileFormatType                 = fileFormatType::defaultFileFormat);
 
     /**
-     *
-     */
-
-    /**
      * @brief Write to file-system.
      *
      * @param filename file to which to write the csv
@@ -225,7 +221,7 @@ class CSVAnalyzer
                fileFormatType     fileFormat   = fileFormatType::defaultFileFormat);
 
     /**
-     * @brief plit a delimited line-string into string tokens.
+     * @brief Split a delimited line-string into string tokens.
      *
      * @param str original string
      * @param result string-vector
@@ -234,10 +230,6 @@ class CSVAnalyzer
      */
     static bool
      splitLine(const std::string &str, std::vector<std::string> &result, const std::string &inSeparator = ",");
-
-    /**
-     * Use a delimited string to populate the headers of the csv.
-     */
 
     /**
      * @brief Use a delimited string to populate the headers of the csv.
