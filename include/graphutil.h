@@ -171,7 +171,7 @@ template<typename T_>
 struct PODNode : public NodeBase
 {
     static_assert(std::is_default_constructible<T_>::value,
-                  "T_template parameter of PODNode must be default-constructible");
+                  "template parameter of PODNode must be default-constructible");
     BOOST_CLASS_REQUIRE(T_, boost, EqualityComparableConcept);
     BOOST_CLASS_REQUIRE(T_, boost, LessThanComparableConcept);
 
@@ -367,7 +367,7 @@ class DirectedGraph
 
         cycle_detector(const cycle_detector &rhs) = default;
 
-         cycle_detector(const cycle_detector &&)          = delete;
+        cycle_detector(const cycle_detector &&)           = delete;
         cycle_detector operator=(const cycle_detector &)  = delete;
         cycle_detector operator=(const cycle_detector &&) = delete;
 
@@ -579,47 +579,47 @@ class DirectedGraph
      * @param node the node to remove
      * @return true, if the node was removed, false if the node was not part of the graph
      */
-    bool removeNode(const NodeT_ &node)
+bool removeNode(const NodeT_ &node)
     {
         bool reval = false;
         auto found = node2index_.find(node);
 
         if(found != node2index_.end())
-            return false;
-
-        // also remove all edges into and out of the node
-        NODE_SET parents = parentNodes(node);
-
-        for(auto it = parents.begin(); it != parents.end(); it++)
         {
-            auto eIt = edges_.find(UndirEdge(node2index_[*it], found->second));
+            // also remove all edges into and out of the node
+            NODE_SET parents = parentNodes(node);
 
-            remove_edge(node2index_[*it], found->second, graph_);
+            for(auto it = parents.begin(); it != parents.end(); it++)
+            {
+                auto eIt = edges_.find(UndirEdge(node2index_[*it], found->second));
 
-            if(eIt != edges_.end())
-                edges_.erase(eIt);
+                remove_edge(node2index_[*it], found->second, graph_);
+
+                if(eIt != edges_.end())
+                    edges_.erase(eIt);
+            }
+
+            NODE_SET children = childrenNodes(node);
+
+            for(auto it = children.begin(); it != children.end(); it++)
+            {
+                auto eIt = edges_.find(UndirEdge(node2index_[*it], found->second));
+
+                remove_edge(found->second, node2index_[*it], graph_);
+
+                if(eIt != edges_.end())
+                    edges_.erase(eIt);
+            }
+
+            // then remove the node itself
+            remove_vertex(found->second, graph_);
+
+            reorganiseIndexMap();
+            reval = true;
         }
 
-        NODE_SET children = childrenNodes(node);
-
-        for(auto it = children.begin(); it != children.end(); it++)
-        {
-            auto eIt = edges_.find(UndirEdge(node2index_[*it], found->second));
-
-            remove_edge(found->second, node2index_[*it], graph_);
-
-            if(eIt != edges_.end())
-                edges_.erase(eIt);
-        }
-
-        // then remove the node itself
-        remove_vertex(found->second, graph_);
-
-        reorganiseIndexMap();
-
-        return true;
+        return (reval);
     }
-
     /**
      * @brief Add an edge from node1 to node2 with edge-information
      *

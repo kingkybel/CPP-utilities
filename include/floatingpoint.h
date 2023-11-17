@@ -31,14 +31,14 @@
 namespace util
 {
 /**
- * Size of buffer in decimal_record.
+ * @brief Size of buffer in decimal_record.
  */
 constexpr int DECIMAL_STRING_LENGTH = 512;
 
 using quadruple = long double;
 
 /**
- * Rounding direction.
+ * @brief Rounding direction.
  */
 enum fp_direction_type
 {
@@ -49,7 +49,7 @@ enum fp_direction_type
 };
 
 /**
- * Levels of precision for floating point numbers.
+ * @brief Levels of precision for floating point numbers.
  */
 enum fp_precision_type
 {
@@ -60,7 +60,7 @@ enum fp_precision_type
 };
 
 /**
- * floating-point classes.
+ * @brief floating-point classes.
  */
 enum fp_class_type
 {
@@ -73,7 +73,7 @@ enum fp_class_type
 };
 
 /**
- * exceptions according to bit number
+ * @brief exceptions according to bit number
  */
 enum fp_exception_type
 {
@@ -87,7 +87,7 @@ enum fp_exception_type
 using fp_exception_field_type = unsigned int;
 
 /**
- * Type of representation
+ * @brief Type of representation
  */
 enum decimal_form
 {
@@ -107,7 +107,7 @@ enum decimal_form
 };
 
 /**
- * How are decimals represented.
+ * @brief How are decimals represented.
  */
 struct decimal_mode
 {
@@ -119,7 +119,7 @@ struct decimal_mode
 using decimal_string = char[DECIMAL_STRING_LENGTH];
 
 /**
- * Structure to represent a decimal (float) number.
+ * @brief Structure to represent a decimal (float) number.
  */
 struct decimal_record
 {
@@ -134,51 +134,69 @@ struct decimal_record
     int                exponent;
 
     /**
-     * Significand - each char contains an ASCII
-     *  digit, except the string-terminating
+     * @brief Significand - each char contains an ASCII digit, except the string-terminating
      * ASCII null.
      */
     decimal_string ds;
 
     /**
-     * On conversion from decimal to binary, != 0
-     * indicates more non-zero digits following ds.
+     * @brief On conversion from decimal to binary, != 0 indicates more non-zero digits following ds.
      */
     int more;
 
     /**
-     * On fixed_form conversion from binary to decimal, contains number of
-     *  digits required for ds.
+     * @brief On fixed_form conversion from binary to decimal, contains number of digits required for ds.
      */
     int ndigits;
 };
 
 /**
- * Generic ostream - &lt;&lt; operator for decimal_mode.
+ * @brief Generic ostream - &lt;&lt; operator for decimal_mode.
+ *
+ * @param os output stream to be modified
+ * @param dm decimal mode
+ * @return std::ostream& the modified stream
  */
 std::ostream &operator<<(std::ostream &os, const decimal_mode &dm);
 
 /**
- * Generic ostream - &lt;&lt; operator for decimal_record.
+ * @brief Generic ostream - &lt;&lt; operator for decimal_record.
+ *
+ * @param os  output stream to be modified
+ * @param dr decimal_record
+ * @return std::ostream& the modified stream
  */
 std::ostream &operator<<(std::ostream &os, const decimal_record &dr);
 
 /**
- * Equality for two decimal_records.
+ * @brief Equality for two decimal_records.
+ *
+ * @param lhs left-hand-side decimal_record
+ * @param rhs right-hand-side decimal_record
+ * @return true, if left equal to right, false otherwise
  */
 bool operator==(const decimal_record &lhs, const decimal_record &rhs);
 
 /**
- * Convert a quadruple to a decimal record.
+ * @brief Convert a quadruple to a decimal record.
+ *
+ * @param px pointer to a double double floating point value
+ * @param pm pointer to the decimal_mode
+ * @param pd pointer to the decimal_record
+ * @param ps ponter to an exception type
  */
 void quadruple_to_decimal(quadruple *px, decimal_mode *pm, decimal_record *pd, fp_exception_field_type *ps);
 
 /**
- * Convert a decimal record to a quadruple.
+ * @brief Convert a decimal record to a quadruple.
+ *
+ * @param px pointer to a double double floating point value
+ * @param pm pointer to the decimal_mode
+ * @param pd pointer to the decimal_record
+ * @param ps ponter to an exception type
  */
 void decimal_to_quadruple(quadruple *px, decimal_mode *pm, decimal_record *pd, fp_exception_field_type *ps);
 
-};
-// namespace util
+};  // namespace util
 
 #endif  // NS_UTIL_FLOATINGPOINT_H_INCLUDED

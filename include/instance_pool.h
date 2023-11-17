@@ -41,15 +41,21 @@ namespace util
 DEFINE_HAS_STATIC_MEMBER(has_static_bool_fill, T::fill, bool (*)(void));
 
 /**
- * A class to contain a number of instances.
- * exactly one instance: singleton
- * limited with a minimum and a maximum of instances
- * unlimited number of instances, at least one
+ * @brief A class to contain a number of instances.
+ * <ul>
+ * <li> exactly one instance: singleton</li>
+ * <li> limited with a minimum and a maximum of instances</li>
+ * <li> unlimited number of instances, at least one</li>
+ * </ul>
  *
- * Intended to be derived from. Derived classes are responsible to manage
+ * Intended as base class. Derived classes are responsible to manage
  * the pool of instances, so they should make all constructors private and
  * use the protected static members to add/remove/ clear instances and not
  * expose those functions indirectly.
+ *
+ * @tparam T_ type for which to create the instance pool
+ * @tparam maxInstances maximum number of instances
+ * @tparam minInstances minimum number of instances
  */
 template<typename T_, size_t maxInstances = 0, size_t minInstances = 1>
 struct InstancePool
@@ -63,6 +69,11 @@ struct InstancePool
     static ObjectContainerIterator current_;
 
     protected:
+    /**
+     * @brief Add an instance of the object type to the pool.
+     *
+     * @param pObject ponter to the object
+     */
     static void addInstance(ObjectPointer pObject)
     {
         if(avail_.find(pObject) == avail_.end())
@@ -80,6 +91,11 @@ struct InstancePool
         }
     }
 
+    /**
+     * @brief Remove an instance of the object type from the pool.
+     *
+     * @param pObject ponter to the object to remove
+     */
     static void removeInstance(ObjectPointer pObject)
     {
         auto found = avail_.find(pObject);
@@ -92,6 +108,9 @@ struct InstancePool
         current_ = avail_.begin();
     }
 
+    /**
+     * @brief Remove the instance at the front of the container.
+     */
     static void removeFrontInstance()
     {
         if(avail_.size() > 0)
@@ -102,6 +121,9 @@ struct InstancePool
         current_ = avail_.begin();
     }
 
+    /**
+     * @brief Remove all instances.
+     */
     static void clear()
     {
         avail_.clear();
@@ -109,8 +131,7 @@ struct InstancePool
 
     public:
     /**
-     * Retrieve an instance from the pool in round- robin-fashion, in case
-     * of multiple instance.
+     * @brief Retrieve an instance from the pool in round- robin-fashion, in case of multiple instance.
      *
      * @return an instance from the pool
      */
@@ -152,7 +173,7 @@ struct InstancePool
     }
 
     /**
-     * Retrieves the number of the currently available instances.
+     * @brief Retrieves the number of the currently available instances.
      *
      * @return the size of the pool
      */
@@ -162,8 +183,7 @@ struct InstancePool
     }
 
     /**
-     * Sanity check whether the number of instances in the pool is within the
-     * required limits.
+     * @brief Sanity check whether the number of instances in the pool is within the required limits.
      *
      * @return true, if so, false otherwise
      */
@@ -173,7 +193,7 @@ struct InstancePool
     }
 
     /**
-     * Check whether the pool is empty.
+     * @brief Check whether the pool is empty.
      *
      * @return  true if so, false otherwise
      */
@@ -193,14 +213,13 @@ typename InstancePool<T_, maxInstances, minInstances>::ObjectContainerIterator
  InstancePool<T_, maxInstances, minInstances>::current_;
 
 /**
- * A singleton is an instance-pool with exactly one contained instance.
+ * @brief A singleton is an instance-pool with exactly one contained instance.
  */
 template<typename T_>
 struct Singleton : public InstancePool<T_, 1, 1>
 {
 };
 
-};
-// namespace util
+};  // namespace util
 
 #endif  // INSTANCE_POOL_H_INCLUDED

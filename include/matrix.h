@@ -27,7 +27,7 @@
 
 #include "stringutil.h"
 #include "to_string.h"
-//#define DO_TRACE_
+// #define DO_TRACE_
 #include "traceutil.h"
 
 #include <cmath>
@@ -74,19 +74,19 @@ struct matrix_interface
     }
 
     /**
-     * Retrieve the horizontal extent of the matrix.
+     * @brief Retrieve the horizontal extent of the matrix.
      * @return x-dimension
      */
     virtual size_t sizeX() const = 0;
 
     /**
-     * Retrieve the vertical extent of the matrix.
+     * @brief Retrieve the vertical extent of the matrix.
      * @return y-dimension
      */
     virtual size_t sizeY() const = 0;
 
     /**
-     * Check whether coordinates (x,y) are within the matrix.
+     * @brief Check whether coordinates (x,y) are within the matrix.
      * @return true if so, false otherwise
      */
     bool withinBounds(size_t x, size_t y) const
@@ -95,7 +95,7 @@ struct matrix_interface
     }
 
     /**
-     * Check whether this is a square matrix.
+     * @brief Check whether this is a square matrix.
      * @return true if so, false otherwise
      */
     bool isSquare() const
@@ -104,7 +104,7 @@ struct matrix_interface
     }
 
     /**
-     * Check whether matrix dimensions of the right-hand side are compatible
+     * @brief Check whether matrix dimensions of the right-hand side are compatible
      * for adding to this matrix (x- and y- dimensions need to be same as in
      * this matrix)
      * @param rhs the right-hand-side matrix.
@@ -116,7 +116,7 @@ struct matrix_interface
     }
 
     /**
-     * Check whether matrix dimensions of the right-hand side are compatible
+     * @brief Check whether matrix dimensions of the right-hand side are compatible
      * for matrix multiplication with this matrix.
      * @param rhs the right-hand-side matrix.
      * @return true if so, false otherwise
@@ -127,7 +127,7 @@ struct matrix_interface
     }
 
     /**
-     * Check whether this matrix is square and the rhs matrix has the same
+     * @brief Check whether this matrix is square and the rhs matrix has the same
      * number of rows for the solve algorithm to work.
      * @param rhs the right-hand-side matrix.
      * @return true if so, false otherwise
@@ -138,7 +138,7 @@ struct matrix_interface
     }
 
     /**
-     * Check whether this is a horizontal vector-shaped matrix.
+     * @brief Check whether this is a horizontal vector-shaped matrix.
      * @return true if so, false otherwise
      */
     bool isHVector() const
@@ -147,7 +147,7 @@ struct matrix_interface
     }
 
     /**
-     * Check whether this is a vertical vector-shaped matrix.
+     * @brief Check whether this is a vertical vector-shaped matrix.
      * @return true if so, false otherwise
      */
     bool isVVector() const
@@ -156,43 +156,43 @@ struct matrix_interface
     }
 
     /**
-     * Check whether this is a diagonal matrix.
+     * @brief Check whether this is a diagonal matrix.
      * @return true if so, false otherwise
      */
     virtual bool isDiagonal() const = 0;
 
     /**
-     * Check whether this is a scalar matrix.
+     * @brief Check whether this is a scalar matrix.
      * @return true if so, false otherwise
      */
     virtual bool isScalar() const = 0;
 
     /**
-     * Check whether this is a unit matrix.
+     * @brief Check whether this is a unit matrix.
      * @return true if so, false otherwise
      */
     virtual bool isUnit() const = 0;
 
     /**
-     * Check whether this is a upper triangular matrix.
+     * @brief Check whether this is a upper triangular matrix.
      * @return true if so, false otherwise
      */
     virtual bool isUpperTriangular() const = 0;
 
     /**
-     * Check whether this is a lower triangular matrix.
+     * @brief Check whether this is a lower triangular matrix.
      * @return true if so, false otherwise
      */
     virtual bool isLowerTriangular() const = 0;
 
     /**
-     * Check whether this is a symmetric matrix.
+     * @brief Check whether this is a symmetric matrix.
      * @return true if so, false otherwise
      */
     virtual bool isSymmetric() const = 0;
 
     /**
-     * Check whether this is a skew-symmetric matrix.
+     * @brief Check whether this is a skew-symmetric matrix.
      * @return true if so, false otherwise
      */
     virtual bool isSkewSymmetric() const = 0;
@@ -254,7 +254,7 @@ template<>
 void checkBounds<false>(const matrix_interface &lhs, size_t x, size_t y, const std::string &location);
 
 /**
- * matrix template
+ * @brief matrix template
  *
  * Note: This matrix template class defines majority of the matrix
  * operations as overloaded operators and methods. It is assumed that
@@ -281,7 +281,7 @@ class matrix : public matrix_interface
     mat_t m_;
 
     /**
-     * Initialize the data container by re-creating it with new dimensions.
+     * @brief Initialize the data container by re-creating it with new dimensions.
      *
      * @param xDim new x-dimension
      * @param yDim new y-dimension
@@ -310,7 +310,7 @@ class matrix : public matrix_interface
     matrix(const matrix &rhs) = default;
 
     /**
-     * Default constructor.
+     * @brief Default constructor.
      * @param xDim x-dimension: if equal 0 than set to 1
      * @param yDim y-dimension: if equal 0 than make matrix square
      * @param l list of T-values to initialize the matrix
@@ -340,7 +340,7 @@ class matrix : public matrix_interface
     }
 
     /**
-     * Move copy constructor.
+     * @brief Move copy constructor.
      * @param rhs right-hand-side matrix - will be reset
      */
     matrix(matrix &&rhs) : m_(rhs.m_)
@@ -352,7 +352,7 @@ class matrix : public matrix_interface
     matrix &operator=(const matrix &rhs) = default;
 
     /**
-     * Move assignment operator.
+     * @brief Move assignment operator.
      * @param rhs right-hand-side matrix - will be reset
      * @return this matrix set to what rhs previously was.
      */
@@ -367,7 +367,7 @@ class matrix : public matrix_interface
     }
 
     /**
-     * Create a diagonal matrix.
+     * @brief Create a diagonal matrix.
      *
      * @param l the values of the diagonal. Length of the list determines the
      *          dimensions of the matrix.
@@ -386,7 +386,7 @@ class matrix : public matrix_interface
     }
 
     /**
-     * Create a scalar matrix.
+     * @brief Create a scalar matrix.
      *
      * @param dim dimension (x and y are the same)
      * @param c scalar value on the diagonal
@@ -404,7 +404,7 @@ class matrix : public matrix_interface
     }
 
     /**
-     * Create a horizontal vector-matrix (size in Y-dimension is 1)
+     * @brief Create a horizontal vector-matrix (size in Y-dimension is 1)
      * @param l list of values, determines also the size of the matrix
      * @return l.size() x 1 - matrix with values from the list
      */
@@ -420,7 +420,7 @@ class matrix : public matrix_interface
     }
 
     /**
-     * Create a vertical vector-matrix (size in X-dimension is 1)
+     * @brief Create a vertical vector-matrix (size in X-dimension is 1)
      *
      * @param l list of values, determines also the size of the matrix
      *
@@ -438,7 +438,7 @@ class matrix : public matrix_interface
     }
 
     /**
-     * Retrieve the horizontal extent of the matrix.
+     * @brief Retrieve the horizontal extent of the matrix.
      * @return x-dimension
      */
     size_t sizeX() const
@@ -447,7 +447,7 @@ class matrix : public matrix_interface
     }
 
     /**
-     * Retrieve the vertical extent of the matrix.
+     * @brief Retrieve the vertical extent of the matrix.
      * @return y-dimension
      */
     size_t sizeY() const
@@ -456,7 +456,7 @@ class matrix : public matrix_interface
     }
 
     /**
-     * Assert that dimensions of the given matrices are compatible for the
+     * @brief Assert that dimensions of the given matrices are compatible for the
      * given operation.
      *
      * @param lhs left-hand-side matrix
@@ -493,7 +493,7 @@ class matrix : public matrix_interface
     }
 
     /**
-     * Assert that a given scalar is not zero.
+     * @brief Assert that a given scalar is not zero.
      * @param c the offending scalar
      * @param location the location in the class
      * @throw matrixScalarMustNotBeZero
@@ -505,7 +505,7 @@ class matrix : public matrix_interface
     }
 
     /**
-     * Assert that dimensions of the given matrices are compatible for the
+     * @brief Assert that dimensions of the given matrices are compatible for the
      * given operation.
      *
      * @param lhs left-hand-side matrix
@@ -520,7 +520,7 @@ class matrix : public matrix_interface
     }
 
     /**
-     * Subscript operator to get/set individual elements.
+     * @brief Subscript operator to get/set individual elements.
      *
      * @param x x-coordinate
      * @param y y coordinate
@@ -536,7 +536,7 @@ class matrix : public matrix_interface
     }
 
     /**
-     * Subscript operator to get individual elements.
+     * @brief Subscript operator to get individual elements.
      *
      * @param x x-coordinate
      * @param y y coordinate
@@ -552,7 +552,7 @@ class matrix : public matrix_interface
     }
 
     /**
-     * Retrieve the whole row(y) if in bounds.
+     * @brief Retrieve the whole row(y) if in bounds.
      *
      * @param y row index
      *
@@ -566,7 +566,7 @@ class matrix : public matrix_interface
     }
 
     /**
-     * Retrieve the whole row(y) if in bounds.
+     * @brief Retrieve the whole row(y) if in bounds.
      *
      * @param y row index
      *
@@ -580,7 +580,7 @@ class matrix : public matrix_interface
     }
 
     /**
-     * Unary + operator.
+     * @brief Unary + operator.
      *
      * @param rhs the right hand side matrix
      *
@@ -593,7 +593,7 @@ class matrix : public matrix_interface
     }
 
     /**
-     * Unary negation operator.
+     * @brief Unary negation operator.
      *
      * @param rhs right-hand-side matrix
      *
@@ -611,7 +611,7 @@ class matrix : public matrix_interface
     }
 
     /**
-     * Global matrix addition operator.
+     * @brief Global matrix addition operator.
      *
      * @param lhs left-hand-side matrix
      * @param rhs right-hand-side matrix
@@ -631,7 +631,7 @@ class matrix : public matrix_interface
     }
 
     /**
-     * Combined addition and assignment operator.
+     * @brief Combined addition and assignment operator.
      *
      * @param rhs right-hand-side matrix
      *
@@ -646,7 +646,7 @@ class matrix : public matrix_interface
     }
 
     /**
-     * Global matrix subtraction operator.
+     * @brief Global matrix subtraction operator.
      *
      * @param lhs left-hand-side matrix
      * @param rhs right-hand-side matrix
@@ -668,7 +668,7 @@ class matrix : public matrix_interface
     }
 
     /**
-     * Combined subtraction and assignment operator.
+     * @brief Combined subtraction and assignment operator.
      * @param rhs right-hand-side matrix
      * @return the result of *this - rhs
      */
@@ -682,7 +682,7 @@ class matrix : public matrix_interface
     }
 
     /**
-     * Global scalar multiplication operator.
+     * @brief Global scalar multiplication operator.
      * @param lhs left-hand-side matrix
      * @param c right-hand-side constant scalar value
      * @return the result of lhs*c
@@ -699,7 +699,7 @@ class matrix : public matrix_interface
     }
 
     /**
-     * Global scalar multiplication operator.
+     * @brief Global scalar multiplication operator.
      *
      * @param c left-hand-side constant scalar value
      * @param rhs left-hand-side matrix
@@ -718,7 +718,7 @@ class matrix : public matrix_interface
     }
 
     /**
-     * Combined scalar multiplication and assignment operator.
+     * @brief Combined scalar multiplication and assignment operator.
      *
      * @param c scalar
      *
@@ -732,7 +732,7 @@ class matrix : public matrix_interface
     }
 
     /**
-     * Matrix multiplication operator.
+     * @brief Matrix multiplication operator.
      * @param lhs left-hand-side matrix
      * @param rhs right-hand-side matrix
      * @return the product lhs*rhs
@@ -759,7 +759,7 @@ class matrix : public matrix_interface
     }
 
     /**
-     * Combined  multiplication and assignment operator.
+     * @brief Combined  multiplication and assignment operator.
      *
      * @param rhs right-hand-side matrix
      *
@@ -773,7 +773,7 @@ class matrix : public matrix_interface
     }
 
     /**
-     * Global scalar division operator.
+     * @brief Global scalar division operator.
      *
      * @param lhs left-hand-side matrix
      * @param c right-hand-side constant scalar value
@@ -794,7 +794,7 @@ class matrix : public matrix_interface
     }
 
     /**
-     * Global scalar divided by matrix operator.
+     * @brief Global scalar divided by matrix operator.
      *
      * @param rhs right-hand-side matrix
      * @param c left-hand-side constant scalar value
@@ -807,7 +807,7 @@ class matrix : public matrix_interface
     }
 
     /**
-     * Global matrix divided by matrix operator.
+     * @brief Global matrix divided by matrix operator.
      *
      * @param lhs left-hand-side matrix
      * @param rhs right-hand-side matrix#
@@ -821,7 +821,7 @@ class matrix : public matrix_interface
     }
 
     /**
-     * Combined scalar division and assignment operator.
+     * @brief Combined scalar division and assignment operator.
      * @param c scalar
      * @return the result of *this * c
      */
@@ -835,7 +835,7 @@ class matrix : public matrix_interface
     }
 
     /**
-     * Power operator.
+     * @brief Power operator.
      * @param pow power
      * @return lhs ^ pow
      */
@@ -852,7 +852,7 @@ class matrix : public matrix_interface
     }
 
     /**
-     * Combined power and assignment operator.
+     * @brief Combined power and assignment operator.
      *
      * @param pow power
      *
@@ -868,7 +868,7 @@ class matrix : public matrix_interface
     }
 
     /**
-     * This operator is used to return the transposition of the matrix.
+     * @brief This operator is used to return the transposition of the matrix.
      * @param rhs right-hand-side matrix
      * @return rhs.transposed
      */
@@ -886,7 +886,7 @@ class matrix : public matrix_interface
     }
 
     /**
-     * Resize the matrix to new dimensions whilst preserving the values where
+     * @brief Resize the matrix to new dimensions whilst preserving the values where
      * possible.
      *
      * @param newXDim new x-dimension
@@ -909,7 +909,7 @@ class matrix : public matrix_interface
     }
 
     /**
-     * This operator has been used to calculate inversion of matrix.
+     * @brief This operator has been used to calculate inversion of matrix.
      * @param rhs right-hand-side matrix
      * @return lhs^(-1)
      */
@@ -921,7 +921,7 @@ class matrix : public matrix_interface
     }
 
     /**
-     * Inversion function.
+     * @brief Inversion function.
      *
      * @return the inverted square matrix if this matrix is not singular.
      */
@@ -975,7 +975,7 @@ class matrix : public matrix_interface
     }
 
     /**
-     * Solve simultaneous equations.
+     * @brief Solve simultaneous equations.
      *
      * @param v matrix of values. Can be seen as set of vertical vectors
      *
@@ -1034,8 +1034,7 @@ class matrix : public matrix_interface
 #if defined HAVE_LEGACY_DETERMINANT_METHOD
 
     /**
-     *
-     * Calculate the determinant of this matrix.
+     * @brief Calculate the determinant of this matrix.
      * @return the determinant
      */
     T determinant() const
@@ -1076,7 +1075,7 @@ class matrix : public matrix_interface
 
     private:  // make the recursive method private
     /**
-     * Calculate the sub-determinant of this matrix at level n. This is a
+     * @brief Calculate the sub-determinant of this matrix at level n. This is a
      * recursive method.
      * @param n the level with first call to be level n == sizeX().
      * @return the sub-determinant
@@ -1122,7 +1121,7 @@ class matrix : public matrix_interface
 
     public:
     /**
-     * Calculate the determinant of this matrix.
+     * @brief Calculate the determinant of this matrix.
      *
      * @return the determinant
      */
@@ -1132,7 +1131,7 @@ class matrix : public matrix_interface
     }
 
     /**
-     * Calculate the norm of a matrix.
+     * @brief Calculate the norm of a matrix.
      * @return the norm
      */
     T norm() const
@@ -1149,7 +1148,7 @@ class matrix : public matrix_interface
     }
 
     /**
-     * Calculate the condition number of a matrix.
+     * @brief Calculate the condition number of a matrix.
      * @return the condition number
      */
     T cond() const
@@ -1160,7 +1159,7 @@ class matrix : public matrix_interface
     }
 
     /**
-     * Calculate the co-factor of a matrix for a given element.
+     * @brief Calculate the co-factor of a matrix for a given element.
      *
      * @param x x-coordinate
      * @param y y-coordinate
@@ -1199,7 +1198,7 @@ class matrix : public matrix_interface
     }
 
     /**
-     * Calculate adjoin of a matrix.
+     * @brief Calculate adjoin of a matrix.
      *
      * @return the adjoin
      */
@@ -1217,7 +1216,7 @@ class matrix : public matrix_interface
     }
 
     /**
-     * Check whether this is a singular matrix.
+     * @brief Check whether this is a singular matrix.
      *
      * @return true if so, false otherwise
      */
@@ -1227,7 +1226,7 @@ class matrix : public matrix_interface
     }
 
     /**
-     * Check whether this is a diagonal matrix.
+     * @brief Check whether this is a diagonal matrix.
      *
      * @return true if so, false otherwise
      */
@@ -1245,7 +1244,7 @@ class matrix : public matrix_interface
     }
 
     /**
-     * Check whether this is a scalar matrix.
+     * @brief Check whether this is a scalar matrix.
      *
      * @return true if so, false otherwise
      */
@@ -1264,7 +1263,7 @@ class matrix : public matrix_interface
     }
 
     /**
-     * Check whether this is a unit matrix.
+     * @brief Check whether this is a unit matrix.
      *
      * @return true if so, false otherwise
      */
@@ -1277,7 +1276,7 @@ class matrix : public matrix_interface
     }
 
     /**
-     * Check whether this is a null matrix.
+     * @brief Check whether this is a null matrix.
      *
      * @return true if so, false otherwise
      */
@@ -1292,7 +1291,7 @@ class matrix : public matrix_interface
     }
 
     /**
-     * Check whether this is a symmetric matrix.
+     * @brief Check whether this is a symmetric matrix.
      *
      * @return true if so, false otherwise
      */
@@ -1310,7 +1309,7 @@ class matrix : public matrix_interface
     }
 
     /**
-     * Check whether this is a skew-symmetric matrix.
+     * @brief Check whether this is a skew-symmetric matrix.
      *
      * @return true if so, false otherwise
      */
@@ -1328,7 +1327,7 @@ class matrix : public matrix_interface
     }
 
     /**
-     * Check whether this is a upper triangular matrix.
+     * @brief Check whether this is a upper triangular matrix.
      *
      * @return true if so, false otherwise
      */
@@ -1346,7 +1345,7 @@ class matrix : public matrix_interface
     }
 
     /**
-     * Check whether this is a lower triangular matrix.
+     * @brief Check whether this is a lower triangular matrix.
      * @return true if so, false otherwise
      */
     bool isLowerTriangular() const
@@ -1363,7 +1362,7 @@ class matrix : public matrix_interface
     }
 
     /**
-     * Equality operator.
+     * @brief Equality operator.
      *
      * @param lhs left-hand-side matrix
      * @param rhs right-hand-side matrix
@@ -1376,7 +1375,7 @@ class matrix : public matrix_interface
     }
 
     /**
-     * Inequality operator.
+     * @brief Inequality operator.
      *
      * @param lhs left-hand-side matrix
      * @param rhs right-hand-side matrix
@@ -1389,7 +1388,7 @@ class matrix : public matrix_interface
     }
 
     /**
-     * Input stream function.
+     * @brief Input stream function.
      *
      * @param istrm the input stream to read from
      * @param m the matrix to read into
@@ -1410,7 +1409,7 @@ class matrix : public matrix_interface
     }
 
     /**
-     * Output stream function.
+     * @brief Output stream function.
      *
      * @param ostrm the output stream to write to
      * @param m the matrix to write
@@ -1434,7 +1433,7 @@ class matrix : public matrix_interface
 
     private:
     /**
-     * Partial pivoting method.
+     * @brief Partial pivoting method.
      *
      * @param pivX the pivot index
      * @param solutions a pointer to a possible solutions matrix
