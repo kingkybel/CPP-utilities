@@ -92,7 +92,7 @@ void eraseByKey(std::map<Key_, Value_, Compare_, Alloc_> &map2filter, KeyPred_ p
             ++it;
         }
     }
-    // since C++-11 this does no longer work because of explicitly removed assignmentfor pairs:
+    // since C++-11 this does no longer work because of explicitly removed assignment for pairs:
     // map2filter.erase(std::remove_if(map2filter.begin(), map2filter.end(), removeCondition), map2filter.end());
 }
 

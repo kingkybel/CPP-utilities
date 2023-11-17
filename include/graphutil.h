@@ -49,7 +49,7 @@
 namespace util
 {
 /**
- * Error handling for circles in an acyclic graph.
+ * @brief Error handling for circles in an acyclic graph.
  */
 struct circle_error : public std::logic_error
 {
@@ -60,7 +60,7 @@ struct circle_error : public std::logic_error
 };
 
 /**
- * Error handling for parallel edges in an acyclic graph.
+ * @brief Error handling for parallel edges in an acyclic graph.
  */
 struct parallel_error : public std::logic_error
 {
@@ -71,7 +71,7 @@ struct parallel_error : public std::logic_error
 };
 
 /**
- * Helper class needed to avoid parallel edges in a directed graph
+ * @brief Helper class needed to avoid parallel edges in a directed graph
  * (undirected Edge).
  */
 struct UndirEdge
@@ -85,7 +85,7 @@ struct UndirEdge
 };
 
 /**
- * Generic ostream - &lt;&lt; operator for UndirEdge.
+ * @brief Generic ostream - &lt;&lt; operator for UndirEdge.
  */
 inline std::ostream &operator<<(std::ostream &os, const UndirEdge &u)
 {
@@ -95,7 +95,7 @@ inline std::ostream &operator<<(std::ostream &os, const UndirEdge &u)
 }
 
 /**
- * Hash functor for undirected edges.
+ * @brief Hash functor for undirected edges.
  */
 struct UndirEdge_hash
 {
@@ -108,7 +108,7 @@ struct UndirEdge_hash
 };
 
 /**
- * Equality for undirected edges.
+ * @brief Equality for undirected edges.
  */
 inline bool operator==(const UndirEdge &lhs, const UndirEdge &rhs)
 {
@@ -116,7 +116,7 @@ inline bool operator==(const UndirEdge &lhs, const UndirEdge &rhs)
 }
 
 /**
- * Abstract base class for nodes. Ensures that function hash() is implemented.
+ * @brief Abstract base class for nodes. Ensures that function hash() is implemented.
  */
 struct NodeBase
 {
@@ -126,17 +126,23 @@ struct NodeBase
 };
 
 /**
- * Generic hash-template function for nodes.
+ * @brief Generic hash-template function for nodes.
+ *
+ * @tparam NodeT_ node type
+ * @param n node
+ * @return size_t hash-value
  */
-template<typename N_>
-inline size_t HashTFn(const N_ &n)
+template<typename NodeT_>
+inline size_t HashTFn(const NodeT_ &n)
 {
     return (n.hash());
 }
 
 /**
- * Generic hash-template functor for nodes.
+ * @brief Generic hash-template functor for nodes.
  * Requires that template type is derived from NodeBase, hence implements hash().
+ *
+ * @tparam NodeT_
  */
 template<typename NodeT_>
 class HashTClass
@@ -146,8 +152,11 @@ class HashTClass
                   "NodeT_ template parameter must be derived from class NodeBase");
 
     /**
-     * Call the generic template'd Hash-Function which in turn calls the
-     * member hash() which we know is implemented because of concept-constraints.)
+     * @brief Call the generic template'd Hash-Function which in turn calls the
+     * member hash() which we know is implemented because of concept-constraints.
+     *
+     * @param t
+     * @return size_t
      */
     size_t operator()(const NodeT_ &t) const
     {
@@ -156,7 +165,7 @@ class HashTClass
 };
 
 /**
- * Plain old data implementation of NodeBase for ad-hoc use.
+ * @brief Plain old data implementation of NodeBase for ad-hoc use.
  */
 template<typename T_>
 struct PODNode : public NodeBase
@@ -167,15 +176,19 @@ struct PODNode : public NodeBase
     BOOST_CLASS_REQUIRE(T_, boost, LessThanComparableConcept);
 
     /**
-     * Default construct/construct from P.O.D - value
+     * @brief Default construct/construct from P.O.D - value
+     *
+     * @param v the value
      */
     PODNode(const T_ &v = T_()) : v_(v)
     {
     }
 
     /**
-     * Hash implementation using the hash template.
+     * @brief Hash implementation using the hash template.
      * Fulfilling base-interface requirements.
+     *
+     * @return size_t hash-value
      */
     [[nodiscard]] size_t hash() const override
     {
@@ -185,7 +198,9 @@ struct PODNode : public NodeBase
     }
 
     /**
-     * Retrieve the underlying value.
+     * @brief Retrieve the underlying value.
+     *
+     * @return T_& value
      */
     T_ &pod()
     {
@@ -193,7 +208,11 @@ struct PODNode : public NodeBase
     }
 
     /**
-     * Enable associative containers.
+     * @brief Less-operator needed to enable associative containers.
+     *
+     * @param lhs left-hand-side
+     * @param rhs right-hand-side
+     * @return true, if lhs is less than rhs, false otherwise
      */
     friend bool operator<(const PODNode<T_> &lhs, const PODNode<T_> &rhs)
     {
@@ -201,7 +220,11 @@ struct PODNode : public NodeBase
     }
 
     /**
-     * Enable associative containers.
+     * @brief Equality-operator needed to enable associative containers.
+     *
+     * @param lhs left-hand-side
+     * @param rhs right-hand-side
+     * @return true, if lhs is equal to rhs, false otherwise
      */
     friend bool operator==(const PODNode<T_> &lhs, const PODNode<T_> &rhs)
     {
@@ -209,7 +232,11 @@ struct PODNode : public NodeBase
     }
 
     /**
-     * Enable associative containers.
+     * @brief Inequality-operator.
+     *
+     * @param lhs left-hand-side
+     * @param rhs right-hand-side
+     * @return true, if lhs is not equal to rhs, false otherwise
      */
     friend bool operator!=(const PODNode<T_> &lhs, const PODNode<T_> &rhs)
     {
@@ -217,11 +244,15 @@ struct PODNode : public NodeBase
     }
 
     /**
-     * Generic ostream - &lt;&lt; operator for PODNode.
+     * @brief Generic ostream - &lt;&lt; operator for PODNode.
+     *
+     * @param os output stream to be modified
+     * @param node node to stream
+     * @return std::ostream& the modified stream
      */
-    friend std::ostream &operator<<(std::ostream &os, const PODNode<T_> &n)
+    friend std::ostream &operator<<(std::ostream &os, const PODNode<T_> &node)
     {
-        os << n.v_;
+        os << node.v_;
 
         return (os);
     }
@@ -231,7 +262,7 @@ struct PODNode : public NodeBase
 };
 
 /**
- * Wrapper for edge-descriptors that keep a back-pointer to node-descriptors.
+ * @brief Wrapper for edge-descriptors that keep a back-pointer to node-descriptors.
  */
 template<typename NodeT_, typename EdgeT_>
 struct EdgeDescriptor
@@ -261,7 +292,13 @@ struct EdgeDescriptor
 };
 
 /**
- * Generic ostream - &lt;&lt; operator for EdgeDescriptor.
+ * @brief Generic ostream - &lt;&lt; operator for EdgeDescriptor.
+ *
+ * @tparam NodeT_ node type
+ * @tparam EdgeT_ edge type
+ * @param os output stream to modify
+ * @param ed edge-descriptor to stream
+ * @return std::ostream& the modified stream
  */
 template<typename NodeT_, typename EdgeT_>
 std::ostream &operator<<(std::ostream &os, const EdgeDescriptor<NodeT_, EdgeT_> &ed)
@@ -272,12 +309,18 @@ std::ostream &operator<<(std::ostream &os, const EdgeDescriptor<NodeT_, EdgeT_> 
 }
 
 /**
- * Class template for directed graphs.
+ * @brief Class template for directed graphs.
  */
 template<typename NodeT_, typename EdgeT_ = std::string>
 class DirectedGraph
 {
     public:
+    /**
+     * @brief Construct a new Directed Graph object.
+     *
+     * @param allowCycles whether (true) or not (false) to allow cycles in the graph
+     * @param allowParallelEdges  whether (true) or not (false) to allow parallel edges in the graph
+     */
     DirectedGraph(bool allowCycles = false, bool allowParallelEdges = false)
     : allowCycles_(allowCycles)
     , allowParallelEdges_(allowParallelEdges)
@@ -309,28 +352,34 @@ class DirectedGraph
     using VERTEX_RESULT   = std::pair<vertex_t, bool>;
 
     /**
-     * Helper visitor class to help detect cycles in the graph.
+     * @brief Helper visitor class to help detect cycles in the graph.
      */
     struct cycle_detector : public boost::dfs_visitor<>
     {
-        /// Pass the result as reference. Should be initialised with "false" by caller.
-
+        /**
+         * @brief Construct a new cycle detector object
+         *
+         * @param has_cycle result as reference. Should be initialised with "false" by caller.
+         */
         explicit cycle_detector(bool &has_cycle) : has_cycle_(has_cycle)
         {
         }
 
-        cycle_detector(const cycle_detector &rhs) : has_cycle_(rhs.has_cycle_)
-        {
-        }
+        cycle_detector(const cycle_detector &rhs) = default;
 
-        cycle_detector(const cycle_detector &&)           = delete;
+         cycle_detector(const cycle_detector &&)          = delete;
         cycle_detector operator=(const cycle_detector &)  = delete;
         cycle_detector operator=(const cycle_detector &&) = delete;
 
         /**
-         * Overridden dfs_visitor - method for back-edge- event.
+         * @brief Overridden dfs_visitor - method for back-edge event.
+         *
+         * @tparam Edge edge type
+         * @tparam Graph graph type
+         * @param e edge
+         * @param g graph
          */
-        template<class Edge, class Graph>
+        template<typename Edge, typename Graph>
         void back_edge(Edge e, Graph &g)
         {
             has_cycle_ = true;
@@ -341,7 +390,7 @@ class DirectedGraph
     };
 
     /**
-     * Reset the graph.
+     * @brief Reset the graph.
      */
     void clear()
     {
@@ -351,7 +400,10 @@ class DirectedGraph
     }
 
     /**
-     * Add a node with value "node" to the graph.
+     * @brief Add a node with value "node" to the graph.
+     *
+     * @param node the note to add to the graph
+     * @return VERTEX_RESULT the added/modified vertex and whether (true) it was added or (false) only modified
      */
     VERTEX_RESULT addNode(NodeT_ node)
     {
@@ -374,7 +426,10 @@ class DirectedGraph
     }
 
     /**
-     * Retrieve a pointer to the value of a node using the vertex.
+     * @brief Retrieve a pointer to the value of a node using the vertex.
+     *
+     * @param v vertex
+     * @return NodeT_* pointer to the node
      */
     NodeT_ *getNode(const vertex_t &v)
     {
@@ -382,7 +437,10 @@ class DirectedGraph
     }
 
     /**
-     * Retrieve a pointer to the value of a node using a copy of the value.
+     * @brief Retrieve a pointer to the value of a node using a copy of the value.
+     *
+     * @param node the node to search
+     * @return NodeT_* pointer to the value of the node
      */
     NodeT_ *getNode(const NodeT_ &node)
     {
@@ -397,7 +455,10 @@ class DirectedGraph
     }
 
     /**
-     * Retrieve a read-only pointer to the value of a node using a copy of the value.
+     * @brief Retrieve a read-only pointer to the value of a node using a copy of the value.
+     *
+     * @param node the node to search
+     * @return const NodeT_* pointer to the node
      */
     const NodeT_ *getNode(const NodeT_ &node) const
     {
@@ -413,7 +474,10 @@ class DirectedGraph
     }
 
     /**
-     * Retrieve the number of in-edges to a node.
+     * @brief Retrieve the number of in-edges to a node.
+     *
+     * @param checkNode the node to check
+     * @return size_t the in-degree for the node
      */
     size_t inDegree(const NodeT_ &checkNode) const
     {
@@ -423,10 +487,12 @@ class DirectedGraph
     }
 
     /**
-     * Determine whether the graph has a cycle.
+     * @brief Determine whether the graph has a cycle.
      * This can only happen when we just added an edge, but since we'd like
      * our graph to be acyclic we will remove the offending edge.
      * Any non-member caller of this will always receive a false.
+     *
+     * @return true, if the graph has got a cycle, false otherwise
      */
     bool hasCycle() const
     {
@@ -439,7 +505,10 @@ class DirectedGraph
     }
 
     /**
-     * Do a depth first search on the graph.
+     * @brief Do a depth first search on the graph.
+     *
+     * @tparam VisitorT_ visitor type
+     * @param vis the visitor
      */
     template<typename VisitorT_>
     void applyDepthFirst(VisitorT_ &vis)
@@ -448,7 +517,7 @@ class DirectedGraph
     }
 
     /**
-     * Internal function to re-jig the map after a deletion.
+     * @brief Internal function to re-jig the map after a deletion.
      */
     void reorganiseIndexMap()
     {
@@ -464,7 +533,9 @@ class DirectedGraph
     }
 
     /**
-     * Retrieve pointers to all nodes in the graph ordered in a depth first fashion.
+     * @brief Retrieve pointers to all nodes in the graph ordered in a depth first fashion.
+     *
+     * @return NODE_PTR_VECTOR vector of all nodes
      */
     NODE_PTR_VECTOR getNodes()
     {
@@ -482,8 +553,10 @@ class DirectedGraph
     }
 
     /**
-     * Retrieve read-only pointers to all nodes in the graph ordered in a
+     * @brief Retrieve read-only pointers to all nodes in the graph ordered in a
      * depth first order.
+     *
+     * @return const NODE_PTR_VECTOR vector of all nodes
      */
     const NODE_PTR_VECTOR getNodes() const
     {
@@ -501,7 +574,10 @@ class DirectedGraph
     }
 
     /**
-     *  Remove a node from the graph.
+     * @brief Remove a node from the graph.
+     *
+     * @param node the node to remove
+     * @return true, if the node was removed, false if the node was not part of the graph
      */
     bool removeNode(const NodeT_ &node)
     {
@@ -509,44 +585,50 @@ class DirectedGraph
         auto found = node2index_.find(node);
 
         if(found != node2index_.end())
+            return false;
+
+        // also remove all edges into and out of the node
+        NODE_SET parents = parentNodes(node);
+
+        for(auto it = parents.begin(); it != parents.end(); it++)
         {
-            // also remove all edges into and out of the node
-            NODE_SET parents = parentNodes(node);
+            auto eIt = edges_.find(UndirEdge(node2index_[*it], found->second));
 
-            for(auto it = parents.begin(); it != parents.end(); it++)
-            {
-                auto eIt = edges_.find(UndirEdge(node2index_[*it], found->second));
+            remove_edge(node2index_[*it], found->second, graph_);
 
-                remove_edge(node2index_[*it], found->second, graph_);
-
-                if(eIt != edges_.end())
-                    edges_.erase(eIt);
-            }
-
-            NODE_SET children = childrenNodes(node);
-
-            for(auto it = children.begin(); it != children.end(); it++)
-            {
-                auto eIt = edges_.find(UndirEdge(node2index_[*it], found->second));
-
-                remove_edge(found->second, node2index_[*it], graph_);
-
-                if(eIt != edges_.end())
-                    edges_.erase(eIt);
-            }
-
-            // then remove the node itself
-            remove_vertex(found->second, graph_);
-
-            reorganiseIndexMap();
-            reval = true;
+            if(eIt != edges_.end())
+                edges_.erase(eIt);
         }
 
-        return (reval);
+        NODE_SET children = childrenNodes(node);
+
+        for(auto it = children.begin(); it != children.end(); it++)
+        {
+            auto eIt = edges_.find(UndirEdge(node2index_[*it], found->second));
+
+            remove_edge(found->second, node2index_[*it], graph_);
+
+            if(eIt != edges_.end())
+                edges_.erase(eIt);
+        }
+
+        // then remove the node itself
+        remove_vertex(found->second, graph_);
+
+        reorganiseIndexMap();
+
+        return true;
     }
 
     /**
-     * Add an edge from node1 to node2 with edge-information
+     * @brief Add an edge from node1 to node2 with edge-information
+     *
+     * @param node1 first node
+     * @param node2 second node
+     * @param edge edge between the nodes
+     * @return true, is successfully added
+     * @throw circle_error, if inserting the edge would create a circle
+     *        parallel_error,  if inserting the edge would create parallel edges
      */
     bool addEdge(NodeT_ node1, NodeT_ node2, EdgeT_ edge = EdgeT_())
     {
@@ -587,7 +669,11 @@ class DirectedGraph
     }
 
     /**
-     * Remove an edge from the graph.
+     * @brief Remove an edge from the graph.
+     *
+     * @param node1 first node of the edge
+     * @param node2 second node of the edge
+     * @return true, if the edge was successfully removed, false otherwise
      */
     bool removeEdge(const NodeT_ &node1, const NodeT_ &node2)
     {
@@ -609,8 +695,12 @@ class DirectedGraph
     }
 
     /**
-     * Retrieve a pointer to an edge from start to finish (if such an edge
+     * @brief Retrieve a pointer to an edge from start to finish (if such an edge
      * exists, 0 otherwise).
+     *
+     * @param start start node of the edge
+     * @param finish end node of the edge
+     * @return const EdgeT_* pointer to the edge
      */
     const EdgeT_ *getEdge(const NodeT_ &start, const NodeT_ &finish) const
     {
@@ -632,7 +722,9 @@ class DirectedGraph
     }
 
     /**
-     * Retrieve pointers to all edges of the graph.
+     * @brief Retrieve pointers to all edges of the graph.
+     *
+     * @return EDGE_PTR_VECTOR the edge pointers
      */
     EDGE_PTR_VECTOR getEdges()
     {
@@ -649,7 +741,9 @@ class DirectedGraph
     }
 
     /**
-     * Retrieve read-only pointers to all edges of the graph.
+     * @brief Retrieve read-only pointers to all edges of the graph.
+     *
+     * @return const EDGE_PTR_VECTOR  the edge pointers
      */
     const EDGE_PTR_VECTOR getEdges() const
     {
@@ -666,7 +760,10 @@ class DirectedGraph
     }
 
     /**
-     * Retrieve all nodes connected to checkNode where checkNode is the start-point.
+     * @brief Retrieve all nodes connected to checkNode where checkNode is the start-point.
+     *
+     * @param checkNode the node to check
+     * @return NODE_SET the children nodes of checkNode
      */
     NODE_SET childrenNodes(const NodeT_ &checkNode) const
     {
@@ -688,7 +785,10 @@ class DirectedGraph
     }
 
     /**
-     * Retrieve all nodes connected to checkNode where checkNode is the end-point.
+     * @brief Retrieve all nodes connected to checkNode where checkNode is the end-point.
+     *
+     * @param checkNode the node to check
+     * @return NODE_SET the parent nodes of checkNode
      */
     NODE_SET parentNodes(const NodeT_ &checkNode) const
     {
@@ -710,7 +810,10 @@ class DirectedGraph
     }
 
     /**
-     * Retrieve all nodes connected to checkNode.
+     * @brief Retrieve all nodes connected to checkNode.
+     *
+     * @param checkNode the node to check
+     * @return NODE_SET all nodes connected to checkNode
      */
     NODE_SET connectedNodes(const NodeT_ &checkNode) const
     {
@@ -756,7 +859,13 @@ class DirectedGraph
 };
 
 /**
- * Generic ostream - &lt;&lt; operator for DirectedAcylicGraph.
+ * @brief Generic ostream - &lt;&lt; operator for DirectedAcylicGraph.
+ *
+ * @tparam NodeT_ node type
+ * @tparam EdgeT_ edge type
+ * @param os the output stream to modify
+ * @param dag the directed acycic graph to stream
+ * @return std::ostream& the modified stream
  */
 template<typename NodeT_, typename EdgeT_>
 std::ostream &operator<<(std::ostream &os, const DirectedGraph<NodeT_, EdgeT_> &dag)
@@ -778,7 +887,6 @@ std::ostream &operator<<(std::ostream &os, const DirectedGraph<NodeT_, EdgeT_> &
 
     return (os);
 }
-};
-// namespace util
+};  // namespace util
 
 #endif  // NS_UTIL_GRAPHUTIL_H_INCLUDED
