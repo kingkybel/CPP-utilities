@@ -20,6 +20,7 @@ add_executable(run_tests
                 statutil_tests.cc
                 bayesutil_tests.cc
                 performance_timer_tests.cc
+                heap_tests.cc
                 )
 
 target_link_libraries(run_tests gtest gtest_main gmp dkanyutil dkbayesutil dkcsvutil dkdateutil dkfloatingpoint dkprimes dkstatutil dkthreadutil)
