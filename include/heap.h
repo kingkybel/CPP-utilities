@@ -34,13 +34,16 @@
 namespace util
 {
 /**
- * @class heap
+ * @brief a heap implementation
+ * 
+ * @tparam T_ element type
+ * @tparam Compare comparison function type, by default comparison is std::greater, which results in a min-heap
  */
 template<typename T_, typename Compare = std::greater<T_>>
 class heap
 {
-    std::vector<T_> arr;
-    size_t          last = 0UL;
+    std::vector<T_> arr_;
+    size_t          last_ = 0UL;
 
     /**
      * @brief Retrieve the index of the parent of the given index
@@ -48,7 +51,7 @@ class heap
      * @param idx the child whose parent to look for
      * @return size_t the parent
      */
-    static size_t parentOf(const size_t idx)
+    static size_t parentOf_(const size_t idx)
     {
         return (idx > 0UL ? (((idx - 1)) / 2UL) : 0UL);
     }
@@ -58,16 +61,15 @@ class heap
      *
      * @param nodeIdx index of the node to bubble up
      */
-    void bubbleUp(size_t nodeIdx)
+    void bubbleUp_(size_t nodeIdx)
     {
         if(nodeIdx != 0UL)
         {
-            size_t parentIdx = parentOf(nodeIdx);
-
-            if(arr[parentIdx] > arr[nodeIdx])
+            size_t parentIdx = parentOf_(nodeIdx);
+            if(Compare()(arr_[parentIdx], arr_[nodeIdx]))
             {
-                std::swap(arr[parentIdx], arr[nodeIdx]);
-                bubbleUp(parentIdx);
+                std::swap(arr_[parentIdx], arr_[nodeIdx]);
+                bubbleUp_(parentIdx);
             }
         }
     }
@@ -77,31 +79,31 @@ class heap
      *
      * @param nodeIdx index of the node to bubble down
      */
-    void bubbleDown(size_t nodeIndex)
+    void bubbleDown_(size_t nodeIndex)
     {
         size_t minIdx;
         size_t leftIdx  = nodeIndex * 2 + 1;
         size_t rightIdx = nodeIndex * 2 + 2;
 
-        if(rightIdx >= last)
+        if(rightIdx >= last_)
         {
-            if(leftIdx >= last)
+            if(leftIdx >= last_)
                 return;
             else
                 minIdx = leftIdx;
         }
         else
         {
-            if(arr[leftIdx] <= arr[rightIdx])
+            if(!Compare()(arr_[leftIdx], arr_[rightIdx]))
                 minIdx = leftIdx;
             else
                 minIdx = rightIdx;
         }
 
-        if(arr[nodeIndex] > arr[minIdx])
+        if(Compare()(arr_[nodeIndex], arr_[minIdx]))
         {
-            std::swap(arr[minIdx], arr[nodeIndex]);
-            bubbleDown(minIdx);
+            std::swap(arr_[minIdx], arr_[nodeIndex]);
+            bubbleDown_(minIdx);
         }
     }
 
@@ -119,7 +121,7 @@ class heap
     {
         if(empty())
             return nullptr;
-        return &arr[0];
+        return &arr_[0];
     }
 
     /**
@@ -129,13 +131,13 @@ class heap
     {
         if(!empty())
         {
-            // Replace root with last element
-            arr[0] = arr[last - 1];
+            // Replace root with last_ element
+            arr_[0] = arr_[last_ - 1];
 
             // Decrement size of heap
-            last--;
+            last_--;
 
-            bubbleDown(0L);
+            bubbleDown_(0L);
         }
     }
 
@@ -147,13 +149,13 @@ class heap
     void insert(T_ key)
     {
         // Increase the size of Heap by 1
-        last++;
-        if(last >= arr.size())
-            arr.resize(last);
+        last_++;
+        if(last_ >= arr_.size())
+            arr_.resize(last_);
 
         // Insert the element at end of Heap
-        arr[last - 1] = key;
-        bubbleUp(last - 1);
+        arr_[last_ - 1] = key;
+        bubbleUp_(last_ - 1);
     }
 
     /**
@@ -163,7 +165,7 @@ class heap
      */
     size_t size() const
     {
-        return (last);
+        return (last_);
     }
 
     /**
@@ -174,10 +176,10 @@ class heap
      */
     T_ operator[](size_t index) const
     {
-        if(index > last)
+        if(index > last_)
             throw std::out_of_range("");
 
-        return (arr[index]);
+        return (arr_[index]);
     }
 
     /**
@@ -206,7 +208,7 @@ class heap
             os << h[i];
             if(layerCount == layerSize)
             {
-                os << "| ";
+                os << " | ";
                 layerSize *= 2;
                 layerCount = 1;
             }
@@ -225,13 +227,13 @@ class heap
  * @brief heap class that uses std algorithms
  *
  * @tparam T_ type of elements
- * @tparam Compare comparison function type
+ * @tparam Compare comparison function type, by default comparison is std::greater, which results in a min-heap
  */
 template<typename T_, typename Compare = std::greater<T_>>
 class std_heap
 {
-    std::vector<T_> arr;
-    size_t          last = 0UL;
+    std::vector<T_> arr_;
+    size_t          last_ = 0UL;
 
     public:
     std_heap()                    = default;
@@ -247,7 +249,7 @@ class std_heap
     {
         if(empty())
             return nullptr;
-        return &arr[0];
+        return &arr_[0];
     }
 
     /**
@@ -255,11 +257,11 @@ class std_heap
      */
     void pop()
     {
-        std::pop_heap(arr.begin(), arr.begin() + last, Compare());
-        last--;
+        std::pop_heap(arr_.begin(), arr_.begin() + last_, Compare());
+        last_--;
 
-        if(last < arr.size() / 2)
-            arr.resize(last);
+        if(last_ < arr_.size() / 2)
+            arr_.resize(last_);
     }
 
     /**
@@ -270,13 +272,13 @@ class std_heap
     void insert(T_ Key)
     {
         // Increase the size of Heap by 1
-        last++;
-        if(arr.size() < size())
-            arr.resize(size() + 1);
+        last_++;
+        if(arr_.size() < size())
+            arr_.resize(size() + 1);
 
-        arr[size() - 1] = Key;
+        arr_[size() - 1] = Key;
         // Insert the element at end of Heap
-        std::push_heap(arr.begin(), arr.begin() + last, Compare());
+        std::push_heap(arr_.begin(), arr_.begin() + last_, Compare());
     }
 
     /**
@@ -286,7 +288,7 @@ class std_heap
      */
     size_t size() const
     {
-        return (last);
+        return (last_);
     }
 
     /**
@@ -297,10 +299,10 @@ class std_heap
      */
     T_ operator[](size_t index) const
     {
-        if(index >= last)
+        if(index >= last_)
             throw std::out_of_range("");
 
-        return (arr[index]);
+        return (arr_[index]);
     }
 
     /**
