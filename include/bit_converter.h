@@ -62,27 +62,44 @@ union bit_converter
     }
 
     /**
-     * @brief convert from a homogenous initializer list of type FT_
+     * @brief Convert from a homogenous initializer list of type ElType_. If the total memory of all objects in the
+     * initList exceeds the total memory of the bit converter, then throw a std::length_error
      *
-     * @tparam FT_ type of elements of the  initializer list
-     * @param ftList the initializer list
+     * @tparam ElType_ type of elements of the  initializer list
+     * @param initList the initializer list. all elements need to be of type ElType_
      * @return bit_converter the converter object
+     * @throw std::length_error
      */
-    template<typename FT_>
-    static bit_converter from(std::initializer_list<FT_> ftList)
+    template<typename ElType_>
+    static bit_converter from(std::initializer_list<ElType_> initList)
     {
         bit_converter   reval;
-        const long long numOfBytes = ftList.size() * (sizeof(FT_) / BYTES_IN_CHAR) * sizeof(int8_t);
-        long long       i          = 0LL;
-
-        for(auto v: ftList)
+        const long long numOfBytes = initList.size() * (sizeof(ElType_) / BYTES_IN_CHAR) * sizeof(int8_t);
+        if(numOfBytes > BYTES_IN_DATA)
         {
-            reval.byte[i] = (i < numOfBytes) ? v : 0U;
+            throw std::length_error("Total size of bytes of given arguments exceeeds actual size of bit_converter");
+        }
+
+        union BytesOfEl
+        {
+            ElType_ el;
+            uint8_t byte[sizeof(ElType_)];
+        };
+        long long i = 0LL;
+        size_t byteNum{0U};
+        for(auto v: initList)
+        {
+            BytesOfEl b{v};
+            for(size_t j = 0; j < sizeof(ElType_); j++)
+            {
+                byteNum = i * sizeof(ElType_) + j;
+                reval.byte[byteNum] = (byteNum < numOfBytes) ? b.byte[j] : 0U;
+            }
             i++;
         }
 
-        while(i < BYTES_IN_DATA)
-            reval.byte[i++] = false;
+        while(byteNum < BYTES_IN_DATA)
+            reval.byte[byteNum++] = false;
 
         return (reval);
     }
@@ -131,9 +148,9 @@ union bit_converter
     }
 
     /**
-     * @brief Rotate the bits of a the object
+     * @brief Rotate the bits of the object
      *
-     * @param bitsToShift number of position to shift, negative numbers means shift to right
+     * @param bitsToShift number of positions to shift, negative numbers means shift to right
      */
     void rotate(long long bitsToShift)
     {

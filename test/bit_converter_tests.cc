@@ -49,3 +49,95 @@ TEST_F(BitConverterTest, construction_test)
     string                 zero_64 = "0000000000000000000000000000000000000000000000000000000000000000";
     ASSERT_EQ(zero_64, string{defaultBC.asBitset().to_string()});
 }
+
+TEST_F(BitConverterTest, from_construction_test)
+{
+    auto   result  = bit_converter<int64_t>::from({char{0}});
+    string zero_64 = "0000000000000000000000000000000000000000000000000000000000000000";
+    ASSERT_EQ(zero_64, string{result.asBitset().to_string()});
+    result = bit_converter<int64_t>::from({char{0}, char{0}, char{0}, char{0}, char{0}, char{0}, char{0}, char{0}});
+    ASSERT_EQ(zero_64, string{result.asBitset().to_string()});
+    result = bit_converter<int64_t>::from({int16_t{0}, int16_t{0}, int16_t{0}, int16_t{0}});
+    ASSERT_EQ(zero_64, string{result.asBitset().to_string()});
+    result = bit_converter<int64_t>::from({uint32_t{0}, uint32_t{0}});
+    ASSERT_EQ(zero_64, string{result.asBitset().to_string()});
+
+    string expected{"0000000000000100000000000000001100000000000000100000000000000001"};
+    result = bit_converter<int64_t>::from({int16_t{1}, int16_t{2}, int16_t{3}, int16_t{4}});
+    ASSERT_EQ(expected, string{result.asBitset().to_string()});
+}
+
+TEST_F(BitConverterTest, set_and_get_test)
+{
+    bit_converter<int64_t> bitConv{int64_t{0}};
+    for(size_t i = 0UL; i < 64; i++)
+        ASSERT_FALSE(bitConv.getBit(i));
+    for(size_t i = 0UL; i < 8; i++)
+        ASSERT_EQ(bitConv.getByte(i), u_char{0});
+
+    bitConv.setBit(34);
+    for(size_t i = 0UL; i < 64; i++)
+        if(i != 34)
+            ASSERT_FALSE(bitConv.getBit(i));
+        else
+            ASSERT_TRUE(bitConv.getBit(i));
+            
+    for(size_t i = 0UL; i < 8; i++)
+        if(i != 4)
+            ASSERT_EQ(bitConv.getByte(i), u_char{0});
+        else
+            ASSERT_EQ(bitConv.getByte(i), u_char{4});
+
+    bitConv.setBit(34, false);
+    for(size_t i = 0UL; i < 64; i++)
+        ASSERT_FALSE(bitConv.getBit(i));
+    for(size_t i = 0UL; i < 8; i++)
+        ASSERT_EQ(bitConv.getByte(i), u_char{0});
+
+    bitConv.setByte(4, uint8_t{4});
+    for(size_t i = 0UL; i < 64; i++)
+        if(i != 34)
+            ASSERT_FALSE(bitConv.getBit(i));
+        else
+            ASSERT_TRUE(bitConv.getBit(i));
+            
+    for(size_t i = 0UL; i < 8; i++)
+        if(i != 4)
+            ASSERT_EQ(bitConv.getByte(i), u_char{0});
+        else
+            ASSERT_EQ(bitConv.getByte(i), u_char{4});
+            
+    bitConv.setByte(4, uint8_t{0});
+    for(size_t i = 0UL; i < 64; i++)
+        ASSERT_FALSE(bitConv.getBit(i));
+    for(size_t i = 0UL; i < 8; i++)
+        ASSERT_EQ(bitConv.getByte(i), u_char{0});
+}
+
+TEST_F(BitConverterTest, rotate_test)
+{
+    auto bit_patterns = vector<int64_t>{1234L, -45325L, 0L, 7070734L, -1231211234L};
+    for(const auto& bit_patternt_int: bit_patterns)
+    {
+        bit_converter<int64_t> bits{int64_t{bit_patternt_int}};
+        string                 originalStr = bits.asBitset().to_string();
+
+        auto num_shift = vector{1, -1, 13, -17, 131, -200};
+        for(const auto& shift: num_shift)
+        {
+            // cout << "patt=" << bit_patternt_int << " shift=" << shift << endl;
+            string afterRotate{};
+            for(size_t i = 0UL; i < 63UL; i++)
+            {
+                bits.rotate(shift);
+                afterRotate = string{bits.asBitset().to_string()};
+                // cout << i << ": " << afterRotate << endl;
+            }
+            bits.rotate(shift);
+            afterRotate = string{bits.asBitset().to_string()};
+            // cout << 64 << ": " << afterRotate << endl;
+            ASSERT_EQ(originalStr, afterRotate);
+            // cout << endl;
+        }
+    }
+}
