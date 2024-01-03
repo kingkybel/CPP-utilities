@@ -4,6 +4,21 @@ A collection of C++-sample-files.
 # Installation
 The installation and build is tested on ./do    
 ## dependencies
+
+BOOST:
+```
+# create a directory where you like to clone googletest, eg: ~/Repos and change to it
+mkdir ~/Repos ; cd ~/Repos
+```
+From https://www.boost.org/users/history/version_1_84_0.html download `boost_1_84_0.tar.gz`
+
+```
+tar -xvf boost_1_84_0.tar.gz
+cd boost_1_84_0
+./bootstrap.sh
+./b2
+```
+
 MPFR:
 ```
  sudo apt-get install libmpfr-dev libmpfr-doc
