@@ -345,4 +345,4 @@ class ThreadScheduler
 
 };  // namespace util
 
-#endif  // NS_UTIL_BIT_CONVERTER_H_INCLUDED
+#endif  // NS_UTIL_THREADUTIL_H_INCLUDED
