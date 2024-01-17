@@ -30,7 +30,7 @@
       "request": "launch",
       "program": "${workspaceFolder}/build/bin/run_tests",
       "args": [
-        //  "--gtest_filter=TimerTest.simulation_vs_measured_delay_test"
+          "--gtest_filter=HeapTest.heap_test"
       ],
       "stopAtEntry": false,
       "cwd": "${workspaceFolder}",

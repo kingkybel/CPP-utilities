@@ -1,10 +1,16 @@
 FROM ubuntu:22.04
 LABEL Description="Build environment"
 
+ENV TZ=Europe/Berlin
+RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && \
+    echo $TZ > /etc/timezone && \
+    DEBIAN_FRONTEND=noninteractive
 RUN apt-get update && \
     apt-get -y --no-install-recommends install \
-    build-essential g++-12 cmake gdb wget unzip autoconf git libtool \
-    ssh curl apt-transport-https ca-certificates libgmp3-dev libmpfr-dev python3.10 && \
+        build-essential g++-12 cmake gdb wget unzip autoconf git libtool \
+        ssh curl apt-transport-https ca-certificates libgmp3-dev libmpfr-dev python3.10 python3-pip \
+    cmake ninja-build lcov && \
+    pip3 install pytest pytest-cov fastcov && \
     update-ca-certificates && \
     apt-get clean
 

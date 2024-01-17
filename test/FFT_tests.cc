@@ -23,7 +23,7 @@
  */
 
 #include "FFT.h"
-#include "stringutil.h"
+#include "to_string.h"
 
 #include <algorithm>
 #include <cstdlib>
@@ -40,6 +40,14 @@ class FFTTest : public ::testing::Test
     protected:
     void SetUp() override
     {
+    }
+
+    void TearDown() override
+    {
+    }
+
+    vector<FFT::FLOATTYPE> randomSample()
+    {
         std::default_random_engine                     generator;
         std::uniform_real_distribution<FFT::FLOATTYPE> distribution(0.0L, 255.0);
         sampleVec.clear();
@@ -48,34 +56,68 @@ class FFTTest : public ::testing::Test
             FFT::FLOATTYPE val = distribution(generator);
             sampleVec.emplace_back(val);
         }
+
+        return sampleVec;
     }
 
-    void TearDown() override
+    vector<FFT::FLOATTYPE> initConstant(FFT::FLOATTYPE value)
     {
+        sampleVec.clear();
+        for(int i = 0; i < 1024; i++)
+        {
+            sampleVec.emplace_back(value);
+        }
+        return sampleVec;
     }
 
-    private:
+    vector<FFT::FLOATTYPE> initAlternate(FFT::FLOATTYPE value1, FFT::FLOATTYPE value2)
+    {
+        sampleVec.clear();
+        for(int i = 0; i < 512; i++)
+        {
+            sampleVec.emplace_back(value1);
+            sampleVec.emplace_back(value2);
+        }
+        return sampleVec;
+    }
+
+    protected:
     vector<FFT::FLOATTYPE> sampleVec;
+    FFT                    fft;
 };
 
 // 1.Input random data
 TEST_F(FFTTest, random_data_test)
 {
+    fft.loadFloatVector(randomSample());
+    auto transformed = fft.transform();
 }
 
 // 2.Inputs are all zeros
 TEST_F(FFTTest, all_zeros_test)
 {
+    fft.loadFloatVector(initConstant(0.0));
+    auto transformed = fft.transform();
 }
 
 // 3.Inputs are all ones (or some other nonzero value)
 TEST_F(FFTTest, all_ones_test)
 {
+    fft.loadFloatVector(initConstant(1.0));
+    auto transformed = fft.transform();
+    auto intensity = fft.intensityVector();
+    ASSERT_GE(intensity[0], 1.0);
+    for(size_t i = 1UL; i < intensity.size(); i++)
+    {
+        ASSERT_FLOAT_EQ(intensity[i], 0.0);
+    }
 }
 
 // 4.Inputs alternate between +1 and -1.
 TEST_F(FFTTest, alternate_1_and_minus_1_test)
 {
+    fft.loadFloatVector(initAlternate(1.0, -1.0));
+    auto transformed = fft.transform();
 }
 
 // 5.Input is e^(8*j*2*pi*i/N) for i = 0,1,2, ...,N-1. (j = sqrt(-1))

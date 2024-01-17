@@ -80,34 +80,6 @@ add_subdirectory(test)
 set(CMAKE_CXX_CLANG_TIDY "clang-tidy;-checks=* -p ${CMAKE_SOURCE_DIR}/build")
 
 install(FILES
-    "include/anyutil.h"
-    "include/bayesutil.h"
-    "include/bit_converter.h"
-    "include/brackets.h"
-    "include/ci_string.h"
-    "include/constants.h"
-    "include/container_convert.h"
-    "include/csvutil.h"
-    "include/dateutil.h"
-    "include/decorator.h"
-    "include/degree_conversion.h"
-    "include/FFT.h"
-    "include/floatingpoint.h"
-    "include/graphutil.h"
-    "include/grid.h"
-    "include/heap.h"
-    "include/instance_pool.h"
-    "include/limited_int.h"
-    "include/logvalue.h"
-    "include/matrix.h"
-    "include/performance_timer.h"
-    "include/primes.h"
-    "include/statutil.h"
-    "include/stringutil.h"
-    "include/threadutil.h"
-    "include/tinytea.h"
-    "include/to_string.h"
-    "include/traceutil.h"
-    "include/traits.h"
-    DESTINATION /usr/local/include)
+    PATTERN "include/.*\.h"
+    DESTINATION /usr/local/include/)
 

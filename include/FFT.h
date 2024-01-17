@@ -291,7 +291,6 @@ class FFT
     COMPLEXMATRIX complexExpontials_;         // exponentials
     FLOATVECTOR   tapeOfDoubles_;             // recording tape
 };
-};
-// namespace util
+};  // namespace util
 
 #endif  // !defined(NS_UTIL_FFT_H_INCLUDED)
