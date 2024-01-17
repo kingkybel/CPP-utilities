@@ -1,5 +1,6 @@
 # Build directory
 /build
+/build.docker
 /src/*.o
 /test/*.o
 

@@ -28,7 +28,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    command: /app/scripts/do_build /app/src
+    command: /app/scripts/do_build /app/src build.docker
     volumes:
       - ${SOURCE_PATH}:/app/src:rw
       

@@ -85,14 +85,14 @@ union bit_converter
             ElType_ el;
             uint8_t byte[sizeof(ElType_)];
         };
-        long long i = 0LL;
-        size_t byteNum{0U};
+        size_t i{0UL};
+        size_t byteNum{0UL};
         for(auto v: initList)
         {
             BytesOfEl b{v};
-            for(size_t j = 0; j < sizeof(ElType_); j++)
+            for(size_t j = 0UL; j < sizeof(ElType_); j++)
             {
-                byteNum = i * sizeof(ElType_) + j;
+                byteNum             = i * sizeof(ElType_) + j;
                 reval.byte[byteNum] = (byteNum < numOfBytes) ? b.byte[j] : 0U;
             }
             i++;
