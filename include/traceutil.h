@@ -22,10 +22,22 @@
  * @author: Dieter J Kybelksties
  */
 
-#ifndef NS_UTIL_TRACEUTIL_H_INCLUDED
-#define NS_UTIL_TRACEUTIL_H_INCLUDED
+//
+// NOTE: Include guards removed so that individual files can get traced, even if the file was previously included
+//
 
 #include <iostream>
+
+// un-define all macros to silence preprocessor warnings  
+#undef TRACE0
+#undef TRACE1
+#undef TRACE2
+#undef TRACE3
+// multi process versions for forked processes
+#undef PTRACE0
+#undef PTRACE1
+#undef PTRACE2
+#undef PTRACE3
 
 #if defined DO_TRACE_
 
@@ -97,5 +109,3 @@
     #define PTRACE3(v1, v2, v3)
 
 #endif  // DO_TRACE_
-
-#endif  // NS_UTIL_TRACEUTIL_H_INCLUDED
