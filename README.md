@@ -10,22 +10,26 @@ BOOST:
 # create a directory where you like to clone googletest, eg: ~/Repos and change to it
 mkdir ~/Repos ; cd ~/Repos
 ```
-From https://www.boost.org/users/history/version_1_84_0.html download `boost_1_84_0.tar.gz`
+From https://www.boost.org/users/history/version_1_84_0.html download `boost_1_85_0.tar.gz`
 
-```
-tar -xvf boost_1_84_0.tar.gz
-cd boost_1_84_0
-./bootstrap.sh
+```bash
+BOOST_VER=1_85_0
+BOOST_VER_DOT=1.85.0
+wget -O boost_${BOOST_VER}.tar.gz https://sourceforge.net/projects/boost/files/boost/${BOOST_VER_DOT}/boost_${BOOST_VER}.tar.gz/download
+tar -xvf boost_${BOOST_VER}.tar.gz
+cd boost_${BOOST_VER}
+./bootstrap.sh --prefix=/usr/
 ./b2
+sudo ./b2 install
 ```
 
 MPFR:
-```
+```bash
  sudo apt-get install libmpfr-dev libmpfr-doc
 ```
 
 googletest:
-```
+```bash
 # create a directory where you like to clone googletest, eg: ~/Repos and change to it
 mkdir ~/Repos ; cd ~/Repos
 git clone https://github.com/google/googletest.git
@@ -39,7 +43,7 @@ sudo make install
 ```
 
 ## use cmake
-```
+```bash
 mkdir ./build
 cd build
 cmake ..
@@ -48,14 +52,14 @@ sudo make install
 ```
 
 ## use autoconf (legacy - no longer maintained)
-```
+```bash
 ./create_configure.ksh
 ./configure
 make
 ```
 
 ## Build docker-container
-```
+```bash
 docker-compose build
 ```
 If the build - subdirectory already exists rename it before executing docker-compose Before building.
