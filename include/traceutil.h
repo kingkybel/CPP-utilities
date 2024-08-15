@@ -1,5 +1,6 @@
 /*
- * File Name:   traceutil.h
+ * Repository:  https://github.com/kingkybel/CPP-utilities
+ * File Name:   include/traceutil.h
  * Description: debug tracing
  *
  * Copyright (C) 2023 Dieter J Kybelksties <github@kybelksties.com>
@@ -28,7 +29,7 @@
 
 #include <iostream>
 
-// un-define all macros to silence preprocessor warnings  
+// un-define all macros to silence preprocessor warnings
 #undef TRACE0
 #undef TRACE1
 #undef TRACE2
@@ -49,23 +50,15 @@
         {                                                                                                            \
             std::cout << __FILE__ << ":" << __LINE__ << " " << __FUNCTION__ << " " << #v1 << "=" << v1 << std::endl; \
         }
-    #define TRACE2(v1, v2)                                                                                      \
-        {                                                                                                       \
-            std::cout << __FILE__ << ":" << __LINE__ << " " << __FUNCTION__ << " "                              \
-                      << #v1 << "=" << v1                                                                       \
-                      << " "                                                                                    \
-                      << #v2 << "=" << v2                                                                       \
-                      << std::endl;                                                                             \
+    #define TRACE2(v1, v2)                                                                                           \
+        {                                                                                                            \
+            std::cout << __FILE__ << ":" << __LINE__ << " " << __FUNCTION__ << " " << #v1 << "=" << v1 << " " << #v2 \
+                      << "=" << v2 << std::endl;                                                                     \
         }
-    #define TRACE3(v1, v2, v3)                                                                                  \
-        {                                                                                                       \
-            std::cout << __FILE__ << ":" << __LINE__ << " " << __FUNCTION__ << " "                              \
-                      << #v1 << "=" << v1                                                                       \
-                      << " "                                                                                    \
-                      << #v2 << "=" << v2                                                                       \
-                      << " "                                                                                    \
-                      << #v3 << "=" << v3                                                                       \
-                      << std::endl;                                                                             \
+    #define TRACE3(v1, v2, v3)                                                                                       \
+        {                                                                                                            \
+            std::cout << __FILE__ << ":" << __LINE__ << " " << __FUNCTION__ << " " << #v1 << "=" << v1 << " " << #v2 \
+                      << "=" << v2 << " " << #v3 << "=" << v3 << std::endl;                                          \
         }
     // multi process versions for forked processes
     #define PTRACE0                                                                                              \
@@ -77,23 +70,15 @@
             std::cout << __FILE__ << ":" << __LINE__ << " " << __FUNCTION__ << " PID=" << getpid() << " " << #v1 \
                       << "=" << v1 << std::endl;                                                                 \
         }
-    #define PTRACE2(v1, v2)                                                                                     \
-        {                                                                                                       \
-            std::cout << __FILE__ << ":" << __LINE__ << " " << __FUNCTION__ << " PID=" << getpid() << " "       \
-                      << #v1 << "=" << v1                                                                       \
-                      << " "                                                                                    \
-                      << #v2 << "=" << v2                                                                       \
-                      << std::endl;                                                                             \
+    #define PTRACE2(v1, v2)                                                                                      \
+        {                                                                                                        \
+            std::cout << __FILE__ << ":" << __LINE__ << " " << __FUNCTION__ << " PID=" << getpid() << " " << #v1 \
+                      << "=" << v1 << " " << #v2 << "=" << v2 << std::endl;                                      \
         }
-    #define PTRACE3(v1, v2, v3)                                                                                 \
-        {                                                                                                       \
-            std::cout << __FILE__ << ":" << __LINE__ << " " << __FUNCTION__ << " PID=" << getpid() << " "       \
-                      << #v1 << "=" << v1                                                                       \
-                      << " "                                                                                    \
-                      << #v2 << "=" << v2                                                                       \
-                      << " "                                                                                    \
-                      << #v3 << "=" << v3                                                                       \
-                      << std::endl;                                                                             \
+    #define PTRACE3(v1, v2, v3)                                                                                  \
+        {                                                                                                        \
+            std::cout << __FILE__ << ":" << __LINE__ << " " << __FUNCTION__ << " PID=" << getpid() << " " << #v1 \
+                      << "=" << v1 << " " << #v2 << "=" << v2 << " " << #v3 << "=" << v3 << std::endl;           \
         }
 
 #else

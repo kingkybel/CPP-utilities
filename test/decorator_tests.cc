@@ -1,5 +1,6 @@
 /*
- * File:		decorator_tests.cc
+ * Repository:  https://github.com/kingkybel/CPP-utilities
+ * File Name:   test/decorator_tests.cc
  * Description: Unit tests for stream decoration.
  *
  * Copyright (C) 2023 Dieter J Kybelksties <github@kybelksties.com>

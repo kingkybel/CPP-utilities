@@ -1,5 +1,6 @@
 /*
- * File Name:   contants.h
+ * Repository:  https://github.com/kingkybel/CPP-utilities
+ * File Name:   include/contants.h
  * Description: some constants
  *
  * Copyright (C) 2023 Dieter J Kybelksties

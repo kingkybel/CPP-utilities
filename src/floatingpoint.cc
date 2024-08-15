@@ -1,5 +1,6 @@
 /*
- * File Name:   floatingpoint.cc
+ * Repository:  https://github.com/kingkybel/CPP-utilities
+ * File Name:   src/floatingpoint.cc
  * Description: Re-create Solaris double_to_decimal, decimal_to_double, ...
  *
  * Copyright (C) 2023 Dieter J Kybelksties <github@kybelksties.com>

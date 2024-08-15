@@ -1,5 +1,6 @@
 /*
- * File Name:   threadutil.cc
+ * Repository:  https://github.com/kingkybel/CPP-utilities
+ * File Name:   src/threadutil.cc
  * Description: thread utility functions
  *
  * Copyright (C) 2023 Dieter J Kybelksties <github@kybelksties.com>
@@ -23,7 +24,7 @@
  */
 
 #include "threadutil.h"
-//#define DO_TRACE_
+// #define DO_TRACE_
 #include "traceutil.h"
 
 namespace util
@@ -85,7 +86,7 @@ void ThreadScheduler::processQueueThread()
             priority_thread_queue_.pop();
         }
 
-         // Check if any threads in the pool have finished
+        // Check if any threads in the pool have finished
         for(auto it = thread_pool.begin(); it != thread_pool.end();)
         {
             if(it->joinable())

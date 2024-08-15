@@ -1,5 +1,6 @@
 /*
- * File Name:   to_string.h
+ * Repository:  https://github.com/kingkybel/CPP-utilities
+ * File Name:   include/to_string.h
  * Description: string utility functions
  *
  * Copyright (C) 2023 Dieter J Kybelksties <github@kybelksties.com>
@@ -25,9 +26,9 @@
 #ifndef NS_UTIL_TO_STRING_H_INCLUDED
 #define NS_UTIL_TO_STRING_H_INCLUDED
 
-#include "traits.h"
 #include "decorator.h"
-//#define DO_TRACE_
+#include "traits.h"
+// #define DO_TRACE_
 #include "traceutil.h"
 
 #include <sstream>

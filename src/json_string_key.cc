@@ -1,9 +1,9 @@
 /*
  * Repository:  https://github.com/kingkybel/CPP-utilities
- * File Name:   test/primes_tests.cc
- * Description: Unit tests for primes
+ * File Name:   src/json_string_key.cc
+ * Description: string key for json objects
  *
- * Copyright (C) 2023 Dieter J Kybelksties <github@kybelksties.com>
+ * Copyright (C) 2024 Dieter J Kybelksties <github@kybelksties.com>
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -19,33 +19,27 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
- * @date: 2023-08-28
+ * @date: 2024-08-15
  * @author: Dieter J Kybelksties
  */
+#include "json_string_key.h"
 
-#include "primes.h"
+#include "json_exceptions.h"
 
-#include <complex>
-#include <gtest/gtest.h>
-#include <initializer_list>
-#include <ios>
-#include <iostream>
-
-using namespace std;
-using namespace util;
-
-class PrimesTest : public ::testing::Test
+namespace util
 {
-    protected:
-    void SetUp() override
-    {
-    }
-
-    void TearDown() override
-    {
-    }
-};
-
-TEST_F(PrimesTest, testPrimesConstruction)
+JsonStringKey::JsonStringKey(const std::string& key_str)
 {
+    if(key_str.empty() || key_str.find_first_of(" \t\n[]\"") != std::string::npos)
+    {
+        throw JsonStringKeyError(key_str);
+    }
+    key_ = key_str;
 }
+
+std::string JsonStringKey::toString() const
+{
+    return key_;
+}
+
+}  // namespace util

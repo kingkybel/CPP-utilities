@@ -1,5 +1,6 @@
 /*
- * File:        performance_timer.h
+ * Repository:  https://github.com/kingkybel/CPP-utilities
+ * File Name:   include/performance_timer.h
  * Description: High-precision timer
  *
  * Copyright (C) 2023 Dieter J Kybelksties <github@kybelksties.com>
@@ -106,7 +107,7 @@ class performance_timer
 
     /**
      * @brief Start the recording of time.
-     * 
+     *
      * @param key unique string to identify the section of code to measuer.
      * @param start_line line in the code where recording starts
      * @param alias an optional alis to make it easier to find the statistics structure where perfomance is recorded.
@@ -131,7 +132,7 @@ class performance_timer
 
     /**
      * @brief End the recording of a code section,
-     * 
+     *
      * @param end_line line in the code where recording ends
      */
     void end(int32_t end_line)
@@ -153,7 +154,7 @@ class performance_timer
 
     /**
      * @brief Add the given time in nanoseconds to every recording frame on the stack.
-     * 
+     *
      * @param time_ns time in nanoseconds
      */
     void simulate_time(std::chrono::nanoseconds time_ns)
@@ -168,8 +169,8 @@ class performance_timer
 
     /**
      * @brief Retrieve all recorded statistics.
-     * 
-     * @return the (iterable) container with the statistics 
+     *
+     * @return the (iterable) container with the statistics
      */
     auto get_stats() const
     {
@@ -178,7 +179,7 @@ class performance_timer
 
     /**
      * @brief Get the stat object for a given key.
-     * 
+     *
      * @param key string-key or alias
      * @return util::performance_timer::stats the statistics for the given key, or empty stats if key cannot be found
      */
@@ -197,8 +198,8 @@ class performance_timer
 
     /**
      * @brief Get the stack object
-     * 
-     * @return auto 
+     *
+     * @return auto
      */
     bool empty() const
     {
@@ -207,7 +208,7 @@ class performance_timer
 
     /**
      * @brief ostream operator
-     * 
+     *
      * @param os outstream to be modified
      * @param tmr perfomance timer object
      * @return std::ostream& the modified stream

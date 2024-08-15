@@ -1,5 +1,6 @@
 /*
- * File Name:   grid.h
+ * Repository:  https://github.com/kingkybel/CPP-utilities
+ * File Name:   include/grid.h
  * Description: a template structure to hold data in a rectangular scheme
  *
  * Copyright (C) 2023 Dieter J Kybelksties <github@kybelksties.com>

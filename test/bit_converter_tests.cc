@@ -1,5 +1,6 @@
 /*
- * File:		bit_converter_tests.cc
+ * Repository:  https://github.com/kingkybel/CPP-utilities
+ * File Name:   test/bit_converter_tests.cc
  * Description: Unit tests for bit converter.
  *
  * Copyright (C) 2023 Dieter J Kybelksties <github@kybelksties.com>
@@ -81,7 +82,7 @@ TEST_F(BitConverterTest, set_and_get_test)
             ASSERT_FALSE(bitConv.getBit(i));
         else
             ASSERT_TRUE(bitConv.getBit(i));
-            
+
     for(size_t i = 0UL; i < 8; i++)
         if(i != 4)
             ASSERT_EQ(bitConv.getByte(i), u_char{0});
@@ -100,13 +101,13 @@ TEST_F(BitConverterTest, set_and_get_test)
             ASSERT_FALSE(bitConv.getBit(i));
         else
             ASSERT_TRUE(bitConv.getBit(i));
-            
+
     for(size_t i = 0UL; i < 8; i++)
         if(i != 4)
             ASSERT_EQ(bitConv.getByte(i), u_char{0});
         else
             ASSERT_EQ(bitConv.getByte(i), u_char{4});
-            
+
     bitConv.setByte(4, uint8_t{0});
     for(size_t i = 0UL; i < 64; i++)
         ASSERT_FALSE(bitConv.getBit(i));

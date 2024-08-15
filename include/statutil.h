@@ -1,5 +1,6 @@
 /*
- * File Name:   statutil.h
+ * Repository:  https://github.com/kingkybel/CPP-utilities
+ * File Name:   include/statutil.h
  * Description: statistic utility functions
  *
  * Copyright (C) 2023 Dieter J Kybelksties <github@kybelksties.com>
@@ -86,7 +87,7 @@ struct event_error : public std::logic_error
 
     event_error(const std::type_info &t1, const std::type_info &t2)
     : std::logic_error(
-     event_error("Cannot get interval of type " + toString(t1.name()) + " from Event of type " + toString(t2.name())))
+       event_error("Cannot get interval of type " + toString(t1.name()) + " from Event of type " + toString(t2.name())))
     {
     }
 };

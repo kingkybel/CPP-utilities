@@ -1,5 +1,6 @@
 /*
- * File:		statutilTest.cc
+ * Repository:  https://github.com/kingkybel/CPP-utilities
+ * File Name:   test/statutilTest.cc
  * Description: Unit tests for statistics utilities
  *
  * Copyright (C) 2023 Dieter J Kybelksties <github@kybelksties.com>

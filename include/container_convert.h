@@ -1,5 +1,6 @@
 /*
- * File Name:   container_convert.h
+ * Repository:  https://github.com/kingkybel/CPP-utilities
+ * File Name:   include/container_convert.h
  * Description: Utilities for converting one container into another.
  *
  * Copyright (C) 2023 Dieter J Kybelksties
@@ -54,7 +55,7 @@ struct true_pred
 
 /**
  * @brief Erase remove from forward-iterable containers
- * 
+ *
  * @tparam Container type of container
  * @tparam Predicate predicate
  * @param container the container to remove from

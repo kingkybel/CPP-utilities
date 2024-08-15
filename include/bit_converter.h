@@ -1,5 +1,6 @@
 /*
- * File Name:   bit_converter.h
+ * Repository:  https://github.com/kingkybel/CPP-utilities
+ * File Name:   include/bit_converter.h
  * Description: Utility to access bits and bytes of arbitrary objects.
  *
  * Copyright (C) 2023 Dieter J Kybelksties

@@ -1,5 +1,6 @@
 /*
- * File Name:   type_bracket_map.h
+ * Repository:  https://github.com/kingkybel/CPP-utilities
+ * File Name:   include/type_bracket_map.h
  * Description: Brackets mapped per type for streaming output
  * Copyright (C) 2023 Dieter J Kybelksties <github@kybelksties.com>
  *
@@ -26,7 +27,7 @@
 
 #include "brackets.h"
 #include "traits.h"
-//#define DO_TRACE_
+// #define DO_TRACE_
 #include "traceutil.h"
 
 #include <algorithm>
@@ -126,7 +127,7 @@ inline std::basic_ostream<CharT_, Traits_> &operator<<(std::basic_ostream<CharT_
  */
 template<typename StringToT_,
          typename StringFrom_,
-         typename std::enable_if<util::is_std_string<StringToT_>::value>::type * = nullptr,
+         typename std::enable_if<util::is_std_string<StringToT_>::value>::type *  = nullptr,
          typename std::enable_if<util::is_std_string<StringFrom_>::value>::type * = nullptr>
 StringToT_ convert(const StringFrom_ &from)
 {
@@ -143,7 +144,7 @@ StringToT_ convert(const StringFrom_ &from)
 
 template<typename CharToT_,
          typename StringFrom_,
-         typename std::enable_if<util::is_char<CharToT_>::value>::type * = nullptr,
+         typename std::enable_if<util::is_char<CharToT_>::value>::type *          = nullptr,
          typename std::enable_if<util::is_std_string<StringFrom_>::value>::type * = nullptr>
 std::basic_string<CharToT_> convert(const StringFrom_ &from)
 {
@@ -251,11 +252,11 @@ enum class IntBase
 template<typename CharT_ = char>
 struct intFmt
 {
-    explicit intFmt(IntBase                                                  base       = IntBase::decimal,
-                    size_t                                                   width      = 0UL,
-                    bool                                                     showBase   = false,
-                    bool                                                     hexUpper   = false,
-                    CharT_                                                   fill       = util::charToChar<CharT_, char>('0'),
+    explicit intFmt(IntBase                                                  base     = IntBase::decimal,
+                    size_t                                                   width    = 0UL,
+                    bool                                                     showBase = false,
+                    bool                                                     hexUpper = false,
+                    CharT_                                                   fill = util::charToChar<CharT_, char>('0'),
                     std::basic_string_view<CharT_, std::char_traits<CharT_>> hexBaseStr = "0x",
                     std::basic_string_view<CharT_, std::char_traits<CharT_>> octBaseStr = "0o")
     : isValid_(base != IntBase::default_format)
@@ -374,8 +375,9 @@ class decorator
         ss << "CharT_:" << typeid(CharT_).name() << " TraitsT_:" << typeid(CharT_).name() << std::endl;
         ss << "---- brackets ------" << std::endl;
         for(const auto &kv: type2brackets_)
-            ss << kv.first << " -> ('" << convert<std::string>(kv.second.left()) << "', '" << convert<std::string>(kv.second.inner())
-               << "', '" << convert<std::string>(kv.second.right()) << "')" << std::endl;
+            ss << kv.first << " -> ('" << convert<std::string>(kv.second.left()) << "', '"
+               << convert<std::string>(kv.second.inner()) << "', '" << convert<std::string>(kv.second.right()) << "')"
+               << std::endl;
         ss << "------ int --------" << std::endl;
         for(const auto &kv: intType2format_)
             ss << kv.first << " -> " << (kv.second.toString()) << std::endl;

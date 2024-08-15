@@ -1,5 +1,6 @@
 /*
- * File Name:   stringutil.h
+ * Repository:  https://github.com/kingkybel/CPP-utilities
+ * File Name:   include/stringutil.h
  * Description: string utility functions
  *
  * Copyright (C) 2023 Dieter J Kybelksties <github@kybelksties.com>
@@ -26,7 +27,7 @@
 #define NS_UTIL_STRINGUTIL_H_INCLUDED
 
 #include "to_string.h"
-//#define DO_TRACE_
+// #define DO_TRACE_
 #include "traceutil.h"
 
 #include <algorithm>
@@ -387,10 +388,8 @@ bool scanBoolString(const StringT_ &strVal, bool &result)
     return (found != VALID_BOOL.end());
 }
 
-
-template<typename StringT_,
-         typename std::enable_if<util::is_std_string<StringT_>::value>::type* = nullptr>
-StringT_ substr_from_to_incl(const StringT_& str, size_t start, size_t finish)
+template<typename StringT_, typename std::enable_if<util::is_std_string<StringT_>::value>::type * = nullptr>
+StringT_ substr_from_to_incl(const StringT_ &str, size_t start, size_t finish)
 {
     if(start > static_cast<size_t>(str.size()) || start > finish)
         return StringT_{};
@@ -412,8 +411,8 @@ StringT_ substr_from_to_incl(const StringT_& str, size_t start, size_t finish)
  */
 template<typename StringT_,
          typename SeparatorT_,
-         typename std::enable_if<util::has_std_string_compatible_char<StringT_, SeparatorT_>::value>::type* = nullptr>
-std::vector<StringT_> splitIntoVector(const StringT_& str, SeparatorT_ sep)
+         typename std::enable_if<util::has_std_string_compatible_char<StringT_, SeparatorT_>::value>::type * = nullptr>
+std::vector<StringT_> splitIntoVector(const StringT_ &str, SeparatorT_ sep)
 {
     std::vector<StringT_>        results;
     typename StringT_::size_type subStrStart = 0UL;
@@ -467,7 +466,7 @@ template<typename StringT_,
          typename std::enable_if<util::has_std_string_compatible_char<StringT_, SeparatorT_>::value>::type * = nullptr>
 std::set<StringT_> splitIntoSet(const StringT_ &str, SeparatorT_ sep)
 {
-    std::set<StringT_>        results;
+    std::set<StringT_>           results;
     typename StringT_::size_type subStrStart = 0UL;
     typename StringT_::size_type sepStart    = str.find(sep);
     typename StringT_::size_type sepLen      = util::string_or_char_size(sep);
@@ -502,7 +501,7 @@ std::set<StringT_> splitIntoSet(const StringT_ &str, SeparatorT_ sep)
         }
     }
 
-     return (results);
+    return (results);
 }
 
 /**

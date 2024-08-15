@@ -1,9 +1,9 @@
 /*
  * Repository:  https://github.com/kingkybel/CPP-utilities
- * File Name:   test/primes_tests.cc
- * Description: Unit tests for primes
+ * File Name:   include/json_index_key.h
+ * Description: index key for json collections
  *
- * Copyright (C) 2023 Dieter J Kybelksties <github@kybelksties.com>
+ * Copyright (C) 2024 Dieter J Kybelksties <github@kybelksties.com>
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -19,33 +19,31 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
- * @date: 2023-08-28
+ * @date: 2024-08-15
  * @author: Dieter J Kybelksties
  */
+#ifndef NS_UTIL_JSON_INDEX_KEY_H_INCLUDED
+#define NS_UTIL_JSON_INDEX_KEY_H_INCLUDED
 
-#include "primes.h"
+#include "json_key.h"
 
-#include <complex>
-#include <gtest/gtest.h>
-#include <initializer_list>
-#include <ios>
-#include <iostream>
-
-using namespace std;
-using namespace util;
-
-class PrimesTest : public ::testing::Test
+namespace util
 {
-    protected:
-    void SetUp() override
-    {
-    }
 
-    void TearDown() override
-    {
-    }
+class JsonIndexKey : public JsonKey
+{
+    public:
+    JsonIndexKey(const std::string& index_str);
+
+    std::string toString() const;
+    bool        isStart() const;
+    bool        isEnd() const;
+
+    private:
+    int  index_;
+    bool isStart_;
+    bool isEnd_;
 };
+}  // namespace util
 
-TEST_F(PrimesTest, testPrimesConstruction)
-{
-}
+#endif  // NS_UTIL_JSON_INDEX_KEY_H_INCLUDED

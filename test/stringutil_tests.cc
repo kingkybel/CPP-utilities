@@ -1,5 +1,6 @@
 /*
- * File:		stringutil_tests.cc
+ * Repository:  https://github.com/kingkybel/CPP-utilities
+ * File Name:   test/stringutil_tests.cc
  * Description: Unit tests for string utilities
  *
  * Copyright (C) 2023 Dieter J Kybelksties <github@kybelksties.com>
@@ -132,7 +133,7 @@ void util_string_mod_testT()
 {
     typedef SR<T_> SR;
     SR             modResults[] = {
-                 // trivial
+     // trivial
      SR("", "trim", StripTrimMode::ALL, "\n\t \r", char(0), "", __LINE__),
      SR("", "trim", StripTrimMode::LEFT, "\n\t \r", char(0), "", __LINE__),
      SR("", "trim", StripTrimMode::RIGHT, "\n\t \r", char(0), "", __LINE__),
@@ -611,7 +612,7 @@ void util_string_left_right_testT()
     ASSERT_NE(resultSet.find("123"), resultSet.end());
     ASSERT_NE(resultSet.find("456"), resultSet.end());
     ASSERT_NE(resultSet.find("789"), resultSet.end());
- 
+
     const T_ stripStr  = " _ 123.456/789-0ab/_ _";
     T_       stripable = stripStr;
 

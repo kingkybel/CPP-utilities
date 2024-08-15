@@ -1,5 +1,6 @@
 /*
- * File:		limited_int_tests.cc
+ * Repository:  https://github.com/kingkybel/CPP-utilities
+ * File Name:   test/limited_int_tests.cc
  * Description: Unit tests for limited_values -templates
  *
  * Copyright (C) 2023 Dieter J Kybelksties <github@kybelksties.com>
@@ -25,7 +26,7 @@
 #include "degree_conversion.h"
 #include "limited_int.h"
 #include "to_string.h"
-//#define DO_TRACE_
+// #define DO_TRACE_
 #include "traceutil.h"
 
 #include <algorithm>

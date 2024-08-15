@@ -19,6 +19,11 @@ target_link_libraries(dkfloatingpoint PRIVATE gmp ${BOOST_FILESYSTEM})
 add_library(dkprimes STATIC primes.cc)
 add_library(dkstatutil STATIC statutil.cc)
 add_library(dkthreadutil STATIC threadutil.cc)
+add_library(dkjsonutil STATIC
+        json_index_key.cc
+        json_string_key.cc
+        json_key_path.cc
+        json_object.cc)
 
 
 # target_link_libraries(dkutils PRIVATE gmp boost_filesystem)

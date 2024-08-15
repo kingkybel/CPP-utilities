@@ -1,9 +1,9 @@
 /*
  * Repository:  https://github.com/kingkybel/CPP-utilities
- * File Name:   test/primes_tests.cc
- * Description: Unit tests for primes
+ * File Name:   include/json_key.h
+ * Description: abstract base class for json keys
  *
- * Copyright (C) 2023 Dieter J Kybelksties <github@kybelksties.com>
+ * Copyright (C) 2024 Dieter J Kybelksties <github@kybelksties.com>
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -19,33 +19,19 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
- * @date: 2023-08-28
+ * @date: 2024-08-15
  * @author: Dieter J Kybelksties
  */
 
-#include "primes.h"
+#ifndef NS_UTIL_JSON_KEY_H_INCLUDED
+#define NS_UTIL_JSON_KEY_H_INCLUDED
+#include <string>
 
-#include <complex>
-#include <gtest/gtest.h>
-#include <initializer_list>
-#include <ios>
-#include <iostream>
-
-using namespace std;
-using namespace util;
-
-class PrimesTest : public ::testing::Test
+class JsonKey
 {
-    protected:
-    void SetUp() override
-    {
-    }
-
-    void TearDown() override
-    {
-    }
+    public:
+    virtual ~JsonKey()                                 = default;
+    [[nodiscard]] virtual std::string toString() const = 0;
 };
 
-TEST_F(PrimesTest, testPrimesConstruction)
-{
-}
+#endif  // NS_UTIL_JSON_KEY_H_INCLUDED

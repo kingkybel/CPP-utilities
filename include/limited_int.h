@@ -1,5 +1,6 @@
 /*
- * File Name:   limited_int.h
+ * Repository:  https://github.com/kingkybel/CPP-utilities
+ * File Name:   include/limited_int.h
  * Description: Integers than can only assume values between a minimum and a
  *              maximum.
  *
@@ -523,7 +524,7 @@ struct limited_int
 
     /**
      * @brief Output stream operator.
-     * 
+     *
      * @param os the output stream to modify
      * @param i the limited_int to stream
      * @return std::ostream& the modified stream
@@ -656,7 +657,7 @@ class limited_int_iterator
 
         return (tmp);
     }
-    
+
     /**
      * @brief decrement step times.
      *
@@ -672,7 +673,7 @@ class limited_int_iterator
 
     /**
      * @brief Equality operator for limited_int_iterator.
-     * 
+     *
      * @param lhs left-hand-side iterator
      * @param rhs right-hand-side iterator
      * @return true, if lhs is equal to rhs, false otherwise
@@ -685,7 +686,7 @@ class limited_int_iterator
 
     /**
      * @brief Inequality operator for limited_int_iterator.
-     * 
+     *
      * @param lhs left-hand-side iterator
      * @param rhs right-hand-side iterator
      * @return true, if lhs is not equal to rhs, false otherwise
@@ -698,7 +699,7 @@ class limited_int_iterator
 
     /**
      * @brief Dereference operator.
-     * 
+     *
      * @return LimitedInt& the value the iterator points to.
      */
     LimitedInt &operator*()
@@ -708,7 +709,7 @@ class limited_int_iterator
 
     /**
      * @brief Dereference operator.
-     * 
+     *
      * @return LimitedInt& the value the iterator points to.
      */
     LimitedInt *operator->()
@@ -718,7 +719,7 @@ class limited_int_iterator
 
     /**
      * @brief Output stream operator.
-     * 
+     *
      * @param os the output stream to modify
      * @param it the iterator to stream
      * @return std::ostream& the modified stream

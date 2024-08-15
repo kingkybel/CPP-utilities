@@ -1,6 +1,7 @@
 /*
- * File:		dateutil_tests.cc
- * Description:         Unit tests for date utilities.
+ * Repository:  https://github.com/kingkybel/CPP-utilities
+ * File Name:   test/dateutil_tests.cc
+ * Description: Unit tests for date utilities.
  *
  * Copyright (C) 2023 Dieter J Kybelksties <github@kybelksties.com>
  *

@@ -1,7 +1,8 @@
 /*
- * File Name:   primes.cc
+ * Repository:  https://github.com/kingkybel/CPP-utilities
+ * File Name:   src/primes.cc
  * Description: double values transformed into logarithmic domain
- * 
+ *
  * Copyright (C) 2023 Dieter J Kybelksties <github@kybelksties.com>
  *
  * This program is free software; you can redistribute it and/or

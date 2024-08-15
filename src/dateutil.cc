@@ -1,7 +1,8 @@
 /*
- * File Name:   dateutil.cc
+ * Repository:  https://github.com/kingkybel/CPP-utilities
+ * File Name:   src/dateutil.cc
  * Description: date utility functions
- * 
+ *
  * Copyright (C) 2023 Dieter J Kybelksties <github@kybelksties.com>
  *
  * This program is free software; you can redistribute it and/or
@@ -187,7 +188,7 @@ namespace datescan
     {
         auto &fmts = formats();
         fmts.clear();
-        
+
         struct FmtType
         {
             string fmt_;

@@ -1,5 +1,6 @@
 /*
- * File:		logval_tests.cc
+ * Repository:  https://github.com/kingkybel/CPP-utilities
+ * File Name:   test/logval_tests.cc
  * Description: Unit tests for log-values
  *
  * Copyright (C) 2023 Dieter J Kybelksties <github@kybelksties.com>
@@ -23,7 +24,7 @@
  */
 
 #include "stringutil.h"
-//#define DO_TRACE_
+// #define DO_TRACE_
 #include "traceutil.h"
 
 #include <algorithm>

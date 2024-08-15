@@ -1,6 +1,7 @@
 /*
- * File:		FFTTest.cc
- * Description:         Unit tests for Fast Fourier Transform.
+ * Repository:  https://github.com/kingkybel/CPP-utilities
+ * File Name:   test/FFTTest.cc
+ * Description: Unit tests for Fast Fourier Transform.
  *
  * Copyright (C) 2023 Dieter J Kybelksties <github@kybelksties.com>
  *
@@ -105,7 +106,7 @@ TEST_F(FFTTest, all_ones_test)
 {
     fft.loadFloatVector(initConstant(1.0));
     auto transformed = fft.transform();
-    auto intensity = fft.intensityVector();
+    auto intensity   = fft.intensityVector();
     ASSERT_GE(intensity[0], 1.0);
     for(size_t i = 1UL; i < intensity.size(); i++)
     {

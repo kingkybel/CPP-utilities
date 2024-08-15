@@ -1,5 +1,6 @@
 /*
- * File Name:   threadutil.h
+ * Repository:  https://github.com/kingkybel/CPP-utilities
+ * File Name:   include/threadutil.h
  * Description: Utility for threads.
  *
  * Copyright (C) 2023 Dieter J Kybelksties
@@ -306,7 +307,7 @@ class ThreadScheduler
     }
 
     private:
-    void processQueueThread();
+    void        processQueueThread();
     std::thread processQueue();
 
     std::priority_queue<PriorityThread> priority_thread_queue_;

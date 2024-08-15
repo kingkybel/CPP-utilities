@@ -1,8 +1,9 @@
 /*
- * File Name:   degree_conversion.h
+ * Repository:  https://github.com/kingkybel/CPP-utilities
+ * File Name:   include/degree_conversion.h
  * Description: Integer values that can only assume angle values, [0,360],
  *              [-180, 180] degrees, or [0, 2Pi] micro-radians.
- * 
+ *
  * Copyright (C) 2023 Dieter J Kybelksties <github@kybelksties.com>
  *
  * This program is free software; you can redistribute it and/or
@@ -44,12 +45,12 @@ using Deg360Traits =
  limited_int_traits<int64_t, DEGREE_360_MIN, DEGREE_360_MAX, resolve_modulo, convert_circular_scale>;
 using Deg360 = limited_int<int64_t, DEGREE_360_MIN, DEGREE_360_MAX, Deg360Traits>;
 
-using Rad2PiTraits =
- limited_int_traits<int64_t, MICRO_RAD_MIN, MICRO_RAD_2PI, resolve_modulo, convert_circular_scale>;
-using Rad2Pi = limited_int<int64_t, 0, MICRO_RAD_2PI, Rad2PiTraits>;
+using Rad2PiTraits = limited_int_traits<int64_t, MICRO_RAD_MIN, MICRO_RAD_2PI, resolve_modulo, convert_circular_scale>;
+using Rad2Pi       = limited_int<int64_t, 0, MICRO_RAD_2PI, Rad2PiTraits>;
 
-using MilliMTraits = limited_int_traits<int64_t, -FACTOR_METER_TO_MILLI_METER, FACTOR_METER_TO_MILLI_METER, resolve_invalid, convert_scale>;
-using MilliM       = limited_int<int64_t, -FACTOR_METER_TO_MILLI_METER, FACTOR_METER_TO_MILLI_METER, MilliMTraits>;
+using MilliMTraits =
+ limited_int_traits<int64_t, -FACTOR_METER_TO_MILLI_METER, FACTOR_METER_TO_MILLI_METER, resolve_invalid, convert_scale>;
+using MilliM = limited_int<int64_t, -FACTOR_METER_TO_MILLI_METER, FACTOR_METER_TO_MILLI_METER, MilliMTraits>;
 
 using MicroMTraits =
  limited_int_traits<int64_t, -FACTOR_METER_TO_MICRO_METER, FACTOR_METER_TO_MICRO_METER, resolve_invalid, convert_scale>;

@@ -1,5 +1,6 @@
 /*
- * File Name:   primes.h
+ * Repository:  https://github.com/kingkybel/CPP-utilities
+ * File Name:   include/primes.h
  * Description: some simple prime calculation routines
  *
  * Copyright (C) 2023 Dieter J Kybelksties <github@kybelksties.com>

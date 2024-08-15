@@ -1,5 +1,6 @@
 /*
- * File Name:   graphutil.h
+ * Repository:  https://github.com/kingkybel/CPP-utilities
+ * File Name:   include/graphutil.h
  * Description: graph utility functions
  *
  * Copyright (C) 2023 Dieter J Kybelksties <github@kybelksties.com>
@@ -579,7 +580,7 @@ class DirectedGraph
      * @param node the node to remove
      * @return true, if the node was removed, false if the node was not part of the graph
      */
-bool removeNode(const NodeT_ &node)
+    bool removeNode(const NodeT_ &node)
     {
         bool reval = false;
         auto found = node2index_.find(node);

@@ -1,5 +1,6 @@
 /*
- * File Name:   tinytea.h
+ * Repository:  https://github.com/kingkybel/CPP-utilities
+ * File Name:   include/tinytea.h
  * Description: TEA encryption
  *
  * Copyright (C) 2023 Dieter J Kybelksties <github@kybelksties.com>

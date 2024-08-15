@@ -1,5 +1,6 @@
 /*
- * File:		instance_pool_tests.cc
+ * Repository:  https://github.com/kingkybel/CPP-utilities
+ * File Name:   test/instance_pool_tests.cc
  * Description: Unit tests for the instant pool
  *
  * Copyright (C) 2023 Dieter J Kybelksties <github@kybelksties.com>
@@ -24,7 +25,7 @@
 
 #include "instance_pool.h"
 #include "stringutil.h"
-//#define DO_TRACE_
+// #define DO_TRACE_
 #include "traceutil.h"
 
 #include <gtest/gtest.h>

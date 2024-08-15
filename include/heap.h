@@ -1,5 +1,6 @@
 /*
- * File:		heap.h
+ * Repository:  https://github.com/kingkybel/CPP-utilities
+ * File Name:   include/heap.h
  * Description: implementation of a heap-container
  *
  * Copyright (C) 2023 Dieter J Kybelksties <github@kybelksties.com>
@@ -35,7 +36,7 @@ namespace util
 {
 /**
  * @brief a heap implementation
- * 
+ *
  * @tparam T_ element type
  * @tparam Compare comparison function type, by default comparison is std::greater, which results in a min-heap
  */

@@ -58,4 +58,4 @@ make
 ```
 docker-compose build
 ```
-If the build - subdirectory already exists rename it before executing docker-compose.
+If the build - subdirectory already exists rename it before executing docker-compose Before building.

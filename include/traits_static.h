@@ -1,5 +1,6 @@
 /*
- * File:        traits_static.h
+ * Repository:  https://github.com/kingkybel/CPP-utilities
+ * File Name:   include/traits_static.h
  * Description: Enforce static functions in classes.
  *
  * Copyright (C) 2023 Dieter J Kybelksties <github@kybelksties.com>
@@ -34,7 +35,8 @@ namespace util
 {
 
 /**
- * @brief Macro to make it a bit easier to define a trait to check whether a class has a static member of a given signature.
+ * @brief Macro to make it a bit easier to define a trait to check whether a class has a static member of a given
+ * signature.
  * @usage
  * add this macro to your project with the first parameter the name
  * you want to give the trait and the second the name of the member function
@@ -65,7 +67,7 @@ namespace util
         template<typename T, T>                                                    \
         struct helper;                                                             \
         template<typename T>                                                       \
-        static std::uint8_t check(helper<signature, &funcName>*);                  \
+        static std::uint8_t check(helper<signature, &funcName> *);                 \
         template<typename T>                                                       \
         static std::uint16_t check(...);                                           \
                                                                                    \
@@ -93,7 +95,7 @@ namespace util
  *
  * cout &lt;&lt; has_some_func &lt;test1, int(std::string)&gt;::value &lt;&lt; endl; // --> 1
  * cout &lt;&lt; has_some_func &lt;test2, int(std::string)&gt;::value &lt;&lt; endl; // --> 0
- * 
+ *
  * @endcode
  */
 #define DEFINE_HAS_MEMBER(TraitName, FunctionName)                                                    \
@@ -110,7 +112,7 @@ namespace util
     {                                                                                                 \
         private:                                                                                      \
         template<typename T>                                                                          \
-        static constexpr auto check(T*) ->                                                            \
+        static constexpr auto check(T *) ->                                                           \
          typename std::is_same<decltype(std::declval<T>().FunctionName(std::declval<Args>()...)),     \
                                Ret      /* ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^*/   \
                                >::type; /* attempt to call it and see if the return type is correct*/ \
@@ -124,6 +126,6 @@ namespace util
         static constexpr bool value = type::value;                                                    \
     };
 
-} // namespace util
+}  // namespace util
 
 #endif  // TRAITS_STATIC_H_INCLUDED

@@ -1,5 +1,6 @@
 /*
- * File Name:   bayesutil.h
+ * Repository:  https://github.com/kingkybel/CPP-utilities
+ * File Name:   include/bayesutil.h
  * Description: Bayes net utility functions
  *
  * Copyright (C) 2023 Dieter J Kybelksties

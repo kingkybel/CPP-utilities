@@ -1,5 +1,6 @@
 /*
- * File Name:   brackets.h
+ * Repository:  https://github.com/kingkybel/CPP-utilities
+ * File Name:   include/brackets.h
  * Description: standard bracket types
  *
  * Copyright (C) 2023 Dieter J Kybelksties
@@ -65,26 +66,16 @@ namespace
     };
 
     const auto &DEFAULT_BRACKETS = std::unordered_map<util::BracketKey::Type, LeftInnerRight>{{
-     {util::BracketKey::NONE, {"", " ", ""}},
-     {util::BracketKey::BOOL, {"", " ", ""}},
-     {util::BracketKey::CHAR, {"'", " ", "'"}},
-     {util::BracketKey::INT, {"", " ", ""}},
-     {util::BracketKey::FLOAT, {"", " ", ""}},
-     {util::BracketKey::STRING, {"\"", ",", "\""}},
-     {util::BracketKey::VECTOR, {"<", ",", ">"}},
-     {util::BracketKey::DEQUE, {"^", "<-", "$"}},
-     {util::BracketKey::SET, {"{", ",", "}"}},
-     {util::BracketKey::UNORDERED_SET, {"{~", ",", "~}"}},
-     {util::BracketKey::MULTISET, {"{#", ",", "#}"}},
-     {util::BracketKey::UNORDERED_MULTISET, {"{#~", ",", "~#}"}},
-     {util::BracketKey::MAP, {"[", ",", "]"}}, 
-     {util::BracketKey::UNORDERED_MAP, {"[~", ",", "~]"}},
-     {util::BracketKey::MULTIMAP, {"[#", ",", "#]"}},
-     {util::BracketKey::UNORDERED_MULTIMAP, {"[#~", ",", "~#]"}},
-     {util::BracketKey::PAIR, {"(", ",", ")"}}, 
-     {util::BracketKey::TUPLE, {"(", ",", ")"}},
-     {util::BracketKey::SLASH, {"/", "/", ""}},  
-     {util::BracketKey::BACKSLASH, {"\\", "\\", ""}},
+     {util::BracketKey::NONE, {"", " ", ""}},         {util::BracketKey::BOOL, {"", " ", ""}},
+     {util::BracketKey::CHAR, {"'", " ", "'"}},       {util::BracketKey::INT, {"", " ", ""}},
+     {util::BracketKey::FLOAT, {"", " ", ""}},        {util::BracketKey::STRING, {"\"", ",", "\""}},
+     {util::BracketKey::VECTOR, {"<", ",", ">"}},     {util::BracketKey::DEQUE, {"^", "<-", "$"}},
+     {util::BracketKey::SET, {"{", ",", "}"}},        {util::BracketKey::UNORDERED_SET, {"{~", ",", "~}"}},
+     {util::BracketKey::MULTISET, {"{#", ",", "#}"}}, {util::BracketKey::UNORDERED_MULTISET, {"{#~", ",", "~#}"}},
+     {util::BracketKey::MAP, {"[", ",", "]"}},        {util::BracketKey::UNORDERED_MAP, {"[~", ",", "~]"}},
+     {util::BracketKey::MULTIMAP, {"[#", ",", "#]"}}, {util::BracketKey::UNORDERED_MULTIMAP, {"[#~", ",", "~#]"}},
+     {util::BracketKey::PAIR, {"(", ",", ")"}},       {util::BracketKey::TUPLE, {"(", ",", ")"}},
+     {util::BracketKey::SLASH, {"/", "/", ""}},       {util::BracketKey::BACKSLASH, {"\\", "\\", ""}},
      {util::BracketKey::PIPE, {"|", "|", "|"}},
     }};
 

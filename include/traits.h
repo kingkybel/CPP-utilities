@@ -1,5 +1,6 @@
 /*
- * File:        traits.h
+ * Repository:  https://github.com/kingkybel/CPP-utilities
+ * File Name:   include/traits.h
  * Description: Macros to define traits that can static_assert whether
  *              static or non static member-functions are present in a type.
  *
@@ -359,7 +360,8 @@ struct has_std_string_compatible_char
 };
 
 template<typename T>
-typename std::enable_if<util::is_std_string<T>::value || util::is_std_string_view<T>::value, size_t>::type string_or_char_size(const T& str)
+typename std::enable_if<util::is_std_string<T>::value || util::is_std_string_view<T>::value, size_t>::type
+ string_or_char_size(const T& str)
 {
     return str.size();
 }

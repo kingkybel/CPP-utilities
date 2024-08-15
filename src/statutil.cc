@@ -1,5 +1,6 @@
 /*
- * File Name:   statutil.cc
+ * Repository:  https://github.com/kingkybel/CPP-utilities
+ * File Name:   src/statutil.cc
  * Description: statistic utility functions
  *
  * Copyright (C) 2023 Dieter J Kybelksties <github@kybelksties.com>
@@ -25,7 +26,7 @@
 #include "statutil.h"
 
 #include "to_string.h"
-//#define DO_TRACE_
+// #define DO_TRACE_
 #include "traceutil.h"
 
 #include <numbers>
@@ -494,7 +495,7 @@ EventCatenation &EventCatenation::operator&&(const Event &e)
 EventCatenation &EventCatenation::operator&&(const EventCatenation &el)
 {
     for(auto it = el.cbegin(); it != el.cend(); it++)
-        *this &&*it;
+        *this && *it;
 
     return (*this);
 }
@@ -567,7 +568,7 @@ bool EventCatenation::moveEvent(const string &name, EventCatenation &el)
     for(auto it = cbegin(); !hasBeenMoved && it != cend(); it++)
         if(it->name() == name)
         {
-            el &&*it;
+            el && *it;
             evts_.erase(it);
             hasBeenMoved = true;
         }
@@ -759,7 +760,7 @@ CondEvent CondEvent::filterConditions(const set<string> &conds) const
     for(auto it = condList_.cbegin(); it != condList_.cend(); it++)
     {
         if(conds.find(it->name()) != conds.end())
-            filteredConds &&*it;
+            filteredConds && *it;
     }
 
     // then add all conditions that are not present in the CondEvent
@@ -1520,7 +1521,7 @@ void spread(vector<CondEvent> &condEvents, const EventCollection &ev, bool isCon
         if(isCond)
             *vIt || *evIt;
         else
-            *vIt &&*evIt;
+            *vIt && *evIt;
 
         count++;
 

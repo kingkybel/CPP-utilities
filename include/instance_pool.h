@@ -1,5 +1,6 @@
 /*
- * File:		instance_pool.h
+ * Repository:  https://github.com/kingkybel/CPP-utilities
+ * File Name:   include/instance_pool.h
  * Description: implementation of a limited pool container
  *
  * Copyright (C) 2023 Dieter J Kybelksties <github@kybelksties.com>
@@ -26,6 +27,7 @@
 #define INSTANCE_POOL_H_INCLUDED
 
 #include "traits.h"
+#include "traits_static.h"
 
 #include <exception>
 #include <memory>

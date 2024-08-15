@@ -1,5 +1,6 @@
 /*
- * File Name:   bayesutil.cc
+ * Repository:  https://github.com/kingkybel/CPP-utilities
+ * File Name:   src/bayesutil.cc
  * Description: Bayes net utility functions
  *
  * Copyright (C) 2023 Dieter J Kybelksties <github@kybelksties.com>

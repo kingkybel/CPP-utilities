@@ -1,5 +1,6 @@
 /*
- * File Name:   ci_string.h
+ * Repository:  https://github.com/kingkybel/CPP-utilities
+ * File Name:   include/ci_string.h
  * Description: Case-insensitive string definition
  * Copyright (C) 2023 Dieter J Kybelksties <github@kybelksties.com>
  *

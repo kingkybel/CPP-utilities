@@ -1,5 +1,6 @@
 /*
- * File:		heap_tests.cc
+ * Repository:  https://github.com/kingkybel/CPP-utilities
+ * File Name:   test/heap_tests.cc
  * Description: Unit tests for heap templates.
  *
  * Copyright (C) 2023 Dieter J Kybelksties <github@kybelksties.com>
@@ -45,7 +46,7 @@ class HeapTest : public ::testing::Test
 
 TEST_F(HeapTest, heap_test)
 {
-    heap<int32_t, std::less<int32_t>> hipp; // max-heap: biggest element at top
+    heap<int32_t, std::less<int32_t>> hipp;  // max-heap: biggest element at top
     ASSERT_TRUE(hipp.empty());
     ASSERT_EQ(hipp.size(), 0UL);
     ASSERT_EQ(hipp.top(), nullptr);
@@ -100,7 +101,7 @@ TEST_F(HeapTest, heap_test)
 
 TEST_F(HeapTest, std_heap_test)
 {
-    std_heap<int32_t, std::less<int32_t>> hipp; // max-heap: biggest element at top
+    std_heap<int32_t, std::less<int32_t>> hipp;  // max-heap: biggest element at top
     ASSERT_TRUE(hipp.empty());
     ASSERT_EQ(hipp.size(), 0UL);
     ASSERT_EQ(hipp.top(), nullptr);

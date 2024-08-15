@@ -1,5 +1,6 @@
 /*
- * File Name:   matrix.h
+ * Repository:  https://github.com/kingkybel/CPP-utilities
+ * File Name:   include/matrix.h
  * Description: A template for matrix operations.
  *
  * Copyright (C) 2023 Dieter J Kybelksties <github@kybelksties.com>

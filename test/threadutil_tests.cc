@@ -1,5 +1,6 @@
 /*
- * File:		threadutil_tests.cc
+ * Repository:  https://github.com/kingkybel/CPP-utilities
+ * File Name:   test/threadutil_tests.cc
  * Description: Unit tests for thread utilities.
  *
  * Copyright (C) 2023 Dieter J Kybelksties <github@kybelksties.com>
@@ -67,8 +68,7 @@ TEST_F(ThreadutilTest, future_with_exception_test)
         FAIL() << "Unexpected exception: " << ex.what() << std::endl;
     }
 
-    y = -5.0;
+    y             = -5.0;
     result_future = make_exception_safe_future(somefunc, x, y);
     ASSERT_THROW(result_future.get(), std::exception);
-    
 }

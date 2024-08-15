@@ -1,5 +1,6 @@
 /*
- * File:		performance_timer_tests.cc
+ * Repository:  https://github.com/kingkybel/CPP-utilities
+ * File Name:   test/performance_timer_tests.cc
  * Description: Unit tests for perfomance test utilities
  *
  * Copyright (C) 2023 Dieter J Kybelksties <github@kybelksties.com>
@@ -136,9 +137,10 @@ TEST_F(TimerTest, DISABLED_simulation_vs_measured_delay_test)
         simVsMeasure(std::chrono::nanoseconds{50}, false);
     auto msrStat = tmr.get_stat("simVsMeasure");
 
-    auto simTotal = simStat.aggregate_time_;
-    auto msrTotal = msrStat.aggregate_time_;
-    auto toleranceFactor = 1.0/6.3;
-    auto tolerance = msrTotal * toleranceFactor;
-    ASSERT_LE(std::abs(simTotal-msrTotal), tolerance) << "Tolerance factor " << toleranceFactor << " is too big. Try adjusting.";
+    auto simTotal        = simStat.aggregate_time_;
+    auto msrTotal        = msrStat.aggregate_time_;
+    auto toleranceFactor = 1.0 / 6.3;
+    auto tolerance       = msrTotal * toleranceFactor;
+    ASSERT_LE(std::abs(simTotal - msrTotal), tolerance)
+     << "Tolerance factor " << toleranceFactor << " is too big. Try adjusting.";
 }
