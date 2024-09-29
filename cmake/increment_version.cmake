@@ -1,5 +1,4 @@
 function(increment_version minor_or_major)
-
     file(READ "version.txt" PROJECT_VERSION_FILE)
     string(STRIP "${PROJECT_VERSION_FILE}" PROJECT_VERSION_FILE) # Remove leading/trailing whitespace
 
@@ -13,5 +12,4 @@ function(increment_version minor_or_major)
 
     # Write back the updated version to version.txt
     file(WRITE "version.txt" "${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}.${PROJECT_VERSION_PATCH}")
-
 endfunction()

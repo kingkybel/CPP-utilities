@@ -1,7 +1,7 @@
 /*
  * Repository:  https://github.com/kingkybel/CPP-utilities
  * File Name:   test/performance_timer_tests.cc
- * Description: Unit tests for perfomance test utilities
+ * Description: Unit tests for performance test utilities
  *
  * Copyright (C) 2023 Dieter J Kybelksties <github@kybelksties.com>
  *

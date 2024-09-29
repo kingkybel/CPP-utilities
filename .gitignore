@@ -3,6 +3,7 @@
 /build.docker
 /src/*.o
 /test/*.o
+/cmake-build-debug/
 
 # doxygen output directory
 /doxygen
@@ -31,3 +32,7 @@
 
 # tryout directory
 /tryout/
+/.tryout/
+
+# idea-confif
+/.idea/
