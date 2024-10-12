@@ -24,16 +24,10 @@
  */
 #include "anyutil.h"
 #include "dateutil.h"
-#include "stringutil.h"
-
-#include <algorithm>
 #include <gtest/gtest.h>
-#include <iostream>
 #include <map>
 #include <set>
-#include <sstream>
 #include <string>
-#include <vector>
 
 using namespace std;
 using namespace util;
@@ -88,7 +82,7 @@ TEST_F(AnyUtilTest, util_any_test)
     f = scanAs<VAR_FLOAT>("1234.34e-31");
     ASSERT_DOUBLE_EQ(f, 1234.34e-31L);
 
-    Var anAny(string("a T_"));
+    Var anAny(string("a ValueT_"));
     ASSERT_TRUE(isA<string>(anAny));
     anAny = (VAR_INT)5L;
     ASSERT_TRUE(isA<VAR_INT>(anAny));

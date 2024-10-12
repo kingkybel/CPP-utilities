@@ -23,40 +23,27 @@
  * @author: Dieter J Kybelksties
  */
 
-#include "anyutil.h"
-#include "bayesutil.h"
 #include "ci_string.h"
 #include "container_convert.h"
 #include "cstdlib"
-#include "csvutil.h"
-#include "dateutil.h"
-#include "graphutil.h"
-#include "statutil.h"
 #include "stringutil.h"
 
-#include <boost/assign/std/vector.hpp>
-#include <boost/bind.hpp>
-#include <gtest/gtest.h>
-#define BOOST_NO_CXX11_SCOPED_ENUMS
-#include <boost/filesystem.hpp>
-#undef BOOST_NO_CXX11_SCOPED_ENUMS
 #include <cmath>
+#include <gtest/gtest.h>
 #include <iostream>
 #include <string>
 
 using namespace std;
 using namespace util;
-using namespace util::datescan;
-using namespace boost::posix_time;
-using namespace boost::gregorian;
-using namespace boost::assign;
-using namespace boost::filesystem;
+//using namespace util::datescan;
+//using namespace boost::posix_time;
+//using namespace boost::gregorian;
 
-const string filename = "/tmp/test.csv";
+string const filename = "/tmp/test.csv";
 
 class StringUtilTest : public ::testing::Test
 {
-    protected:
+  protected:
     void SetUp() override
     {
     }
@@ -66,7 +53,7 @@ class StringUtilTest : public ::testing::Test
     }
 };
 
-template<typename T_>
+template <typename T_>
 struct SR
 {
     SR(const T_&     source,
@@ -77,46 +64,55 @@ struct SR
        const T_&     result,
        size_t        line,
        bool          differentInsensitive = false,
-       const T_&     resultInsensitive    = "")
-    : source_(source)
-    , tp_(tp)
-    , m_(m)
-    , modChars_(modChars)
-    , c_(c)
-    , result_(result)
-    , line_(line)
-    , differentInsensitive_(differentInsensitive)
-    , resultInsensitive_(differentInsensitive ? resultInsensitive : result_)
+       const T_& resultInsensitive        = "")
+        : source_(source)
+        , tp_(tp)
+        , m_(m)
+        , modChars_(modChars)
+        , c_(c)
+        , result_(result)
+        , line_(line)
+        , differentInsensitive_(differentInsensitive)
+        , resultInsensitive_(differentInsensitive ? resultInsensitive : result_)
     {
     }
 
     bool correctResult()
     {
         T_ actualResult = source_;
-        if(tp_ == "trim")
+        if (tp_ == "trim")
         {
-            if(m_ == util::StripTrimMode::LEFT)
+            if (m_ == util::StripTrimMode::LEFT)
+            {
                 trimLeft(actualResult, modChars_);
-            else if(m_ == util::StripTrimMode::RIGHT)
+            }
+            else if (m_ == util::StripTrimMode::RIGHT)
+            {
                 trimRight(actualResult, modChars_);
+            }
             else
+            {
                 trim(actualResult, modChars_);
+            }
         }
-        else if(tp_ == "strip")
+        else if (tp_ == "strip")
         {
             strip(actualResult, modChars_, m_);
         }
-        else if(tp_ == "replace")
+        else if (tp_ == "replace")
         {
             replaceChar(actualResult, modChars_, c_, m_);
         }
         T_   expectedResult = (typeid(T_) == typeid(ci_string) && differentInsensitive_) ? resultInsensitive_ : result_;
         bool reval          = (expectedResult == actualResult);
-        if(!reval)
+        if (!reval)
+        {
             cout << " Line " << line_ << ": " << quoted(expectedResult) << " != " << quoted(actualResult) << " "
                  << ends;
+        }
         return reval;
     }
+
     T_            source_;
     T_            tp_;
     StripTrimMode m_;
@@ -128,144 +124,144 @@ struct SR
     T_            resultInsensitive_;
 };
 
-template<typename T_>
+template <typename T_>
 void util_string_mod_testT()
 {
     typedef SR<T_> SR;
     SR             modResults[] = {
-     // trivial
-     SR("", "trim", StripTrimMode::ALL, "\n\t \r", char(0), "", __LINE__),
-     SR("", "trim", StripTrimMode::LEFT, "\n\t \r", char(0), "", __LINE__),
-     SR("", "trim", StripTrimMode::RIGHT, "\n\t \r", char(0), "", __LINE__),
-     SR(" ", "trim", StripTrimMode::ALL, "\n\t \r", char(0), "", __LINE__),
-     SR(" ", "trim", StripTrimMode::LEFT, "\n\t \r", char(0), "", __LINE__),
-     SR(" ", "trim", StripTrimMode::RIGHT, "\n\t \r", char(0), "", __LINE__),
-     SR("\t", "trim", StripTrimMode::ALL, "\n\t \r", char(0), "", __LINE__),
-     SR("\t", "trim", StripTrimMode::LEFT, "\n\t \r", char(0), "", __LINE__),
-     SR("\t", "trim", StripTrimMode::RIGHT, "\n\t \r", char(0), "", __LINE__),
-     SR("\n", "trim", StripTrimMode::ALL, "\n\t \r", char(0), "", __LINE__),
-     SR("\n", "trim", StripTrimMode::LEFT, "\n\t \r", char(0), "", __LINE__),
-     SR("\n", "trim", StripTrimMode::RIGHT, "\n\t \r", char(0), "", __LINE__),
+        // trivial
+        SR("", "trim", StripTrimMode::ALL, "\n\t \r", char(0), "", __LINE__),
+        SR("", "trim", StripTrimMode::LEFT, "\n\t \r", char(0), "", __LINE__),
+        SR("", "trim", StripTrimMode::RIGHT, "\n\t \r", char(0), "", __LINE__),
+        SR(" ", "trim", StripTrimMode::ALL, "\n\t \r", char(0), "", __LINE__),
+        SR(" ", "trim", StripTrimMode::LEFT, "\n\t \r", char(0), "", __LINE__),
+        SR(" ", "trim", StripTrimMode::RIGHT, "\n\t \r", char(0), "", __LINE__),
+        SR("\t", "trim", StripTrimMode::ALL, "\n\t \r", char(0), "", __LINE__),
+        SR("\t", "trim", StripTrimMode::LEFT, "\n\t \r", char(0), "", __LINE__),
+        SR("\t", "trim", StripTrimMode::RIGHT, "\n\t \r", char(0), "", __LINE__),
+        SR("\n", "trim", StripTrimMode::ALL, "\n\t \r", char(0), "", __LINE__),
+        SR("\n", "trim", StripTrimMode::LEFT, "\n\t \r", char(0), "", __LINE__),
+        SR("\n", "trim", StripTrimMode::RIGHT, "\n\t \r", char(0), "", __LINE__),
 
-     SR("", "strip", StripTrimMode::ALL, "\n\t \r", char(0), "", __LINE__),
-     SR("", "strip", StripTrimMode::LEFT, "\n\t \r", char(0), "", __LINE__),
-     SR("", "strip", StripTrimMode::RIGHT, "\n\t \r", char(0), "", __LINE__),
-     SR(" ", "strip", StripTrimMode::ALL, "\n\t \r", char(0), "", __LINE__),
-     SR(" ", "strip", StripTrimMode::LEFT, "\n\t \r", char(0), "", __LINE__),
-     SR(" ", "strip", StripTrimMode::RIGHT, "\n\t \r", char(0), "", __LINE__),
-     SR("\t", "strip", StripTrimMode::ALL, "\n\t \r", char(0), "", __LINE__),
-     SR("\t", "strip", StripTrimMode::LEFT, "\n\t \r", char(0), "", __LINE__),
-     SR("\t", "strip", StripTrimMode::RIGHT, "\n\t \r", char(0), "", __LINE__),
-     SR("\n", "strip", StripTrimMode::ALL, "\n\t \r", char(0), "", __LINE__),
-     SR("\n", "strip", StripTrimMode::LEFT, "\n\t \r", char(0), "", __LINE__),
-     SR("\n", "strip", StripTrimMode::RIGHT, "\n\t \r", char(0), "", __LINE__),
+        SR("", "strip", StripTrimMode::ALL, "\n\t \r", char(0), "", __LINE__),
+        SR("", "strip", StripTrimMode::LEFT, "\n\t \r", char(0), "", __LINE__),
+        SR("", "strip", StripTrimMode::RIGHT, "\n\t \r", char(0), "", __LINE__),
+        SR(" ", "strip", StripTrimMode::ALL, "\n\t \r", char(0), "", __LINE__),
+        SR(" ", "strip", StripTrimMode::LEFT, "\n\t \r", char(0), "", __LINE__),
+        SR(" ", "strip", StripTrimMode::RIGHT, "\n\t \r", char(0), "", __LINE__),
+        SR("\t", "strip", StripTrimMode::ALL, "\n\t \r", char(0), "", __LINE__),
+        SR("\t", "strip", StripTrimMode::LEFT, "\n\t \r", char(0), "", __LINE__),
+        SR("\t", "strip", StripTrimMode::RIGHT, "\n\t \r", char(0), "", __LINE__),
+        SR("\n", "strip", StripTrimMode::ALL, "\n\t \r", char(0), "", __LINE__),
+        SR("\n", "strip", StripTrimMode::LEFT, "\n\t \r", char(0), "", __LINE__),
+        SR("\n", "strip", StripTrimMode::RIGHT, "\n\t \r", char(0), "", __LINE__),
 
-     SR("", "replace", StripTrimMode::ALL, "\n\t \r", '#', "", __LINE__),
-     SR("", "replace", StripTrimMode::LEFT, "\n\t \r", '#', "", __LINE__),
-     SR("", "replace", StripTrimMode::RIGHT, "\n\t \r", '#', "", __LINE__),
-     SR(" ", "replace", StripTrimMode::ALL, "\n\t \r", '#', "#", __LINE__, false),
-     SR(" ", "replace", StripTrimMode::LEFT, "\n\t \r", '#', "#", __LINE__),
-     SR(" ", "replace", StripTrimMode::RIGHT, "\n\t \r", '#', "#", __LINE__),
-     SR("\t", "replace", StripTrimMode::ALL, "\n\t \r", '#', "#", __LINE__),
-     SR("\t", "replace", StripTrimMode::LEFT, "\n\t \r", '#', "#", __LINE__),
-     SR("\t", "replace", StripTrimMode::RIGHT, "\n\t \r", '#', "#", __LINE__),
-     SR("\n", "replace", StripTrimMode::ALL, "\n\t \r", '#', "#", __LINE__),
-     SR("\n", "replace", StripTrimMode::LEFT, "\n\t \r", '#', "#", __LINE__),
-     SR("\n", "replace", StripTrimMode::RIGHT, "\n\t \r", '#', "#", __LINE__),
+        SR("", "replace", StripTrimMode::ALL, "\n\t \r", '#', "", __LINE__),
+        SR("", "replace", StripTrimMode::LEFT, "\n\t \r", '#', "", __LINE__),
+        SR("", "replace", StripTrimMode::RIGHT, "\n\t \r", '#', "", __LINE__),
+        SR(" ", "replace", StripTrimMode::ALL, "\n\t \r", '#', "#", __LINE__, false),
+        SR(" ", "replace", StripTrimMode::LEFT, "\n\t \r", '#', "#", __LINE__),
+        SR(" ", "replace", StripTrimMode::RIGHT, "\n\t \r", '#', "#", __LINE__),
+        SR("\t", "replace", StripTrimMode::ALL, "\n\t \r", '#', "#", __LINE__),
+        SR("\t", "replace", StripTrimMode::LEFT, "\n\t \r", '#', "#", __LINE__),
+        SR("\t", "replace", StripTrimMode::RIGHT, "\n\t \r", '#', "#", __LINE__),
+        SR("\n", "replace", StripTrimMode::ALL, "\n\t \r", '#', "#", __LINE__),
+        SR("\n", "replace", StripTrimMode::LEFT, "\n\t \r", '#', "#", __LINE__),
+        SR("\n", "replace", StripTrimMode::RIGHT, "\n\t \r", '#', "#", __LINE__),
 
-     // trivial case-dependent
-     SR("", "trim", StripTrimMode::ALL, "abc", char(0), "", __LINE__, false, ""),
-     SR("", "trim", StripTrimMode::LEFT, "abc", char(0), "", __LINE__, false, ""),
-     SR("", "trim", StripTrimMode::RIGHT, "abc", char(0), "", __LINE__, false, ""),
-     SR("a", "trim", StripTrimMode::ALL, "abc", char(0), "", __LINE__, false, ""),
-     SR("a", "trim", StripTrimMode::LEFT, "abc", char(0), "", __LINE__, false, ""),
-     SR("a", "trim", StripTrimMode::RIGHT, "abc", char(0), "", __LINE__, false, ""),
-     SR("b", "trim", StripTrimMode::ALL, "abc", char(0), "", __LINE__, false, ""),
-     SR("b", "trim", StripTrimMode::LEFT, "abc", char(0), "", __LINE__, false, ""),
-     SR("b", "trim", StripTrimMode::RIGHT, "abc", char(0), "", __LINE__, false, ""),
-     SR("c", "trim", StripTrimMode::ALL, "abc", char(0), "", __LINE__, false, ""),
-     SR("c", "trim", StripTrimMode::LEFT, "abc", char(0), "", __LINE__, false, ""),
-     SR("c", "trim", StripTrimMode::RIGHT, "abc", char(0), "", __LINE__, false, ""),
-     SR("A", "trim", StripTrimMode::ALL, "abc", char(0), "A", __LINE__, true, ""),
-     SR("A", "trim", StripTrimMode::LEFT, "abc", char(0), "A", __LINE__, true, ""),
-     SR("A", "trim", StripTrimMode::RIGHT, "abc", char(0), "A", __LINE__, true, ""),
-     SR("B", "trim", StripTrimMode::ALL, "abc", char(0), "B", __LINE__, true, ""),
-     SR("B", "trim", StripTrimMode::LEFT, "abc", char(0), "B", __LINE__, true, ""),
-     SR("B", "trim", StripTrimMode::RIGHT, "abc", char(0), "B", __LINE__, true, ""),
-     SR("C", "trim", StripTrimMode::ALL, "abc", char(0), "C", __LINE__, true, ""),
-     SR("C", "trim", StripTrimMode::LEFT, "abc", char(0), "C", __LINE__, true, ""),
-     SR("C", "trim", StripTrimMode::RIGHT, "abc", char(0), "C", __LINE__, true, ""),
+        // trivial case-dependent
+        SR("", "trim", StripTrimMode::ALL, "abc", char(0), "", __LINE__, false, ""),
+        SR("", "trim", StripTrimMode::LEFT, "abc", char(0), "", __LINE__, false, ""),
+        SR("", "trim", StripTrimMode::RIGHT, "abc", char(0), "", __LINE__, false, ""),
+        SR("a", "trim", StripTrimMode::ALL, "abc", char(0), "", __LINE__, false, ""),
+        SR("a", "trim", StripTrimMode::LEFT, "abc", char(0), "", __LINE__, false, ""),
+        SR("a", "trim", StripTrimMode::RIGHT, "abc", char(0), "", __LINE__, false, ""),
+        SR("b", "trim", StripTrimMode::ALL, "abc", char(0), "", __LINE__, false, ""),
+        SR("b", "trim", StripTrimMode::LEFT, "abc", char(0), "", __LINE__, false, ""),
+        SR("b", "trim", StripTrimMode::RIGHT, "abc", char(0), "", __LINE__, false, ""),
+        SR("c", "trim", StripTrimMode::ALL, "abc", char(0), "", __LINE__, false, ""),
+        SR("c", "trim", StripTrimMode::LEFT, "abc", char(0), "", __LINE__, false, ""),
+        SR("c", "trim", StripTrimMode::RIGHT, "abc", char(0), "", __LINE__, false, ""),
+        SR("A", "trim", StripTrimMode::ALL, "abc", char(0), "A", __LINE__, true, ""),
+        SR("A", "trim", StripTrimMode::LEFT, "abc", char(0), "A", __LINE__, true, ""),
+        SR("A", "trim", StripTrimMode::RIGHT, "abc", char(0), "A", __LINE__, true, ""),
+        SR("B", "trim", StripTrimMode::ALL, "abc", char(0), "B", __LINE__, true, ""),
+        SR("B", "trim", StripTrimMode::LEFT, "abc", char(0), "B", __LINE__, true, ""),
+        SR("B", "trim", StripTrimMode::RIGHT, "abc", char(0), "B", __LINE__, true, ""),
+        SR("C", "trim", StripTrimMode::ALL, "abc", char(0), "C", __LINE__, true, ""),
+        SR("C", "trim", StripTrimMode::LEFT, "abc", char(0), "C", __LINE__, true, ""),
+        SR("C", "trim", StripTrimMode::RIGHT, "abc", char(0), "C", __LINE__, true, ""),
 
-     SR("", "strip", StripTrimMode::ALL, "abc", char(0), "", __LINE__, false, ""),
-     SR("", "strip", StripTrimMode::LEFT, "abc", char(0), "", __LINE__, false, ""),
-     SR("", "strip", StripTrimMode::RIGHT, "abc", char(0), "", __LINE__, false, ""),
-     SR("a", "strip", StripTrimMode::ALL, "abc", char(0), "", __LINE__, false, ""),
-     SR("a", "strip", StripTrimMode::LEFT, "abc", char(0), "", __LINE__, false, ""),
-     SR("a", "strip", StripTrimMode::RIGHT, "abc", char(0), "", __LINE__, ""),
-     SR("b", "strip", StripTrimMode::ALL, "abc", char(0), "", __LINE__, false, ""),
-     SR("b", "strip", StripTrimMode::LEFT, "abc", char(0), "", __LINE__, false, ""),
-     SR("b", "strip", StripTrimMode::RIGHT, "abc", char(0), "", __LINE__, false, ""),
-     SR("c", "strip", StripTrimMode::ALL, "abc", char(0), "", __LINE__, false, ""),
-     SR("c", "strip", StripTrimMode::LEFT, "abc", char(0), "", __LINE__, false, ""),
-     SR("c", "strip", StripTrimMode::RIGHT, "abc", char(0), "", __LINE__, false, ""),
-     SR("A", "strip", StripTrimMode::ALL, "abc", char(0), "A", __LINE__, true, ""),
-     SR("A", "strip", StripTrimMode::LEFT, "abc", char(0), "A", __LINE__, true, ""),
-     SR("A", "strip", StripTrimMode::RIGHT, "abc", char(0), "A", __LINE__, true, ""),
-     SR("B", "strip", StripTrimMode::ALL, "abc", char(0), "B", __LINE__, true, ""),
-     SR("B", "strip", StripTrimMode::LEFT, "abc", char(0), "B", __LINE__, true, ""),
-     SR("B", "strip", StripTrimMode::RIGHT, "abc", char(0), "B", __LINE__, true, ""),
-     SR("C", "strip", StripTrimMode::ALL, "abc", char(0), "C", __LINE__, true, ""),
-     SR("C", "strip", StripTrimMode::LEFT, "abc", char(0), "C", __LINE__, true, ""),
-     SR("C", "strip", StripTrimMode::RIGHT, "abc", char(0), "C", __LINE__, true, ""),
+        SR("", "strip", StripTrimMode::ALL, "abc", char(0), "", __LINE__, false, ""),
+        SR("", "strip", StripTrimMode::LEFT, "abc", char(0), "", __LINE__, false, ""),
+        SR("", "strip", StripTrimMode::RIGHT, "abc", char(0), "", __LINE__, false, ""),
+        SR("a", "strip", StripTrimMode::ALL, "abc", char(0), "", __LINE__, false, ""),
+        SR("a", "strip", StripTrimMode::LEFT, "abc", char(0), "", __LINE__, false, ""),
+        SR("a", "strip", StripTrimMode::RIGHT, "abc", char(0), "", __LINE__, ""),
+        SR("b", "strip", StripTrimMode::ALL, "abc", char(0), "", __LINE__, false, ""),
+        SR("b", "strip", StripTrimMode::LEFT, "abc", char(0), "", __LINE__, false, ""),
+        SR("b", "strip", StripTrimMode::RIGHT, "abc", char(0), "", __LINE__, false, ""),
+        SR("c", "strip", StripTrimMode::ALL, "abc", char(0), "", __LINE__, false, ""),
+        SR("c", "strip", StripTrimMode::LEFT, "abc", char(0), "", __LINE__, false, ""),
+        SR("c", "strip", StripTrimMode::RIGHT, "abc", char(0), "", __LINE__, false, ""),
+        SR("A", "strip", StripTrimMode::ALL, "abc", char(0), "A", __LINE__, true, ""),
+        SR("A", "strip", StripTrimMode::LEFT, "abc", char(0), "A", __LINE__, true, ""),
+        SR("A", "strip", StripTrimMode::RIGHT, "abc", char(0), "A", __LINE__, true, ""),
+        SR("B", "strip", StripTrimMode::ALL, "abc", char(0), "B", __LINE__, true, ""),
+        SR("B", "strip", StripTrimMode::LEFT, "abc", char(0), "B", __LINE__, true, ""),
+        SR("B", "strip", StripTrimMode::RIGHT, "abc", char(0), "B", __LINE__, true, ""),
+        SR("C", "strip", StripTrimMode::ALL, "abc", char(0), "C", __LINE__, true, ""),
+        SR("C", "strip", StripTrimMode::LEFT, "abc", char(0), "C", __LINE__, true, ""),
+        SR("C", "strip", StripTrimMode::RIGHT, "abc", char(0), "C", __LINE__, true, ""),
 
-     SR("", "replace", StripTrimMode::ALL, "abc", '#', "", __LINE__, false, ""),
-     SR("", "replace", StripTrimMode::LEFT, "abc", '#', "", __LINE__, false, ""),
-     SR("", "replace", StripTrimMode::RIGHT, "abc", '#', "", __LINE__, false, ""),
-     SR("a", "replace", StripTrimMode::ALL, "abc", '#', "#", __LINE__, false, "#"),
-     SR("a", "replace", StripTrimMode::LEFT, "abc", '#', "#", __LINE__, false, "#"),
-     SR("a", "replace", StripTrimMode::RIGHT, "abc", '#', "#", __LINE__, false, "#"),
-     SR("b", "replace", StripTrimMode::ALL, "abc", '#', "#", __LINE__, false, "#"),
-     SR("b", "replace", StripTrimMode::LEFT, "abc", '#', "#", __LINE__, false, "#"),
-     SR("b", "replace", StripTrimMode::RIGHT, "abc", '#', "#", __LINE__, false, "#"),
-     SR("c", "replace", StripTrimMode::ALL, "abc", '#', "#", __LINE__, false, "#"),
-     SR("c", "replace", StripTrimMode::LEFT, "abc", '#', "#", __LINE__, false, "#"),
-     SR("c", "replace", StripTrimMode::RIGHT, "abc", '#', "#", __LINE__, false, "#"),
-     SR("A", "replace", StripTrimMode::ALL, "abc", '#', "A", __LINE__, true, "#"),
-     SR("A", "replace", StripTrimMode::LEFT, "abc", '#', "A", __LINE__, true, "#"),
-     SR("A", "replace", StripTrimMode::RIGHT, "abc", '#', "A", __LINE__, true, "#"),
-     SR("B", "replace", StripTrimMode::ALL, "abc", '#', "B", __LINE__, true, "#"),
-     SR("B", "replace", StripTrimMode::LEFT, "abc", '#', "B", __LINE__, true, "#"),
-     SR("B", "replace", StripTrimMode::RIGHT, "abc", '#', "B", __LINE__, true, "#"),
-     SR("C", "replace", StripTrimMode::ALL, "abc", '#', "C", __LINE__, true, "#"),
-     SR("C", "replace", StripTrimMode::LEFT, "abc", '#', "C", __LINE__, true, "#"),
-     SR("C", "replace", StripTrimMode::RIGHT, "abc", '#', "C", __LINE__, true, "#"),
+        SR("", "replace", StripTrimMode::ALL, "abc", '#', "", __LINE__, false, ""),
+        SR("", "replace", StripTrimMode::LEFT, "abc", '#', "", __LINE__, false, ""),
+        SR("", "replace", StripTrimMode::RIGHT, "abc", '#', "", __LINE__, false, ""),
+        SR("a", "replace", StripTrimMode::ALL, "abc", '#', "#", __LINE__, false, "#"),
+        SR("a", "replace", StripTrimMode::LEFT, "abc", '#', "#", __LINE__, false, "#"),
+        SR("a", "replace", StripTrimMode::RIGHT, "abc", '#', "#", __LINE__, false, "#"),
+        SR("b", "replace", StripTrimMode::ALL, "abc", '#', "#", __LINE__, false, "#"),
+        SR("b", "replace", StripTrimMode::LEFT, "abc", '#', "#", __LINE__, false, "#"),
+        SR("b", "replace", StripTrimMode::RIGHT, "abc", '#', "#", __LINE__, false, "#"),
+        SR("c", "replace", StripTrimMode::ALL, "abc", '#', "#", __LINE__, false, "#"),
+        SR("c", "replace", StripTrimMode::LEFT, "abc", '#', "#", __LINE__, false, "#"),
+        SR("c", "replace", StripTrimMode::RIGHT, "abc", '#', "#", __LINE__, false, "#"),
+        SR("A", "replace", StripTrimMode::ALL, "abc", '#', "A", __LINE__, true, "#"),
+        SR("A", "replace", StripTrimMode::LEFT, "abc", '#', "A", __LINE__, true, "#"),
+        SR("A", "replace", StripTrimMode::RIGHT, "abc", '#', "A", __LINE__, true, "#"),
+        SR("B", "replace", StripTrimMode::ALL, "abc", '#', "B", __LINE__, true, "#"),
+        SR("B", "replace", StripTrimMode::LEFT, "abc", '#', "B", __LINE__, true, "#"),
+        SR("B", "replace", StripTrimMode::RIGHT, "abc", '#', "B", __LINE__, true, "#"),
+        SR("C", "replace", StripTrimMode::ALL, "abc", '#', "C", __LINE__, true, "#"),
+        SR("C", "replace", StripTrimMode::LEFT, "abc", '#', "C", __LINE__, true, "#"),
+        SR("C", "replace", StripTrimMode::RIGHT, "abc", '#', "C", __LINE__, true, "#"),
 
-     // not-so-trivial case-dependent
-     SR("aABbCc", "trim", StripTrimMode::ALL, "abc", char(0), "ABbC", __LINE__, true, ""),
-     /**/ SR("aABbCc", "trim", StripTrimMode::LEFT, "abc", char(0), "ABbCc", __LINE__, true, ""),
-     SR("aABbCc", "trim", StripTrimMode::RIGHT, "abc", char(0), "aABbC", __LINE__, true, ""),
+        // not-so-trivial case-dependent
+        SR("aABbCc", "trim", StripTrimMode::ALL, "abc", char(0), "ABbC", __LINE__, true, ""),
+        /**/ SR("aABbCc", "trim", StripTrimMode::LEFT, "abc", char(0), "ABbCc", __LINE__, true, ""),
+        SR("aABbCc", "trim", StripTrimMode::RIGHT, "abc", char(0), "aABbC", __LINE__, true, ""),
 
-     SR("aABbCc", "strip", StripTrimMode::ALL, "abc", char(0), "ABC", __LINE__, true, ""),
-     SR("aABbCc", "strip", StripTrimMode::LEFT, "abc", char(0), "ABbCc", __LINE__, true, ""),
-     SR("aABbCc", "strip", StripTrimMode::RIGHT, "abc", char(0), "aABbC", __LINE__, true, ""),
+        SR("aABbCc", "strip", StripTrimMode::ALL, "abc", char(0), "ABC", __LINE__, true, ""),
+        SR("aABbCc", "strip", StripTrimMode::LEFT, "abc", char(0), "ABbCc", __LINE__, true, ""),
+        SR("aABbCc", "strip", StripTrimMode::RIGHT, "abc", char(0), "aABbC", __LINE__, true, ""),
 
-     SR("aABbCc", "replace", StripTrimMode::ALL, "abc", '#', "#AB#C#", __LINE__, true, "######"),
-     SR("aABbCc", "replace", StripTrimMode::LEFT, "abc", '#', "#ABbCc", __LINE__, true, "######"),
-     SR("aABbCc", "replace", StripTrimMode::RIGHT, "abc", '#', "aABbC#", __LINE__, true, "######"),
+        SR("aABbCc", "replace", StripTrimMode::ALL, "abc", '#', "#AB#C#", __LINE__, true, "######"),
+        SR("aABbCc", "replace", StripTrimMode::LEFT, "abc", '#', "#ABbCc", __LINE__, true, "######"),
+        SR("aABbCc", "replace", StripTrimMode::RIGHT, "abc", '#', "aABbC#", __LINE__, true, "######"),
 
-     SR("a-A-B-b-c-C", "trim", StripTrimMode::ALL, "abc", char(0), "-A-B-b-c-C", __LINE__, true, "-A-B-b-c-"),
-     /**/ SR("a-A-B-b-c-C", "trim", StripTrimMode::LEFT, "abc", char(0), "-A-B-b-c-C", __LINE__, true, "-A-B-b-c-C"),
-     SR("a-A-B-b-c-C", "trim", StripTrimMode::RIGHT, "abc", char(0), "a-A-B-b-c-C", __LINE__, true, "a-A-B-b-c-"),
+        SR("a-A-B-b-c-C", "trim", StripTrimMode::ALL, "abc", char(0), "-A-B-b-c-C", __LINE__, true, "-A-B-b-c-"),
+        /**/ SR("a-A-B-b-c-C", "trim", StripTrimMode::LEFT, "abc", char(0), "-A-B-b-c-C", __LINE__, true, "-A-B-b-c-C"),
+        SR("a-A-B-b-c-C", "trim", StripTrimMode::RIGHT, "abc", char(0), "a-A-B-b-c-C", __LINE__, true, "a-A-B-b-c-"),
 
-     SR("a-A-B-b-c-C", "strip", StripTrimMode::ALL, "abc", char(0), "-A-B---C", __LINE__, true, "-----"),
-     SR("a-A-B-b-c-C", "strip", StripTrimMode::LEFT, "abc", char(0), "-A-B-b-c-C", __LINE__, true, "-A-B-b-c-C"),
-     SR("a-A-B-b-c-C", "strip", StripTrimMode::RIGHT, "abc", char(0), "a-A-B-b-c-C", __LINE__, true, "a-A-B-b-c-"),
+        SR("a-A-B-b-c-C", "strip", StripTrimMode::ALL, "abc", char(0), "-A-B---C", __LINE__, true, "-----"),
+        SR("a-A-B-b-c-C", "strip", StripTrimMode::LEFT, "abc", char(0), "-A-B-b-c-C", __LINE__, true, "-A-B-b-c-C"),
+        SR("a-A-B-b-c-C", "strip", StripTrimMode::RIGHT, "abc", char(0), "a-A-B-b-c-C", __LINE__, true, "a-A-B-b-c-"),
 
-     SR("a-A-B-b-c-C", "replace", StripTrimMode::ALL, "abc", '#', "#-A-B-#-#-C", __LINE__, true, "#-#-#-#-#-#"),
-     SR("a-A-B-b-c-C", "replace", StripTrimMode::LEFT, "abc", '#', "#-A-B-b-c-C", __LINE__, true, "#-A-B-b-c-C"),
-     SR("a-A-B-b-c-C", "replace", StripTrimMode::RIGHT, "abc", '#', "a-A-B-b-c-C", __LINE__, true, "a-A-B-b-c-#"),
+        SR("a-A-B-b-c-C", "replace", StripTrimMode::ALL, "abc", '#', "#-A-B-#-#-C", __LINE__, true, "#-#-#-#-#-#"),
+        SR("a-A-B-b-c-C", "replace", StripTrimMode::LEFT, "abc", '#', "#-A-B-b-c-C", __LINE__, true, "#-A-B-b-c-C"),
+        SR("a-A-B-b-c-C", "replace", StripTrimMode::RIGHT, "abc", '#', "a-A-B-b-c-C", __LINE__, true, "a-A-B-b-c-#"),
     };
-    for(size_t i = 0; i < sizeof(modResults) / sizeof(SR); i++)
+    for (size_t i = 0; i < sizeof(modResults) / sizeof(SR); i++)
     {
         ASSERT_TRUE(modResults[i].correctResult());
     }
@@ -333,7 +329,7 @@ TEST_F(StringUtilTest, util_container_conversion_test)
     ASSERT_EQ(sSet.size(), 2UL);
 }
 
-template<typename T_>
+template <typename T_>
 void util_string_testT()
 {
     T_ trimstring = "";
@@ -478,11 +474,11 @@ void util_string_testT()
     trim(stripable, " _");
     ASSERT_EQ(stripable, "123.456/789-0ab/");
 
-    stripable = stripStr;  // " _ 123.456/789-0ab/_ _"
+    stripable = stripStr; // " _ 123.456/789-0ab/_ _"
     // ("replaceChar " << stripable << " chars \"_\" with '#'");
     replaceChar(stripable, "_", '#');
     ASSERT_EQ(stripable, " # 123.456/789-0ab/# #");
-    stripable = stripStr;  // " _ 123.456/789-0ab/_ _"
+    stripable = stripStr; // " _ 123.456/789-0ab/_ _"
     // ("replaceChar " << stripable << " chars \" _\" with '#'");
     replaceChar(stripable, "_ ", '#');
     ASSERT_EQ(stripable, "###123.456/789-0ab/###");
@@ -491,7 +487,7 @@ void util_string_testT()
     ASSERT_EQ(toUpper(T_("SoMeStRiNg")), T_("SOMESTRING"));
 }
 
-template<typename T_>
+template <typename T_>
 void util_string_left_right_testT()
 {
     T_ trimstring = "";
@@ -700,7 +696,7 @@ TEST_F(StringUtilTest, util_ci_string_test)
     ASSERT_NE(resultSet.find("b"), resultSet.end());
     ASSERT_NE(resultSet.find("c"), resultSet.end());
 
-    const ci_string stripStr  = "abCaaAxxxabcxxxcBA";
+    ci_string const stripStr  = "abCaaAxxxabcxxxcBA";
     ci_string       stripable = stripStr;
 
     // ("strip " << stripable << " of \"abc\"");

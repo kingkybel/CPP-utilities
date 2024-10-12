@@ -25,11 +25,8 @@
 
 #include "primes.h"
 
-#include <complex>
 #include <gtest/gtest.h>
-#include <initializer_list>
 #include <ios>
-#include <iostream>
 
 using namespace std;
 using namespace util;

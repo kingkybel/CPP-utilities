@@ -24,7 +24,6 @@
  */
 #include "threadutil.h"
 
-#include <cstdlib>
 #include <gtest/gtest.h>
 #include <iostream>
 #include <string>

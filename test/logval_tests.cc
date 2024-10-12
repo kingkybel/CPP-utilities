@@ -32,7 +32,6 @@
 #include <gtest/gtest.h>
 #include <iostream>
 #include <logvalue.h>
-#include <matrix.h>
 #include <random>
 #include <sstream>
 

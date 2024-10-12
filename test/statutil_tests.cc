@@ -23,20 +23,12 @@
  * @author: Dieter J Kybelksties
  */
 
-#include <boost/assign/std/vector.hpp>
-#include <boost/bind.hpp>
-#include <gtest/gtest.h>
-#define BOOST_NO_CXX11_SCOPED_ENUMS
-#include <boost/filesystem.hpp>
-#undef BOOST_NO_CXX11_SCOPED_ENUMS
 #include <anyutil.h>
-#include <bayesutil.h>
+#include <boost/assign/std/vector.hpp>
 #include <cmath>
-#include <cstdlib>
 #include <csvutil.h>
 #include <dateutil.h>
-#include <graphutil.h>
-#include <iostream>
+#include <gtest/gtest.h>
 #include <statutil.h>
 #include <string>
 #include <stringutil.h>
@@ -47,16 +39,15 @@ using namespace util::datescan;
 using namespace boost::posix_time;
 using namespace boost::gregorian;
 using namespace boost::assign;
-using namespace boost::filesystem;
 
-const string filename = "/tmp/test.csv";
+string const filename = "/tmp/test.csv";
 
 using namespace std;
 using namespace util;
 
 class StatUtilTest : public ::testing::Test
 {
-    protected:
+  protected:
     void SetUp() override
     {
         initDateFormats();
@@ -77,7 +68,7 @@ TEST_F(StatUtilTest, util_event_catenation_test)
     // "Two *IDENTICAL* EventLists of size 1");
     el1 = Event("E1", true);
     el2 = Event("E1", true);
-    ASSERT_FALSE((el1 < el2));
+    ASSERT_FALSE(el1 < el2);
     ASSERT_TRUE(Event("E1", true).notConflicting(Event("E1", true)));
     ASSERT_FALSE(Event("E1", true).notConflicting(Event("E1", false)));
     ASSERT_TRUE(Event("E1", true).notConflicting(Event("E2", true)));
@@ -87,7 +78,7 @@ TEST_F(StatUtilTest, util_event_catenation_test)
     el1 = Event("E1", true);
     el2 = Event("E1", true) && Event("E2", false);
     ASSERT_TRUE(el1 < el2);
-    ASSERT_FALSE((el2 < el1));
+    ASSERT_FALSE(el2 < el1);
     ASSERT_TRUE(el1.notConflicting(el1));
     ASSERT_TRUE(el2.notConflicting(el2));
     ASSERT_TRUE(el2.notConflicting(el1));
@@ -97,21 +88,21 @@ TEST_F(StatUtilTest, util_event_catenation_test)
     el1 = Event("E1", true) && Event("E2", false) && Event("E3", false) && Event("E4", false);
     el2 = Event("E1", true) && Event("E2", false) && Event("E3", true) && Event("E4", false);
     ASSERT_TRUE(el1 < el2);
-    ASSERT_FALSE((el2 < el1));
+    ASSERT_FALSE(el2 < el1);
     el1 = Event("E1", true) && Event("E2", false) && Event("E5", false) && Event("E4", false);
     el2 = Event("E1", true) && Event("E2", false) && Event("E3", true) && Event("E4", false);
     ASSERT_TRUE(el2 < el1);
-    ASSERT_FALSE((el1 < el2));
+    ASSERT_FALSE(el1 < el2);
 
     // "Two EventLists *IDENTICAL* to a certain size then different, different length");
     el1 = Event("E1", true) && Event("E2", false) && Event("E3", false) && Event("E4", false) && Event("E6", false);
     el2 = Event("E1", true) && Event("E2", false) && Event("E3", true) && Event("E4", false);
     ASSERT_TRUE(el1 < el2);
-    ASSERT_FALSE((el2 < el1));
+    ASSERT_FALSE(el2 < el1);
     el1 = Event("E1", true) && Event("E2", false) && Event("E5", false) && Event("E4", false);
     el2 = Event("E1", true) && Event("E2", false) && Event("E3", true) && Event("E4", false);
     ASSERT_TRUE(el2 < el1);
-    ASSERT_FALSE((el1 < el2));
+    ASSERT_FALSE(el1 < el2);
     ASSERT_TRUE(el1.notConflicting(el1));
     ASSERT_TRUE(el2.notConflicting(el2));
     ASSERT_TRUE(el2.notConflicting(el1));
@@ -167,10 +158,10 @@ TEST_F(StatUtilTest, util_condition_events_test)
 {
     // "Check CondEvents");
     Event           e;
-    EventCatenation el(e);  // empty event is not added so results in empty list
+    EventCatenation el(e); // empty event is not added so results in empty list
     ASSERT_TRUE(el.empty());
 
-    el = Event("SomeName", true);  // list is initialised with one element
+    el = Event("SomeName", true); // list is initialised with one element
     ASSERT_FALSE(el.empty());
     el&& Event("SomeMore", (VAR_FLOAT)3.14159365) && Event("EvenSomeMore", VAR_STRING("XXX"));
     ASSERT_FALSE(el.empty());
@@ -219,7 +210,7 @@ TEST_F(StatUtilTest, util_condition_event_manip_test)
     order.push_back("E4");
     order.push_back("E3");
     ce.chainRule(l, order);
-    for(CondEvent::CONDEVENT_LIST_CITER it = l.begin(); it != l.end(); it++)
+    for (CondEvent::CONDEVENT_LIST_CITER it = l.begin(); it != l.end(); it++)
     {
         ASSERT_EQ(it->eventSize(), 1UL);
     }
@@ -256,7 +247,7 @@ TEST_F(StatUtilTest, util_condition_event_manip_test)
 
     ce = Event("E1", true) && Event("E2", true) && Event("E3", true) && Event("E4", true);
     ce.chainRule(l, order);
-    for(CondEvent::CONDEVENT_LIST_CITER it = l.begin(); it != l.end(); it++)
+    for (CondEvent::CONDEVENT_LIST_CITER it = l.begin(); it != l.end(); it++)
     {
         ASSERT_EQ(it->eventSize(), 1UL);
     }
@@ -267,30 +258,30 @@ TEST_F(StatUtilTest, util_event_date_matcher_test)
     // "Two EventLists of size 1");
     // "match to interval");
     {
-        Event itv_20140203_20150203 = Event("E1", Interval<VAR_DATE>(toDate(2014, 2, 3), toDate(2015, 2, 3)));
-        ASSERT_TRUE(Event("E1", toDate(2014, 2, 3)).matches(itv_20140203_20150203));
-        ASSERT_TRUE(Event("E1", toDate(2015, 2, 3)).matches(itv_20140203_20150203));
-        ASSERT_TRUE(Event("E1", toDate(2014, 3, 3)).matches(itv_20140203_20150203));
-        ASSERT_FALSE(Event("E1", toDate(2014, 2, 2)).matches(itv_20140203_20150203));
-        ASSERT_FALSE(Event("E1", toDate(2015, 2, 4)).matches(itv_20140203_20150203));
+        Event itv_20140203_20150203 = Event("E1", Interval<VAR_DATE>(toDate(2'014, 2, 3), toDate(2'015, 2, 3)));
+        ASSERT_TRUE(Event("E1", toDate(2'014, 2, 3)).matches(itv_20140203_20150203));
+        ASSERT_TRUE(Event("E1", toDate(2'015, 2, 3)).matches(itv_20140203_20150203));
+        ASSERT_TRUE(Event("E1", toDate(2'014, 3, 3)).matches(itv_20140203_20150203));
+        ASSERT_FALSE(Event("E1", toDate(2'014, 2, 2)).matches(itv_20140203_20150203));
+        ASSERT_FALSE(Event("E1", toDate(2'015, 2, 4)).matches(itv_20140203_20150203));
     }
     {
         // comparator1 = [2014-02-03, oo)
 
-        Event itv_20140203_oo = Event("E1", Interval<VAR_DATE>(toDate(2014, 2, 3), {finiteMin}));
-        ASSERT_TRUE(Event("E1", toDate(2014, 2, 3)).matches(itv_20140203_oo));
-        ASSERT_TRUE(Event("E1", toDate(2015, 2, 3)).matches(itv_20140203_oo));
-        ASSERT_TRUE(Event("E1", toDate(2014, 3, 3)).matches(itv_20140203_oo));
-        ASSERT_FALSE(Event("E1", toDate(2014, 2, 2)).matches(itv_20140203_oo));  // outside the interval
-        ASSERT_TRUE(Event("E1", toDate(2015, 2, 2)).matches(itv_20140203_oo));
+        Event itv_20140203_oo = Event("E1", Interval<VAR_DATE>(toDate(2'014, 2, 3), {finiteMin}));
+        ASSERT_TRUE(Event("E1", toDate(2'014, 2, 3)).matches(itv_20140203_oo));
+        ASSERT_TRUE(Event("E1", toDate(2'015, 2, 3)).matches(itv_20140203_oo));
+        ASSERT_TRUE(Event("E1", toDate(2'014, 3, 3)).matches(itv_20140203_oo));
+        ASSERT_FALSE(Event("E1", toDate(2'014, 2, 2)).matches(itv_20140203_oo)); // outside the interval
+        ASSERT_TRUE(Event("E1", toDate(2'015, 2, 2)).matches(itv_20140203_oo));
     }
     {
-        Event itv_oo_20140203 = Event("E1", Interval<VAR_DATE>(toDate(2014, 2, 3), {infiniteMin, rightClosed}));
-        ASSERT_TRUE(Event("E1", toDate(2014, 2, 3)).matches(itv_oo_20140203));
-        ASSERT_FALSE(Event("E1", toDate(2015, 2, 3)).matches(itv_oo_20140203));
-        ASSERT_FALSE(Event("E1", toDate(2014, 3, 3)).matches(itv_oo_20140203));
-        ASSERT_TRUE(Event("E1", toDate(2014, 2, 2)).matches(itv_oo_20140203));
-        ASSERT_FALSE(Event("E1", toDate(2015, 2, 4)).matches(itv_oo_20140203));
+        Event itv_oo_20140203 = Event("E1", Interval<VAR_DATE>(toDate(2'014, 2, 3), {infiniteMin, rightClosed}));
+        ASSERT_TRUE(Event("E1", toDate(2'014, 2, 3)).matches(itv_oo_20140203));
+        ASSERT_FALSE(Event("E1", toDate(2'015, 2, 3)).matches(itv_oo_20140203));
+        ASSERT_FALSE(Event("E1", toDate(2'014, 3, 3)).matches(itv_oo_20140203));
+        ASSERT_TRUE(Event("E1", toDate(2'014, 2, 2)).matches(itv_oo_20140203));
+        ASSERT_FALSE(Event("E1", toDate(2'015, 2, 4)).matches(itv_oo_20140203));
     }
 }
 
@@ -344,7 +335,7 @@ TEST_F(StatUtilTest, util_event_POD_matcher_test)
     ASSERT_TRUE(Event("E5", VAR_STRING("dieter")).matches(comparator_ge));
     ASSERT_TRUE(Event("E5", VAR_STRING("freedom")).matches(comparator_ge));
     // are not greater or equal to "dieter": {"diet", "angry"}
-    ASSERT_FALSE(Event("E5", VAR_STRING("diet")).matches(comparator_ge));  // "diet" not >= "dieter"
+    ASSERT_FALSE(Event("E5", VAR_STRING("diet")).matches(comparator_ge)); // "diet" not >= "dieter"
     ASSERT_FALSE(Event("E5", VAR_STRING("angry")).matches(comparator_ge));
 }
 
@@ -353,34 +344,34 @@ TEST_F(StatUtilTest, util_eventlist_matcher_test)
     // "Two EventLists of equal size >1";
     // "match to interval";
 
-    EventCatenation el1;  // E1 in [2014-02-03..2015-02-03], E2 < 11 , E3 >= "dieter"
-    el1&&           Event("E1", Interval<VAR_DATE>(toDate(2014, 2, 3), toDate(2015, 2, 3)));
+    EventCatenation el1; // E1 in [2014-02-03..2015-02-03], E2 < 11 , E3 >= "dieter"
+    el1&&           Event("E1", Interval<VAR_DATE>(toDate(2'014, 2, 3), toDate(2'015, 2, 3)));
     el1&&           Event("E2", VAR_INT(11), &Event::less);
     el1&&           Event("E3", VAR_STRING("dieter"), &Event::greaterEqual);
 
     // match only if *ALL* events are matching
     EventCatenation el2;
-    el2 = Event("E1", toDate(2014, 2, 3));
+    el2 = Event("E1", toDate(2'014, 2, 3));
     el2&& Event("E2", VAR_INT(10));
     el2&& Event("E3", VAR_STRING("dieter"));
     ASSERT_TRUE(el2.matches(el1));
 
-    el2 = Event("E1", toDate(2015, 2, 3));
+    el2 = Event("E1", toDate(2'015, 2, 3));
     el2&& Event("E2", VAR_INT(-5));
     el2&& Event("E3", VAR_STRING("freedom"));
     ASSERT_TRUE(el2.matches(el1));
 
-    el2 = Event("E1", toDate(2013, 2, 3));
+    el2 = Event("E1", toDate(2'013, 2, 3));
     el2&& Event("E2", VAR_INT(-5));
     el2&& Event("E3", VAR_STRING("freedom"));
     ASSERT_FALSE(el2.matches(el1));
 
-    el2 = Event("E1", toDate(2014, 2, 3));
+    el2 = Event("E1", toDate(2'014, 2, 3));
     el2&& Event("E2", VAR_INT(23));
     el2&& Event("E3", VAR_STRING("freedom"));
     ASSERT_FALSE(el2.matches(el1));
 
-    el2 = Event("E1", toDate(2014, 2, 3));
+    el2 = Event("E1", toDate(2'014, 2, 3));
     el2&& Event("E2", VAR_INT(-5));
     el2&& Event("E3", VAR_STRING("angry"));
     ASSERT_TRUE(!el2.matches(el1));
@@ -489,7 +480,7 @@ TEST_F(StatUtilTest, util_continuous_stat_test)
     // "====== Testing continuous statistical functions ========");
     GaussFunction norm(0.0L, 1.0L);
     // probability P([mu-sigma, mu+sigma])
-    const long double p_m_var_prob = 0.682689492137L;
+    long double const p_m_var_prob = 0.682689492137L;
 
     VAR_FLOAT prob = norm.P(Event("E", Interval<long double>()));
     ASSERT_DOUBLE_EQ(prob, 1.0L);
@@ -514,9 +505,10 @@ TEST_F(StatUtilTest, util_continuous_stat_test)
 
     ASSERT_DOUBLE_EQ(norm.P(Event("E", Interval<long double>(norm.mu(), {infiniteMin}))), 0.5L);
 
-    ASSERT_LE(norm.P(Event("E", Interval<long double>(norm.mu() - norm.sigma(), norm.mu() + norm.sigma())))
-               - p_m_var_prob,
-              1E-10);
+    ASSERT_LE(
+        norm.P(Event("E", Interval<long double>(norm.mu() - norm.sigma(), norm.mu() + norm.sigma()))) - p_m_var_prob,
+        1E-10
+    );
 
     ExponentialFunction ed(1.0L);
     ASSERT_DOUBLE_EQ(ed.P(Event("E", Interval<long double>(0.0L))), 1.0L);

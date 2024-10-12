@@ -26,10 +26,7 @@
 #include "tinytea.h"
 
 #include <cmath>
-#include <cstdlib>
 #include <gtest/gtest.h>
-#include <iostream>
-#include <string>
 #include <stringutil.h>
 
 using namespace std;

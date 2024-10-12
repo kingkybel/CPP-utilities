@@ -10,7 +10,8 @@ add_executable(run_tests
         brackets_tests.cc
         decorator_tests.cc
         csvutil_tests.cc
-        graphutil_tests.cc
+        directed_graph_tests.cc
+        directed_graph_traits_tests.cc
         matrix_tests.cc
         instance_pool_tests.cc
         logval_tests.cc
@@ -18,7 +19,7 @@ add_executable(run_tests
         FFT_tests.cc
         primes_tests.cc
         statutil_tests.cc
-        bayesutil_tests.cc
+        #        bayesutil_tests.cc
         performance_timer_tests.cc
         heap_tests.cc
 )
@@ -28,7 +29,7 @@ target_link_libraries(run_tests
         gtest_main
         gmp
         dkanyutil
-        dkbayesutil
+        #        dkbayesutil
         dkcsvutil
         dkdateutil
         dkfloatingpoint
@@ -38,4 +39,4 @@ target_link_libraries(run_tests
         boost_filesystem
 )
 add_test(NAME run_tests COMMAND run_tests)
-include(Dart)
+

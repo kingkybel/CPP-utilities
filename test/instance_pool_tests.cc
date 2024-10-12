@@ -24,13 +24,11 @@
  */
 
 #include "instance_pool.h"
-#include "stringutil.h"
 // #define DO_TRACE_
 #include "traceutil.h"
 
 #include <gtest/gtest.h>
 #include <iostream>
-#include <sstream>
 #include <string>
 
 using namespace std;
