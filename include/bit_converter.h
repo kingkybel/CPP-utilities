@@ -54,7 +54,7 @@ union bit_converter
 
     /**
      * @brief Construct a new bit converter object.
-     * If T_ does not have a default constructor then parameter data has to be provided.
+     * If ValueT_ does not have a default constructor then parameter data has to be provided.
      *
      * @param data object to convert
      */

@@ -374,7 +374,7 @@ class Event
     [[nodiscard]] std::string name() const;
 
     /**
-     * @brief Retrieve the value as template-type T_.
+     * @brief Retrieve the value as template-type ValueT_.
      *
      * @return the native value
      */
@@ -385,10 +385,10 @@ class Event
     }
 
     /**
-     * @brief Retrieve the value as interval of template-type T_.
+     * @brief Retrieve the value as interval of template-type ValueT_.
      * If the value is indeed a single value, then return a single value interval.
      *
-     * @return the type-T_ - interval
+     * @return the type-ValueT_ - interval
      */
     template<typename T_>
     [[nodiscard]] Interval<T_> interval() const
@@ -630,8 +630,8 @@ class EventValueRange
 
     /**
      * @brief Add a range of values to the range.
-     * @param lowest lowest T_ value
-     * @param highest highest T_ value
+     * @param lowest lowest ValueT_ value
+     * @param highest highest ValueT_ value
      * true if all value of between lowest and highest were added, false
      *       otherwise
      */

@@ -44,7 +44,7 @@ namespace util
  * @tparam Value_ @tparam Value_  type of the value
  * @return true always, false never
  */
-template<typename Value_>
+template <typename Value_>
 struct true_pred
 {
     bool operator()(Value_)
@@ -61,7 +61,7 @@ struct true_pred
  * @param container the container to remove from
  * @param pred predicate to decide which elements to remove
  */
-template<typename Container, typename Predicate>
+template <typename Container, typename Predicate>
 void eraseRemove(Container &container, Predicate pred)
 {
     container.erase(std::remove_if(container.begin(), container.end(), pred), container.end());
@@ -78,13 +78,13 @@ void eraseRemove(Container &container, Predicate pred)
  * @param map2filter map-bject
  * @param pred key-predicate on which to filter
  */
-template<typename Key_, typename Value_, typename Compare_, typename Alloc_, typename KeyPred_>
+template <typename Key_, typename Value_, typename Compare_, typename Alloc_, typename KeyPred_>
 void eraseByKey(std::map<Key_, Value_, Compare_, Alloc_> &map2filter, KeyPred_ pred = true_pred<Key_>{})
 {
     auto it = map2filter.begin();
-    while(it != map2filter.end())
+    while (it != map2filter.end())
     {
-        if(pred(it->first))
+        if (pred(it->first))
         {
             it = map2filter.erase(it);
         }
@@ -108,13 +108,13 @@ void eraseByKey(std::map<Key_, Value_, Compare_, Alloc_> &map2filter, KeyPred_ p
  * @param map2filter map-bject
  * @param pred value-predicate on which to filter
  */
-template<typename Key_, typename Value_, typename Compare_, typename Alloc_, typename ValuePred_>
+template <typename Key_, typename Value_, typename Compare_, typename Alloc_, typename ValuePred_>
 void eraseByValue(std::map<Key_, Value_, Compare_, Alloc_> &map2filter, ValuePred_ pred = true_pred<Value_>{})
 {
     auto it = map2filter.begin();
-    while(it != map2filter.end())
+    while (it != map2filter.end())
     {
-        if(pred(it->second))
+        if (pred(it->second))
         {
             it = map2filter.erase(it);
         }
@@ -137,12 +137,12 @@ void eraseByValue(std::map<Key_, Value_, Compare_, Alloc_> &map2filter, ValuePre
  * @param destination destination vector
  * @param pred precicate object
  */
-template<typename Value_, typename Alloc_, typename Pred_ = true_pred<Value_>>
+template <typename Value_, typename Alloc_, typename Pred_ = true_pred<Value_>>
 void moveElementsTo(std::vector<Value_, Alloc_> &source, std::vector<Value_, Alloc_> &destination, Pred_ pred = Pred_{})
 {
-    for(auto it = source.begin(); it != source.end();)
+    for (auto it = source.begin(); it != source.end();)
     {
-        if(pred(*it))
+        if (pred(*it))
         {
             destination.push_back(*it);
             it = source.erase(it);
@@ -163,15 +163,17 @@ void moveElementsTo(std::vector<Value_, Alloc_> &source, std::vector<Value_, All
  * @param orderedSet  the ordered set to convert from
  * @return std::vector<Value_, Alloc_>  a vector with all the elements of the ordered set in the same order
  */
-template<typename Value_, typename Compare_, typename Alloc_>
-inline std::vector<Value_, Alloc_> toVector(const std::set<Value_, Compare_, Alloc_> &orderedSet)
+template <typename Value_, typename Compare_, typename Alloc_>
+inline std::vector<Value_, Alloc_> toVector(std::set<Value_, Compare_, Alloc_> const &orderedSet)
 {
     std::vector<Value_, Alloc_> reval;
 
-    if(!orderedSet.empty())
+    if (!orderedSet.empty())
+    {
         std::copy(orderedSet.begin(), orderedSet.end(), std::back_inserter(reval));
+    }
 
-    return (reval);
+    return reval;
 }
 
 /**
@@ -182,15 +184,17 @@ inline std::vector<Value_, Alloc_> toVector(const std::set<Value_, Compare_, All
  * @param que the deque to convert from
  * @return std::vector<Value_, Alloc_> a vector with all the elements of the deque in the same order
  */
-template<typename Value_, typename Alloc_>
-inline std::vector<Value_, Alloc_> toVector(const std::deque<Value_, Alloc_> &que)
+template <typename Value_, typename Alloc_>
+inline std::vector<Value_, Alloc_> toVector(std::deque<Value_, Alloc_> const &que)
 {
     std::vector<Value_, Alloc_> reval;
 
-    if(!que.empty())
+    if (!que.empty())
+    {
         std::copy(que.begin(), que.end(), std::back_inserter(reval));
+    }
 
-    return (reval);
+    return reval;
 }
 
 /**
@@ -201,15 +205,17 @@ inline std::vector<Value_, Alloc_> toVector(const std::deque<Value_, Alloc_> &qu
  * @param vec the vector to convert from
  * @return std::deque<Value_, Alloc_> a vector with all the elements of the deque in the same order
  */
-template<typename Value_, typename Alloc_>
-inline std::deque<Value_, Alloc_> toDeque(const std::vector<Value_, Alloc_> &vec)
+template <typename Value_, typename Alloc_>
+inline std::deque<Value_, Alloc_> toDeque(std::vector<Value_, Alloc_> const &vec)
 {
     std::deque<Value_, Alloc_> reval;
 
-    if(!vec.empty())
+    if (!vec.empty())
+    {
         std::copy(vec.begin(), vec.end(), std::back_inserter(reval));
+    }
 
-    return (reval);
+    return reval;
 }
 
 /**
@@ -220,18 +226,20 @@ inline std::deque<Value_, Alloc_> toDeque(const std::vector<Value_, Alloc_> &vec
  * @param vec the vector with comparable elements
  * @return std::set<Value_, std::less<Value_>, Alloc_>
  */
-template<typename Value_, typename Alloc_>
-inline std::set<Value_, std::less<Value_>, Alloc_> toSet(const std::vector<Value_, Alloc_> &vec)
+template <typename Value_, typename Alloc_>
+inline std::set<Value_, std::less<Value_>, Alloc_> toSet(std::vector<Value_, Alloc_> const &vec)
 {
-    static_assert(util::has_operator_less<Value_>::value, "Ordered set elements must be less-than comparable");
-    static_assert(util::has_operator_equal<Value_>::value, "Ordered set elements must be equal comparable");
+    static_assert(util::is_less_comparable_v<Value_>, "Ordered set elements must be less-than comparable");
+    static_assert(util::is_equality_comparable_v<Value_>, "Ordered set elements must be equal comparable");
 
     std::set<Value_, std::less<Value_>, Alloc_> reval;
 
-    if(!vec.empty())
+    if (!vec.empty())
+    {
         std::copy(vec.begin(), vec.end(), std::inserter(reval, reval.begin()));
+    }
 
-    return (reval);
+    return reval;
 }
 
 /**
@@ -244,18 +252,20 @@ inline std::set<Value_, std::less<Value_>, Alloc_> toSet(const std::vector<Value
  * @param uSet the unordered set of comparable elements to convert from
  * @return std::set<Value_, std::less<Value_>, Alloc_> a set of all unique elements of the vector
  */
-template<typename Value_, typename Hash_, typename Pred_, typename Alloc_>
-inline std::set<Value_, std::less<Value_>, Alloc_> toSet(const std::unordered_set<Value_, Hash_, Pred_, Alloc_> &uSet)
+template <typename Value_, typename Hash_, typename Pred_, typename Alloc_>
+inline std::set<Value_, std::less<Value_>, Alloc_> toSet(std::unordered_set<Value_, Hash_, Pred_, Alloc_> const &uSet)
 {
-    static_assert(util::has_operator_less<Value_>::value, "Ordered set elements must be less-than comparable");
-    static_assert(util::has_operator_equal<Value_>::value, "Ordered set elements must be equal comparable");
+    static_assert(util::is_less_comparable_v<Value_>, "Ordered set elements must be less-than comparable");
+    static_assert(util::is_equality_comparable_v<Value_>, "Ordered set elements must be equal comparable");
 
     std::set<Value_, std::less<Value_>, Alloc_> reval;
 
-    if(!uSet.empty())
+    if (!uSet.empty())
+    {
         std::copy(uSet.begin(), uSet.end(), std::inserter(reval, reval.begin()));
+    }
 
-    return (reval);
+    return reval;
 }
 
 /**
@@ -269,20 +279,24 @@ inline std::set<Value_, std::less<Value_>, Alloc_> toSet(const std::unordered_se
  * @param uMap the unordered set of comparable elements to convert from
  * @return std::map<Key_, Value_, std::less<Key_>, Alloc_> an ordered key/value map
  */
-template<typename Key_, typename Value_, typename Hash_, typename Pred_, typename Alloc_>
+template <typename Key_, typename Value_, typename Hash_, typename Pred_, typename Alloc_>
 inline std::map<Key_, Value_, std::less<Key_>, Alloc_>
- toMap(const std::unordered_map<Key_, Value_, Hash_, Pred_, Alloc_> &uMap)
+    toMap(std::unordered_map<Key_, Value_, Hash_, Pred_, Alloc_> const &uMap)
 {
-    static_assert(util::has_operator_less<Key_>::value, "Ordered map keys must be less-than comparable");
-    static_assert(util::has_operator_equal<Key_>::value, "Ordered map keys must be equal comparable");
+    static_assert(util::is_less_comparable_v<Key_>, "Ordered map keys must be less-than comparable");
+    static_assert(util::is_equality_comparable_v<Key_>, "Ordered map keys must be equal comparable");
 
     std::map<Key_, Value_, std::less<Key_>, Alloc_> reval;
 
-    if(!uMap.empty())
-        for(const auto &kv: uMap)
+    if (!uMap.empty())
+    {
+        for (auto const &kv: uMap)
+        {
             reval[kv.first] = kv.second;
+        }
+    }
 
-    return (reval);
+    return reval;
 }
 
 /**
@@ -298,26 +312,31 @@ inline std::map<Key_, Value_, std::less<Key_>, Alloc_>
  * @param uMap the unordered set of comparable elements to convert from
  * @return std::set<Key_, std::less<Key_>, Alloc_> an ordered set of all keys of the unordered map
  */
-template<typename Key_,
-         typename Value_,
-         typename Hash_,
-         typename Pred_,
-         typename Alloc_,
-         typename AllocRet_ = std::allocator<Key_>>
+template <
+    typename Key_,
+    typename Value_,
+    typename Hash_,
+    typename Pred_,
+    typename Alloc_,
+    typename AllocRet_ = std::allocator<Key_>>
 inline std::set<Key_, std::less<Key_>, AllocRet_>
- toOrderedKeySet(const std::unordered_map<Key_, Value_, Hash_, Pred_, Alloc_> &uMap)
+    toOrderedKeySet(std::unordered_map<Key_, Value_, Hash_, Pred_, Alloc_> const &uMap)
 {
-    static_assert(util::has_operator_less<Key_>::value, "Ordered set elements need to be less-than comparable");
-    static_assert(util::has_operator_equal<Key_>::value, "Ordered set elements keys need to be equal comparable");
+    static_assert(util::is_less_comparable_v<Key_>, "Ordered set elements need to be less-than comparable");
+    static_assert(util::is_equality_comparable_v<Key_>, "Ordered set elements keys need to be equal comparable");
 
     std::set<Key_, std::less<Key_>, AllocRet_> reval;
 
-    if(!uMap.empty())
-        for(const auto &kv: uMap)
+    if (!uMap.empty())
+    {
+        for (auto const &kv: uMap)
+        {
             reval.insert(kv.first);
+        }
+    }
 
-    return (reval);
+    return reval;
 }
-};  // namepace util
+}; // namespace util
 
-#endif  // CONTAINER_CONVERT_H_INCLUDED
+#endif // CONTAINER_CONVERT_H_INCLUDED

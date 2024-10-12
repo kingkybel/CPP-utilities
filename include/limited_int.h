@@ -177,7 +177,7 @@ struct convert_scale
      * @param min_ new minimum
      * @param max_ new maximum
      * @param rhs limited_int value to convert
-     * @return T_ the converted value
+     * @return ValueT_ the converted value
      */
     template<typename T_, typename LimitedInt2_>
     static T_ convertFrom(T_ min_, T_ max_, const LimitedInt2_ &rhs)
@@ -208,7 +208,7 @@ struct convert_circular_scale
      * @param min_ new minimum
      * @param max_ new maximum
      * @param rhs limited_int value to convert
-     * @return T_ the converted value
+     * @return ValueT_ the converted value
      */
     template<typename T_, typename LimitedInt2_>
     static T_ convertFrom(T_ min_, T_ max_, const LimitedInt2_ &rhs)

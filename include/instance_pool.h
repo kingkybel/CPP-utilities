@@ -40,7 +40,7 @@ namespace util
 {
 // create a trait with which we can check, that a derived class has
 // a "static bool fill()" method
-DEFINE_HAS_STATIC_MEMBER(has_static_bool_fill, T::fill, bool (*)(void));
+DEFINE_HAS_STATIC_MEMBER_FUNCTION(has_static_bool_fill, T::fill, bool (*)(void));
 
 /**
  * @brief A class to contain a number of instances.
@@ -148,7 +148,7 @@ struct InstancePool
         // maxInstances elements
 
         static_assert(has_static_bool_fill<T_>::value,
-                      "InstancePool<T_> derived class needs static member 'bool fill()");
+                      "InstancePool<ValueT_> derived class needs static member 'bool fill()");
 
         [[maybe_unused]] static bool isFilled = T_::fill();
         // static size_t index    = avail_.size() - 1;

@@ -178,7 +178,7 @@ inline bool withinTolerance(VAR_FLOAT v1, VAR_FLOAT v2, VAR_FLOAT tolerance = 1e
 /**
  * @brief Minimal (range) value for allowable Var-types.
  *
- * @return the minimal value for the template type T_
+ * @return the minimal value for the template type ValueT_
  */
 template<typename T_>
 inline T_ minVal()
@@ -189,7 +189,7 @@ inline T_ minVal()
 /**
  * @brief Maximal (range) value for allowable Var-types.
  *
- * @return the maximal value for the template type T_
+ * @return the maximal value for the template type ValueT_
  */
 template<typename T_>
 inline T_ maxVal()
@@ -506,7 +506,7 @@ struct Interval : public IntervalType
      * right/left Open/Closed flags can be added. Any inconsistencies are made
      * consistent
      * @param v the value at the finite side, if it defaults to the minimal
-     *          value for the parameter type T_, then the interval will be
+     *          value for the parameter type ValueT_, then the interval will be
      *          the entire domain (-oo..+oo)
      * @param l should contain at least one of the tags
      * <ul>
@@ -630,7 +630,7 @@ struct Interval : public IntervalType
     /**
      * @brief Get the left of the interval
      *
-     * @return T_ the lower bound
+     * @return ValueT_ the lower bound
      */
     [[nodiscard]] T_ left() const
     {
@@ -640,7 +640,7 @@ struct Interval : public IntervalType
     /**
      * @brief Get the right of the interval
      *
-     * @return T_  the upper bound
+     * @return ValueT_  the upper bound
      */
     [[nodiscard]] T_ right() const
     {
@@ -760,7 +760,7 @@ class Var
     Var(const VAR_DATE &v);   ///< Construct date variant.
 
     /**
-     * @brief Construct a new T_-type interval Var object
+     * @brief Construct a new ValueT_-type interval Var object
      *
      * @tparam T_ underlying value type of the interval
      * @param itvl an interval
@@ -780,11 +780,11 @@ class Var
     [[nodiscard]] std::any              value() const;   ///< get the contained values as std::any.
 
     /**
-     * @brief Check whether the value has the native type T_.
+     * @brief Check whether the value has the native type ValueT_.
      *
      * @tparam T_ template type
      * @param v value
-     * @return true, if the typeid of the value matches the typeid of the T_, false otherwise
+     * @return true, if the typeid of the value matches the typeid of the ValueT_, false otherwise
      */
     template<typename T_>
     friend bool isA(const Var &v)
@@ -796,8 +796,8 @@ class Var
      * @brief Retrieve the contained value
      *
      * @tparam T_ the type of the contained value
-     * @return T_ the contained value, if possible
-     * @throw if the underlying value cannot be cast to T_
+     * @return ValueT_ the contained value, if possible
+     * @throw if the underlying value cannot be cast to ValueT_
      */
     template<typename T_>
     [[nodiscard]] T_ get() const
@@ -816,7 +816,7 @@ class Var
      * @tparam T_ a native type
      * @param v1 first value
      * @param v2 second value
-     * @return true, is v1 and v2 have the same type T_, false otherwise
+     * @return true, is v1 and v2 have the same type ValueT_, false otherwise
      */
     template<typename T_>
     friend bool sameType(const Var &v1, const Var &v2)

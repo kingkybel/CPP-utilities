@@ -36,55 +36,70 @@
 
 namespace util
 {
-template<typename T, typename EqualTo>
-struct has_operator_equal_impl
-{
-    template<typename U, typename V>
-    static auto test(U*) -> decltype(std::declval<U>() == std::declval<V>());
-    template<typename, typename>
-    static auto test(...) -> std::false_type;
-
-    using type = typename std::is_same<bool, decltype(test<T, EqualTo>(0))>::type;
-};
-
-template<typename T, typename LessThan>
-struct has_operator_less_impl
-{
-    template<typename U, typename V>
-    static auto test(U*) -> decltype(std::declval<U>() < std::declval<V>());
-    template<typename, typename>
-    static auto test(...) -> std::false_type;
-
-    using type = typename std::is_same<bool, decltype(test<T, LessThan>(0))>::type;
-};
-
-template<typename T, typename EqualTo = T>
-struct has_operator_equal : has_operator_equal_impl<T, EqualTo>::type
+// Helper for equality comparability
+template <typename T, typename EqualTo, typename = void>
+struct is_equality_comparable : std::false_type
 {
 };
 
-template<typename T, typename LessThan = T>
-struct has_operator_less : has_operator_less_impl<T, LessThan>::type
+// Specialization when decltype(std::declval<U>() == std::declval<V>()) is valid and returns bool
+template <typename T, typename EqualTo>
+struct is_equality_comparable<T, EqualTo, std::void_t<decltype(std::declval<T>() == std::declval<EqualTo>())>>
+    : std::is_same<bool, decltype(std::declval<T>() == std::declval<EqualTo>())>
 {
 };
 
-template<typename>
+// Public trait for equality comparability
+template <typename T, typename EqualTo = T>
+using is_equality_comparable_t = is_equality_comparable<T, EqualTo>::type;
+
+// Public trait for equality comparability
+template <typename T, typename EqualTo = T>
+bool constexpr is_equality_comparable_v = is_equality_comparable<T, EqualTo>::value;
+
+// Helper for less-than comparability
+template <typename T, typename LessThan, typename = void>
+struct is_less_comparable : std::false_type
+{
+};
+
+// Specialization when decltype(std::declval<U>() < std::declval<V>()) is valid and returns bool
+template <typename T, typename LessThan>
+struct is_less_comparable<T, LessThan, std::void_t<decltype(std::declval<T>() < std::declval<LessThan>())>>
+    : std::is_same<bool, decltype(std::declval<T>() < std::declval<LessThan>())>
+{
+};
+
+// Public trait for less-than comparability
+template <typename T, typename LessThan = T>
+using is_less_comparable_t = is_less_comparable<T, LessThan>::type;
+
+template <typename T, typename LessThan = T>
+bool constexpr is_less_comparable_v = is_less_comparable<T, LessThan>::value;
+
+template <typename>
 struct is_tuple : std::false_type
 {
 };
 
-template<typename... T>
+template <typename... T>
 struct is_tuple<std::tuple<T...>> : std::true_type
 {
 };
 
-template<size_t N, typename T, typename... types>
+template <typename... T>
+using is_tuple_t = is_tuple<std::tuple<T...>>::type;
+
+template <typename... T>
+bool constexpr is_tuple_v = is_tuple<std::tuple<T...>>::value;
+
+template <size_t N, typename T, typename... types>
 struct get_Nth_type
 {
     using type = typename get_Nth_type<N - 1, types...>::type;
 };
 
-template<typename T, typename... types>
+template <typename T, typename... types>
 struct get_Nth_type<0, T, types...>
 {
     using type = T;
@@ -93,7 +108,7 @@ struct get_Nth_type<0, T, types...>
 /**
  * @brief Trait to identify custom character types. Default is false.
  */
-template<typename>
+template <typename>
 struct is_char : std::false_type
 {
 };
@@ -101,7 +116,7 @@ struct is_char : std::false_type
 /**
  * @brief Trait to identify custom character types. Specialization for "char" true.
  */
-template<>
+template <>
 struct is_char<char> : std::true_type
 {
 };
@@ -109,7 +124,7 @@ struct is_char<char> : std::true_type
 /**
  * @brief Trait to identify custom character types. Specialization for "wchar_t" true.
  */
-template<>
+template <>
 struct is_char<wchar_t> : std::true_type
 {
 };
@@ -117,7 +132,7 @@ struct is_char<wchar_t> : std::true_type
 /**
  * @brief Trait to identify custom character types. Specialization for "char16_t" true.
  */
-template<>
+template <>
 struct is_char<char16_t> : std::true_type
 {
 };
@@ -125,15 +140,21 @@ struct is_char<char16_t> : std::true_type
 /**
  * @brief Trait to identify custom character types. Specialization for "char32_t" true.
  */
-template<>
+template <>
 struct is_char<char32_t> : std::true_type
 {
 };
 
+template <typename T>
+using is_char_t = is_char<T>::type;
+
+template <typename T>
+bool constexpr is_char_v = is_char<T>::value;
+
 /**
  * @brief Trait to identify std-string types. Default is false.
  */
-template<typename>
+template <typename>
 struct is_std_string : std::false_type
 {
     using char_type = void;
@@ -142,11 +163,17 @@ struct is_std_string : std::false_type
 /**
  * @brief Trait to identify std-string types. Specialization for "std::basic_string" is true.
  */
-template<typename CharT, typename Traits, typename Alloc>
+template <typename CharT, typename Traits, typename Alloc>
 struct is_std_string<std::basic_string<CharT, Traits, Alloc>> : std::true_type
 {
     using char_type = CharT;
 };
+
+template <typename CharT, typename Traits, typename Alloc>
+using is_std_string_t = is_std_string<std::basic_string<CharT, Traits, Alloc>>::type;
+
+template <typename CharT, typename Traits, typename Alloc>
+bool constexpr is_std_string_v = is_std_string<std::basic_string<CharT, Traits, Alloc>>::value;
 
 /**
  * @brief Convert a char to a different char type
@@ -156,10 +183,11 @@ struct is_std_string<std::basic_string<CharT, Traits, Alloc>> : std::true_type
  * @param c the char to convert
  * @return constexpr CharTto_ the converted char
  */
-template<typename CharTto_,
-         typename CharTfrom_,
-         typename std::enable_if<util::is_char<CharTto_>::value>::type*   = nullptr,
-         typename std::enable_if<util::is_char<CharTfrom_>::value>::type* = nullptr>
+template <
+    typename CharTto_,
+    typename CharTfrom_,
+    typename std::enable_if<util::is_char<CharTto_>::value>::type*   = nullptr,
+    typename std::enable_if<util::is_char<CharTfrom_>::value>::type* = nullptr>
 constexpr CharTto_ charToChar(CharTfrom_ c)
 {
     return static_cast<CharTto_>(c);
@@ -168,7 +196,7 @@ constexpr CharTto_ charToChar(CharTfrom_ c)
 /**
  * @brief Trait to identify std-string-view types. Default is false.
  */
-template<typename U>
+template <typename U>
 struct is_std_string_view : std::false_type
 {
     using char_type = void;
@@ -177,16 +205,22 @@ struct is_std_string_view : std::false_type
 /**
  * @brief Trait to identify std-string types. Specialization for "std::basic_string_view" is true.
  */
-template<typename CharT, typename Traits>
+template <typename CharT, typename Traits>
 struct is_std_string_view<std::basic_string_view<CharT, Traits>> : std::true_type
 {
     using char_type = CharT;
 };
 
+template <typename CharT, typename Traits>
+using is_std_string_view_t = is_std_string_view<std::basic_string_view<CharT, Traits>>::type;
+
+template <typename CharT, typename Traits>
+bool constexpr is_std_string_view_v = is_std_string_view<std::basic_string_view<CharT, Traits>>::value;
+
 /**
  * @brief Trait to identify character pointer types. Default is false.
  */
-template<typename U>
+template <typename U>
 struct is_char_pointer : std::false_type
 {
     using char_type = void;
@@ -195,7 +229,7 @@ struct is_char_pointer : std::false_type
 /**
  * @brief Trait to identify character pointer types. Specialization for "CharT*" is true, if CharT is a character.
  */
-template<typename CharT>
+template <typename CharT>
 struct is_char_pointer<CharT*>
 {
     static constexpr bool                                       value = is_char<CharT>::value;
@@ -205,8 +239,8 @@ struct is_char_pointer<CharT*>
 /**
  * @brief Trait to identify character pointer types. Specialization for "const CharT*" is true, if CharT is a character.
  */
-template<typename CharT>
-struct is_char_pointer<const CharT*>
+template <typename CharT>
+struct is_char_pointer<CharT const*>
 {
     static constexpr bool                                       value = is_char<CharT>::value;
     typedef typename std::conditional<value, CharT, void>::type char_type;
@@ -216,17 +250,23 @@ struct is_char_pointer<const CharT*>
  * @brief Trait to identify character pointer types. Specialization for "const CharT* const" is true, if CharT is a
  * character.
  */
-template<typename CharT>
-struct is_char_pointer<const CharT* const>
+template <typename CharT>
+struct is_char_pointer<CharT const* const>
 {
     static constexpr bool                                       value = is_char<CharT>::value;
     typedef typename std::conditional<value, CharT, void>::type char_type;
 };
 
+template <typename CharT>
+using is_char_pointer_t = is_char_pointer<CharT>::type;
+
+template <typename CharT>
+bool constexpr is_char_pointer_v = is_char_pointer<CharT>::value;
+
 /**
  * @brief Trait to identify character array types. Default is false.
  */
-template<typename U>
+template <typename U>
 struct is_char_array : std::false_type
 {
     using char_type = void;
@@ -235,7 +275,7 @@ struct is_char_array : std::false_type
 /**
  * @brief Trait to identify character array types. Specialization for "CharT[]" is true, if CharT is a character.
  */
-template<typename CharT>
+template <typename CharT>
 struct is_char_array<CharT[]>
 {
     static constexpr bool                                       value = is_char<CharT>::value;
@@ -245,7 +285,7 @@ struct is_char_array<CharT[]>
 /**
  * @brief Trait to identify character array types. Specialization for "CharT[sz]" is true, if CharT is a character.
  */
-template<typename CharT, size_t sz>
+template <typename CharT, size_t sz>
 struct is_char_array<CharT[sz]>
 {
     static constexpr bool                                       value = is_char<CharT>::value;
@@ -255,8 +295,8 @@ struct is_char_array<CharT[sz]>
 /**
  * @brief Trait to identify character array types. Specialization for "const CharT[]" is true, if CharT is a character.
  */
-template<typename CharT>
-struct is_char_array<const CharT[]>
+template <typename CharT>
+struct is_char_array<CharT const[]>
 {
     static constexpr bool                                       value = is_char<CharT>::value;
     typedef typename std::conditional<value, CharT, void>::type char_type;
@@ -266,19 +306,25 @@ struct is_char_array<const CharT[]>
  * @brief Trait to identify character array types. Specialization for "const CharT[sz]" is true, if CharT is a
  * character.
  */
-template<typename CharT, size_t sz>
-struct is_char_array<const CharT[sz]>
+template <typename CharT, size_t sz>
+struct is_char_array<CharT const[sz]>
 {
     static constexpr bool                                       value = is_char<CharT>::value;
     typedef typename std::conditional<value, CharT, void>::type char_type;
 };
 
+template <typename CharT>
+using is_char_array_t = is_char_array<CharT>::type;
+
+template <typename CharT>
+bool constexpr is_char_array_v = is_char_array<CharT>::value;
+
 /**
  * @brief Trait to identify "logical strings": char* char-arrays, string_views and strings.
  *
- * @tparam T tyep to check
+ * @tparam T type to check
  */
-template<typename T>
+template <typename T>
 struct is_string
 {
     // Check for custom string-like types
@@ -330,7 +376,7 @@ struct is_string
 // {
 // };
 
-template<typename StringT1_, typename StringT2_>
+template <typename StringT1_, typename StringT2_>
 struct is_compatible_string
 {
     static constexpr bool                            is_string_1_v = is_string<StringT1_>::value;
@@ -343,7 +389,7 @@ struct is_compatible_string
     typedef typename std::conditional<value, char_type_1, void>::type type;
 };
 
-template<typename StringT_, typename StringOrCharT_>
+template <typename StringT_, typename StringOrCharT_>
 struct has_std_string_compatible_char
 {
     // clang-format off
@@ -359,34 +405,54 @@ struct has_std_string_compatible_char
     // clang-format on
 };
 
-template<typename T>
+template <typename T>
 typename std::enable_if<util::is_std_string<T>::value || util::is_std_string_view<T>::value, size_t>::type
- string_or_char_size(const T& str)
+    string_or_char_size(T const& str)
 {
     return str.size();
 }
 
-template<typename T>
+template <typename T>
 typename std::enable_if<util::is_char_pointer<T>::value || util::is_char_array<T>::value, size_t>::type
- string_or_char_size(const T& str)
+    string_or_char_size(T const& str)
 {
     typedef typename util::is_string<T>::char_type char_type;
     return std::char_traits<char_type>::length(str);
 }
 
-template<typename T>
-typename std::enable_if<util::is_char<T>::value, size_t>::type string_or_char_size(const T& str)
+template <typename T>
+typename std::enable_if<util::is_char<T>::value, size_t>::type string_or_char_size(T const& str)
 {
     return 1UL;
 }
 
-template<typename T>
+template <typename T>
 typename std::enable_if<!util::is_string<T>::value && !util::is_char<T>::value, size_t>::type
- string_or_char_size(const T& /* str */)
+    string_or_char_size(T const& /* str */)
 {
     return 0UL;
 }
 
-};  //  namespace util
+// Primary template to check if std::hash<Type> exists and is callable with const Type&
+template <typename Type, typename = void>
+struct has_std_hash : std::false_type
+{
+};
 
-#endif  // TRAITS_H_INCLUDED
+// Specialization for when std::hash<Type> is well-formed and callable
+template <typename Type>
+struct has_std_hash<Type, std::void_t<decltype(std::declval<std::hash<Type>>()(std::declval<Type const&>()))>>
+    : std::is_same<decltype(std::declval<std::hash<Type>>()(std::declval<Type const&>())), size_t>
+{
+};
+
+template <typename Type>
+using has_std_hash_t = has_std_hash<Type>::type;
+
+// Helper variable template (for C++14 and above)
+template <typename Type>
+constexpr bool has_std_hash_v = has_std_hash<Type>::value;
+
+}; //  namespace util
+
+#endif // TRAITS_H_INCLUDED

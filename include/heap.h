@@ -116,7 +116,7 @@ class heap
     /**
      * @brief Get the top element
      *
-     * @return T_* const pointer to the top element, nullpt if heap is empty
+     * @return ValueT_* const pointer to the top element, nullpt if heap is empty
      */
     T_ *const top()
     {
@@ -173,7 +173,7 @@ class heap
      * @brief Selection of an element within the heap
      *
      * @param index index of the element
-     * @return T_ the element at the index
+     * @return ValueT_ the element at the index
      */
     T_ operator[](size_t index) const
     {
@@ -244,7 +244,7 @@ class std_heap
     /**
      * @brief Get the top element
      *
-     * @return T_* const pointer to the top element, nullpt if heap is empty
+     * @return ValueT_* const pointer to the top element, nullpt if heap is empty
      */
     T_ *const top()
     {
@@ -296,7 +296,7 @@ class std_heap
      * @brief Selection of an element within the heap
      *
      * @param index index of the element
-     * @return T_ the element at the index
+     * @return ValueT_ the element at the index
      */
     T_ operator[](size_t index) const
     {

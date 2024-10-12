@@ -405,7 +405,7 @@ class CSVAnalyzer
      * @tparam T_ type of the value
      * @param column column of the
      * @param line line of the value
-     * @return T_ the value
+     * @return ValueT_ the value
      */
     template<typename T_>
     T_ get(size_t column, size_t line) const
@@ -429,7 +429,7 @@ class CSVAnalyzer
      * @tparam T_ type of the value
      * @param header column of the value identified by the header-string
      * @param line line of the value
-     * @return T_ the value
+     * @return ValueT_ the value
      */
     template<typename T_>
     T_ get(const std::string &header, size_t line) const
