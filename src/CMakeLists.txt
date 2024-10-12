@@ -1,5 +1,5 @@
 add_library(dkanyutil STATIC anyutil.cc)
-add_library(dkbayesutil STATIC bayesutil.cc)
+#add_library(dkbayesutil STATIC bayesutil.cc)
 add_library(dkcsvutil STATIC csvutil.cc)
 add_library(dkdateutil STATIC dateutil.cc)
 add_library(dkfloatingpoint STATIC floatingpoint.cc)
