@@ -22,6 +22,19 @@ jobs:
     steps:
     - uses: actions/checkout@v4
 
+    - name: Install gtest manually
+      run: |
+        sudo apt-get install libgtest-dev
+        cd /usr/src/gtest
+        sudo cmake CMakeLists.txt
+        sudo make
+        sudo cp lib/*.a /usr/lib
+        sudo ln -s /usr/lib/libgtest.a /usr/local/lib/libgtest.a
+        sudo ln -s /usr/lib/libgtest_main.a /usr/local/lib/libgtest_main.a
+
+    - name: nstall MPFR
+      run: sudo apt-get install libmpfr-dev libmpfr-doc
+      
     - name: Build Boost
       id: boost
       uses: egor-tensin/build-boost@v1
@@ -30,7 +43,6 @@ jobs:
         libraries: filesystem program_options system
         platform: x64
         configuration: Release
-        directory: /usr
     - name: Show paths
       run: |
         printf 'Boost has been unpacked to: %s\n' '${{ steps.boost.outputs.root }}'
@@ -42,6 +54,8 @@ jobs:
       with:
         path: '${{ runner.workspace }}/boost_*.tar.gz'
         key: 'boost-1.86.0'
+
+
     
     - name: Build Boost
       # This won't re-download the archive unnecessarily:
