@@ -24,6 +24,8 @@
  */
 
 #include "threadutil.h"
+
+#include <utility>
 // #define DO_TRACE_
 #include "traceutil.h"
 
@@ -31,16 +33,16 @@ namespace util
 {
 
 PriorityThread::PriorityThread(uint64_t id, uint64_t priority, std::shared_ptr<ThreadFuncBase> pThreadFunc)
-: id_(id)
-, priority_(priority)
-, arrival_time_(std::chrono::steady_clock::now())
-, pThreadFunc_(pThreadFunc)
+    : id_(id)
+    , priority_(priority)
+    , arrival_time_(std::chrono::steady_clock::now())
+    , pThreadFunc_(std::move(pThreadFunc))
 {
 }
 
-ThreadScheduler::ThreadScheduler(const auto& priority_intervals, uint64_t pool_size)
-: priority_intervals_(priority_intervals)
-, pool_size_(pool_size)
+ThreadScheduler::ThreadScheduler(auto const& priority_intervals, uint64_t pool_size)
+    : priority_intervals_(priority_intervals)
+    , pool_size_(pool_size)
 {
     queue_processor_thread_ = processQueue();
 }
@@ -63,7 +65,7 @@ void ThreadScheduler::processQueueThread()
 {
     std::vector<std::thread> thread_pool;
 
-    while(true)
+    while (true)
     {
         std::unique_lock<std::mutex> processQueueLock{mutex_};
 
@@ -71,13 +73,13 @@ void ThreadScheduler::processQueueThread()
         cv_.wait(processQueueLock, [this] { return !priority_thread_queue_.empty() || terminate_; });
 
         // Check for termination
-        if(terminate_)
+        if (terminate_)
         {
             break;
         }
 
         // Fill the thread pool
-        while(thread_pool.size() < pool_size_ && !priority_thread_queue_.empty())
+        while (thread_pool.size() < pool_size_ && !priority_thread_queue_.empty())
         {
             auto priority_thread = priority_thread_queue_.top();
 
@@ -87,9 +89,9 @@ void ThreadScheduler::processQueueThread()
         }
 
         // Check if any threads in the pool have finished
-        for(auto it = thread_pool.begin(); it != thread_pool.end();)
+        for (auto it = thread_pool.begin(); it != thread_pool.end();)
         {
-            if(it->joinable())
+            if (it->joinable())
             {
                 it->join();
                 it = thread_pool.erase(it);
@@ -102,9 +104,9 @@ void ThreadScheduler::processQueueThread()
     }
 
     // Wait for all remaining threads in the pool to finish
-    for(auto& thread: thread_pool)
+    for (auto& thread: thread_pool)
     {
-        if(thread.joinable())
+        if (thread.joinable())
         {
             thread.join();
         }
@@ -117,4 +119,4 @@ std::thread ThreadScheduler::processQueue()
     return queueProcessorThread;
 }
 
-};  // namespace util
+}; // namespace util

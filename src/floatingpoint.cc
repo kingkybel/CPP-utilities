@@ -40,81 +40,91 @@
 namespace util
 {
 using namespace std;
-decimal_record::decimal_record(enum fp_class_type fpclass_,
-                               int                sign_,
-                               int                exponent_,
-                               const std::string  ds_,
-                               int                more_,
-                               int                ndigits_)
-: fpclass(fpclass_)
-, sign(sign_)
-, exponent(exponent_)
-, more(more_)
-, ndigits(ndigits_)
+
+decimal_record::decimal_record(
+    enum fp_class_type fpclass_,
+    int                sign_,
+    int                exponent_,
+    std::string const &ds_,
+    int                more_,
+    int                ndigits_
+)
+    : fpclass(fpclass_)
+    , sign(sign_)
+    , exponent(exponent_)
+    , more(more_)
+    , ndigits(ndigits_)
 {
     memset(ds, 0, DECIMAL_STRING_LENGTH);
     strcpy(ds, ds_.c_str());
 }
 
-static const unsigned int defaultNumberOfBits = 128;
-bool                      operator==(const decimal_record &lhs, const decimal_record &rhs)
+static unsigned int const defaultNumberOfBits = 128;
+
+bool operator==(decimal_record const &lhs, decimal_record const &rhs)
 {
-    return ((lhs.exponent == rhs.exponent) && (lhs.fpclass == rhs.fpclass) && (lhs.more == rhs.more)
-            && (lhs.ndigits == rhs.ndigits) && (lhs.sign == rhs.sign) && (!strcmp(lhs.ds, rhs.ds)));
+    return (lhs.exponent == rhs.exponent) && (lhs.fpclass == rhs.fpclass) && (lhs.more == rhs.more) &&
+           (lhs.ndigits == rhs.ndigits) && (lhs.sign == rhs.sign) && (!strcmp(lhs.ds, rhs.ds));
 }
-ostream &operator<<(ostream &os, const decimal_record &dr)
+
+ostream &operator<<(ostream &os, decimal_record const &dr)
 {
     os << "decimal_record { ds=" << dr.ds << ", exponent=" << dr.exponent << ", fpclass="
-       << (dr.fpclass == fp_zero      ? "fp_zero" :
-           dr.fpclass == fp_subnormal ? "fp_subnormal" :
-           dr.fpclass == fp_normal    ? "fp_normal" :
-           dr.fpclass == fp_infinity  ? "fp_infinity" :
-           dr.fpclass == fp_quiet     ? "fp_quiet" :
-           dr.fpclass == fp_signaling ? "fp_signaling" :
-                                        "<unkown>")
+       << (dr.fpclass == fp_zero        ? "fp_zero"
+           : dr.fpclass == fp_subnormal ? "fp_subnormal"
+           : dr.fpclass == fp_normal    ? "fp_normal"
+           : dr.fpclass == fp_infinity  ? "fp_infinity"
+           : dr.fpclass == fp_quiet     ? "fp_quiet"
+           : dr.fpclass == fp_signaling ? "fp_signaling"
+                                        : "<unkown>")
        << ", more=" << dr.more << ", ndigits=" << dr.ndigits << ", sign=" << dr.sign << " }";
 
-    return (os);
+    return os;
 }
-ostream &operator<<(ostream &os, const decimal_mode &dm)
+
+ostream &operator<<(ostream &os, decimal_mode const &dm)
 {
     os << "decimal_mode {" << (dm.df == floating_form ? "floating_form" : "fixed_form") << ", "
-       << (dm.rd == fp_nearest  ? "fp_nearest" :
-           dm.rd == fp_tozero   ? "fp_tozero" :
-           dm.rd == fp_negative ? "fp_negative" :
-                                  "fp_positive")
+       << (dm.rd == fp_nearest    ? "fp_nearest"
+           : dm.rd == fp_tozero   ? "fp_tozero"
+           : dm.rd == fp_negative ? "fp_negative"
+                                  : "fp_positive")
        << ","
        << "ndigits=" << dm.ndigits;
 
-    return (os);
+    return os;
 }
 
 // constants we need for the rounding process
-static const mpf_class zero(0.0, defaultNumberOfBits);
-static const mpf_class one(1.0, defaultNumberOfBits);
-static const mpf_class oneHalf(0.5, defaultNumberOfBits);
-static const mpf_class ten(10.0, defaultNumberOfBits);
+static mpf_class const zero(0.0, defaultNumberOfBits);
+static mpf_class const one(1.0, defaultNumberOfBits);
+static mpf_class const oneHalf(0.5, defaultNumberOfBits);
+static mpf_class const ten(10.0, defaultNumberOfBits);
 
 // helper operators for mpf's
-bool operator<(const mpf_class &lhs, const mpf_class &rhs)
+bool operator<(mpf_class const &lhs, mpf_class const &rhs)
 {
-    return (cmp(lhs, rhs) < 0);
+    return cmp(lhs, rhs) < 0;
 }
-bool operator==(const mpf_class &lhs, const mpf_class &rhs)
+
+bool operator==(mpf_class const &lhs, mpf_class const &rhs)
 {
-    return (cmp(lhs, rhs) == 0);
+    return cmp(lhs, rhs) == 0;
 }
-bool operator!=(const mpf_class &lhs, const mpf_class &rhs)
+
+bool operator!=(mpf_class const &lhs, mpf_class const &rhs)
 {
-    return (!(lhs == rhs));
+    return !(lhs == rhs);
 }
-bool operator>(const mpf_class &lhs, const mpf_class &rhs)
+
+bool operator>(mpf_class const &lhs, mpf_class const &rhs)
 {
-    return (cmp(lhs, rhs) > 0);
+    return cmp(lhs, rhs) > 0;
 }
-bool isNegative(const mpf_class &lhs)
+
+bool isNegative(mpf_class const &lhs)
 {
-    return (sgn(lhs) == -1);
+    return sgn(lhs) == -1;
 }
 
 // helper: returns a mpf 10^exponent
@@ -124,10 +134,12 @@ mpf_class ten_to_the_power_of(int exponent)
     mpf_class reval(0.0, defaultNumberOfBits);
     mpf_pow_ui(reval.get_mpf_t(), ten.get_mpf_t(), abs(exponent));
 
-    if(exponent < 0)
+    if (exponent < 0)
+    {
         mpf_div(reval.get_mpf_t(), one.get_mpf_t(), reval.get_mpf_t());
+    }
 
-    return (reval);
+    return reval;
 }
 
 // strip 0's from the front and end of a string
@@ -145,12 +157,12 @@ mpf_class round(mpf_class val, decimal_mode *pm)
     int       exponent = 0;
     mpf_class reval    = zero;
 
-    if(pm != nullptr && val != zero)
+    if (pm != nullptr && val != zero)
     {
         reval             = val;
         mpf_class abs_val = abs(val);
 
-        if(abs_val < one)  // the value is between -1.0 and 1.0
+        if (abs_val < one) // the value is between -1.0 and 1.0
         {
             // To find out the exponent exp in the #.######E(exp)
             // representation of the number count the zero's after the "."
@@ -160,7 +172,7 @@ mpf_class round(mpf_class val, decimal_mode *pm)
             stringstream ss;
             mp_exp_t     e = 0;
 
-            ss << fixed << setprecision(40) << abs_val.get_str(e);  // @suppress("Avoid magic numbers")
+            ss << fixed << setprecision(40) << abs_val.get_str(e); // @suppress("Avoid magic numbers")
 
             string            s            = ss.str();
             string::size_type firstNotNull = s.find_first_not_of("0.");
@@ -171,9 +183,9 @@ mpf_class round(mpf_class val, decimal_mode *pm)
         {
             mpf_class tmp = abs_val;
 
-            while(tmp > one)
+            while (tmp > one)
             {
-                tmp /= ten;  // divide by 10.0 until we are < 1.0
+                tmp /= ten; // divide by 10.0 until we are < 1.0
                 exponent++;
             }
         }
@@ -182,13 +194,13 @@ mpf_class round(mpf_class val, decimal_mode *pm)
 
         reval *= ten_to_the_power_of(shiftDpl);
 
-        if(pm->rd == fp_nearest)
+        if (pm->rd == fp_nearest)
         {
             // -10.4 --> -10
             // -12.8 --> -13
             //  10.4 -->  10
             //  12.8 -->  13
-            if(negative)
+            if (negative)
             {
                 // reval = trunc(reval - 0.5)
                 reval -= oneHalf;
@@ -201,7 +213,7 @@ mpf_class round(mpf_class val, decimal_mode *pm)
                 reval = trunc(reval);
             }
         }
-        else if(pm->rd == fp_tozero)
+        else if (pm->rd == fp_tozero)
         {
             // -10.4 --> -10
             // -12.8 --> -12
@@ -209,13 +221,15 @@ mpf_class round(mpf_class val, decimal_mode *pm)
             //  12.8 -->  12
             mpf_class toZeroCorrector = ten_to_the_power_of(exponent - 29);
 
-            if(negative)
+            if (negative)
+            {
                 toZeroCorrector *= -1.0;
+            }
 
             reval += toZeroCorrector;
             reval = trunc(reval);
         }
-        else if(pm->rd == fp_positive)
+        else if (pm->rd == fp_positive)
         {
             // -10.4 --> -10
             // -12.8 --> -12
@@ -223,7 +237,7 @@ mpf_class round(mpf_class val, decimal_mode *pm)
             //  12.8 -->  13
             reval = ceil(reval);
         }
-        else if(pm->rd == fp_negative)
+        else if (pm->rd == fp_negative)
         {
             // -10.4 --> -11
             // -12.8 --> -13
@@ -235,7 +249,7 @@ mpf_class round(mpf_class val, decimal_mode *pm)
         reval /= ten_to_the_power_of(shiftDpl);
     }
 
-    return (reval);
+    return reval;
 }
 
 //
@@ -294,33 +308,33 @@ mpf_class round(mpf_class val, decimal_mode *pm)
 void quadruple_to_decimal(quadruple *px, decimal_mode *pm, decimal_record *pd, fp_exception_field_type *ps)
 {
     mpf_set_default_prec(defaultNumberOfBits);
-    if(pd != nullptr && px != nullptr)
+    if (pd != nullptr && px != nullptr)
     {
         *pd = decimal_record();
-        if(*px == numeric_limits<quadruple>::infinity())  // @suppress("Direct float comparison")
+        if (*px == numeric_limits<quadruple>::infinity()) // @suppress("Direct float comparison")
         {
             pd->fpclass = fp_infinity;
             return;
         }
-        else if(*px == -numeric_limits<quadruple>::infinity())  // @suppress("Direct float comparison")
+        else if (*px == -numeric_limits<quadruple>::infinity()) // @suppress("Direct float comparison")
         {
             pd->fpclass = fp_infinity;
             pd->sign    = 1;
             return;
         }
-        else if(*px == numeric_limits<quadruple>::quiet_NaN())  // @suppress("Direct float comparison")
+        else if (*px == numeric_limits<quadruple>::quiet_NaN()) // @suppress("Direct float comparison")
         {
             pd->fpclass = fp_quiet;
             return;
         }
-        else if(*px == numeric_limits<quadruple>::signaling_NaN())  // @suppress("Direct float comparison")
+        else if (*px == numeric_limits<quadruple>::signaling_NaN()) // @suppress("Direct float comparison")
         {
             pd->fpclass = fp_signaling;
             return;
         }
 
         stringstream ss;
-        ss << fixed << setprecision(100) << *px;  // @suppress("Avoid magic numbers")
+        ss << fixed << setprecision(100) << *px; // @suppress("Avoid magic numbers")
 
         string            valStr = ss.str();
         mpf_class         val(valStr, defaultNumberOfBits);
@@ -329,30 +343,38 @@ void quadruple_to_decimal(quadruple *px, decimal_mode *pm, decimal_record *pd, f
         val        = round(val, pm);
         mp_exp_t e = 0;
         ss.str("");
-        ss << fixed << setprecision(100) << val.get_str(e);  // @suppress("Avoid magic numbers")
+        ss << fixed << setprecision(100) << val.get_str(e); // @suppress("Avoid magic numbers")
         valStr = ss.str();
 
-        if(valStr[0] == '-')
+        if (valStr[0] == '-')
         {
             valStr   = valStr.substr(1);
             pd->sign = 1;
         }
-        else if(valStr[0] == '+')
+        else if (valStr[0] == '+')
         {
             valStr = valStr.substr(1);
         }
 
-        if(valStr.find_last_of(".") == string::npos)
+        if (valStr.find_last_of(".") == string::npos)
+        {
             valStr += ".";
+        }
 
         remove0(valStr);
 
-        if(valStr == ".")
+        if (valStr == ".")
+        {
             valStr = "0.0";
-        else if(valStr[0] == '.')
+        }
+        else if (valStr[0] == '.')
+        {
             valStr = "0" + valStr;
-        else if(valStr[valStr.size() - 1] == '.')
+        }
+        else if (valStr[valStr.size() - 1] == '.')
+        {
             valStr += "0";
+        }
 
         // now we have a "normalized string"
         // "0.0", "1.0", "2.0", "13413.0"
@@ -360,7 +382,7 @@ void quadruple_to_decimal(quadruple *px, decimal_mode *pm, decimal_record *pd, f
         // but *NOT* :
         // "0", "000234", "00123.000". "54634.64563456000", ...
 
-        if(valStr == "0.0")
+        if (valStr == "0.0")
         {
             pd->exponent = 0;
             pd->ndigits  = 0;
@@ -385,14 +407,14 @@ void quadruple_to_decimal(quadruple *px, decimal_mode *pm, decimal_record *pd, f
 
             int padding = abs(pm->ndigits + pd->exponent);
 
-            if(-pd->exponent < pm->ndigits)
+            if (-pd->exponent < pm->ndigits)
             {
                 valStr += string(padding, '0');
                 pd->exponent -= padding;
                 pd->ndigits = valStr.size();
             }
 
-            if(pm->df == fixed_form && pd->ndigits > pm->ndigits && *px < 1.0L && *px > -1.0)
+            if (pm->df == fixed_form && pd->ndigits > pm->ndigits && *px < 1.0L && *px > -1.0)
             {
                 valStr = valStr.substr(0, pm->ndigits);
                 pd->exponent += (pd->ndigits - pm->ndigits);
@@ -443,24 +465,28 @@ void decimal_to_quadruple(quadruple *px, decimal_mode *pm, decimal_record *pd, f
 {
     mpf_set_default_prec(defaultNumberOfBits);
 
-    if(pd != nullptr && px != nullptr)
+    if (pd != nullptr && px != nullptr)
     {
-        if(pd->fpclass == fp_infinity)
+        if (pd->fpclass == fp_infinity)
         {
-            if(pd->sign != 0)
+            if (pd->sign != 0)
+            {
                 *px = -numeric_limits<quadruple>::infinity();
+            }
             else
+            {
                 *px = numeric_limits<quadruple>::infinity();
+            }
 
             return;
         }
-        else if(pd->fpclass == fp_quiet)
+        else if (pd->fpclass == fp_quiet)
         {
             *px = numeric_limits<quadruple>::quiet_NaN();
 
             return;
         }
-        else if(pd->fpclass == fp_signaling)
+        else if (pd->fpclass == fp_signaling)
         {
             *px = numeric_limits<quadruple>::signaling_NaN();
 
@@ -474,18 +500,19 @@ void decimal_to_quadruple(quadruple *px, decimal_mode *pm, decimal_record *pd, f
 
         // some NGBVal operations set the flag to 1 rather than -1
         // so we do a != 0 here
-        if(pd->sign != 0)
+        if (pd->sign != 0)
+        {
             tmp *= -1.0;
+        }
 
         tmp = round(tmp, pm);
 
         stringstream ss;
         mp_exp_t     e = 0;
 
-        ss << fixed << setprecision(100) << tmp.get_str(e);  // @suppress("Avoid magic numbers")
+        ss << fixed << setprecision(100) << tmp.get_str(e); // @suppress("Avoid magic numbers")
         ss >> *px;
     }
 }
 
-};
-// namespace util
+}; // namespace util

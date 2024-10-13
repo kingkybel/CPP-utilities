@@ -42,24 +42,32 @@ using namespace boost;
 /**
  *  Error handling for event lists with mutually exclusive events.
  */
-eventlist_conflict_error::eventlist_conflict_error(eventlist_conflict_error::conflict_type tp,
-                                                   const EventCatenation                  &e1)
-: std::logic_error(string(tp == eventlist_conflict_error::evt ? "Event-list " : "Condition-list") + toString(e1)
-                   + " has conflicting events")
+eventlist_conflict_error::eventlist_conflict_error(
+    eventlist_conflict_error::conflict_type tp,
+    EventCatenation const                  &e1
+)
+    : std::logic_error(
+          string(tp == eventlist_conflict_error::evt ? "Event-list " : "Condition-list") + toString(e1) +
+          " has conflicting events"
+      )
 {
 }
 
-eventlist_conflict_error::eventlist_conflict_error(const EventCatenation &e1, const EventCatenation &e2)
-: std::logic_error("Event-list " + toString(e1) + " and Condition-list " + toString(e2) + " have conflicting events")
+eventlist_conflict_error::eventlist_conflict_error(EventCatenation const &e1, EventCatenation const &e2)
+    : std::logic_error(
+          "Event-list " + toString(e1) + " and Condition-list " + toString(e2) + " have conflicting events"
+      )
 {
 }
 
 /**
  *  Construct a boolean range (or not if haveBoolRange == false).
  */
-EventValueRange::EventValueRange(bool haveBoolRange) : values_(), type_(discrete)
+EventValueRange::EventValueRange(bool haveBoolRange)
+    : values_()
+    , type_(discrete)
 {
-    if(haveBoolRange)
+    if (haveBoolRange)
     {
         insert(false);
         insert(true);
@@ -69,9 +77,11 @@ EventValueRange::EventValueRange(bool haveBoolRange) : values_(), type_(discrete
 /**
  *  Construct a range of enumerated character values.
  */
-EventValueRange::EventValueRange(const set<VAR_CHAR> &values) : values_(), type_(discrete)
+EventValueRange::EventValueRange(set<VAR_CHAR> const &values)
+    : values_()
+    , type_(discrete)
 {
-    for(auto value: values)
+    for (auto value: values)
     {
         insert(value);
     }
@@ -80,9 +90,11 @@ EventValueRange::EventValueRange(const set<VAR_CHAR> &values) : values_(), type_
 /**
  *  Construct a range of enumerated signed integer values.
  */
-EventValueRange::EventValueRange(const set<VAR_INT> &values) : values_(), type_(discrete)
+EventValueRange::EventValueRange(set<VAR_INT> const &values)
+    : values_()
+    , type_(discrete)
 {
-    for(auto value: values)
+    for (auto value: values)
     {
         insert(value);
     }
@@ -91,9 +103,11 @@ EventValueRange::EventValueRange(const set<VAR_INT> &values) : values_(), type_(
 /**
  *  Construct a range of enumerated unsigned integer values.
  */
-EventValueRange::EventValueRange(const set<VAR_UINT> &values) : values_(), type_(discrete)
+EventValueRange::EventValueRange(set<VAR_UINT> const &values)
+    : values_()
+    , type_(discrete)
 {
-    for(auto value: values)
+    for (auto value: values)
     {
         insert(value);
     }
@@ -102,25 +116,35 @@ EventValueRange::EventValueRange(const set<VAR_UINT> &values) : values_(), type_
 /**
  *  Construct a range of enumerated date values.
  */
-EventValueRange::EventValueRange(const set<VAR_DATE> &values) : values_(), type_(discrete)
+EventValueRange::EventValueRange(set<VAR_DATE> const &values)
+    : values_()
+    , type_(discrete)
 {
-    for(auto value: values)
+    for (auto value: values)
+    {
         insert(value);
+    }
 }
 
 /**
  *  Construct a range of enumerated string values.
  */
-EventValueRange::EventValueRange(const set<VAR_STRING> &values) : values_(), type_(discrete)
+EventValueRange::EventValueRange(set<VAR_STRING> const &values)
+    : values_()
+    , type_(discrete)
 {
-    for(auto value: values)
+    for (auto value: values)
+    {
         insert(value);
+    }
 }
 
 /**
  *  Construct a range of enumerated character values as an interval from lowest to highest.
  */
-EventValueRange::EventValueRange(VAR_CHAR lowest, VAR_CHAR highest) : values_(), type_(discrete)
+EventValueRange::EventValueRange(VAR_CHAR lowest, VAR_CHAR highest)
+    : values_()
+    , type_(discrete)
 {
     addRange(lowest, highest);
 }
@@ -128,7 +152,9 @@ EventValueRange::EventValueRange(VAR_CHAR lowest, VAR_CHAR highest) : values_(),
 /**
  *  Construct a range of enumerated signed integer values as an interval from lowest to highest.
  */
-EventValueRange::EventValueRange(VAR_INT lowest, VAR_INT highest) : values_(), type_(discrete)
+EventValueRange::EventValueRange(VAR_INT lowest, VAR_INT highest)
+    : values_()
+    , type_(discrete)
 {
     addRange(lowest, highest);
 }
@@ -136,7 +162,9 @@ EventValueRange::EventValueRange(VAR_INT lowest, VAR_INT highest) : values_(), t
 /**
  *  Construct a range of enumerated unsigned integer values as an interval from lowest to highest.
  */
-EventValueRange::EventValueRange(VAR_UINT lowest, VAR_UINT highest) : values_(), type_(discrete)
+EventValueRange::EventValueRange(VAR_UINT lowest, VAR_UINT highest)
+    : values_()
+    , type_(discrete)
 {
     addRange(lowest, highest);
 }
@@ -144,7 +172,9 @@ EventValueRange::EventValueRange(VAR_UINT lowest, VAR_UINT highest) : values_(),
 /**
  *  Construct a range of continuous uniform floating point values as an interval from lowest to highest.
  */
-EventValueRange::EventValueRange(VAR_FLOAT lowest, VAR_FLOAT highest) : values_(), type_(float_uniform)
+EventValueRange::EventValueRange(VAR_FLOAT lowest, VAR_FLOAT highest)
+    : values_()
+    , type_(float_uniform)
 {
     addRange(lowest, highest);
 }
@@ -152,7 +182,9 @@ EventValueRange::EventValueRange(VAR_FLOAT lowest, VAR_FLOAT highest) : values_(
 /**
  *  Construct a range of continuous uniform floating point values as an interval.
  */
-EventValueRange::EventValueRange(VAR_FLOAT_INTERVAL interval) : values_(), type_(float_uniform)
+EventValueRange::EventValueRange(VAR_FLOAT_INTERVAL interval)
+    : values_()
+    , type_(float_uniform)
 {
     addRange(interval.left(), interval.right());
 }
@@ -160,15 +192,17 @@ EventValueRange::EventValueRange(VAR_FLOAT_INTERVAL interval) : values_(), type_
 /**
  *  Construct a range of continuous for distribution-type.
  */
-EventValueRange::EventValueRange(DistributionType tp) : values_(), type_(tp)
+EventValueRange::EventValueRange(DistributionType tp)
+    : values_()
+    , type_(tp)
 {
-    if(tp == exponential)
+    if (tp == exponential)
     {
         VAR_FLOAT_INTERVAL interval(0.0L, {finiteMax, rightOpen});
 
         addRange(interval.left(), interval.right());
     }
-    else if(tp == gaussian)
+    else if (tp == gaussian)
     {
         VAR_FLOAT_INTERVAL interval;
 
@@ -181,7 +215,7 @@ EventValueRange::EventValueRange(DistributionType tp) : values_(), type_(tp)
  */
 size_t EventValueRange::size() const
 {
-    return (values_.size());
+    return values_.size();
 }
 
 /**
@@ -189,7 +223,7 @@ size_t EventValueRange::size() const
  */
 bool EventValueRange::isContinuous() const
 {
-    return (type_ != discrete);
+    return type_ != discrete;
 }
 
 /**
@@ -198,7 +232,7 @@ bool EventValueRange::isContinuous() const
 
 EventValueRange::DistributionType EventValueRange::type() const
 {
-    return (type_);
+    return type_;
 }
 
 /**
@@ -206,20 +240,26 @@ EventValueRange::DistributionType EventValueRange::type() const
  *  the range previously or in case of float whether the value is in the
  *  interval
  */
-bool EventValueRange::validValue(const Var &value) const
+bool EventValueRange::validValue(Var const &value) const
 {
-    if(isContinuous())
+    if (isContinuous())
     {
-        if(!isA<VAR_FLOAT>(value))
-            return (false);
+        if (!isA<VAR_FLOAT>(value))
+        {
+            return false;
+        }
 
         auto f = toNative<VAR_FLOAT>(value);
 
-        if(values_.size() == 0)
-            return (true);
+        if (values_.empty())
+        {
+            return true;
+        }
 
-        if(values_.size() != 2)
+        if (values_.size() != 2)
+        {
             throw event_range_error(f, values_.size());
+        }
 
         auto it = values_.begin();
         auto v1 = toNative<VAR_FLOAT>(*it);
@@ -228,30 +268,32 @@ bool EventValueRange::validValue(const Var &value) const
 
         auto v2 = toNative<VAR_FLOAT>(*it);
 
-        return ((v1 <= f) && (f <= v2));
+        return (v1 <= f) && (f <= v2);
     }
 
-    return (values_.find(value) != values_.end());
+    return values_.find(value) != values_.end();
 }
 
 /**
  *  Add a value if the type is valid.
  */
-bool EventValueRange::add(const Var &val)
+bool EventValueRange::add(Var const &val)
 {
-    if(validType(val))
-        return (values_.insert(val).second);
+    if (validType(val))
+    {
+        return values_.insert(val).second;
+    }
 
-    return (false);
+    return false;
 }
 
 /**
  * if no value has been added to the range yet then any Var is valid
  * otherwise all have to be of the same type
  */
-bool EventValueRange::validType(const Var &value) const
+bool EventValueRange::validType(Var const &value) const
 {
-    return (values_.empty() || ((values_.begin()->type() == value.type())));
+    return values_.empty() || (values_.begin()->type() == value.type());
 }
 
 /**
@@ -259,22 +301,24 @@ bool EventValueRange::validType(const Var &value) const
  * values with the name. Helper for the creation of canonised (full)
  * probability table
  */
-EventCollection EventValueRange::makeEventSet(const string &name) const
+EventCollection EventValueRange::makeEventSet(string const &name) const
 {
     EventCollection reval;
 
-    for(auto value: values_)
+    for (auto const &value: values_)
+    {
         reval.insert(Event(name, value, true));
+    }
 
-    return (reval);
+    return reval;
 }
 
 /**
  * Event value range streaming operator.
  */
-ostream &operator<<(ostream &os, const EventValueRange &evr)
+ostream &operator<<(ostream &os, EventValueRange const &evr)
 {
-    return (os << evr.values_);
+    return os << evr.values_;
 }
 
 // static member initialization
@@ -289,244 +333,253 @@ PlaceHolderOp Event::placeHolderOp;
 /**
  * Construct empty Event. Default-operation: Placeholder - returns false.
  */
-Event::Event(Operation *op) : name_(""), value_(), operation_(op ? op : &Event::equals)
+Event::Event(Operation *op)
+    : value_()
+    , operation_(op ? op : &Event::equals)
 {
 }
 
 /**
  * Construct boolean Event. Default-operation: Equality.
  */
-Event::Event(const string &name, VAR_BOOL b, Operation *op)
-: name_(name)
-, value_(b)
-, operation_(op ? op : &Event::equals)
+Event::Event(string name, VAR_BOOL b, Operation *op)
+    : name_(std::move(name))
+    , value_(b)
+    , operation_(op ? op : &Event::equals)
 {
 }
 
 /**
  * Construct character Event. Default-operation: Equality.
  */
-Event::Event(const string &name, VAR_CHAR c, Operation *op)
-: name_(name)
-, value_(c)
-, operation_(op ? op : &Event::equals)
+Event::Event(string name, VAR_CHAR c, Operation *op)
+    : name_(std::move(name))
+    , value_(c)
+    , operation_(op ? op : &Event::equals)
 {
 }
 
-Event::Event(const string &name, VAR_INT i, Operation *op)
-: name_(name)
-, value_(i)
-, operation_(op ? op : &Event::equals)
+Event::Event(string name, VAR_INT i, Operation *op)
+    : name_(std::move(name))
+    , value_(i)
+    , operation_(op ? op : &Event::equals)
 {
 }
 
-Event::Event(const string &name, VAR_UINT u, Operation *op)
-: name_(name)
-, value_(u)
-, operation_(op ? op : &Event::equals)
+Event::Event(string name, VAR_UINT u, Operation *op)
+    : name_(std::move(name))
+    , value_(u)
+    , operation_(op ? op : &Event::equals)
 {
 }
 
-Event::Event(const string &name, VAR_FLOAT f, Operation *op)
-: name_(name)
-, value_(f)
-, operation_(op ? op : &Event::equals)
+Event::Event(string name, VAR_FLOAT f, Operation *op)
+    : name_(std::move(name))
+    , value_(f)
+    , operation_(op ? op : &Event::equals)
 {
 }
 
-Event::Event(const string &name, VAR_DATE d, Operation *op)
-: name_(name)
-, value_(d)
-, operation_(op ? op : &Event::equals)
+Event::Event(string name, VAR_DATE d, Operation *op)
+    : name_(std::move(name))
+    , value_(d)
+    , operation_(op ? op : &Event::equals)
 {
 }
 
-Event::Event(const string &name, VAR_STRING s, Operation *op)
-: name_(name)
-, value_(s)
-, operation_(op ? op : &Event::equals)
+Event::Event(string name, VAR_STRING s, Operation *op)
+    : name_(std::move(name))
+    , value_(s)
+    , operation_(op ? op : &Event::equals)
 {
 }
 
-Event::Event(const string &name, VAR_BOOL_INTERVAL itvl, Operation *op)
-: name_(name)
-, value_(itvl)
-, operation_(op ? op : &Event::isElementOf)
+Event::Event(string name, VAR_BOOL_INTERVAL itvl, Operation *op)
+    : name_(std::move(name))
+    , value_(itvl)
+    , operation_(op ? op : &Event::isElementOf)
 {
 }
 
-Event::Event(const string &name, VAR_CHAR_INTERVAL itvl, Operation *op)
-: name_(name)
-, value_(itvl)
-, operation_(op ? op : &Event::isElementOf)
+Event::Event(string name, VAR_CHAR_INTERVAL itvl, Operation *op)
+    : name_(std::move(name))
+    , value_(itvl)
+    , operation_(op ? op : &Event::isElementOf)
 {
 }
 
-Event::Event(const string &name, VAR_INT_INTERVAL itvl, Operation *op)
-: name_(name)
-, value_(itvl)
-, operation_(op ? op : &Event::isElementOf)
+Event::Event(string name, VAR_INT_INTERVAL itvl, Operation *op)
+    : name_(std::move(name))
+    , value_(itvl)
+    , operation_(op ? op : &Event::isElementOf)
 {
 }
 
-Event::Event(const string &name, VAR_UINT_INTERVAL itvl, Operation *op)
-: name_(name)
-, value_(itvl)
-, operation_(op ? op : &Event::isElementOf)
+Event::Event(string name, VAR_UINT_INTERVAL itvl, Operation *op)
+    : name_(std::move(name))
+    , value_(itvl)
+    , operation_(op ? op : &Event::isElementOf)
 {
 }
 
-Event::Event(const string &name, VAR_FLOAT_INTERVAL itvl, Operation *op)
-: name_(name)
-, value_(itvl)
-, operation_(op ? op : &Event::isElementOf)
+Event::Event(string name, VAR_FLOAT_INTERVAL itvl, Operation *op)
+    : name_(std::move(name))
+    , value_(itvl)
+    , operation_(op ? op : &Event::isElementOf)
 {
 }
 
-Event::Event(const string &name, VAR_DATE_INTERVAL itvl, Operation *op)
-: name_(name)
-, value_(itvl)
-, operation_(op ? op : &Event::isElementOf)
+Event::Event(string name, VAR_DATE_INTERVAL itvl, Operation *op)
+    : name_(std::move(name))
+    , value_(itvl)
+    , operation_(op ? op : &Event::isElementOf)
 {
 }
 
-Event::Event(const string &name, const char *s, Operation *op)
-: name_(name)
-, value_(VAR_STRING(s ? s : ""))
-, operation_(op ? op : &Event::equals)
+Event::Event(string name, char const *s, Operation *op)
+    : name_(std::move(name))
+    , value_(VAR_STRING(s ? s : ""))
+    , operation_(op ? op : &Event::equals)
 {
 }
 
 /**
  * extra dummy parameter dummyConfirm to allow Var as parameter
  */
-Event::Event(const string &name, const Var &a, bool dummyConfirm, Operation *op)
-: name_(name)
-, value_(a)
-, operation_(op ? op : &Event::equals)
+Event::Event(string name, Var const &a, bool dummyConfirm, Operation *op)
+    : name_(std::move(name))
+    , value_(a)
+    , operation_(op ? op : &Event::equals)
 {
-    if(!dummyConfirm)
+    if (!dummyConfirm)
+    {
         throw event_error("Event can only be created if dummy confirm "
                           "parameter is set to true!");
+    }
 }
 
-Event &Event::operator()(const string &name, const Var &value, Operation *op)
+Event &Event::operator()(string const &name, Var const &value, Operation *op)
 {
     name_          = name;
     value_         = value;
     operation_     = op ? op : &Event::equals;
     isPlaceHolder_ = false;
 
-    return (*this);
+    return *this;
 }
 
-Event Event::placeholderEvent(const string &name)
+Event Event::placeholderEvent(string const &name)
 {
     Event reval(&Event::placeHolderOp);
     reval.name_          = name;
     reval.isPlaceHolder_ = true;
 
-    return (reval);
+    return reval;
 }
 
 bool Event::isPlaceholder() const
 {
-    return (isPlaceHolder_);
+    return isPlaceHolder_;
 }
 
 bool Event::empty() const
 {
-    return (!isPlaceholder() && (name_.empty() || value_.empty() || (operation_ == nullptr)));
+    return !isPlaceholder() && (name_.empty() || value_.empty() || (operation_ == nullptr));
 }
 
-bool Event::notConflicting(const Event &e) const
+bool Event::notConflicting(Event const &e) const
 {
-    return ((name() != e.name()) || ((value_ == e.value_) && (typeid(operation_) == typeid(e.operation_)))
-            || (isPlaceholder() && e.isPlaceholder()));
+    return (name() != e.name()) || ((value_ == e.value_) && (typeid(operation_) == typeid(e.operation_))) ||
+           (isPlaceholder() && e.isPlaceholder());
 }
 
 string Event::name() const
 {
-    return (name_);
+    return name_;
 }
 
 Var Event::varValue() const
 {
-    return (value_);
+    return value_;
 }
 
 string Event::opDesc() const
 {
-    return (operation_ ? operation_->desc(value_) : string(""));
+    return operation_ ? operation_->desc(value_) : string("");
 }
 
-bool Event::matches(const Event &e) const
+bool Event::matches(Event const &e) const
 {
-    return ((name() == e.name()) && e.operation_->leftMatchesRight(varValue(), e.varValue()));
+    return (name() == e.name()) && e.operation_->leftMatchesRight(varValue(), e.varValue());
 }
 
-bool operator==(const Event &lhs, const Event &rhs)
+bool operator==(Event const &lhs, Event const &rhs)
 {
-    return ((lhs.name_ == rhs.name_) && (lhs.value_ == rhs.value_)
-            && (typeid(lhs.operation_) == typeid(rhs.operation_)));
+    return (lhs.name_ == rhs.name_) && (lhs.value_ == rhs.value_) && (typeid(lhs.operation_) == typeid(rhs.operation_));
 }
 
-bool operator<(const Event &lhs, const Event &rhs)
+bool operator<(Event const &lhs, Event const &rhs)
 {
-    return ((lhs.name_ < rhs.name_) || ((lhs.name_ == rhs.name_) && (lhs.value_ < rhs.value_))
-            || ((lhs.name_ == rhs.name_) && (lhs.value_ == rhs.value_)
-                && (string(typeid(lhs.operation_).name()) < string(typeid(rhs.operation_).name()))));
+    return (lhs.name_ < rhs.name_) || ((lhs.name_ == rhs.name_) && (lhs.value_ < rhs.value_)) ||
+           ((lhs.name_ == rhs.name_) && (lhs.value_ == rhs.value_) &&
+            (string(typeid(lhs.operation_).name()) < string(typeid(rhs.operation_).name())));
 }
 
-EventCatenation::EventCatenation(const Event &event)
+EventCatenation::EventCatenation(Event const &event)
 {
-    if(!event.empty())
+    if (!event.empty())
+    {
         evts_.insert(event);
+    }
 }
 
-EventCatenation &EventCatenation::operator&&(const Event &e)
+EventCatenation &EventCatenation::operator&&(Event const &e)
 {
-    if(!e.empty())
+    if (!e.empty())
+    {
         evts_.insert(e);
+    }
 
-    return (*this);
+    return *this;
 }
 
-EventCatenation &EventCatenation::operator&&(const EventCatenation &el)
+EventCatenation &EventCatenation::operator&&(EventCatenation el)
 {
-    for(auto it = el.cbegin(); it != el.cend(); it++)
-        *this && *it;
+    for (const auto & event : el)
+    {
+        *this && event;
+    }
 
-    return (*this);
+    return *this;
 }
 
 bool EventCatenation::empty() const
 {
-    return (evts_.empty());
+    return evts_.empty();
 }
 
 size_t EventCatenation::size() const
 {
-    return (evts_.size());
+    return evts_.size();
 }
 
 /**
  * two EventCatenations are notConflicting if their Events are pairwise notConflicting
  */
-bool EventCatenation::notConflicting(const EventCatenation &eList) const
+bool EventCatenation::notConflicting(EventCatenation const &eList) const
 {
     bool reval = true;
     auto el1It = eList.cbegin();
 
-    while(reval && el1It != eList.cend())
+    while (reval && el1It != eList.cend())
     {
         auto el2It = cbegin();
 
-        while(reval && el2It != cend())
+        while (reval && el2It != cend())
         {
-            if(!el1It->notConflicting(*el2It))
+            if (!el1It->notConflicting(*el2It))
             {
-                reval = false;  // stop on the first conflict
+                reval = false; // stop on the first conflict
             }
 
             el2It++;
@@ -535,21 +588,21 @@ bool EventCatenation::notConflicting(const EventCatenation &eList) const
         el1It++;
     }
 
-    return (reval);
+    return reval;
 }
 
-bool EventCatenation::matches(const EventCatenation &eList) const
+bool EventCatenation::matches(EventCatenation const &eList) const
 {
     bool reval  = size() == eList.size();
     auto itThis = cbegin();
     auto itThat = eList.cbegin();
 
-    for(; reval && itThis != cend(); itThis++, itThat++)
+    for (; reval && itThis != cend(); itThis++, itThat++)
     {
         reval &= itThis->matches(*itThat);
     }
 
-    return (reval);
+    return reval;
 }
 
 Event EventCatenation::eventByName(const string &name) const
@@ -561,48 +614,54 @@ Event EventCatenation::eventByName(const string &name) const
     return (Event());
 }
 
-bool EventCatenation::moveEvent(const string &name, EventCatenation &el)
+bool EventCatenation::moveEvent(string const &name, EventCatenation &el)
 {
     bool hasBeenMoved = false;
 
-    for(auto it = cbegin(); !hasBeenMoved && it != cend(); it++)
-        if(it->name() == name)
+    for (auto it = cbegin(); !hasBeenMoved && it != cend(); it++)
+    {
+        if (it->name() == name)
         {
             el && *it;
             evts_.erase(it);
             hasBeenMoved = true;
         }
+    }
 
-    return (hasBeenMoved);
+    return hasBeenMoved;
 }
 
-bool EventCatenation::hasEvent(const string &e) const
+bool EventCatenation::hasEvent(string const &e) const
 {
-    for(auto it = evts_.begin(); it != evts_.end(); it++)
-        if(it->name() == e)
-            return (true);
+    for (const auto & evt : evts_)
+    {
+        if (evt.name() == e)
+        {
+            return true;
+        }
+    }
 
-    return (false);
+    return false;
 }
 
 EventCatenation::EventsIterator EventCatenation::begin()
 {
-    return (evts_.begin());
+    return evts_.begin();
 }
 
 EventCatenation::EventsConstIterator EventCatenation::cbegin() const
 {
-    return (evts_.begin());
+    return evts_.begin();
 }
 
 EventCatenation::EventsIterator EventCatenation::end()
 {
-    return (evts_.end());
+    return evts_.end();
 }
 
 EventCatenation::EventsConstIterator EventCatenation::cend() const
 {
-    return (evts_.end());
+    return evts_.end();
 }
 
 void EventCatenation::erase(EventsIterator it)
@@ -610,9 +669,9 @@ void EventCatenation::erase(EventsIterator it)
     evts_.erase(it);
 }
 
-bool operator==(const EventCatenation &lhs, const EventCatenation &rhs)
+bool operator==(EventCatenation const &lhs, EventCatenation const &rhs)
 {
-    return (lhs.evts_ == rhs.evts_);
+    return lhs.evts_ == rhs.evts_;
 }
 
 /**
@@ -621,28 +680,28 @@ bool operator==(const EventCatenation &lhs, const EventCatenation &rhs)
  * wholly contained in the other. In that case the shorter list is "less"
  * than the longer list
  */
-bool operator<(const EventCatenation &lhs, const EventCatenation &rhs)
+bool operator<(EventCatenation const &lhs, EventCatenation const &rhs)
 {
     bool reval     = true;
     auto itLhs     = lhs.cbegin();
     auto itRhs     = rhs.cbegin();
     bool foundDiff = false;
 
-    for(; itLhs != lhs.cend() && itRhs != rhs.cend(); itLhs++, itRhs++)
+    for (; itLhs != lhs.cend() && itRhs != rhs.cend(); itLhs++, itRhs++)
     {
-        const auto &left  = *itLhs;
-        const auto &right = *itRhs;
+        auto const &left  = *itLhs;
+        auto const &right = *itRhs;
         TRACE2(left, right);
         // all left Events are equal because we break at first difference
-        if(left > right)  // rhs is smaller so we are *BIGGER* -> return false
+        if (left > right) // rhs is smaller so we are *BIGGER* -> return false
         {
-            TRACE1((left > right));
+            TRACE1(left > right);
             foundDiff = true;
             reval     = false;
             break;
         }
 
-        if(left < right)  // lhs is smaller so we are smaller -> return true
+        if (left < right) // lhs is smaller so we are smaller -> return true
         {
             foundDiff = true;
             break;
@@ -651,100 +710,122 @@ bool operator<(const EventCatenation &lhs, const EventCatenation &rhs)
 
     // lhs is wholly contained in rhs, if rhs is longer then lhs is smaller
     // otherwise rhs is smaller
-    if(!foundDiff)
+    if (!foundDiff)
+    {
         reval = lhs.size() < rhs.size();
+    }
 
-    return (reval);
+    return reval;
 }
 
-ostream &operator<<(std::ostream &os, const Event &rhs)
+ostream &operator<<(std::ostream &os, Event const &rhs)
 {
-    return (os << rhs.name() << rhs.opDesc() << rhs.varValue());
+    return os << rhs.name() << rhs.opDesc() << rhs.varValue();
 }
 
-ostream &operator<<(ostream &os, const EventCatenation &eList)
+ostream &operator<<(ostream &os, EventCatenation const &eList)
 {
     size_t i        = 0;
     size_t maxIndex = eList.size() - 1;
 
-    for(auto event: eList.events())
+    for (const auto& event: eList.events())
     {
         os << event << (i < maxIndex ? ", " : "");
         i++;
     }
 
-    return (os);
+    return os;
 }
 
-EventCatenation operator&&(const Event &lhs, const Event &rhs)
+EventCatenation operator&&(Event const &lhs, Event const &rhs)
 {
     EventCatenation reval(lhs);
 
     reval &&rhs;
 
-    return (reval);
+    return reval;
 }
 
-CondEvent::CondEvent(const EventCatenation &eList, const EventCatenation &condList) : eList_(eList), condList_(condList)
+CondEvent::CondEvent(EventCatenation const &eList, EventCatenation const &condList)
+    : eList_(eList)
+    , condList_(condList)
 {
     // The following errors prevent us from creating mis-formed CondEvents
-    if(!eList_.notConflicting(eList_))
+    if (!eList_.notConflicting(eList_))
+    {
         throw eventlist_conflict_error(eventlist_conflict_error::evt, eList_);
-    if(!condList_.notConflicting(condList_))
+    }
+    if (!condList_.notConflicting(condList_))
+    {
         throw eventlist_conflict_error(eventlist_conflict_error::cond, condList_);
-    if(!eList_.notConflicting(condList_))
+    }
+    if (!eList_.notConflicting(condList_))
+    {
         throw eventlist_conflict_error(eList_, condList_);
+    }
 }
 
-CondEvent::CondEvent(const CSVAnalyzer &csv,
-                     size_t             row,
-                     size_t             lastEventIndex,  // needs to at least 1 so index needs to be 0
-                     bool               isAccummulative)
+CondEvent::CondEvent(
+    CSVAnalyzer const &csv,
+    size_t             row,
+    size_t             lastEventIndex, // needs to at least 1 so index needs to be 0
+    bool               isAccumulative
+)
 {
-    // if isAccummulative id true, then the last column are prob-values
-    size_t lastCondIndex = csv.columns() - ((isAccummulative) ? 2 : 1);
+    // if isAccumulative id true, then the last column are prob-values
+    size_t lastCondIndex = csv.columns() - ((isAccumulative) ? 2 : 1);
 
-    for(size_t col = 0; col <= lastCondIndex; col++)
+    for (size_t col = 0; col <= lastCondIndex; col++)
     {
-        if(col <= lastEventIndex)
+        if (col <= lastEventIndex)
+        {
             eList_ &&Event(csv.header(col), csv.getVar(col, row), true);
+        }
         else
+        {
             condList_ &&Event(csv.header(col), csv.getVar(col, row), true);
+        }
     }
 
-    if(!eList_.notConflicting(eList_))
+    if (!eList_.notConflicting(eList_))
+    {
         throw eventlist_conflict_error(eventlist_conflict_error::evt, eList_);
+    }
 
-    if(!condList_.notConflicting(condList_))
+    if (!condList_.notConflicting(condList_))
+    {
         throw eventlist_conflict_error(eventlist_conflict_error::cond, condList_);
+    }
 
-    if(!eList_.notConflicting(condList_))
+    if (!eList_.notConflicting(condList_))
+    {
         throw eventlist_conflict_error(eList_, condList_);
+    }
 }
 
 bool CondEvent::empty() const
 {
-    return (eList_.empty());
+    return eList_.empty();
 }
 
 size_t CondEvent::eventSize() const
 {
-    return (eList_.size());
+    return eList_.size();
 }
 
 size_t CondEvent::conditionSize() const
 {
-    return (condList_.size());
+    return condList_.size();
 }
 
-const EventCatenation &CondEvent::event() const
+EventCatenation const &CondEvent::event() const
 {
-    return (eList_);
+    return eList_;
 }
 
-const EventCatenation &CondEvent::condition() const
+EventCatenation const &CondEvent::condition() const
 {
-    return (condList_);
+    return condList_;
 }
 
 /**
@@ -752,45 +833,53 @@ const EventCatenation &CondEvent::condition() const
  * conditions relevant are filtered out and missing ones are entered as
  * place-holders
  */
-CondEvent CondEvent::filterConditions(const set<string> &conds) const
+CondEvent CondEvent::filterConditions(set<string> const &conds) const
 {
     EventCatenation filteredConds;
     // first add all conditions that can be found in the filter-set (conds)
     // to the new filtered conditions
-    for(auto it = condList_.cbegin(); it != condList_.cend(); it++)
+    for (auto it = condList_.cbegin(); it != condList_.cend(); it++)
     {
-        if(conds.find(it->name()) != conds.end())
+        if (conds.find(it->name()) != conds.end())
+        {
             filteredConds && *it;
+        }
     }
 
     // then add all conditions that are not present in the CondEvent
     // as place-holders
-    for(auto nameIt = conds.begin(); nameIt != conds.end(); nameIt++)
+    for (auto nameIt = conds.begin(); nameIt != conds.end(); nameIt++)
     {
-        if(!containsCondition(*nameIt))
+        if (!containsCondition(*nameIt))
+        {
             filteredConds &&Event::placeholderEvent(*nameIt);
+        }
     }
 
-    if(!eList_.notConflicting(filteredConds))
-        throw eventlist_conflict_error(eList_, filteredConds);
-
-    return (CondEvent(eList_, filteredConds));
-}
-
-bool CondEvent::isMatch(const CondEvent &ce) const
-{
-    return (eList_.matches(ce.eList_) && condList_.matches(ce.condList_));
-}
-
-bool CondEvent::containsCondition(const string &name) const
-{
-    for(auto it = condList_.cbegin(); it != condList_.cend(); it++)
+    if (!eList_.notConflicting(filteredConds))
     {
-        if(it->name() == name)
-            return (true);
+        throw eventlist_conflict_error(eList_, filteredConds);
     }
 
-    return (false);
+    return CondEvent(eList_, filteredConds);
+}
+
+bool CondEvent::isMatch(CondEvent const &ce) const
+{
+    return eList_.matches(ce.eList_) && condList_.matches(ce.condList_);
+}
+
+bool CondEvent::containsCondition(string const &name) const
+{
+    for (auto it = condList_.cbegin(); it != condList_.cend(); it++)
+    {
+        if (it->name() == name)
+        {
+            return true;
+        }
+    }
+
+    return false;
 }
 
 /**
@@ -811,7 +900,7 @@ bool CondEvent::containsCondition(const string &name) const
  *  <li> all but (possibly) the last are already of the required form</li>
  * </ul>
  */
-bool CondEvent::chainRule(CondEvent::CONDEVENT_LIST &cel, const string &name) const
+bool CondEvent::chainRule(CondEvent::CONDEVENT_LIST &cel, string const &name) const
 {
     // if(cel.empty())
     //     cel.push_back(*this);
@@ -837,10 +926,10 @@ bool CondEvent::chainRule(CondEvent::CONDEVENT_LIST &cel, const string &name) co
     // if(!newEl.empty())
     //     cel.push_back(CondEvent(newEl, newCond));
 
-    return (reval);
+    return reval;
 }
 
-bool CondEvent::chainRule(CondEvent::CONDEVENT_LIST &cel, const vector<string> &nameList) const
+bool CondEvent::chainRule(CondEvent::CONDEVENT_LIST &cel, vector<string> const &nameList) const
 {
     bool reval = true;
 
@@ -851,146 +940,152 @@ bool CondEvent::chainRule(CondEvent::CONDEVENT_LIST &cel, const vector<string> &
     //     chainRule(cel, *it);
     // }
 
-    return (reval);
+    return reval;
 }
 
-CondEvent &CondEvent::operator&&(const Event &el)
+CondEvent &CondEvent::operator&&(Event const &el)
 {
     eList_ &&el;
-    return (*this);
+    return *this;
 }
 
-CondEvent &CondEvent::operator||(const Event &el)
+CondEvent &CondEvent::operator||(Event const &el)
 {
     condList_ &&el;
-    return (*this);
+    return *this;
 }
 
-bool CondEvent::hasEvent(const string &name) const
+bool CondEvent::hasEvent(string const &name) const
 {
-    return (eList_.hasEvent(name));
+    return eList_.hasEvent(name);
 }
 
-bool CondEvent::hasCondition(const string &name) const
+bool CondEvent::hasCondition(string const &name) const
 {
-    return (condList_.hasEvent(name));
+    return condList_.hasEvent(name);
 }
 
-bool operator==(const CondEvent &lhs, const CondEvent &rhs)
+bool operator==(CondEvent const &lhs, CondEvent const &rhs)
 {
-    return ((lhs.eList_ == rhs.eList_) && (lhs.condList_ == rhs.condList_));
+    return (lhs.eList_ == rhs.eList_) && (lhs.condList_ == rhs.condList_);
 }
 
-bool operator<(const CondEvent &lhs, const CondEvent &rhs)
+bool operator<(CondEvent const &lhs, CondEvent const &rhs)
 {
-    return ((lhs.condList_ < rhs.condList_) || (lhs.condList_ == rhs.condList_ && lhs.eList_ < rhs.eList_));
+    return (lhs.condList_ < rhs.condList_) || (lhs.condList_ == rhs.condList_ && lhs.eList_ < rhs.eList_);
 }
 
-ostream &operator<<(ostream &os, const CondEvent &ce)
+ostream &operator<<(ostream &os, CondEvent const &ce)
 {
     os << ce.eList_;
 
-    if(!ce.condList_.empty())
+    if (!ce.condList_.empty())
+    {
         os << " | " << ce.condList_;
+    }
 
-    return (os);
+    return os;
 }
 
-CondEvent operator||(const EventCatenation &lhs, const EventCatenation &rhs)
+CondEvent operator||(EventCatenation const &lhs, EventCatenation const &rhs)
 {
     CondEvent reval(lhs, rhs);
 
-    return (reval);
+    return reval;
 }
 
 ProbabilityFunction::ProbabilityFunction(VALUERANGES_TYPE eventValueRanges, VALUERANGES_TYPE conditionValueRanges)
-: eventValueRanges_(eventValueRanges)
-, conditionValueRanges_(conditionValueRanges)
+    : eventValueRanges_(std::move(eventValueRanges))
+    , conditionValueRanges_(std::move(conditionValueRanges))
 {
 }
 
 /**
  * @TODO: this needs to change to cater for Intervals
  */
-bool ProbabilityFunction::possibleCondEvent(const CondEvent &ce, string &error) const
+bool ProbabilityFunction::possibleCondEvent(CondEvent const &ce, string &error) const
 {
     // check type and name of event and condition
-    for(auto evIt = ce.event().cbegin(); evIt != ce.event().cend(); evIt++)
+    for (auto evIt = ce.event().cbegin(); evIt != ce.event().cend(); evIt++)
     {
         auto found = eventValueRanges_.find(evIt->name());
 
-        if(found == eventValueRanges_.end())
+        if (found == eventValueRanges_.end())
         {
             error = "Event '" + evIt->name() + "' not a valid probability variable.";
-            return (false);
+            return false;
         }
 
-        if(!found->second.validValue(evIt->varValue()))
+        if (!found->second.validValue(evIt->varValue()))
         {
-            error = "p(" + toString(ce) + "): Event value '" + toString(evIt->varValue()) + "' of Event '"
-                    + evIt->name() + "' has incorrect type or invalid value: " + toString(found->second) + ".";
+            error = "p(" + toString(ce) + "): Event value '" + toString(evIt->varValue()) + "' of Event '" +
+                    evIt->name() + "' has incorrect type or invalid value: " + toString(found->second) + ".";
 
-            return (false);
+            return false;
         }
     }
 
-    for(auto condIt = ce.condition().cbegin(); condIt != ce.condition().cend(); condIt++)
+    for (auto condIt = ce.condition().cbegin(); condIt != ce.condition().cend(); condIt++)
     {
         auto found = conditionValueRanges_.find(condIt->name());
 
-        if(found == conditionValueRanges_.end())
+        if (found == conditionValueRanges_.end())
         {
             error = "p(" + toString(ce) + "): Condition '" + condIt->name() + "' not a valid probability variable.";
 
-            return (false);
+            return false;
         }
 
-        if(!found->second.validType(condIt->varValue()))
+        if (!found->second.validType(condIt->varValue()))
         {
-            error = "Condition value '" + toString(condIt->varValue()) + "' of Condition '" + condIt->name()
-                    + "' has incorrect type or invalid value: " + toString(found->second) + ".";
+            error = "Condition value '" + toString(condIt->varValue()) + "' of Condition '" + condIt->name() +
+                    "' has incorrect type or invalid value: " + toString(found->second) + ".";
 
-            return (false);
+            return false;
         }
     }
 
-    return (true);
+    return true;
 }
 
-bool ProbabilityFunction::addValueToEventRange(const string &name, const Var &val)
+bool ProbabilityFunction::addValueToEventRange(string const &name, Var const &val)
 {
-    return (addValidValueToRange(eventValueRanges_, conditionValueRanges_, name, val));
+    return addValidValueToRange(eventValueRanges_, conditionValueRanges_, name, val);
 }
 
-bool ProbabilityFunction::addValueToConditionRange(const string &name, const Var &val)
+bool ProbabilityFunction::addValueToConditionRange(string const &name, Var const &val)
 {
-    return (addValidValueToRange(conditionValueRanges_, eventValueRanges_, name, val));
+    return addValidValueToRange(conditionValueRanges_, eventValueRanges_, name, val);
 }
 
-bool ProbabilityFunction::addValidValueToRange(VALUERANGES_TYPE &range,
-                                               VALUERANGES_TYPE &range_ortho,
-                                               const string     &name,
-                                               const Var        &value)
+bool ProbabilityFunction::addValidValueToRange(
+    VALUERANGES_TYPE &range,
+    VALUERANGES_TYPE &range_ortho,
+    string const     &name,
+    Var const        &value
+)
 {
     bool reval = true;
 
     // when adding to range we must make sure it's not already in range_ortho
-    if(range_ortho.find(name) != range_ortho.end())
+    if (range_ortho.find(name) != range_ortho.end())
+    {
         throw distribution_error("Event '" + name + "' cannot be in events and conditions at the same time.");
+    }
 
     range[name].add(value);
 
-    return (reval);
+    return reval;
 }
 
 size_t ProbabilityFunction::getLastEventIndex() const
 {
-    return (eventValueRanges_.empty() ? 0 : eventValueRanges_.size() - 1);
+    return eventValueRanges_.empty() ? 0 : eventValueRanges_.size() - 1;
 }
 
 size_t ProbabilityFunction::getNumberOfConditions() const
 {
-    return (conditionValueRanges_.size());
+    return conditionValueRanges_.size();
 }
 
 /**
@@ -1006,22 +1101,24 @@ UniformFloatFunction::UniformFloatFunction(VAR_FLOAT low, VAR_FLOAT high, const 
  */
 ProbabilityFunction *UniformFloatFunction::clone() const
 {
-    return (new UniformFloatFunction(*this));
+    return new UniformFloatFunction(*this);
 }
 
 /**
  * Probability of a conditional event.
  */
-long double UniformFloatFunction::P(const CondEvent &ce) const
+long double UniformFloatFunction::P(CondEvent const &ce) const
 {
     // ce.eventSize() has to be exactly 1, the event-type has to be float or
     // float-interval
-    if(ce.eventSize() > 1)
-        return (0.0L);
+    if (ce.eventSize() > 1)
+    {
+        return 0.0L;
+    }
 
     auto foundParam = param_.find(ce.condition());
 
-    if(foundParam != param_.end())
+    if (foundParam != param_.end())
     {
         VAR_FLOAT           low   = foundParam->second.low;
         VAR_FLOAT           high  = foundParam->second.high;
@@ -1029,15 +1126,15 @@ long double UniformFloatFunction::P(const CondEvent &ce) const
         long double         lowP  = itvl.isLeftInfinite() ? low : itvl.left();
         long double         highP = itvl.isRightInfinite() ? high : itvl.right();
 
-        return ((highP - lowP) / (high - low));
+        return (highP - lowP) / (high - low);
     }
 
-    return (0.0L);
+    return 0.0L;
 }
 
-long double UniformFloatFunction::P(const EventCatenation &el) const
+long double UniformFloatFunction::P(EventCatenation const &el) const
 {
-    return (P(CondEvent(el)));
+    return P(CondEvent(el));
 }
 
 /**
@@ -1057,10 +1154,12 @@ bool UniformFloatFunction::train(CSVAnalyzer csv, bool isAccumulativeCSV)
 {
     bool reval = true;
 
-    if(csv.columns() == 0)
-        return (false);
+    if (csv.columns() == 0)
+    {
+        return false;
+    }
 
-    if(!isAccumulativeCSV || csv.type(csv.columns() - 1) != CSV_COLUMN_TYPE_FLOAT)
+    if (!isAccumulativeCSV || csv.type(csv.columns() - 1) != CSV_COLUMN_TYPE_FLOAT)
     {
         // append a 1.0 - initialised value column
         csv.appendColumn("[[RESULT]]", "float", 1.0L);
@@ -1071,24 +1170,28 @@ bool UniformFloatFunction::train(CSVAnalyzer csv, bool isAccumulativeCSV)
 
     size_t lastEventIndex = 1;
 
-    if(csv.lines() > 0)
+    if (csv.lines() > 0)
     {
         size_t valueIndex = csv.columns() - 1;
 
-        for(size_t row = 0; row < csv.lines(); row++)
+        for (size_t row = 0; row < csv.lines(); row++)
         {
             CondEvent ce(csv, row, lastEventIndex, isAccumulativeCSV);
             VAR_FLOAT occurrences = csv.getFloat(valueIndex, row);
 
-            if(occurrences > 0.0L)
+            if (occurrences > 0.0L)
             {
                 VAR_FLOAT val = csv.getFloat(0, row);
-                if(row > 0)
+                if (row > 0)
                 {
-                    if(val < param_[ce.condition()].low)
+                    if (val < param_[ce.condition()].low)
+                    {
                         param_[ce.condition()].low = val;
-                    if(val > param_[ce.condition()].high)
+                    }
+                    if (val > param_[ce.condition()].high)
+                    {
                         param_[ce.condition()].high = val;
+                    }
                 }
                 else
                 {
@@ -1101,30 +1204,32 @@ bool UniformFloatFunction::train(CSVAnalyzer csv, bool isAccumulativeCSV)
             }
         }
 
-        for(auto parIt = param_.begin(); parIt != param_.end(); parIt++)
+        for (auto parIt = param_.begin(); parIt != param_.end(); parIt++)
         {
             parIt->second.low -= (1.0L / parIt->second.occurrences);
             parIt->second.high += (1.0L / parIt->second.occurrences);
         }
     }
 
-    return (reval);
+    return reval;
 }
 
 /**
  * Generic ostream - &lt;&lt; operator for UniformFloatFunction.
  */
-ostream &operator<<(ostream &os, const UniformFloatFunction &uff)
+ostream &operator<<(ostream &os, UniformFloatFunction const &uff)
 {
-    for(auto it = uff.param_.begin(); it != uff.param_.end(); it++)
+    for (auto it = uff.param_.begin(); it != uff.param_.end(); it++)
     {
-        if(!it->first.empty())
+        if (!it->first.empty())
+        {
             os << "For condition " << it->first << " ";
+        }
 
         os << "Uniform on [" << it->second.low << "," << it->second.high << "]" << endl;
     }
 
-    return (os);
+    return os;
 }
 
 /**
@@ -1146,16 +1251,18 @@ void GaussFunction::clear()
 /**
  * Probability of a conditional event.
  */
-long double GaussFunction::P(const CondEvent &ce) const
+long double GaussFunction::P(CondEvent const &ce) const
 {
     // ce.eventSize() has to be exactly 1, the event-type has to be float or
     // float-interval
-    if(ce.eventSize() > 1)
-        return (0.0L);
+    if (ce.eventSize() > 1)
+    {
+        return 0.0L;
+    }
 
     auto foundParam = param_.find(ce.condition());
 
-    if(foundParam != param_.end())
+    if (foundParam != param_.end())
     {
         VAR_FLOAT                                   mu    = foundParam->second.mu;
         VAR_FLOAT                                   sigma = foundParam->second.sigma;
@@ -1164,18 +1271,18 @@ long double GaussFunction::P(const CondEvent &ce) const
         long double lowP  = itvl.isLeftInfinite() ? 0.0L : boost::math::cdf(nd, itvl.left());
         long double highP = itvl.isRightInfinite() ? 1.0L : boost::math::cdf(nd, itvl.right());
 
-        return (highP - lowP);
+        return highP - lowP;
     }
 
-    return (0.0L);
+    return 0.0L;
 }
 
 /**
  * Probability of an interval. Returns zero if the Event is not an interval-event.
  */
-long double GaussFunction::P(const EventCatenation &el) const
+long double GaussFunction::P(EventCatenation const &el) const
 {
-    return (P(CondEvent(el)));
+    return P(CondEvent(el));
 }
 
 /**
@@ -1187,13 +1294,15 @@ long double GaussFunction::P(const EventCatenation &el) const
  */
 bool GaussFunction::train(CSVAnalyzer csv, bool isAccumulativeCSV)
 {
-    if(csv.columns() == 0)
-        return (false);
+    if (csv.columns() == 0)
+    {
+        return false;
+    }
 
     bool   reval          = true;
     size_t lastEventIndex = 1;
 
-    if(!isAccumulativeCSV || csv.type(csv.columns() - 1) != CSV_COLUMN_TYPE_FLOAT)
+    if (!isAccumulativeCSV || csv.type(csv.columns() - 1) != CSV_COLUMN_TYPE_FLOAT)
     {
         // append a 1.0 - initialised value column
         csv.appendColumn("[[RESULT]]", "float", 1.0L);
@@ -1202,35 +1311,35 @@ bool GaussFunction::train(CSVAnalyzer csv, bool isAccumulativeCSV)
 
     param_.clear();
 
-    if(csv.lines() > 0)
+    if (csv.lines() > 0)
     {
         size_t valueIndex = csv.columns() - 1;
 
-        for(size_t row = 0; row < csv.lines(); row++)
+        for (size_t row = 0; row < csv.lines(); row++)
         {
             CondEvent ce(csv, row, lastEventIndex, isAccumulativeCSV);
             VAR_FLOAT occurrences = csv.getFloat(valueIndex, row);
 
-            if(occurrences > 0.0L)
+            if (occurrences > 0.0L)
             {
                 param_[ce.condition()].mu += csv.getFloat(0, row) * occurrences;
                 param_[ce.condition()].occurrences += occurrences;
             }
         }
 
-        for(auto param: param_)
+        for (auto param: param_)
         {
             param.second.mu /= param.second.occurrences;
-            param.second.sigma = 0.0L;  // reset to 0 just to make sure
+            param.second.sigma = 0.0L; // reset to 0 just to make sure
         }
 
         // now we got all the mu's we calculate the sigmas
-        for(size_t row = 0; row < csv.lines(); row++)
+        for (size_t row = 0; row < csv.lines(); row++)
         {
             CondEvent ce(csv, row, lastEventIndex, isAccumulativeCSV);
             VAR_FLOAT occurrences = csv.getFloat(valueIndex, row);
 
-            if(occurrences > 0.0L)
+            if (occurrences > 0.0L)
             {
                 VAR_FLOAT mu  = param_[ce.condition()].mu;
                 VAR_FLOAT val = csv.getFloat(0, row);
@@ -1239,49 +1348,51 @@ bool GaussFunction::train(CSVAnalyzer csv, bool isAccumulativeCSV)
             }
         }
 
-        for(auto param: param_)
+        for (auto param: param_)
         {
             param.second.sigma /= param.second.occurrences;
         }
     }
 
-    return (reval);
+    return reval;
 }
 
 /**
  * Retrieve mu.
  */
-long double GaussFunction::mu(const CondEvent &ce) const
+long double GaussFunction::mu(CondEvent const &ce) const
 {
     auto found = param_.find(ce.condition());
 
-    return (found != param_.end() ? found->second.mu : 0.0L);
+    return found != param_.end() ? found->second.mu : 0.0L;
 }
 
 /**
  * Retrieve variance.
  */
-long double GaussFunction::sigma(const CondEvent &ce) const
+long double GaussFunction::sigma(CondEvent const &ce) const
 {
     auto found = param_.find(ce.condition());
 
-    return (found != param_.end() ? found->second.sigma : 0.0L);
+    return found != param_.end() ? found->second.sigma : 0.0L;
 }
 
 /**
  * Generic ostream - &lt;&lt; operator for GaussFunction.
  */
-ostream &operator<<(ostream &os, const GaussFunction &d)
+ostream &operator<<(ostream &os, GaussFunction const &d)
 {
-    for(auto param: d.param_)
+    for (auto param: d.param_)
     {
-        if(!param.first.empty())
+        if (!param.first.empty())
+        {
             os << "For condition " << param.first << " ";
+        }
 
         os << "Gauss-distributed with mu=" << param.second.mu << " and sigma=" << param.second.sigma << endl;
     }
 
-    return (os);
+    return os;
 }
 
 /**
@@ -1303,12 +1414,14 @@ void ExponentialFunction::clear()
 /**
  * Probability of an interval. Returns zero if the Event is not an interval-event.
  */
-long double ExponentialFunction::P(const CondEvent &ce) const
+long double ExponentialFunction::P(CondEvent const &ce) const
 {
     // ce.eventSize() has to be exactly 1, the event-type has to be float or
     // float-interval
-    if(ce.eventSize() > 1)
-        return (0.0L);
+    if (ce.eventSize() > 1)
+    {
+        return 0.0L;
+    }
 
     Interval<VAR_FLOAT> itvl = ce.event().cbegin()->interval<VAR_FLOAT>();
 
@@ -1318,15 +1431,15 @@ long double ExponentialFunction::P(const CondEvent &ce) const
     long double lowP  = itvl.isLeftInfinite() ? 0.0L : boost::math::cdf(ed, itvl.left());
     long double highP = itvl.isRightInfinite() ? 1.0L : boost::math::cdf(ed, itvl.right());
 
-    return (highP - lowP);
+    return highP - lowP;
 }
 
 /**
  * Delegate Probability from from EventCatenation to avoid excessive casting.
  */
-long double ExponentialFunction::P(const EventCatenation &el) const
+long double ExponentialFunction::P(EventCatenation const &el) const
 {
-    return (P(CondEvent(el)));
+    return P(CondEvent(el));
 }
 
 /**
@@ -1336,10 +1449,12 @@ long double ExponentialFunction::P(const EventCatenation &el) const
  */
 bool ExponentialFunction::train(CSVAnalyzer csv, bool isAccumulativeCSV)
 {
-    if(csv.columns() == 0)
-        return (false);
+    if (csv.columns() == 0)
+    {
+        return false;
+    }
 
-    if(!isAccumulativeCSV || csv.type(csv.columns() - 1) != CSV_COLUMN_TYPE_FLOAT)
+    if (!isAccumulativeCSV || csv.type(csv.columns() - 1) != CSV_COLUMN_TYPE_FLOAT)
     {
         // append a 1.0 - initialised value column
         csv.appendColumn("[[RESULT]]", "float", 1.0L);
@@ -1351,78 +1466,84 @@ bool ExponentialFunction::train(CSVAnalyzer csv, bool isAccumulativeCSV)
     size_t lastEventIndex = 1;
     bool   reval          = false;
 
-    if(csv.lines() > 0)
+    if (csv.lines() > 0)
     {
         size_t valueIndex = csv.columns() - 1;
 
-        for(size_t row = 0; row < csv.lines(); row++)
+        for (size_t row = 0; row < csv.lines(); row++)
         {
             CondEvent ce(csv, row, lastEventIndex, isAccumulativeCSV);
             VAR_FLOAT occurrences = csv.getFloat(valueIndex, row);
 
-            if(occurrences > 0.0L)
+            if (occurrences > 0.0L)
             {
-                if(csv.getFloat(0, row) < 0.0L)
+                if (csv.getFloat(0, row) < 0.0L)
+                {
                     throw event_range_error(event_range_error::exponential_range, csv.getFloat(0, row));
+                }
 
                 param_[ce.condition()].lambda += csv.getFloat(0, row) * occurrences;
                 param_[ce.condition()].occurrences += occurrences;
             }
         }
 
-        for(auto param: param_)
+        for (auto param: param_)
         {
             param.second.lambda /= param.second.occurrences;
         }
     }
 
-    return (reval);
+    return reval;
 }
 
 /**
  * Retrieve the expectation lambda.
  */
-long double ExponentialFunction::lambda(const CondEvent &ce) const
+long double ExponentialFunction::lambda(CondEvent const &ce) const
 {
     auto found = param_.find(ce.condition());
 
-    return (found != param_.end() ? found->second.lambda : 0.0L);
+    return found != param_.end() ? found->second.lambda : 0.0L;
 }
 
 /**
  * Get the point where the cdf == 1/2.
  * P(0.0 &le; x &le; ln(2)/lambda_) = 0.5
  */
-long double ExponentialFunction::ln2ByLambda(const CondEvent &ce) const
+long double ExponentialFunction::ln2ByLambda(CondEvent const &ce) const
 {
-    return (std::numbers::ln2_v<long double> / lambda(ce));
+    return std::numbers::ln2_v<long double> / lambda(ce);
 }
 
 /**
  * Generic ostream - &lt;&lt; operator for ExponentialFunction.
  */
-ostream &operator<<(ostream &os, const ExponentialFunction &d)
+ostream &operator<<(ostream &os, ExponentialFunction const &d)
 {
-    for(auto param: d.param_)
+    for (auto param: d.param_)
     {
-        if(!param.first.empty())
+        if (!param.first.empty())
+        {
             os << "For condition " << param.first << " ";
+        }
 
         os << "Gauss-distributed with lambda=" << param.second.lambda << endl;
     }
 
-    return (os);
+    return os;
 }
 
-DiscreteProbability::DiscreteProbability(const VALUERANGES_TYPE &eventValueRanges,
-                                         const VALUERANGES_TYPE &conditionValueRanges)
-: ProbabilityFunction(eventValueRanges, conditionValueRanges)
+DiscreteProbability::DiscreteProbability(
+    const VALUERANGES_TYPE &eventValueRanges,
+    const VALUERANGES_TYPE &conditionValueRanges
+)
+    : ProbabilityFunction(eventValueRanges, conditionValueRanges)
 {
 }
 
 ProbabilityFunction *DiscreteProbability::clone() const
 {
-    return (new DiscreteProbability(*this));
+    return new DiscreteProbability(*this);
 }
 
 bool DiscreteProbability::makeUniform()
@@ -1430,19 +1551,23 @@ bool DiscreteProbability::makeUniform()
     bool   reval          = true;
     size_t numberOfValues = values_.size();
 
-    if(numberOfValues == 0)
+    if (numberOfValues == 0)
+    {
         canonise();
+    }
 
     setUniform(true);
 
     long double prob = 1.0 / static_cast<long double>(numberOfValues);
 
-    for(auto value: values_)
+    for (auto value: values_)
+    {
         value.second = prob;
+    }
 
     setModified(false);
 
-    return (reval);
+    return reval;
 }
 
 /*
@@ -1467,25 +1592,29 @@ bool DiscreteProbability::makeUniform()
  */
 bool DiscreteProbability::normalise()
 {
-    if(isUniform())
+    if (isUniform())
     {
-        return (makeUniform());
+        return makeUniform();
     }
 
     bool reval = true;
 
-    if(values_.size() == 0)
+    if (values_.size() == 0)
+    {
         reval = canonise();
+    }
 
     ACCUMULATION_MAP sum;
-    for(auto it = values_.begin(); it != values_.end(); it++)
+    for (auto it = values_.begin(); it != values_.end(); it++)
     {
-        if(it->second < 0.0L)  // values *CAN* be > 1.0 until the probability is normalised
+        if (it->second < 0.0L) // values *CAN* be > 1.0 until the probability is normalised
+        {
             throw distribution_error(it->second);
+        }
 
         auto acIt = sum.find(it->first.condition());
 
-        if(acIt == sum.end())  // initialise
+        if (acIt == sum.end()) // initialise
         {
             sum[it->first.condition()].number = 1.0L;
             sum[it->first.condition()].sum    = it->second;
@@ -1497,40 +1626,50 @@ bool DiscreteProbability::normalise()
         }
     }
 
-    for(auto it = values_.begin(); it != values_.end(); it++)
+    for (auto it = values_.begin(); it != values_.end(); it++)
     {
-        if(sum[it->first.condition()].sum == 0.0L)  // make uniform // @suppress("Direct float comparison")
-            it->second = 1.0L / static_cast<long double>((sum[it->first.condition()].number));
+        if (sum[it->first.condition()].sum == 0.0L) // make uniform // @suppress("Direct float comparison")
+        {
+            it->second = 1.0L / static_cast<long double>(sum[it->first.condition()].number);
+        }
         else
+        {
             // normalise
             it->second /= sum[it->first.condition()].sum;
+        }
     }
 
     setModified(false);
 
-    return (reval);
+    return reval;
 }
 
-void spread(vector<CondEvent> &condEvents, const EventCollection &ev, bool isCond, size_t module)
+void spread(vector<CondEvent> &condEvents, EventCollection const &ev, bool isCond, size_t module)
 {
     auto   evIt  = ev.begin();
     size_t count = 0;
 
-    for(auto vIt = condEvents.begin(); vIt != condEvents.end(); vIt++)
+    for (auto vIt = condEvents.begin(); vIt != condEvents.end(); vIt++)
     {
-        if(isCond)
+        if (isCond)
+        {
             *vIt || *evIt;
+        }
         else
+        {
             *vIt && *evIt;
+        }
 
         count++;
 
-        if(count % module == 0)
+        if (count % module == 0)
         {
             evIt++;
 
-            if(evIt == ev.end())
+            if (evIt == ev.end())
+            {
                 evIt = ev.begin();
+            }
         }
     }
 }
@@ -1542,21 +1681,27 @@ bool DiscreteProbability::canonise()
     vector<CondEvent> condEvents;
     size_t            numCondEvents = 1;
 
-    if(eventValueRanges_.size() == 0 || eventValueRanges_.begin()->second.size() == 0)
+    if (eventValueRanges_.size() == 0 || eventValueRanges_.begin()->second.size() == 0)
+    {
         throw distribution_error("need at least one event with non-empty"
                                  " value-range to canonise discrete distribution.");
+    }
 
-    for(auto eRangeIt = eventValueRanges_.begin(); eRangeIt != eventValueRanges_.end(); eRangeIt++)
+    for (auto eRangeIt = eventValueRanges_.begin(); eRangeIt != eventValueRanges_.end(); eRangeIt++)
+    {
         numCondEvents *= eRangeIt->second.size();
+    }
 
-    for(auto cRangeIt = conditionValueRanges_.begin(); cRangeIt != conditionValueRanges_.end(); cRangeIt++)
+    for (auto cRangeIt = conditionValueRanges_.begin(); cRangeIt != conditionValueRanges_.end(); cRangeIt++)
+    {
         numCondEvents *= cRangeIt->second.size();
+    }
 
     condEvents.resize(numCondEvents);
 
     size_t module = 1;
 
-    for(auto eRangeIt = eventValueRanges_.begin(); eRangeIt != eventValueRanges_.end(); eRangeIt++)
+    for (auto eRangeIt = eventValueRanges_.begin(); eRangeIt != eventValueRanges_.end(); eRangeIt++)
     {
         EventCollection eSet = eRangeIt->second.makeEventSet(eRangeIt->first);
 
@@ -1564,7 +1709,7 @@ bool DiscreteProbability::canonise()
         module *= eSet.size();
     }
 
-    for(auto cRangeIt = conditionValueRanges_.begin(); cRangeIt != conditionValueRanges_.end(); cRangeIt++)
+    for (auto cRangeIt = conditionValueRanges_.begin(); cRangeIt != conditionValueRanges_.end(); cRangeIt++)
     {
         EventCollection eSet = cRangeIt->second.makeEventSet(cRangeIt->first);
 
@@ -1572,11 +1717,15 @@ bool DiscreteProbability::canonise()
         module *= eSet.size();
     }
 
-    for(auto ceIt = condEvents.begin(); ceIt != condEvents.end(); ceIt++)
-        if(values_.find(*ceIt) == values_.end())
+    for (auto ceIt = condEvents.begin(); ceIt != condEvents.end(); ceIt++)
+    {
+        if (values_.find(*ceIt) == values_.end())
+        {
             values_[*ceIt] = 0.0L;
+        }
+    }
 
-    return (reval);
+    return reval;
 }
 
 bool DiscreteProbability::isDistribution() const
@@ -1584,25 +1733,29 @@ bool DiscreteProbability::isDistribution() const
     bool             reval = !empty();
     ACCUMULATION_MAP sum;
 
-    for(auto value: values_)
+    for (auto value: values_)
     {
-        if(value.second < 0.0L)  // values *CAN* be > 1.0 until the probability is normalised
+        if (value.second < 0.0L) // values *CAN* be > 1.0 until the probability is normalised
+        {
             reval = false;
+        }
 
         sum[value.first.condition()].sum += value.second;
     }
 
     auto it = sum.begin();
 
-    while(reval && it != sum.end())
+    while (reval && it != sum.end())
     {
-        if(!withinTolerance(it->second.sum, 1.0L))
+        if (!withinTolerance(it->second.sum, 1.0L))
+        {
             reval = false;
+        }
 
         it++;
     }
 
-    return (reval);
+    return reval;
 }
 
 void DiscreteProbability::clear()
@@ -1614,27 +1767,33 @@ void DiscreteProbability::clear()
 
 bool DiscreteProbability::empty() const
 {
-    return (values_.empty());
+    return values_.empty();
 }
 
 // TODO: this needs to change to cater for Intervals
 
-long double DiscreteProbability::P(const CondEvent &ce) const
+long double DiscreteProbability::P(CondEvent const &ce) const
 {
-    if(!isDistribution())
+    if (!isDistribution())
+    {
         throw distribution_error();
+    }
 
     string error = "";
 
-    if(!possibleCondEvent(ce, error))
+    if (!possibleCondEvent(ce, error))
+    {
         throw distribution_error(error);
+    }
 
     auto found = values_.find(ce);
 
-    if(found == values_.end())
-        return (0.0L);
+    if (found == values_.end())
+    {
+        return 0.0L;
+    }
 
-    return (found->second);
+    return found->second;
 }
 
 /**
@@ -1645,12 +1804,14 @@ long double DiscreteProbability::P(const CondEvent &ce) const
  */
 bool DiscreteProbability::train(CSVAnalyzer csv, bool isAccumulativeCSV)
 {
-    if(csv.columns() == 0)
-        return (false);
+    if (csv.columns() == 0)
+    {
+        return false;
+    }
 
     size_t lastEventIndex = 0;
 
-    if(!isAccumulativeCSV || csv.type(csv.columns() - 1) != CSV_COLUMN_TYPE_FLOAT)
+    if (!isAccumulativeCSV || csv.type(csv.columns() - 1) != CSV_COLUMN_TYPE_FLOAT)
     {
         // append a 1.0 - initialised value column
         csv.appendColumn("[[RESULT]]", "float", 1.0L);
@@ -1659,11 +1820,11 @@ bool DiscreteProbability::train(CSVAnalyzer csv, bool isAccumulativeCSV)
 
     bool reval = false;
 
-    if(csv.lines() > 0)
+    if (csv.lines() > 0)
     {
         size_t valueIndex = csv.columns() - 1;
 
-        for(size_t row = 0; row < csv.lines(); row++)
+        for (size_t row = 0; row < csv.lines(); row++)
         {
             CondEvent ce(csv, row, lastEventIndex, isAccumulativeCSV);
 
@@ -1674,7 +1835,7 @@ bool DiscreteProbability::train(CSVAnalyzer csv, bool isAccumulativeCSV)
         reval = normalise();
     }
 
-    return (reval);
+    return reval;
 }
 
 /**
@@ -1683,17 +1844,17 @@ bool DiscreteProbability::train(CSVAnalyzer csv, bool isAccumulativeCSV)
  */
 void DiscreteProbability::updateValueRangesFromValues_(bool clearFirst)
 {
-    if(clearFirst)
+    if (clearFirst)
     {
         conditionValueRanges_.clear();
         eventValueRanges_.clear();
     }
 
-    for(auto it = values_.begin(); it != values_.end(); it++)
+    for (auto it = values_.begin(); it != values_.end(); it++)
     {
         auto condIt = it->first.condition().cbegin();
 
-        while(condIt != it->first.condition().cend())
+        while (condIt != it->first.condition().cend())
         {
             addValidValueToRange(conditionValueRanges_, eventValueRanges_, condIt->name(), condIt->varValue());
             condIt++;
@@ -1701,7 +1862,7 @@ void DiscreteProbability::updateValueRangesFromValues_(bool clearFirst)
 
         auto evtIt = it->first.event().cbegin();
 
-        while(evtIt != it->first.event().cend())
+        while (evtIt != it->first.event().cend())
         {
             addValidValueToRange(eventValueRanges_, conditionValueRanges_, evtIt->name(), evtIt->varValue());
             evtIt++;
@@ -1709,23 +1870,30 @@ void DiscreteProbability::updateValueRangesFromValues_(bool clearFirst)
     }
 }
 
-ostream &operator<<(ostream &os, const DiscreteProbability &d)
+ostream &operator<<(ostream &os, DiscreteProbability const &d)
 {
     os << "Event value ranges:" << endl;
 
-    for(auto evRange: d.eventValueRanges_)
+    for (auto evRange: d.eventValueRanges_)
+    {
         os << "\t" << evRange.first << ": " << evRange.second << endl;
+    }
 
     os << "Condition value ranges:" << endl;
 
-    for(auto condRange: d.conditionValueRanges_)
+    for (auto condRange: d.conditionValueRanges_)
+    {
         os << "\t" << condRange.first << ": " << condRange.second << endl;
+    }
 
-    for(auto value: d.values_)
+    for (auto value: d.values_)
+    {
         os << "P(" << value.first << ")=" << value.second << endl;
+    }
 
-    return (os);
+    return os;
 }
 
-};
+}; // namespace util
+
 // namespace util

@@ -30,25 +30,26 @@
 #include <vector>
 
 using namespace std;
+
 namespace util
 {
 static map<size_t, vector<size_t>, std::greater<>> testSets = {
- {2047u, {2u}},
- {1373653u, {2u, 3u}},
- {9080191u, {31u, 73u}},
- {25326001u, {2u, 3u, 5u}},
- {3215031751u, {2u, 3u, 5u, 7u}},
- {4759123141u, {2u, 7u, 61u}},
- {1122004669633u, {2u, 13u, 23u, 1662803u}},
- {2152302898747u, {2u, 3u, 5u, 7u, 11u}},
- {3474749660383u, {2u, 3u, 5u, 7u, 11u, 13u}},
- {341550071728321, {2u, 3u, 5u, 7u, 11u, 13u, 17u}},
- {3825123056546413051u, {2u, 3u, 5u, 7u, 11u, 13u, 17u, 19u, 23u}},
- //    {18446744073709551616u,
- //        {2u, 3u, 5u, 7u, 11u, 13u, 17u, 19u, 23u, 29u, 31u, 37u}}
+    {2'047u,                     {2u}                                     },
+    {1'373'653u,                 {2u, 3u}                                 },
+    {9'080'191u,                 {31u, 73u}                               },
+    {25'326'001u,                {2u, 3u, 5u}                             },
+    {3'215'031'751u,             {2u, 3u, 5u, 7u}                         },
+    {4'759'123'141u,             {2u, 7u, 61u}                            },
+    {1'122'004'669'633u,         {2u, 13u, 23u, 1'662'803u}               },
+    {2'152'302'898'747u,         {2u, 3u, 5u, 7u, 11u}                    },
+    {3'474'749'660'383u,         {2u, 3u, 5u, 7u, 11u, 13u}               },
+    {341'550'071'728'321,        {2u, 3u, 5u, 7u, 11u, 13u, 17u}          },
+    {3'825'123'056'546'413'051u, {2u, 3u, 5u, 7u, 11u, 13u, 17u, 19u, 23u}},
+    //    {18446744073709551616u,
+    //        {2u, 3u, 5u, 7u, 11u, 13u, 17u, 19u, 23u, 29u, 31u, 37u}}
 };
 
-template<typename T_>
+template <typename T_>
 T_ powerMod(T_ b, T_ e, T_ modul)
 {
     long double p    = pow(static_cast<long double>(b), static_cast<long double>(e)) / static_cast<long double>(modul);
@@ -57,7 +58,7 @@ T_ powerMod(T_ b, T_ e, T_ modul)
     //    cout << b << "^" << e << " % " << modul << " =" << ((size_t) pow(b, e)) % modul << " || " << rest * modul <<
     //    endl;
 
-    return (rest * modul);
+    return rest * modul;
 }
 
 /**
@@ -94,11 +95,15 @@ T_ powerMod(T_ b, T_ e, T_ modul)
  */
 bool isPrimeMiller(size_t n)
 {
-    if(n == 2)
-        return (true);
+    if (n == 2)
+    {
+        return true;
+    }
 
-    if(n < 2 || n % 2 == 0)
-        return (false);
+    if (n < 2 || n % 2 == 0)
+    {
+        return false;
+    }
 
     // n is odd and n>=3
 
@@ -106,7 +111,7 @@ bool isPrimeMiller(size_t n)
     size_t d = n - 1;
     size_t r = 0;
 
-    while(d % 2 == 0)
+    while (d % 2 == 0)
     {
         d /= 2;
         r++;
@@ -115,14 +120,16 @@ bool isPrimeMiller(size_t n)
     //    cout << "n=" << n << " d=" << d << " r=" << r << " 2^r*d+1=" << pow(2, r) * d + 1 << endl;
     vector<size_t> aVec;
 
-    for(auto aTestSet: testSets)
-        if(n < aTestSet.first)
+    for (auto aTestSet: testSets)
+    {
+        if (n < aTestSet.first)
         {
             aVec = aTestSet.second;
             //            cout << n << "<" << aTestSet.first << ":";
             //            copy(aVec.begin(), aVec.end(), ostream_iterator<size_t>(cout, ", "));
             //            cout << endl;
         }
+    }
     //    cout << "\tCHOSEN: ";
     //    copy(aVec.begin(), aVec.end(), ostream_iterator<size_t>(cout, ", "));
     //    cout << endl;
@@ -138,29 +145,32 @@ bool isPrimeMiller(size_t n)
     //         continue WitnessLoop
     //   return “composite”
     // return “prime”
-    for(auto a: aVec)
+    for (auto a: aVec)
     {
         // size_t x = ((size_t) pow(a, d)) % n;
         auto x = static_cast<size_t>(powerMod(a, d, n));
 
-        if(x != 1 && x != n - 1)
+        if (x != 1 && x != n - 1)
         {
             bool skip = false;
 
-            for(size_t rIt = 0; rIt < r - 1 && !skip; rIt++)
+            for (size_t rIt = 0; rIt < r - 1 && !skip; rIt++)
             {
                 x = (x * x) % n;
 
-                if(x == n - 1)
+                if (x == n - 1)
                 {
                     skip = true;
                 }
             }
-            if(!skip)
-                return (false);
+            if (!skip)
+            {
+                return false;
+            }
         }
     }
-    return (true);
+    return true;
 }
-};
+}; // namespace util
+
 // namespace util

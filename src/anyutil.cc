@@ -27,245 +27,281 @@
 
 #include "stringutil.h"
 #include "to_string.h"
-//#define DO_TRACE_
+// #define DO_TRACE_
 #include "traceutil.h"
 
 using namespace util;
+
 namespace util
 {
 using namespace std;
-const int Var::xalloc_index = ios_base::xalloc();
+int const Var::xalloc_index = ios_base::xalloc();
 
-Var::Var() : value_(std::any())
+Var::Var()
+    : value_(std::any())
 {
 }
 
-Var::Var(const VAR_BOOL &v) : value_(v)
+Var::Var(const VAR_BOOL &v)
+    : value_(v)
 {
 }
 
-Var::Var(const VAR_CHAR &v) : value_(v)
+Var::Var(const VAR_CHAR &v)
+    : value_(v)
 {
 }
 
-Var::Var(const VAR_INT &v) : value_(v)
+Var::Var(const VAR_INT &v)
+    : value_(v)
 {
 }
 
-Var::Var(const VAR_UINT &v) : value_(v)
+Var::Var(const VAR_UINT &v)
+    : value_(v)
 {
 }
 
-Var::Var(const VAR_FLOAT &v) : value_(v)
+Var::Var(const VAR_FLOAT &v)
+    : value_(v)
 {
 }
 
-Var::Var(const VAR_DATE &v) : value_(v)
+Var::Var(const VAR_DATE &v)
+    : value_(v)
 {
 }
 
-Var::Var(const VAR_STRING &v) : value_(v)
+Var::Var(const VAR_STRING &v)
+    : value_(v)
 {
 }
 
-const type_info &Var::type() const
+type_info const &Var::type() const
 {
-    return (value_.type());
+    return value_.type();
 }
 
 bool Var::empty() const
 {
-    return (!value_.has_value());
+    return !value_.has_value();
 }
 
 Var &Var::swap(Var &rhs)
 {
     value_.swap(rhs.value_);
 
-    return (*this);
+    return *this;
 }
 
 std::any Var::value() const
 {
-    return (value_);
+    return value_;
 }
 
-bool Var::contains(const Var &val) const
+bool Var::contains(Var const &val) const
 {
-    bool reval = (containsT<VAR_CHAR>(*this, val) || containsT<VAR_INT>(*this, val) || containsT<VAR_UINT>(*this, val)
-                  || containsT<VAR_FLOAT>(*this, val) || containsT<VAR_DATE>(*this, val) || (*this == val));
+    bool reval =
+        (containsT<VAR_CHAR>(*this, val) || containsT<VAR_INT>(*this, val) || containsT<VAR_UINT>(*this, val) ||
+         containsT<VAR_FLOAT>(*this, val) || containsT<VAR_DATE>(*this, val) || (*this == val));
 
-    return (reval);
+    return reval;
 }
 
-bool operator==(const Var &lhs, const Var &rhs)
+bool operator==(Var const &lhs, Var const &rhs)
 {
-    return (equalT<VAR_BOOL>(lhs, rhs) || equalT<VAR_CHAR>(lhs, rhs) || equalT<VAR_INT>(lhs, rhs)
-            || equalT<VAR_UINT>(lhs, rhs) || equalT<VAR_FLOAT>(lhs, rhs) || equalT<VAR_STRING>(lhs, rhs)
-            || equalT<VAR_DATE>(lhs, rhs) || equalT<VAR_BOOL_INTERVAL>(lhs, rhs) || equalT<VAR_CHAR_INTERVAL>(lhs, rhs)
-            || equalT<VAR_INT_INTERVAL>(lhs, rhs) || equalT<VAR_UINT_INTERVAL>(lhs, rhs)
-            || equalT<VAR_DATE_INTERVAL>(lhs, rhs) || equalT<VAR_FLOAT_INTERVAL>(lhs, rhs));
+    return equalT<VAR_BOOL>(lhs, rhs) || equalT<VAR_CHAR>(lhs, rhs) || equalT<VAR_INT>(lhs, rhs) ||
+           equalT<VAR_UINT>(lhs, rhs) || equalT<VAR_FLOAT>(lhs, rhs) || equalT<VAR_STRING>(lhs, rhs) ||
+           equalT<VAR_DATE>(lhs, rhs) || equalT<VAR_BOOL_INTERVAL>(lhs, rhs) || equalT<VAR_CHAR_INTERVAL>(lhs, rhs) ||
+           equalT<VAR_INT_INTERVAL>(lhs, rhs) || equalT<VAR_UINT_INTERVAL>(lhs, rhs) ||
+           equalT<VAR_DATE_INTERVAL>(lhs, rhs) || equalT<VAR_FLOAT_INTERVAL>(lhs, rhs);
 }
 
-bool operator<(const Var &lhs, const Var &rhs)
+bool operator<(Var const &lhs, Var const &rhs)
 {
-    if(isA<VAR_BOOL>(lhs))
+    if (isA<VAR_BOOL>(lhs))
+    {
         return lessT<VAR_BOOL>(lhs, rhs);
-    if(isA<VAR_CHAR>(lhs))
+    }
+    if (isA<VAR_CHAR>(lhs))
+    {
         return lessT<VAR_CHAR>(lhs, rhs);
-    if(isA<VAR_INT>(lhs))
+    }
+    if (isA<VAR_INT>(lhs))
+    {
         return lessT<VAR_INT>(lhs, rhs);
-    if(isA<VAR_UINT>(lhs))
+    }
+    if (isA<VAR_UINT>(lhs))
+    {
         return lessT<VAR_UINT>(lhs, rhs);
-    if(isA<VAR_FLOAT>(lhs))
+    }
+    if (isA<VAR_FLOAT>(lhs))
+    {
         return lessT<VAR_FLOAT>(lhs, rhs);
-    if(isA<VAR_DATE>(lhs))
+    }
+    if (isA<VAR_DATE>(lhs))
+    {
         return lessT<VAR_DATE>(lhs, rhs);
-    if(isA<VAR_STRING>(lhs))
+    }
+    if (isA<VAR_STRING>(lhs))
+    {
         return lessT<VAR_STRING>(lhs, rhs);
+    }
 
-    if(isA<VAR_BOOL_INTERVAL>(lhs))
+    if (isA<VAR_BOOL_INTERVAL>(lhs))
+    {
         return lessT<VAR_BOOL_INTERVAL>(lhs, rhs);
-    if(isA<VAR_CHAR_INTERVAL>(lhs))
+    }
+    if (isA<VAR_CHAR_INTERVAL>(lhs))
+    {
         return lessT<VAR_CHAR_INTERVAL>(lhs, rhs);
-    if(isA<VAR_INT_INTERVAL>(lhs))
+    }
+    if (isA<VAR_INT_INTERVAL>(lhs))
+    {
         return lessT<VAR_INT_INTERVAL>(lhs, rhs);
-    if(isA<VAR_UINT_INTERVAL>(lhs))
+    }
+    if (isA<VAR_UINT_INTERVAL>(lhs))
+    {
         return lessT<VAR_UINT_INTERVAL>(lhs, rhs);
-    if(isA<VAR_DATE_INTERVAL>(lhs))
+    }
+    if (isA<VAR_DATE_INTERVAL>(lhs))
+    {
         return lessT<VAR_DATE_INTERVAL>(lhs, rhs);
-    if(isA<VAR_FLOAT_INTERVAL>(lhs))
+    }
+    if (isA<VAR_FLOAT_INTERVAL>(lhs))
+    {
         return lessT<VAR_FLOAT_INTERVAL>(lhs, rhs);
+    }
 
-    return (toString(lhs) < toString(rhs));
+    return toString(lhs) < toString(rhs);
 }
 
-bool operator<=(const Var &lhs, const Var &rhs)
+bool operator<=(Var const &lhs, Var const &rhs)
 {
-    return (lessEqualT<VAR_BOOL>(lhs, rhs) || lessEqualT<VAR_CHAR>(lhs, rhs) || lessEqualT<VAR_INT>(lhs, rhs)
-            || lessEqualT<VAR_UINT>(lhs, rhs) || lessEqualT<VAR_FLOAT>(lhs, rhs) || lessEqualT<VAR_DATE>(lhs, rhs)
-            || lessEqualT<VAR_STRING>(lhs, rhs) || lessEqualT<VAR_BOOL_INTERVAL>(lhs, rhs)
-            || lessEqualT<VAR_CHAR_INTERVAL>(lhs, rhs) || lessEqualT<VAR_INT_INTERVAL>(lhs, rhs)
-            || lessEqualT<VAR_UINT_INTERVAL>(lhs, rhs) || lessEqualT<VAR_DATE_INTERVAL>(lhs, rhs)
-            || lessEqualT<VAR_FLOAT_INTERVAL>(lhs, rhs) || (toString(lhs) <= toString(rhs)));
+    return lessEqualT<VAR_BOOL>(lhs, rhs) || lessEqualT<VAR_CHAR>(lhs, rhs) || lessEqualT<VAR_INT>(lhs, rhs) ||
+           lessEqualT<VAR_UINT>(lhs, rhs) || lessEqualT<VAR_FLOAT>(lhs, rhs) || lessEqualT<VAR_DATE>(lhs, rhs) ||
+           lessEqualT<VAR_STRING>(lhs, rhs) || lessEqualT<VAR_BOOL_INTERVAL>(lhs, rhs) ||
+           lessEqualT<VAR_CHAR_INTERVAL>(lhs, rhs) || lessEqualT<VAR_INT_INTERVAL>(lhs, rhs) ||
+           lessEqualT<VAR_UINT_INTERVAL>(lhs, rhs) || lessEqualT<VAR_DATE_INTERVAL>(lhs, rhs) ||
+           lessEqualT<VAR_FLOAT_INTERVAL>(lhs, rhs) || (toString(lhs) <= toString(rhs));
 }
 
-bool operator>(const Var &lhs, const Var &rhs)
+bool operator>(Var const &lhs, Var const &rhs)
 {
-    return (greaterT<VAR_BOOL>(lhs, rhs) || greaterT<VAR_CHAR>(lhs, rhs) || greaterT<VAR_INT>(lhs, rhs)
-            || greaterT<VAR_UINT>(lhs, rhs) || greaterT<VAR_FLOAT>(lhs, rhs) || greaterT<VAR_DATE>(lhs, rhs)
-            || greaterT<VAR_STRING>(lhs, rhs) || greaterT<VAR_BOOL_INTERVAL>(lhs, rhs)
-            || greaterT<VAR_CHAR_INTERVAL>(lhs, rhs) || greaterT<VAR_INT_INTERVAL>(lhs, rhs)
-            || greaterT<VAR_UINT_INTERVAL>(lhs, rhs) || greaterT<VAR_DATE_INTERVAL>(lhs, rhs)
-            || greaterT<VAR_FLOAT_INTERVAL>(lhs, rhs) || (toString(lhs) > toString(rhs)));
+    return greaterT<VAR_BOOL>(lhs, rhs) || greaterT<VAR_CHAR>(lhs, rhs) || greaterT<VAR_INT>(lhs, rhs) ||
+           greaterT<VAR_UINT>(lhs, rhs) || greaterT<VAR_FLOAT>(lhs, rhs) || greaterT<VAR_DATE>(lhs, rhs) ||
+           greaterT<VAR_STRING>(lhs, rhs) || greaterT<VAR_BOOL_INTERVAL>(lhs, rhs) ||
+           greaterT<VAR_CHAR_INTERVAL>(lhs, rhs) || greaterT<VAR_INT_INTERVAL>(lhs, rhs) ||
+           greaterT<VAR_UINT_INTERVAL>(lhs, rhs) || greaterT<VAR_DATE_INTERVAL>(lhs, rhs) ||
+           greaterT<VAR_FLOAT_INTERVAL>(lhs, rhs) || (toString(lhs) > toString(rhs));
 }
 
-bool operator>=(const Var &lhs, const Var &rhs)
+bool operator>=(Var const &lhs, Var const &rhs)
 {
-    return (greaterEqualT<VAR_BOOL>(lhs, rhs) || greaterEqualT<VAR_CHAR>(lhs, rhs) || greaterEqualT<VAR_INT>(lhs, rhs)
-            || greaterEqualT<VAR_UINT>(lhs, rhs) || greaterEqualT<VAR_FLOAT>(lhs, rhs)
-            || greaterEqualT<VAR_DATE>(lhs, rhs) || greaterEqualT<VAR_STRING>(lhs, rhs)
-            || greaterEqualT<VAR_BOOL_INTERVAL>(lhs, rhs) || greaterEqualT<VAR_CHAR_INTERVAL>(lhs, rhs)
-            || greaterEqualT<VAR_INT_INTERVAL>(lhs, rhs) || greaterEqualT<VAR_UINT_INTERVAL>(lhs, rhs)
-            || greaterEqualT<VAR_DATE_INTERVAL>(lhs, rhs) || greaterEqualT<VAR_FLOAT_INTERVAL>(lhs, rhs)
-            || (toString(lhs) >= toString(rhs)));
+    return greaterEqualT<VAR_BOOL>(lhs, rhs) || greaterEqualT<VAR_CHAR>(lhs, rhs) || greaterEqualT<VAR_INT>(lhs, rhs) ||
+           greaterEqualT<VAR_UINT>(lhs, rhs) || greaterEqualT<VAR_FLOAT>(lhs, rhs) ||
+           greaterEqualT<VAR_DATE>(lhs, rhs) || greaterEqualT<VAR_STRING>(lhs, rhs) ||
+           greaterEqualT<VAR_BOOL_INTERVAL>(lhs, rhs) || greaterEqualT<VAR_CHAR_INTERVAL>(lhs, rhs) ||
+           greaterEqualT<VAR_INT_INTERVAL>(lhs, rhs) || greaterEqualT<VAR_UINT_INTERVAL>(lhs, rhs) ||
+           greaterEqualT<VAR_DATE_INTERVAL>(lhs, rhs) || greaterEqualT<VAR_FLOAT_INTERVAL>(lhs, rhs) ||
+           (toString(lhs) >= toString(rhs));
 }
 
-bool Less::leftMatchesRight(const Var &lhs, const Var &rhs) const
+bool Less::leftMatchesRight(Var const &lhs, Var const &rhs) const
 {
-    return (lhs < rhs);
+    return lhs < rhs;
 }
 
-string Less::desc(const Var &v) const
+string Less::desc(Var const &v) const
 {
     stringstream ss;
 
     ss << "<" << v;
 
-    return (ss.str());
+    return ss.str();
 }
 
-bool Equals::leftMatchesRight(const Var &lhs, const Var &rhs) const
+bool Equals::leftMatchesRight(Var const &lhs, Var const &rhs) const
 {
-    return (lhs == rhs);
+    return lhs == rhs;
 }
 
-string Equals::desc(const Var &v) const
+string Equals::desc(Var const &v) const
 {
     stringstream ss;
 
     ss << "==" << v;
 
-    return (ss.str());
+    return ss.str();
 }
 
-bool LessEqual::leftMatchesRight(const Var &lhs, const Var &rhs) const
+bool LessEqual::leftMatchesRight(Var const &lhs, Var const &rhs) const
 {
-    return (lhs <= rhs);
+    return lhs <= rhs;
 }
 
-string LessEqual::desc(const Var &v) const
+string LessEqual::desc(Var const &v) const
 {
     stringstream ss;
 
     ss << "<=" << v;
 
-    return (ss.str());
+    return ss.str();
 }
 
-bool Greater::leftMatchesRight(const Var &lhs, const Var &rhs) const
+bool Greater::leftMatchesRight(Var const &lhs, Var const &rhs) const
 {
-    return (lhs > rhs);
+    return lhs > rhs;
 }
 
-string Greater::desc(const Var &v) const
+string Greater::desc(Var const &v) const
 {
     stringstream ss;
 
     ss << ">" << v;
 
-    return (ss.str());
+    return ss.str();
 }
 
-bool GreaterEqual::leftMatchesRight(const Var &lhs, const Var &rhs) const
+bool GreaterEqual::leftMatchesRight(Var const &lhs, Var const &rhs) const
 {
-    return (lhs >= rhs);
+    return lhs >= rhs;
 }
 
-string GreaterEqual::desc(const Var &v) const
+string GreaterEqual::desc(Var const &v) const
 {
     stringstream ss;
 
     ss << ">=" << v;
 
-    return (ss.str());
+    return ss.str();
 }
 
-bool IsElementOf::leftMatchesRight(const Var &elem, const Var &itvl) const
+bool IsElementOf::leftMatchesRight(Var const &elem, Var const &itvl) const
 {
-    return (itvl.contains(elem));
+    return itvl.contains(elem);
 }
 
-string IsElementOf::desc(const Var &itvl) const
+string IsElementOf::desc(Var const &itvl) const
 {
     stringstream ss;
 
     ss << " in " << itvl;
 
-    return (ss.str());
+    return ss.str();
 }
 
-bool PlaceHolderOp::leftMatchesRight(const Var &elem, const Var &itvl) const
+bool PlaceHolderOp::leftMatchesRight(Var const &elem, Var const &itvl) const
 {
-    return (false);
+    return false;
 }
 
-string PlaceHolderOp::desc(const Var &itvl) const
+string PlaceHolderOp::desc(Var const &itvl) const
 {
     stringstream ss;
 
     ss << " <<NO_MATCH>> " << itvl;
 
-    return (ss.str());
+    return ss.str();
 }
-};  // namespace util
+}; // namespace util

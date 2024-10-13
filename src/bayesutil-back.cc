@@ -24,7 +24,6 @@
  */
 
 #include "bayesutil.h"
-
 #include "to_string.h"
 
 #include <utility>
@@ -33,30 +32,34 @@ namespace util
 {
 using namespace std;
 
-Node::Node(string name, string description, const EventValueRange &range)
-: name_(std::move(name))
-, description_(std::move(description))
-, distType_(range.type())
-, range_(range)
+Node::Node(string name, string description, EventValueRange const &range)
+    : name_(std::move(name))
+    , description_(std::move(description))
+    , distType_(range.type())
+    , range_(range)
 {
 }
 
-Node::Node(const Node &rhs)
-: name_(rhs.name_)
-, description_(rhs.description_)
-, distType_(rhs.distType_)
-, range_(rhs.range_)
+Node::Node(Node const &rhs)
+    : name_(rhs.name_)
+    , description_(rhs.description_)
+    , distType_(rhs.distType_)
+    , range_(rhs.range_)
 {
-    if(rhs.pDistribution_ != nullptr)
+    if (rhs.pDistribution_ != nullptr)
+    {
         pDistribution_ = rhs.pDistribution_->clone();
+    }
 
-    if(rhs.pAprioriDistribution_ != nullptr)
+    if (rhs.pAprioriDistribution_ != nullptr)
+    {
         pAprioriDistribution_ = rhs.pAprioriDistribution_->clone();
+    }
 }
 
-Node &Node::operator=(const Node &rhs)
+Node &Node::operator=(Node const &rhs)
 {
-    if(&rhs != this)
+    if (&rhs != this)
     {
         name_        = rhs.name_;
         description_ = rhs.description_;
@@ -68,7 +71,7 @@ Node &Node::operator=(const Node &rhs)
         pAprioriDistribution_ = (rhs.pAprioriDistribution_ == nullptr) ? nullptr : rhs.pAprioriDistribution_->clone();
     }
 
-    return (*this);
+    return *this;
 }
 
 Node::~Node()
@@ -77,224 +80,262 @@ Node::~Node()
     delete pAprioriDistribution_;
 }
 
-const EventValueRange &Node::range() const
+EventValueRange const &Node::range() const
 {
-    return (range_);
+    return range_;
 }
 
-bool Node::addRangeValue(const Var &val)
+bool Node::addRangeValue(Var const &val)
 {
     bool reval = range_.add(val);
 
-    if(dynamic_cast<DiscreteProbability *>(pDistribution_) != nullptr)
+    if (dynamic_cast<DiscreteProbability *>(pDistribution_) != nullptr)
+    {
         dynamic_cast<DiscreteProbability *>(pDistribution_)->addValueToEventRange(name(), val);
+    }
 
-    if(dynamic_cast<DiscreteProbability *>(pAprioriDistribution_) != nullptr)
+    if (dynamic_cast<DiscreteProbability *>(pAprioriDistribution_) != nullptr)
+    {
         dynamic_cast<DiscreteProbability *>(pAprioriDistribution_)->addValueToEventRange(name(), val);
+    }
 
-    return (reval);
+    return reval;
 }
 
 ProbabilityFunction *Node::distribution()
 {
-    return (pDistribution_);
+    return pDistribution_;
 }
 
 ProbabilityFunction *Node::aprioriDistribution()
 {
-    return (pAprioriDistribution_);
+    return pAprioriDistribution_;
 }
 
 bool Node::hasDistribution() const
 {
-    return ((pDistribution_ != nullptr) && (pDistribution_->isDistribution()));
+    return (pDistribution_ != nullptr) && (pDistribution_->isDistribution());
 }
 
 bool Node::hasAprioriDistribution() const
 {
-    return ((pAprioriDistribution_ != nullptr) && (pAprioriDistribution_->isDistribution()));
+    return (pAprioriDistribution_ != nullptr) && (pAprioriDistribution_->isDistribution());
 }
 
-string Node::setDescription(const string &descr)
+string Node::setDescription(string const &descr)
 {
     description_ = descr;
 
-    return (description_);
+    return description_;
 }
 
 string Node::description() const
 {
-    return (description_);
+    return description_;
 }
 
 string Node::name() const
 {
-    return (name_);
+    return name_;
 }
 
-bool Node::train(const CSVAnalyzer &csv, bool hasValue)
+bool Node::train(CSVAnalyzer const &csv, bool hasValue)
 {
     bool reval = !csv.empty();
 
     delete pDistribution_;
 
     pDistribution_ =
-     (distType_ == EventValueRange::discrete)      ? dynamic_cast<ProbabilityFunction *>(new DiscreteProbability()) :
-     (distType_ == EventValueRange::float_uniform) ? dynamic_cast<ProbabilityFunction *>(new UniformFloatFunction()) :
-     (distType_ == EventValueRange::exponential)   ? dynamic_cast<ProbabilityFunction *>(new ExponentialFunction()) :
-     (distType_ == EventValueRange::gaussian)      ? dynamic_cast<ProbabilityFunction *>(new GaussFunction()) :
-                                                     nullptr;
+        (distType_ == EventValueRange::discrete) ? dynamic_cast<ProbabilityFunction *>(new DiscreteProbability())
+        : (distType_ == EventValueRange::float_uniform)
+            ? dynamic_cast<ProbabilityFunction *>(new UniformFloatFunction())
+        : (distType_ == EventValueRange::exponential) ? dynamic_cast<ProbabilityFunction *>(new ExponentialFunction())
+        : (distType_ == EventValueRange::gaussian)    ? dynamic_cast<ProbabilityFunction *>(new GaussFunction())
+                                                      : nullptr;
 
-    if(nullptr == pDistribution_)
-        throw distribution_error("Distribution-type '" + toString(distType_)
-                                 + "' could not be created or is not implemented.");
+    if (nullptr == pDistribution_)
+    {
+        throw distribution_error(
+            "Distribution-type '" + toString(distType_) + "' could not be created or is not implemented."
+        );
+    }
 
     reval &= pDistribution_->train(csv, hasValue);
 
-    if(reval && distType_)
+    if (reval && distType_)
+    {
         range_.setValues(csv.getRange(0));
+    }
 
-    return (reval);
+    return reval;
 }
 
 bool Node::makeUniform(const VALUERANGES_TYPE &conditionValueRanges)
 {
     bool reval = false;
 
-    if(distType_ != EventValueRange::discrete)
-        return (reval);
+    if (distType_ != EventValueRange::discrete)
+    {
+        return reval;
+    }
 
     auto *pDistribution = dynamic_cast<DiscreteProbability *>(distribution());
 
-    if(pDistribution == nullptr)
+    if (pDistribution == nullptr)
     {
         VALUERANGES_TYPE eventValueRanges;
 
-        if(range().empty())
+        if (range().empty())
+        {
             throw distribution_error(distribution_error::empty_uniform);
+        }
 
         eventValueRanges[name()] = range();
         pDistribution_           = new DiscreteProbability(eventValueRanges, conditionValueRanges);
 
-        if(pDistribution == nullptr)
+        if (pDistribution == nullptr)
+        {
             throw bad_alloc();
+        }
     }
 
-    return (pDistribution->makeUniform());
+    return pDistribution->makeUniform();
 }
 
 bool Node::normalise(const VALUERANGES_TYPE &conditionValueRanges)
 {
-    if(distType_ != EventValueRange::discrete)
-        return (false);
+    if (distType_ != EventValueRange::discrete)
+    {
+        return false;
+    }
 
     auto *pDistribution = dynamic_cast<DiscreteProbability *>(distribution());
 
-    if(pDistribution == nullptr)
+    if (pDistribution == nullptr)
     {
         VALUERANGES_TYPE eventValueRanges;
 
-        if(range().empty())
+        if (range().empty())
+        {
             throw distribution_error(distribution_error::empty_normalise);
+        }
 
         eventValueRanges[name()] = range();
         pDistribution_           = new DiscreteProbability(eventValueRanges, conditionValueRanges);
 
-        if(pDistribution == nullptr)
+        if (pDistribution == nullptr)
+        {
             throw bad_alloc();
+        }
     }
 
-    return (pDistribution->normalise());
+    return pDistribution->normalise();
 }
 
 bool Node::canonise(const VALUERANGES_TYPE &conditionValueRanges)
 {
     bool reval = false;
 
-    if(distType_ != EventValueRange::discrete)
-        return (reval);
+    if (distType_ != EventValueRange::discrete)
+    {
+        return reval;
+    }
 
-    if(dynamic_cast<DiscreteProbability *>(distribution()) == nullptr)
+    if (dynamic_cast<DiscreteProbability *>(distribution()) == nullptr)
     {
         VALUERANGES_TYPE eventValueRanges;
 
-        if(range().empty())
+        if (range().empty())
+        {
             throw distribution_error(distribution_error::empty_canonise);
+        }
 
         eventValueRanges[name()] = range();
         pDistribution_           = new DiscreteProbability(eventValueRanges, conditionValueRanges);
 
-        if(pDistribution_ == nullptr)
+        if (pDistribution_ == nullptr)
+        {
             throw bad_alloc();
+        }
 
         reval = dynamic_cast<DiscreteProbability *>(pDistribution_)->canonise();
     }
 
-    return (reval);
+    return reval;
 }
 
-bool Node::calculateAprioriDistribution(const set<Node> &incoming)
+bool Node::calculateAprioriDistribution(set<Node> const &incoming)
 {
     bool reval = false;
 
-    return (reval);
+    return reval;
 }
 
-bool operator<(const Node &lhs, const Node &rhs)
+bool operator<(Node const &lhs, Node const &rhs)
 {
-    return (lhs.name() < rhs.name());
+    return lhs.name() < rhs.name();
 }
 
-bool operator==(const Node &lhs, const Node &rhs)
+bool operator==(Node const &lhs, Node const &rhs)
 {
-    return (lhs.name() == rhs.name());
+    return lhs.name() == rhs.name();
 }
 
-bool operator!=(const Node &lhs, const Node &rhs)
+bool operator!=(Node const &lhs, Node const &rhs)
 {
-    return (!(lhs == rhs));
+    return !(lhs == rhs);
 }
 
-ostream &operator<<(ostream &os, const Node &node)
+ostream &operator<<(ostream &os, Node const &node)
 {
     os << node.name() << " : ";
 
-    if(!node.description().empty())
-        os << node.description();
-
-    if(!node.range().empty())
+    if (!node.description().empty())
     {
-        if(node.description().empty())
-            os << "range=" << node.range();
-        else
-            os << " (range=" << node.range() << ")";
+        os << node.description();
     }
 
-    if(node.pDistribution_ != nullptr)
-        os << *(static_cast<DiscreteProbability *>(node.pDistribution_));
+    if (!node.range().empty())
+    {
+        if (node.description().empty())
+        {
+            os << "range=" << node.range();
+        }
+        else
+        {
+            os << " (range=" << node.range() << ")";
+        }
+    }
 
-    return (os);
+    if (node.pDistribution_ != nullptr)
+    {
+        os << *(static_cast<DiscreteProbability *>(node.pDistribution_));
+    }
+
+    return os;
 }
 
 // TODO: handle arbitrary CondEvents
 
-long double Node::P(const CondEvent &ce) const
+long double Node::P(CondEvent const &ce) const
 {
-    return (!hasDistribution() ? 0.0L : (pDistribution_->P(ce)));
+    return !hasDistribution() ? 0.0L : (pDistribution_->P(ce));
 }
 
-Dependency::Dependency(string n1, string n2) : n1_(std::move(n1)), n2_(std::move(n2))
+Dependency::Dependency(string n1, string n2)
+    : n1_(std::move(n1))
+    , n2_(std::move(n2))
 {
 }
 
 string Dependency::condition() const
 {
-    return (n1_);
+    return n1_;
 }
 
 string Dependency::event() const
 {
-    return (n2_);
+    return n2_;
 }
 
 string Dependency::name() const
@@ -303,22 +344,22 @@ string Dependency::name() const
 
     ss << condition() << "->" << event();
 
-    return (ss.str());
+    return ss.str();
 }
 
-bool operator<(const Dependency &lhs, const Dependency &rhs)
+bool operator<(Dependency const &lhs, Dependency const &rhs)
 {
-    return ((lhs.n1_ < rhs.n1_) || ((lhs.n1_ == rhs.n1_) && (lhs.n2_ < rhs.n2_)));
+    return (lhs.n1_ < rhs.n1_) || ((lhs.n1_ == rhs.n1_) && (lhs.n2_ < rhs.n2_));
 }
 
-bool operator==(const Dependency &lhs, const Dependency &rhs)
+bool operator==(Dependency const &lhs, Dependency const &rhs)
 {
-    return ((lhs.n1_ == rhs.n1_) && (lhs.n2_ == rhs.n2_));
+    return (lhs.n1_ == rhs.n1_) && (lhs.n2_ == rhs.n2_);
 }
 
-ostream &operator<<(ostream &os, const Dependency &dep)
+ostream &operator<<(ostream &os, Dependency const &dep)
 {
-    return (os << dep.name());
+    return os << dep.name();
 }
 
 BayesNet::BayesNet() = default;
@@ -328,103 +369,107 @@ void BayesNet::clear()
     g_.clear();
 }
 
-bool BayesNet::addNode(const string &name, const string &description)
+bool BayesNet::addNode(string const &name, string const &description)
 {
     VERTEX_RESULT reval = g_.addVertex(Node(name, description));
 
-    return (reval.first);
+    return reval.first;
 }
 
-bool BayesNet::addNode(const string &name, const EventValueRange &range, const string &description)
+bool BayesNet::addNode(string const &name, EventValueRange const &range, string const &description)
 {
     VERTEX_RESULT reval = g_.addVertex(Node(name, description, range));
 
-    return (reval.first);
+    return reval.first;
 }
 
-bool BayesNet::removeNode(const string &name)
+bool BayesNet::removeNode(string const &name)
 {
-    return (g_.removeVertex(Node(name)));
+    return g_.removeVertex(Node(name));
 }
 
-const Node *BayesNet::getNode(const string &name) const
+Node const *BayesNet::getNode(string const &name) const
 {
-    return (g_.getVertexProperty(Node(name)));
+    return g_.getVertexProperty(Node(name));
 }
 
-Node *BayesNet::getNode(const string &name)
+Node *BayesNet::getNode(string const &name)
 {
-    return (g_.getVertexProperty(Node(name)));
+    return g_.getVertexProperty(Node(name));
 }
 
-bool BayesNet::addCauseEffect(const string &cause, const string &effect)
+bool BayesNet::addCauseEffect(string const &cause, string const &effect)
 {
-    return (g_.addEdge(Node(cause), Node(effect)));
+    return g_.addEdge(Node(cause), Node(effect));
 }
 
 bool BayesNet::hasCycle()
 {
-    return (g_.hasCycle());
+    return g_.hasCycle();
 }
 
-BayesNet::NODE_SET BayesNet::connectedNodes(const Node &checkNode)
+BayesNet::NODE_SET BayesNet::connectedNodes(Node const &checkNode)
 {
-    return (g_.connectedNodes(checkNode));
+    return g_.connectedNodes(checkNode);
 }
 
-const BayesNet::NODE_SET BayesNet::connectedNodes(const Node &checkNode) const
+BayesNet::NODE_SET const BayesNet::connectedNodes(Node const &checkNode) const
 {
-    return (g_.connectedNodes(checkNode));
+    return g_.connectedNodes(checkNode);
 }
 
-BayesNet::NODE_SET BayesNet::childrenNodes(const Node &checkNode)
+BayesNet::NODE_SET BayesNet::childrenNodes(Node const &checkNode)
 {
-    return (g_.childrenNodes(checkNode));
+    return g_.childrenNodes(checkNode);
 }
 
-const BayesNet::NODE_SET BayesNet::childrenNodes(const Node &checkNode) const
+BayesNet::NODE_SET const BayesNet::childrenNodes(Node const &checkNode) const
 {
-    return (g_.childrenNodes(checkNode));
+    return g_.childrenNodes(checkNode);
 }
 
-BayesNet::NODE_SET BayesNet::parentNodes(const Node &checkNode)
+BayesNet::NODE_SET BayesNet::parentNodes(Node const &checkNode)
 {
-    return (g_.parentVertices(checkNode));
+    return g_.parentVertices(checkNode);
 }
 
-const BayesNet::NODE_SET BayesNet::parentNodes(const Node &checkNode) const
+BayesNet::NODE_SET const BayesNet::parentNodes(Node const &checkNode) const
 {
-    return (g_.parentVertices(checkNode));
+    return g_.parentVertices(checkNode);
 }
 
 set<string> BayesNet::nodes2names(const NODE_SET &nodes) const
 {
     set<string> reval;
 
-    for(auto node: nodes)
+    for (auto node: nodes)
+    {
         reval.insert(node.name());
+    }
 
-    return (reval);
+    return reval;
 }
 
 /**
  * get the ranges of all conditions
  */
-VALUERANGES_TYPE BayesNet::conditionRanges(const string &name) const
+VALUERANGES_TYPE BayesNet::conditionRanges(string const &name) const
 {
     VALUERANGES_TYPE reval;
 
-    for(auto parent: g_.parentVertices(Node(name)))
+    for (auto parent: g_.parentVertices(Node(name)))
+    {
         reval[parent.name()] = parent.range();
+    }
 
-    return (reval);
+    return reval;
 }
 
-bool BayesNet::trainWithCsv(const CSVAnalyzer &data, bool hasValue, bool isDiscrete)
+bool BayesNet::trainWithCsv(CSVAnalyzer const &data, bool hasValue, bool isDiscrete)
 {
     bool reval = true;
 
-    for(auto node: g_.getVertexProperties())
+    for (auto node: g_.getVertexProperties())
     {
         vector<string> subHeaders;
 
@@ -433,14 +478,16 @@ bool BayesNet::trainWithCsv(const CSVAnalyzer &data, bool hasValue, bool isDiscr
         NODE_SET    parentSet = parentNodes(*(node));
         set<string> parentNames;
 
-        for(auto parent: parentSet)
+        for (auto parent: parentSet)
+        {
             parentNames.insert(parent.name());
+        }
 
         copy(parentNames.begin(), parentNames.end(), back_inserter(subHeaders));
 
-        if(hasValue)
+        if (hasValue)
         {
-            if(data.type(data.columns() - 1) == "float")
+            if (data.type(data.columns() - 1) == "float")
             {
                 subHeaders.push_back(data.header(data.columns() - 1));
             }
@@ -455,47 +502,53 @@ bool BayesNet::trainWithCsv(const CSVAnalyzer &data, bool hasValue, bool isDiscr
         reval &= node->train(nodeData, hasValue);
     }
 
-    return (reval);
+    return reval;
 }
 
-bool BayesNet::trainWithCsv(const string &filename, bool hasValue, bool isDiscrete)
+bool BayesNet::trainWithCsv(string const &filename, bool hasValue, bool isDiscrete)
 {
     CSVAnalyzer data;
     bool        reval = data.read(filename);
 
     reval &= trainWithCsv(data, hasValue, isDiscrete);
 
-    return (reval);
+    return reval;
 }
 
 bool BayesNet::makeUniform()
 {
     bool reval = true;
 
-    for(auto node: g_.getVertexProperties())
+    for (auto node: g_.getVertexProperties())
+    {
         reval &= makeUniform(*(node));
+    }
 
-    return (reval);
+    return reval;
 }
 
 bool BayesNet::normalise()
 {
     bool reval = true;
 
-    for(auto node: g_.getVertexProperties())
+    for (auto node: g_.getVertexProperties())
+    {
         reval &= normalise(*(node));
+    }
 
-    return (reval);
+    return reval;
 }
 
 bool BayesNet::canonise()
 {
     bool reval = true;
 
-    for(auto node: g_.getVertexProperties())
+    for (auto node: g_.getVertexProperties())
+    {
         reval &= canonise(*(node));
+    }
 
-    return (reval);
+    return reval;
 }
 
 /**
@@ -503,17 +556,19 @@ bool BayesNet::canonise()
  */
 bool BayesNet::calculateAprioriDistributions()
 {
-    return (false);
+    return false;
 }
 
 bool BayesNet::fullyDefined() const
 {
     bool reval = true;
 
-    for(auto node: g_.getVertexProperties())
+    for (auto node: g_.getVertexProperties())
+    {
         reval &= node->hasDistribution();
+    }
 
-    return (reval);
+    return reval;
 }
 
 /**
@@ -524,19 +579,20 @@ struct BreadthFirstEl
     size_t numParents_;
     string name_;
 
-    BreadthFirstEl(size_t numParents = 0, string name = "") : numParents_(numParents), name_(std::move(name))
+    BreadthFirstEl(size_t numParents = 0, string name = "")
+        : numParents_(numParents)
+        , name_(std::move(name))
     {
     }
 
-    friend bool operator<(const BreadthFirstEl &lhs, const BreadthFirstEl &rhs)
+    friend bool operator<(BreadthFirstEl const &lhs, BreadthFirstEl const &rhs)
     {
-        return ((lhs.numParents_ < rhs.numParents_)
-                || ((lhs.numParents_ == rhs.numParents_) && (lhs.name_ < rhs.name_)));
+        return (lhs.numParents_ < rhs.numParents_) || ((lhs.numParents_ == rhs.numParents_) && (lhs.name_ < rhs.name_));
     }
 
-    friend bool operator==(const BreadthFirstEl &lhs, const BreadthFirstEl &rhs)
+    friend bool operator==(BreadthFirstEl const &lhs, BreadthFirstEl const &rhs)
     {
-        return ((lhs.numParents_ == rhs.numParents_) && (lhs.name_ == rhs.name_));
+        return (lhs.numParents_ == rhs.numParents_) && (lhs.name_ == rhs.name_);
     }
 };
 
@@ -545,73 +601,89 @@ vector<string> BayesNet::breadthFirstNodeNames() const
     vector<string>      reval;
     set<BreadthFirstEl> sorted;
 
-    for(auto node: g_.getVertexProperties())
+    for (auto node: g_.getVertexProperties())
+    {
         sorted.insert(BreadthFirstEl(g_.inDegree(*node), node->name()));
+    }
 
-    for(auto el: sorted)
+    for (auto el: sorted)
+    {
         reval.push_back(el.name_);
+    }
 
-    return (reval);
+    return reval;
 }
 
-bool BayesNet::makeUniform(const string &name)
+bool BayesNet::makeUniform(string const &name)
 {
     bool  reval = true;
     Node *found = g_.getVertexProperty(Node(name));
 
-    if(found != nullptr)
+    if (found != nullptr)
+    {
         reval &= makeUniform(*found);
+    }
     else
+    {
         reval = false;
+    }
 
-    return (reval);
+    return reval;
 }
 
-bool BayesNet::normalise(const string &name)
+bool BayesNet::normalise(string const &name)
 {
     bool  reval = true;
     Node *found = g_.getVertexProperty(Node(name));
 
-    if(found != nullptr)
+    if (found != nullptr)
+    {
         reval &= normalise(*found);
+    }
     else
+    {
         reval = false;
+    }
 
-    return (reval);
+    return reval;
 }
 
-bool BayesNet::canonise(const string &name)
+bool BayesNet::canonise(string const &name)
 {
     bool  reval = true;
     Node *found = g_.getVertexProperty(Node(name));
 
-    if(found != nullptr)
+    if (found != nullptr)
+    {
         reval &= canonise(*found);
+    }
     else
+    {
         reval = false;
+    }
 
-    return (reval);
+    return reval;
 }
 
 bool BayesNet::makeUniform(Node &node)
 {
     VALUERANGES_TYPE condRanges = conditionRanges(node.name());
 
-    return (node.makeUniform(condRanges));
+    return node.makeUniform(condRanges);
 }
 
 bool BayesNet::normalise(Node &node)
 {
     VALUERANGES_TYPE condRanges = conditionRanges(node.name());
 
-    return (node.normalise(condRanges));
+    return node.normalise(condRanges);
 }
 
 bool BayesNet::canonise(Node &node)
 {
     VALUERANGES_TYPE condRanges = conditionRanges(node.name());
 
-    return (node.canonise(condRanges));
+    return node.canonise(condRanges);
 }
 
 //
@@ -647,18 +719,20 @@ bool BayesNet::canonise(Node &node)
 // P(B | A,C) == P(B | A) [B independent of C]
 //
 
-long double BayesNet::P(const CondEvent &ce) const
+long double BayesNet::P(CondEvent const &ce) const
 {
     long double reval = 0.0L;
 
-    if(ce.eventSize() == 1)
+    if (ce.eventSize() == 1)
     {
         // find the correct node
         string      nodeName = ce.event().cbegin()->name();
-        const Node *pNode    = getNode(nodeName);
+        Node const *pNode    = getNode(nodeName);
 
-        if(pNode == nullptr)
-            return (0.0L);
+        if (pNode == nullptr)
+        {
+            return 0.0L;
+        }
 
         // remove all events from the condition that node is independent of
         CondEvent filtered = ce.filterConditions(nodes2names(parentNodes(Node(nodeName))));
@@ -666,20 +740,22 @@ long double BayesNet::P(const CondEvent &ce) const
         // TODO: if not all conditions are present - build sum
 
         // and return the value from the distribution table
-        return (pNode->P(filtered));
+        return pNode->P(filtered);
     }
-    else if(ce.eventSize() > 1)
+    else if (ce.eventSize() > 1)
     {
         CondEvent::CONDEVENT_LIST productElements;
 
         ce.chainRule(productElements, breadthFirstNodeNames());
         reval = 1.0L;
 
-        for(auto prodEl: productElements)
+        for (auto prodEl: productElements)
+        {
             reval *= P(prodEl);
+        }
     }
 
-    return (reval);
+    return reval;
 }
 
 // Bayes-Ball Algorithm
@@ -739,18 +815,22 @@ struct schedNode
         byChild  = 0x02
     };
 
-    explicit schedNode(SchedType type = byChild) : type_(type), visited_(false), top_(false), bottom_(false)
+    explicit schedNode(SchedType type = byChild)
+        : type_(type)
+        , visited_(false)
+        , top_(false)
+        , bottom_(false)
     {
     }
 
     [[nodiscard]] bool fromChild() const
     {
-        return ((type_ & byChild) == byChild);
+        return (type_ & byChild) == byChild;
     }
 
     [[nodiscard]] bool fromParent() const
     {
-        return ((type_ & byParent) == byParent);
+        return (type_ & byParent) == byParent;
     }
 
     int  type_;
@@ -759,7 +839,7 @@ struct schedNode
     bool bottom_  = false;
 };
 
-CondEvent BayesNet::bayesBallAlgorithm(const CondEvent &ce, EventCatenation &irrelevant) const
+CondEvent BayesNet::bayesBallAlgorithm(CondEvent const &ce, EventCatenation &irrelevant) const
 {
     using SCHEDULE_TYPE = map<string, schedNode>;
     SCHEDULE_TYPE sched;
@@ -770,14 +850,14 @@ CondEvent BayesNet::bayesBallAlgorithm(const CondEvent &ce, EventCatenation &irr
     //    in J to be visited as if from one of its children. (all vertex_properties_t in J)
     deque<string> theQueue;
 
-    for(auto eIt = ce.event().cbegin(); eIt != ce.event().cend(); eIt++)
+    for (auto eIt = ce.event().cbegin(); eIt != ce.event().cend(); eIt++)
     {
         sched[eIt->name()] = schedNode(schedNode::byChild);
         theQueue.push_back(eIt->name());
     }
 
     // 3. While there are still vertex_properties_t scheduled to be visited:
-    while(theQueue.size() > 0)
+    while (theQueue.size() > 0)
     {
         // a. Pick any node j scheduled to be visited and remove it from the
         //    schedule. Either j was scheduled for a visit from a parent, a
@@ -790,17 +870,17 @@ CondEvent BayesNet::bayesBallAlgorithm(const CondEvent &ce, EventCatenation &irr
         sched[name].visited_ = true;
 
         // c. If j not in K and the visit to j is from a child:
-        if(!ce.containsCondition(name) && sched[name].fromChild())
+        if (!ce.containsCondition(name) && sched[name].fromChild())
         {
             // i. if the top of j is not marked, then mark its top and
             //    schedule each of its parents to be visited
-            if(!sched[name].top_)
+            if (!sched[name].top_)
             {
                 sched[name].top_ = true;
 
                 set<string> parents = nodes2names(parentNodes(Node(name)));
 
-                for(auto sIt = parents.begin(); sIt != parents.end(); sIt++)
+                for (auto sIt = parents.begin(); sIt != parents.end(); sIt++)
                 {
                     sched[*sIt].type_ |= schedNode::byChild;
                     theQueue.push_back(*sIt);
@@ -809,13 +889,13 @@ CondEvent BayesNet::bayesBallAlgorithm(const CondEvent &ce, EventCatenation &irr
             // ii. if j not in F and the bottom of j is not marked, then mark
             //     its bottom and schedule each of its children to be visited.
             //     (we do not have F here!)
-            if(!sched[name].bottom_)
+            if (!sched[name].bottom_)
             {
                 sched[name].bottom_ = true;
 
                 set<string> children = nodes2names(childrenNodes(Node(name)));
 
-                for(auto sIt = children.begin(); sIt != children.end(); sIt++)
+                for (auto sIt = children.begin(); sIt != children.end(); sIt++)
                 {
                     sched[*sIt].type_ |= schedNode::byParent;
                     theQueue.push_back(*sIt);
@@ -824,17 +904,17 @@ CondEvent BayesNet::bayesBallAlgorithm(const CondEvent &ce, EventCatenation &irr
         }
 
         // d. If the visit to j is from a parent:
-        if(sched[name].fromParent())
+        if (sched[name].fromParent())
         {
             // i. If j in K and the top of j is not marked, then mark its top
             //    and schedule each of its parents to be visited;
-            if(ce.containsCondition(name) && !sched[name].top_)
+            if (ce.containsCondition(name) && !sched[name].top_)
             {
                 sched[name].top_ = true;
 
                 set<string> parents = nodes2names(parentNodes(Node(name)));
 
-                for(auto sIt = parents.begin(); sIt != parents.end(); sIt++)
+                for (auto sIt = parents.begin(); sIt != parents.end(); sIt++)
                 {
                     sched[*sIt].type_ |= schedNode::byChild;
                     theQueue.push_back(*sIt);
@@ -843,13 +923,13 @@ CondEvent BayesNet::bayesBallAlgorithm(const CondEvent &ce, EventCatenation &irr
 
             // ii. if j not in K and the bottom of j is not marked, then mark
             //     its bottom and schedule each of its children to be visited.
-            if(!ce.containsCondition(name) && !sched[name].bottom_)
+            if (!ce.containsCondition(name) && !sched[name].bottom_)
             {
                 sched[name].bottom_ = true;
 
                 set<string> children = nodes2names(childrenNodes(Node(name)));
 
-                for(auto sIt = children.begin(); sIt != children.end(); sIt++)
+                for (auto sIt = children.begin(); sIt != children.end(); sIt++)
                 {
                     sched[*sIt].type_ |= schedNode::byParent;
                     theQueue.push_back(*sIt);
@@ -864,44 +944,49 @@ CondEvent BayesNet::bayesBallAlgorithm(const CondEvent &ce, EventCatenation &irr
     EventCatenation requisiteEvents;
     EventCatenation requisiteConditions;
 
-    for(auto it = sched.begin(); it != sched.end(); it++)
+    for (auto it = sched.begin(); it != sched.end(); it++)
     {
         Event           evt  = ce.event().eventByName(it->first);
         Event           cond = ce.condition().eventByName(it->first);
         EventCatenation el   = evt;
 
-        if(el.empty() && !cond.empty())
+        if (el.empty() && !cond.empty())
+        {
             el &&cond;
+        }
 
-        if(el.empty())
+        if (el.empty())
+        {
             el &&Event::placeholderEvent(it->first);
+        }
 
         // 4. The irrelevant vertex_properties_t, Ni(J|K), are those vertex_properties_t not marked on
         //    the bottom.
-        if(!it->second.bottom_)
+        if (!it->second.bottom_)
         {
             irrelevant &&el;
         }
         // 5. The requisite probability vertex_properties_t, Np(J|K), are those vertex_properties_t
         //    marked on top.
-        else if(it->second.top_)
+        else if (it->second.top_)
         {
             requisiteEvents &&el;
         }
         // 6. The requisite observation vertex_properties_t, Ne(J|K), are those vertex_properties_t in
         //    K marked as visited.
-        else if(it->second.visited_)
+        else if (it->second.visited_)
         {
             requisiteConditions &&el;
         }
     }
 
-    return (CondEvent(requisiteEvents, requisiteConditions));
+    return CondEvent(requisiteEvents, requisiteConditions);
 }
 
-ostream &operator<<(ostream &os, const BayesNet &bn)
+ostream &operator<<(ostream &os, BayesNet const &bn)
 {
-    return (os << bn.g_);
+    return os << bn.g_;
 }
-};
+}; // namespace util
+
 // namespace util
