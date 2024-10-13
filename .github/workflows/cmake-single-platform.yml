@@ -10,7 +10,7 @@ on:
 
 env:
   # Customize the CMake build type here (Release, Debug, RelWithDebInfo, etc.)
-  BUILD_TYPE: Release
+  BUILD_TYPE: RelWithDebugInfo
 
 jobs:
   build:
@@ -22,7 +22,7 @@ jobs:
     steps:
     - uses: actions/checkout@v4
 
-    - name: Install gtest manually
+    - name: Install gtest
       run: |
         sudo apt-get install libgtest-dev
         cd /usr/src/gtest
@@ -32,7 +32,7 @@ jobs:
         sudo ln -s /usr/lib/libgtest.a /usr/local/lib/libgtest.a
         sudo ln -s /usr/lib/libgtest_main.a /usr/local/lib/libgtest_main.a
 
-    - name: nstall MPFR
+    - name: install MPFR
       run: sudo apt-get install libmpfr-dev libmpfr-doc
       
     - name: Build Boost
@@ -42,7 +42,7 @@ jobs:
         version: 1.86.0
         libraries: filesystem program_options system
         platform: x64
-        configuration: Release
+        configuration: RelWithDebugInfo
     - name: Show paths
       run: |
         printf 'Boost has been unpacked to: %s\n' '${{ steps.boost.outputs.root }}'
@@ -54,8 +54,6 @@ jobs:
       with:
         path: '${{ runner.workspace }}/boost_*.tar.gz'
         key: 'boost-1.86.0'
-
-
     
     - name: Build Boost
       # This won't re-download the archive unnecessarily:
@@ -68,8 +66,6 @@ jobs:
       # See https://cmake.org/cmake/help/latest/variable/CMAKE_BUILD_TYPE.html?highlight=cmake_build_type
       run: cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
           
-
-
     - name: Build
       # Build your program with the given configuration
       run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}
