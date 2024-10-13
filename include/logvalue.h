@@ -33,14 +33,14 @@
 namespace util
 {
 class logVal;
-long double abs(const logVal &val);
+long double abs(logVal const &val);
 
 /**
  * @brief Class to store floating point values in the log domain.
  */
 class logVal
 {
-    private:
+  private:
     long double val_;
     bool        isPositive_;
 
@@ -51,25 +51,25 @@ class logVal
      * @param isPositive flag to indicate whether the value is positive
      */
     logVal(long double logDomainVal, bool isPositive)
-    : val_(logDomainVal)
-    , isPositive_(logDomainVal == 0.0L ? true : isPositive)  // @suppress("Direct float comparison")
+        : val_(logDomainVal)
+        , isPositive_(logDomainVal == 0.0L ? true : isPositive) // @suppress("Direct float comparison")
     {
     }
 
-    public:
+  public:
     /**
      * @brief Check whether the value is zero.
      *
      * @return true, if so, false  otherwise
      */
-    bool isZero() const
+    [[nodiscard]] bool isZero() const
     {
-        return (val_ == -INFINITY);  // @suppress("Direct float comparison")
+        return val_ == -INFINITY; // @suppress("Direct float comparison")
     }
 
     static logVal fromReal(long double realDomainVal)
     {
-        return (realDomainVal >= 0.0L ? logVal(log(realDomainVal), true) : logVal(log(-realDomainVal), false));
+        return realDomainVal >= 0.0L ? logVal(log(realDomainVal), true) : logVal(log(-realDomainVal), false);
     }
 
     /**
@@ -81,7 +81,7 @@ class logVal
      */
     static logVal fromLog(long double logDomainVal, bool isPositive = true)
     {
-        return (logVal(logDomainVal, isPositive));
+        return {logDomainVal, isPositive};
     }
 
     /**
@@ -90,12 +90,13 @@ class logVal
      * @param realDomainVal value in the real domain
      */
     logVal(long double realDomainVal = 0.0L)
-    : val_(log(realDomainVal >= 0.0L ? realDomainVal : -realDomainVal))
-    , isPositive_(realDomainVal >= 0.0L)
+        : val_(std::log(realDomainVal >= 0.0L ? realDomainVal : -realDomainVal))
+        , isPositive_(realDomainVal >= 0.0L)
     {
     }
-    logVal(const logVal &rhs)            = default;
-    logVal &operator=(const logVal &rhs) = default;
+
+    logVal(logVal const &rhs)            = default;
+    logVal &operator=(logVal const &rhs) = default;
     ~logVal()                            = default;
 
     /**
@@ -103,9 +104,9 @@ class logVal
      *
      * @return long double converted value
      */
-    long double toReal() const
+    [[nodiscard]] long double toReal() const
     {
-        return (isPositive_ ? exp(val_) : -exp(val_));
+        return isPositive_ ? std::exp(val_) : -std::exp(val_);
     }
 
     /**
@@ -113,9 +114,9 @@ class logVal
      *
      * @return long double converted value
      */
-    explicit operator long double()
+    explicit operator long double() const
     {
-        return (toReal());
+        return toReal();
     }
 
     /**
@@ -126,12 +127,12 @@ class logVal
      *
      * @return sum of two values converted back into the logarithmic domain
      */
-    friend logVal operator+(const logVal &lhs, const logVal &rhs)
+    friend logVal operator+(logVal const &lhs, logVal const &rhs)
     {
-        long double lhsDbl = lhs.isPositive_ ? exp(lhs.val_) : -exp(lhs.val_);
-        long double rhsDbl = rhs.isPositive_ ? exp(rhs.val_) : -exp(rhs.val_);
+        long double lhsDbl = lhs.isPositive_ ? std::exp(lhs.val_) : -std::exp(lhs.val_);
+        long double rhsDbl = rhs.isPositive_ ? std::exp(rhs.val_) : -std::exp(rhs.val_);
 
-        return (logVal(lhsDbl + rhsDbl));
+        return {lhsDbl + rhsDbl};
     }
 
     /**
@@ -141,13 +142,13 @@ class logVal
      *
      * @return sum of two values converted back into the logarithmic domain
      */
-    logVal &operator+=(const logVal &rhs)
+    logVal &operator+=(logVal const &rhs)
     {
         logVal reval = *this + rhs;
         val_         = reval.val_;
         isPositive_  = reval.isPositive_;
 
-        return (*this);
+        return *this;
     }
 
     /**
@@ -163,7 +164,7 @@ class logVal
         val_         = reval.val_;
         isPositive_  = reval.isPositive_;
 
-        return (*this);
+        return *this;
     }
 
     /**
@@ -177,7 +178,7 @@ class logVal
         val_         = reval.val_;
         isPositive_  = reval.isPositive_;
 
-        return (*this);
+        return *this;
     }
 
     /**
@@ -186,9 +187,9 @@ class logVal
      * @param lhs left-hand-side value in logarithmic domain
      * @return negative value of lhs converted back into the logarithmic domain
      */
-    friend logVal operator-(const logVal &lhs)
+    friend logVal operator-(logVal const &lhs)
     {
-        return (fromLog(lhs.val_, !lhs.isPositive_));
+        return fromLog(lhs.val_, !lhs.isPositive_);
     }
 
     /**
@@ -200,12 +201,12 @@ class logVal
      *
      * @return sum of two values converted back into the logarithmic domain
      */
-    friend logVal operator-(const logVal &lhs, const logVal &rhs)
+    friend logVal operator-(logVal const &lhs, logVal const &rhs)
     {
-        long double lhsDbl = lhs.isPositive_ ? exp(lhs.val_) : -exp(lhs.val_);
-        long double rhsDbl = rhs.isPositive_ ? exp(rhs.val_) : -exp(rhs.val_);
+        long double lhsDbl = lhs.isPositive_ ? std::exp(lhs.val_) : -std::exp(lhs.val_);
+        long double rhsDbl = rhs.isPositive_ ? std::exp(rhs.val_) : -std::exp(rhs.val_);
 
-        return (logVal(lhsDbl - rhsDbl));
+        return {lhsDbl - rhsDbl};
     }
 
     /**
@@ -217,13 +218,13 @@ class logVal
      *
      * @return sum of two values converted back into the logarithmic domain
      */
-    logVal &operator-=(const logVal &rhs)
+    logVal &operator-=(logVal const &rhs)
     {
         logVal reval = *this - rhs;
         val_         = reval.val_;
         isPositive_  = reval.isPositive_;
 
-        return (*this);
+        return *this;
     }
 
     /**
@@ -238,7 +239,7 @@ class logVal
         val_         = reval.val_;
         isPositive_  = reval.isPositive_;
 
-        return (*this);
+        return *this;
     }
 
     /**
@@ -252,7 +253,7 @@ class logVal
         val_         = reval.val_;
         isPositive_  = reval.isPositive_;
 
-        return (*this);
+        return *this;
     }
 
     /**
@@ -262,10 +263,12 @@ class logVal
      * @param rhs right-hand-side value in logarithmic domain
      * @return product of two values converted back into the logarithmic domain
      */
-    friend logVal operator*(const logVal &lhs, const logVal &rhs)
+    friend logVal operator*(logVal const &lhs, logVal const &rhs)
     {
-        return (fromLog(lhs.isZero() || rhs.isZero() ? -INFINITY : (lhs.val_ + rhs.val_),
-                        (lhs.isPositive_ == rhs.isPositive_)));
+        return fromLog(
+            lhs.isZero() || rhs.isZero() ? -std::numeric_limits<long double>::infinity() : (lhs.val_ + rhs.val_),
+            (lhs.isPositive_ == rhs.isPositive_)
+        );
     }
 
     /**
@@ -275,13 +278,13 @@ class logVal
      * @param rhs right-hand-side value in logarithmic domain
      * @return product of two values converted back into the logarithmic domain
      */
-    logVal &operator*=(const logVal &rhs)
+    logVal &operator*=(logVal const &rhs)
     {
         logVal reval = *this * rhs;
         val_         = reval.val_;
         isPositive_  = reval.isPositive_;
 
-        return (*this);
+        return *this;
     }
 
     /**
@@ -291,14 +294,17 @@ class logVal
      * @param rhs right-hand-side value in logarithmic domain
      * @return quotient of two values converted back into the logarithmic domain
      */
-    friend logVal operator/(const logVal &lhs, const logVal &rhs)
+    friend logVal operator/(logVal const &lhs, logVal const &rhs)
     {
-        if(rhs.isZero())
+        if (rhs.isZero())
         {
             throw std::runtime_error("Attempted division by zero.");
         }
 
-        return (fromLog(lhs.isZero() ? -INFINITY : (lhs.val_ - rhs.val_), (lhs.isPositive_ == rhs.isPositive_)));
+        return fromLog(
+            lhs.isZero() ? -std::numeric_limits<long double>::infinity() : (lhs.val_ - rhs.val_),
+            (lhs.isPositive_ == rhs.isPositive_)
+        );
     }
 
     /**
@@ -307,13 +313,13 @@ class logVal
      * @param rhs right-hand-side value in logarithmic domain
      * @return quotient of two values converted back into the logarithmic domain
      */
-    logVal &operator/=(const logVal &rhs)
+    logVal &operator/=(logVal const &rhs)
     {
         logVal reval = *this / rhs;
         val_         = reval.val_;
         isPositive_  = reval.isPositive_;
 
-        return (*this);
+        return *this;
     }
 
     /**
@@ -323,13 +329,12 @@ class logVal
      * @param rhs right-hand-side value in logarithmic domain
      * @return true if lhs equals rhs, false otherwise
      */
-    friend bool operator==(const logVal &lhs, const logVal &rhs)
+    friend bool operator==(logVal const &lhs, logVal const &rhs)
     {
-        bool reval =
-         (lhs.isZero() && rhs.isZero())
-         || (lhs.isPositive_ == rhs.isPositive_ && lhs.val_ == rhs.val_);  // @suppress("Direct float comparison")
+        bool reval = (lhs.isZero() && rhs.isZero()) || (lhs.isPositive_ == rhs.isPositive_ && lhs.val_ == rhs.val_
+                                                       ); // @suppress("Direct float comparison")
 
-        return (reval);
+        return reval;
     }
 
     /**
@@ -339,9 +344,9 @@ class logVal
      * @param rhs right-hand-side value in logarithmic domain
      * @return true if lhs not equal rhs, false otherwise
      */
-    friend bool operator!=(const logVal &lhs, const logVal &rhs)
+    friend bool operator!=(logVal const &lhs, logVal const &rhs)
     {
-        return (!(lhs == rhs));
+        return !(lhs == rhs);
     }
 
     /**
@@ -351,15 +356,19 @@ class logVal
      * @param rhs right-hand-side value in logarithmic domain
      * @return true if lhs less than rhs, false otherwise
      */
-    friend bool operator<(const logVal &lhs, const logVal &rhs)
+    friend bool operator<(logVal const &lhs, logVal const &rhs)
     {
-        if(lhs.isPositive_ && rhs.isPositive_)
-            return (lhs.val_ < rhs.val_);
+        if (lhs.isPositive_ && rhs.isPositive_)
+        {
+            return lhs.val_ < rhs.val_;
+        }
 
-        if(!lhs.isPositive_ && !rhs.isPositive_)
-            return (lhs.val_ > rhs.val_);
+        if (!lhs.isPositive_ && !rhs.isPositive_)
+        {
+            return lhs.val_ > rhs.val_;
+        }
 
-        return (rhs.isPositive_);
+        return rhs.isPositive_;
     }
 
     /**
@@ -369,15 +378,19 @@ class logVal
      * @param rhs right-hand-side value in logarithmic domain
      * @return true if lhs less than or equal rhs, false otherwise
      */
-    friend bool operator<=(const logVal &lhs, const logVal &rhs)
+    friend bool operator<=(logVal const &lhs, logVal const &rhs)
     {
-        if(lhs.isPositive_ && rhs.isPositive_)
-            return (lhs.val_ <= rhs.val_);
+        if (lhs.isPositive_ && rhs.isPositive_)
+        {
+            return lhs.val_ <= rhs.val_;
+        }
 
-        if(!lhs.isPositive_ && !rhs.isPositive_)
-            return (lhs.val_ >= rhs.val_);
+        if (!lhs.isPositive_ && !rhs.isPositive_)
+        {
+            return lhs.val_ >= rhs.val_;
+        }
 
-        return (rhs.isPositive_);
+        return rhs.isPositive_;
     }
 
     /**
@@ -388,15 +401,19 @@ class logVal
      *
      * @return true if lhs greater than rhs, false otherwise
      */
-    friend bool operator>(const logVal &lhs, const logVal &rhs)
+    friend bool operator>(logVal const &lhs, logVal const &rhs)
     {
-        if(lhs.isPositive_ && rhs.isPositive_)
-            return (lhs.val_ > rhs.val_);
+        if (lhs.isPositive_ && rhs.isPositive_)
+        {
+            return lhs.val_ > rhs.val_;
+        }
 
-        if(!lhs.isPositive_ && !rhs.isPositive_)
-            return (lhs.val_ < rhs.val_);
+        if (!lhs.isPositive_ && !rhs.isPositive_)
+        {
+            return lhs.val_ < rhs.val_;
+        }
 
-        return (!rhs.isPositive_);
+        return !rhs.isPositive_;
     }
 
     /**
@@ -406,15 +423,19 @@ class logVal
      * @param rhs right-hand-side value in logarithmic domain
      * @return true if lhs greater than or equal rhs, false otherwise
      */
-    friend bool operator>=(const logVal &lhs, const logVal &rhs)
+    friend bool operator>=(logVal const &lhs, logVal const &rhs)
     {
-        if(lhs.isPositive_ && rhs.isPositive_)
-            return (lhs.val_ >= rhs.val_);
+        if (lhs.isPositive_ && rhs.isPositive_)
+        {
+            return lhs.val_ >= rhs.val_;
+        }
 
-        if(!lhs.isPositive_ && !rhs.isPositive_)
-            return (lhs.val_ <= rhs.val_);
+        if (!lhs.isPositive_ && !rhs.isPositive_)
+        {
+            return lhs.val_ <= rhs.val_;
+        }
 
-        return (!rhs.isPositive_);
+        return !rhs.isPositive_;
     }
 
     /**
@@ -424,10 +445,10 @@ class logVal
      * @param val value to be written
      * @return the modified stream
      */
-    friend std::ostream &operator<<(std::ostream &os, const logVal &val)
+    friend std::ostream &operator<<(std::ostream &os, logVal const &val)
     {
         os << "lv(" << val.toReal() << ") " << (val.isPositive_ ? "+" : "-") << val.val_;
-        return (os);
+        return os;
     }
 };
 
@@ -437,10 +458,10 @@ class logVal
  * @param val the value
  * @return long double absolute value
  */
-inline long double abs(const logVal &val)
+inline long double abs(logVal const &val)
 {
-    return (std::abs(val.toReal()));
+    return std::abs(val.toReal());
 }
-};  // namespace util
+}; // namespace util
 
-#endif  // NS_UTIL_LOGVALUE_H_INCLUDED
+#endif // NS_UTIL_LOGVALUE_H_INCLUDED

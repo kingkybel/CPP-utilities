@@ -43,10 +43,10 @@ using quadruple = long double;
  */
 enum fp_direction_type
 {
-    fp_nearest  = 0,  ///< normal mathematical rounding to the neareast number
-    fp_tozero   = 1,  ///< round towards the 0-point, i.e. truncate pos-comma digits
-    fp_positive = 2,  ///< round towards the next bigger number
-    fp_negative = 3   ///< round towards the next smaller number
+    fp_nearest  = 0, ///< normal mathematical rounding to the neareast number
+    fp_tozero   = 1, ///< round towards the 0-point, i.e. truncate pos-comma digits
+    fp_positive = 2, ///< round towards the next bigger number
+    fp_negative = 3  ///< round towards the next smaller number
 };
 
 /**
@@ -54,10 +54,10 @@ enum fp_direction_type
  */
 enum fp_precision_type
 {
-    fp_extended    = 0,  ///< extended rounding precision
-    fp_single      = 1,  ///< single rounding precision (float)
-    fp_double      = 2,  ///< double rounding precision (double)
-    fp_precision_3 = 3   ///< double rounding precision (quadruple)
+    fp_extended    = 0, ///< extended rounding precision
+    fp_single      = 1, ///< single rounding precision (float)
+    fp_double      = 2, ///< double rounding precision (double)
+    fp_precision_3 = 3  ///< double rounding precision (quadruple)
 };
 
 /**
@@ -112,9 +112,9 @@ enum decimal_form
  */
 struct decimal_mode
 {
-    enum fp_direction_type rd;       ///< Rounding direction.
-    enum decimal_form      df;       ///< Format for conversion from binary to decimal.
-    int                    ndigits;  ///< Number of digits for conversion.
+    enum fp_direction_type rd;      ///< Rounding direction.
+    enum decimal_form      df;      ///< Format for conversion from binary to decimal.
+    int                    ndigits; ///< Number of digits for conversion.
 };
 
 using decimal_string = char[DECIMAL_STRING_LENGTH];
@@ -124,12 +124,14 @@ using decimal_string = char[DECIMAL_STRING_LENGTH];
  */
 struct decimal_record
 {
-    explicit decimal_record(enum fp_class_type fpclass_  = fp_zero,
-                            int                sign_     = 0,
-                            int                exponent_ = 0,
-                            const std::string  ds_       = "",
-                            int                more_     = 0,
-                            int                ndigits_  = 0);
+    explicit decimal_record(
+        enum fp_class_type fpclass_ = fp_zero,
+        int sign_                   = 0,
+        int exponent_               = 0,
+        std::string const &ds_      = "",
+        int more_                   = 0,
+        int ndigits_                = 0
+    );
     enum fp_class_type fpclass;
     int                sign;
     int                exponent;
@@ -158,7 +160,7 @@ struct decimal_record
  * @param dm decimal mode
  * @return std::ostream& the modified stream
  */
-std::ostream &operator<<(std::ostream &os, const decimal_mode &dm);
+std::ostream &operator<<(std::ostream &os, decimal_mode const &dm);
 
 /**
  * @brief Generic ostream - &lt;&lt; operator for decimal_record.
@@ -167,7 +169,7 @@ std::ostream &operator<<(std::ostream &os, const decimal_mode &dm);
  * @param dr decimal_record
  * @return std::ostream& the modified stream
  */
-std::ostream &operator<<(std::ostream &os, const decimal_record &dr);
+std::ostream &operator<<(std::ostream &os, decimal_record const &dr);
 
 /**
  * @brief Equality for two decimal_records.
@@ -176,7 +178,7 @@ std::ostream &operator<<(std::ostream &os, const decimal_record &dr);
  * @param rhs right-hand-side decimal_record
  * @return true, if left equal to right, false otherwise
  */
-bool operator==(const decimal_record &lhs, const decimal_record &rhs);
+bool operator==(decimal_record const &lhs, decimal_record const &rhs);
 
 /**
  * @brief Convert a quadruple to a decimal record.
@@ -198,6 +200,6 @@ void quadruple_to_decimal(quadruple *px, decimal_mode *pm, decimal_record *pd, f
  */
 void decimal_to_quadruple(quadruple *px, decimal_mode *pm, decimal_record *pd, fp_exception_field_type *ps);
 
-};  // namespace util
+}; // namespace util
 
-#endif  // NS_UTIL_FLOATINGPOINT_H_INCLUDED
+#endif // NS_UTIL_FLOATINGPOINT_H_INCLUDED

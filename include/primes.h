@@ -40,18 +40,22 @@ namespace util
 
 class prime_checker
 {
-    private:
-    const long double MAX_NUMBER = static_cast<const long double>(std::numeric_limits<unsigned long long>::max());
-    const unsigned long long ROOT_MAX_NUMBER = sqrt(MAX_NUMBER);
+  private:
+    long double const MAX_NUMBER = static_cast<long double const>(std::numeric_limits<unsigned long long>::max());
+    unsigned long long const ROOT_MAX_NUMBER = std::sqrt(MAX_NUMBER);
 
-    public:
-    bool divisibleByAny(unsigned long long n, std::vector<unsigned long long> divisors)
+  public:
+    static bool divisibleByAny(unsigned long long n, std::vector<unsigned long long> divisors)
     {
-        for(auto divisor: divisors)
-            if(n != divisor && n % divisor == 0)
-                return (true);
+        for (auto divisor: divisors)
+        {
+            if (n != divisor && n % divisor == 0)
+            {
+                return true;
+            }
+        }
 
-        return (false);
+        return false;
     }
 
     /**
@@ -101,7 +105,8 @@ class prime_checker
     //
     //        return step;
     //    }
-    public:
+
+  public:
     std::vector<unsigned long long>        step;
     std::set<unsigned long long>           memoizedPrimes;
     std::unordered_set<unsigned long long> memoizedNonPrimes;
@@ -186,51 +191,63 @@ class prime_checker
     //        return true;
     //    }
 
-    static constexpr unsigned long long SIZE_ULL      = 2'000'000;  // 22'347'494;
+    static constexpr unsigned long long SIZE_ULL      = 2'000'000; // 22'347'494;
     static constexpr unsigned long long ROOT_SIZE_ULL = std::sqrt(SIZE_ULL) + 1;
     std::bitset<SIZE_ULL>               sieve;
     unsigned long long                  partialSieveSize = 2;
 
     bool makePartialSieve()
     {
-        sieve = ~std::bitset<SIZE_ULL>(0LL);  // all true
-        for(size_t p = 2; p < ROOT_SIZE_ULL;)
+        sieve = ~std::bitset<SIZE_ULL>(0LL); // all true
+        for (size_t p = 2; p < ROOT_SIZE_ULL;)
         {
-            for(size_t n = p + p; n <= SIZE_ULL; n += p)
+            for (size_t n = p + p; n <= SIZE_ULL; n += p)
+            {
                 sieve[n] = false;
+            }
             p++;
-            while(p < ROOT_SIZE_ULL && sieve[p] == false)
+            while (p < ROOT_SIZE_ULL && sieve[p] == false)
+            {
                 p++;
+            }
 
-            if(static_cast<long double>(p) * static_cast<long double>(partialSieveSize)
-               < static_cast<long double>(ROOT_SIZE_ULL))
+            if (static_cast<long double>(p) * static_cast<long double>(partialSieveSize) <
+                static_cast<long double>(ROOT_SIZE_ULL))
+            {
                 partialSieveSize *= p;
+            }
         }
 
-        return (true);
+        return true;
     }
 
     bool isPrime(unsigned long long n)
     {
         // static bool madePartial = makePartialSieve();
 
-        if(n < SIZE_ULL)
-            return (sieve[n]);
+        if (n < SIZE_ULL)
+        {
+            return sieve[n];
+        }
 
-        if(sieve[n % partialSieveSize] == false)
-            return (false);
+        if (sieve[n % partialSieveSize] == false)
+        {
+            return false;
+        }
 
         // unsigned long long currentStepIndex = 1;
 
-        for(unsigned long long divisor = 2; divisor < ROOT_SIZE_ULL; divisor++)
+        for (unsigned long long divisor = 2; divisor < ROOT_SIZE_ULL; divisor++)
         {
-            if(sieve[divisor % partialSieveSize] && n % divisor == 0)
-                return (false);
+            if (sieve[divisor % partialSieveSize] && n % divisor == 0)
+            {
+                return false;
+            }
         }
 
-        return (true);
+        return true;
     }
 };
-};  // namespace util
+}; // namespace util
 
-#endif  // PRIMES_H_INCLUDED
+#endif // PRIMES_H_INCLUDED

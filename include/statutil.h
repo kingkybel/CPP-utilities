@@ -52,26 +52,31 @@ struct event_range_error : public std::logic_error
 {
     enum conflict_type
     {
-        exponential_range,  ///< Outside the range of the exponential function [0..oo)
-        gaussian_range,     ///< Outside the range of the gaussian function (-oo..oo)
-        uniform_range       ///< Outside the range of a uniform function [min..max]
+        exponential_range, ///< Outside the range of the exponential function [0..oo)
+        gaussian_range,    ///< Outside the range of the gaussian function (-oo..oo)
+        uniform_range      ///< Outside the range of a uniform function [min..max]
     };
 
     event_range_error(VAR_FLOAT f, size_t rangeDescriptors)
-    : std::logic_error("Floatrange-test for '" + toString(f) + "': the float description"
-                       + " must be empty or exactly min and max values. Found " + toString(rangeDescriptors))
+        : std::logic_error(
+              "Floatrange-test for '" + toString(f) + "': the float description" +
+              " must be empty or exactly min and max values. Found " + toString(rangeDescriptors)
+          )
     {
     }
 
-    event_range_error(const std::string &str = "Invalid range") : std::logic_error(str)
+    explicit event_range_error(std::string const &str = "Invalid range")
+        : std::logic_error(str)
     {
     }
 
     event_range_error(conflict_type tp, VAR_FLOAT f1, VAR_FLOAT f2 = 0.0L, VAR_FLOAT f3 = 0.0L)
-    : std::logic_error(tp == exponential_range ? "Range for exponential function is [0..oo) but found " + toString(f1) :
-                       tp == uniform_range ? "Range for exponential function is [" + toString(f1) + ".." + toString(f2)
-                                              + "] but found " + toString(f3) :
-                                             "Invalid range.")
+        : std::logic_error(
+              tp == exponential_range ? "Range for exponential function is [0..oo) but found " + toString(f1)
+              : tp == uniform_range   ? "Range for exponential function is [" + toString(f1) + ".." + toString(f2) +
+                                          "] but found " + toString(f3)
+                                    : "Invalid range."
+          )
     {
     }
 };
@@ -81,13 +86,15 @@ struct event_range_error : public std::logic_error
  */
 struct event_error : public std::logic_error
 {
-    event_error(const std::string &str) : std::logic_error(str)
+    explicit event_error(std::string const &str)
+        : std::logic_error(str)
     {
     }
 
-    event_error(const std::type_info &t1, const std::type_info &t2)
-    : std::logic_error(
-       event_error("Cannot get interval of type " + toString(t1.name()) + " from Event of type " + toString(t2.name())))
+    event_error(std::type_info const &t1, std::type_info const &t2)
+        : std::logic_error(event_error(
+              "Cannot get interval of type " + toString(t1.name()) + " from Event of type " + toString(t2.name())
+          ))
     {
     }
 };
@@ -101,13 +108,13 @@ struct eventlist_conflict_error : public std::logic_error
 {
     enum conflict_type
     {
-        evt,      ///< Event list conflicts with itself
-        cond,     ///< condition list conflicts with itself
-        evt_cond  ///< event- and condition-lists conflict with each other
+        evt,     ///< Event list conflicts with itself
+        cond,    ///< condition list conflicts with itself
+        evt_cond ///< event- and condition-lists conflict with each other
     };
 
-    eventlist_conflict_error(conflict_type tp, const EventCatenation &e1);
-    eventlist_conflict_error(const EventCatenation &e1, const EventCatenation &e2);
+    eventlist_conflict_error(conflict_type tp, EventCatenation const &e1);
+    eventlist_conflict_error(EventCatenation const &e1, EventCatenation const &e2);
 };
 
 /**
@@ -122,21 +129,26 @@ struct distribution_error : public std::logic_error
         empty_canonise
     };
 
-    distribution_error(conflict_type tp)
-    : std::logic_error(std::string(tp == empty_uniform   ? "Make uniform" :
-                                   tp == empty_normalise ? "Normalise" :
-                                                           "Canonise")
-                       + ": cannot modify distribution as node-distribution "
-                         "is empty and range is empty.")
+    explicit distribution_error(conflict_type tp)
+        : std::logic_error(
+              std::string(
+                  tp == empty_uniform     ? "Make uniform"
+                  : tp == empty_normalise ? "Normalise"
+                                          : "Canonise"
+              ) +
+              ": cannot modify distribution as node-distribution "
+              "is empty and range is empty."
+          )
     {
     }
 
-    distribution_error(const std::string &err = "") : std::logic_error(err.empty() ? "Not a distribution!" : err)
+    explicit distribution_error(std::string const &err = "")
+        : std::logic_error(err.empty() ? "Not a distribution!" : err)
     {
     }
 
-    distribution_error(long double val)
-    : std::logic_error("Probability value " + toString(val) + " is outside range [0.0..1.0]")
+    explicit distribution_error(long double val)
+        : std::logic_error("Probability value " + toString(val) + " is outside range [0.0..1.0]")
     {
     }
 };
@@ -153,14 +165,14 @@ struct distribution_error : public std::logic_error
  */
 class Event
 {
-    public:
-    static Equals        equals;         ///< Default Equality operation
-    static Less          less;           ///< Default Less operation
-    static LessEqual     lessEqual;      ///< Default Less Equal operation
-    static Greater       greater;        ///< Default Greater operation
-    static GreaterEqual  greaterEqual;   ///< Default Greater Equal operation
-    static IsElementOf   isElementOf;    ///< Default Element inclusion operation
-    static PlaceHolderOp placeHolderOp;  ///< Default Placeholder operation
+  public:
+    static Equals        equals;        ///< Default Equality operation
+    static Less          less;          ///< Default Less operation
+    static LessEqual     lessEqual;     ///< Default Less Equal operation
+    static Greater       greater;       ///< Default Greater operation
+    static GreaterEqual  greaterEqual;  ///< Default Greater Equal operation
+    static IsElementOf   isElementOf;   ///< Default Element inclusion operation
+    static PlaceHolderOp placeHolderOp; ///< Default Placeholder operation
 
     /**
      * @brief Default construct empty Event.
@@ -176,7 +188,7 @@ class Event
      * @param b boolean value
      * @param op operation, default: Equality.
      */
-    Event(const std::string &name, VAR_BOOL b, Operation *op = &equals);
+    Event(std::string name, VAR_BOOL b, Operation *op = &equals);
 
     /**
      * @brief Construct character Event.
@@ -185,7 +197,7 @@ class Event
      * @param c character value
      * @param op operation, default: Equality.
      */
-    Event(const std::string &name, VAR_CHAR c, Operation *op = &equals);
+    Event(std::string name, VAR_CHAR c, Operation *op = &equals);
 
     /**
      * @brief Construct signed integer Event.
@@ -194,7 +206,7 @@ class Event
      * @param i integral value
      * @param op operation, default: Equality.
      */
-    Event(const std::string &name, VAR_INT i, Operation *op = &equals);
+    Event(std::string name, VAR_INT i, Operation *op = &equals);
 
     /**
      * @brief Construct unsigned integer Event.
@@ -203,7 +215,7 @@ class Event
      * @param u unsigned integral value
      * @param op operation, default: Equality.
      */
-    Event(const std::string &name, VAR_UINT u, Operation *op = &equals);
+    Event(std::string name, VAR_UINT u, Operation *op = &equals);
 
     /**
      * @brief Construct floating point Event.
@@ -212,7 +224,7 @@ class Event
      * @param f floating point value
      * @param op operation, default: Equality.
      */
-    Event(const std::string &name, VAR_FLOAT f, Operation *op = &equals);
+    Event(std::string name, VAR_FLOAT f, Operation *op = &equals);
 
     /**
      * @brief Construct date Event.
@@ -221,7 +233,7 @@ class Event
      * @param d date value
      * @param op operation, default: Equality.
      */
-    Event(const std::string &name, VAR_DATE d, Operation *op = &equals);
+    Event(std::string name, VAR_DATE d, Operation *op = &equals);
 
     /**
      * @brief Construct string Event.
@@ -230,7 +242,7 @@ class Event
      * @param s string value
      * @param op operation, default: Equality.
      */
-    Event(const std::string &name, VAR_STRING s, Operation *op = &equals);
+    Event(std::string name, VAR_STRING s, Operation *op = &equals);
 
     /**
      * @brief Construct boolean interval Event.
@@ -239,7 +251,7 @@ class Event
      * @param bi boolean interval value
      * @param op operation, default: Equality.
      */
-    Event(const std::string &name, VAR_BOOL_INTERVAL bi, Operation *op = &isElementOf);
+    Event(std::string name, VAR_BOOL_INTERVAL bi, Operation *op = &isElementOf);
 
     /**
      * @brief Construct character interval Event.
@@ -248,7 +260,7 @@ class Event
      * @param ci character interval value
      * @param op operation, default: Containment.
      */
-    Event(const std::string &name, VAR_CHAR_INTERVAL ci, Operation *op = &isElementOf);
+    Event(std::string name, VAR_CHAR_INTERVAL ci, Operation *op = &isElementOf);
 
     /**
      * @brief Construct signed integer interval Event.
@@ -257,7 +269,7 @@ class Event
      * @param ii integer interval value
      * @param op operation, default: Containment.
      */
-    Event(const std::string &name, VAR_INT_INTERVAL ii, Operation *op = &isElementOf);
+    Event(std::string name, VAR_INT_INTERVAL ii, Operation *op = &isElementOf);
 
     /**
      * @brief Construct unsigned integer interval Event.
@@ -266,7 +278,7 @@ class Event
      * @param ui unsigned integer interval value
      * @param op operation, default: Containment.
      */
-    Event(const std::string &name, VAR_UINT_INTERVAL ui, Operation *op = &isElementOf);
+    Event(std::string name, VAR_UINT_INTERVAL ui, Operation *op = &isElementOf);
 
     /**
      * @brief Construct floating point interval Event.
@@ -275,7 +287,7 @@ class Event
      * @param fi floating point interval value
      * @param op operation, default: Containment..
      */
-    Event(const std::string &name, VAR_FLOAT_INTERVAL fi, Operation *op = &isElementOf);
+    Event(std::string name, VAR_FLOAT_INTERVAL fi, Operation *op = &isElementOf);
 
     /**
      * @brief Construct date interval Event.
@@ -284,7 +296,7 @@ class Event
      * @param di date interval value
      * @param op operation, default: Containment.
      */
-    Event(const std::string &name, VAR_DATE_INTERVAL di, Operation *op = &isElementOf);
+    Event(std::string name, VAR_DATE_INTERVAL di, Operation *op = &isElementOf);
 
     /**
      * @brief Construct character-string interval Event.
@@ -293,7 +305,7 @@ class Event
      * @param si string interval value
      * @param op operation, default: Equality.
      */
-    Event(const std::string &name, const char *si, Operation *op = &equals);
+    Event(std::string name, char const *si, Operation *op = &equals);
 
     /**
      * @brief Construct Var-type Event.
@@ -303,20 +315,20 @@ class Event
      * @param dummyConfirm Needed to ensure only valid types are used.
      * @param op operation, default: Equality.
      */
-    Event(const std::string &name, const Var &a, bool dummyConfirm, Operation *op = &equals);
+    Event(std::string name, Var const &a, bool dummyConfirm, Operation *op = &equals);
 
     /**
      * @brief Copy-construct Event.
      *
      * @param rhs right-hand side
      */
-    Event(const Event &rhs) = default;
+    Event(Event const &rhs) = default;
 
     /**
      * @brief Assign Event.
      * @param rhs right-hand side
      */
-    Event &operator=(const Event &rhs) = default;
+    Event &operator=(Event const &rhs) = default;
 
     /**
      * @brief Change Event - parameters name/value/operation.
@@ -327,7 +339,7 @@ class Event
      *
      * @return the modified *this
      */
-    Event &operator()(const std::string &name = "", const Var &value = Var(), Operation *op = &equals);
+    Event &operator()(std::string const &name = "", Var const &value = Var(), Operation *op = &equals);
 
     /**
      * @brief Explicitly create an empty (placeholder) Event.
@@ -336,7 +348,7 @@ class Event
      *
      * @return the place holder
      */
-    static Event placeholderEvent(const std::string &name);
+    static Event placeholderEvent(std::string const &name);
 
     /**
      * @brief Check whether this Event is a placeholder.
@@ -364,7 +376,7 @@ class Event
      *
      * @return true if *this and e do not conflict, false otherwise
      */
-    [[nodiscard]] bool notConflicting(const Event &event) const;
+    [[nodiscard]] bool notConflicting(Event const &event) const;
 
     /**
      * @brief Retrieve the name only.
@@ -378,10 +390,10 @@ class Event
      *
      * @return the native value
      */
-    template<typename T_>
+    template <typename T_>
     T_ value() const
     {
-        return (toNative<T_>(value_));
+        return toNative<T_>(value_);
     }
 
     /**
@@ -390,19 +402,23 @@ class Event
      *
      * @return the type-ValueT_ - interval
      */
-    template<typename T_>
+    template <typename T_>
     [[nodiscard]] Interval<T_> interval() const
     {
-        if(value_.type() == typeid(Interval<T_>))
-            return (value_.get<Interval<T_>>());
-        else if(value_.type() == typeid(T_))
+        if (value_.type() == typeid(Interval<T_>))
+        {
+            return value_.get<Interval<T_>>();
+        }
+        else if (value_.type() == typeid(T_))
         {
             T_ v = value_.get<T_>();
 
-            return (Interval<T_>(v, v));
+            return Interval<T_>(v, v);
         }
         else
+        {
             throw event_error(typeid(T_), value_.type());
+        }
     }
 
     /**
@@ -418,7 +434,7 @@ class Event
      *
      * @return true if e matches *this, false otherwise
      */
-    [[nodiscard]] bool matches(const Event &event) const;
+    [[nodiscard]] bool matches(Event const &event) const;
 
     /**
      * @brief Propagate the operation description to the users of this.
@@ -435,7 +451,7 @@ class Event
      *
      * @return true if equal, false otherwise
      */
-    friend bool operator==(const Event &lhs, const Event &rhs);
+    friend bool operator==(Event const &lhs, Event const &rhs);
 
     /**
      * @brief Less than operation needed to enable associative containers.
@@ -445,19 +461,19 @@ class Event
      *
      * @return true if equal, false otherwise
      */
-    friend bool operator<(const Event &lhs, const Event &rhs);
+    friend bool operator<(Event const &lhs, Event const &rhs);
 
-    friend bool operator<=(const Event &lhs, const Event &rhs)
+    friend bool operator<=(Event const &lhs, Event const &rhs)
     {
         return (lhs < rhs) || (lhs == rhs);
     }
 
-    friend bool operator>(const Event &lhs, const Event &rhs)
+    friend bool operator>(Event const &lhs, Event const &rhs)
     {
         return !(lhs <= rhs);
     }
 
-    friend bool operator>=(const Event &lhs, const Event &rhs)
+    friend bool operator>=(Event const &lhs, Event const &rhs)
     {
         return !(lhs < rhs);
     }
@@ -470,9 +486,9 @@ class Event
      *
      * @return the modified stream
      */
-    friend std::ostream &operator<<(std::ostream &os, const Event &rhs);
+    friend std::ostream &operator<<(std::ostream &os, Event const &rhs);
 
-    private:
+  private:
     std::string name_;
     Var         value_;
     Operation  *operation_;
@@ -488,14 +504,15 @@ using EventCollection = std::set<Event>;
  */
 class EventValueRange
 {
-    public:
+  public:
     enum DistributionType
     {
-        discrete,       ///< discrete, enumerated distribution of distinct values
-        float_uniform,  ///< uniform distribution on a finite floating point interval
-        gaussian,       ///< gaussian bell distribution on the float range
-        exponential     ///< exponential distribution on the positive float range
+        discrete,      ///< discrete, enumerated distribution of distinct values
+        float_uniform, ///< uniform distribution on a finite floating point interval
+        gaussian,      ///< gaussian bell distribution on the float range
+        exponential    ///< exponential distribution on the positive float range
     };
+
     using RangeValues = std::set<Var>;
 
     /**
@@ -510,42 +527,42 @@ class EventValueRange
      *
      * @param values the set of characters to initialize the range
      */
-    EventValueRange(const std::set<VAR_CHAR> &values);
+    EventValueRange(std::set<VAR_CHAR> const &values);
 
     /**
      * @brief Construct a range of enumerated signed integer values.
      *
      * @param values the set of integrals to initialize the range
      */
-    EventValueRange(const std::set<VAR_INT> &values);
+    EventValueRange(std::set<VAR_INT> const &values);
 
     /**
      * @brief Construct a range of enumerated unsigned integer values.
      *
      * @param values the set of unsigned integrals to initialize the range
      */
-    EventValueRange(const std::set<VAR_UINT> &values);
+    EventValueRange(std::set<VAR_UINT> const &values);
 
     /**
      * @brief Construct a range of enumerated floating point values.
      *
      * @param values the set of floating point to initialize the range
      */
-    EventValueRange(const std::set<VAR_FLOAT> &values);
+    EventValueRange(std::set<VAR_FLOAT> const &values);
 
     /**
      * @brief Construct a range of enumerated date values.
      *
      * @param values the set of dates to initialize the range
      */
-    EventValueRange(const std::set<VAR_DATE> &values);
+    EventValueRange(std::set<VAR_DATE> const &values);
 
     /**
      * @brief Construct a range of enumerated string values.
      *
      * @param values the set of strings to initialize the range
      */
-    EventValueRange(const std::set<VAR_STRING> &values);
+    EventValueRange(std::set<VAR_STRING> const &values);
 
     /**
      * @brief Construct a range of enumerated character values as an interval from
@@ -605,17 +622,17 @@ class EventValueRange
      */
     [[nodiscard]] bool empty() const
     {
-        return (values_.empty());
+        return values_.empty();
     }
 
     /**
      * @brief Populate the enumerated range from a set.
      * @param values a set of values to add to the range
      */
-    template<typename T_>
-    void setValues(const std::set<T_> &values)
+    template <typename T_>
+    void setValues(std::set<T_> const &values)
     {
-        for(auto it = values.begin(); it != values.end(); it++)
+        for (auto it = values.begin(); it != values.end(); it++)
         {
             values_.insert(Var(*it));
         }
@@ -626,7 +643,7 @@ class EventValueRange
      * @param val a potential new value, if type is ok
      * @return true, if value was added, false otherwise
      */
-    bool add(const Var &val);
+    bool add(Var const &val);
 
     /**
      * @brief Add a range of values to the range.
@@ -635,18 +652,22 @@ class EventValueRange
      * true if all value of between lowest and highest were added, false
      *       otherwise
      */
-    template<typename T_>
+    template <typename T_>
     bool addRange(T_ lowest, T_ highest)
     {
-        if(highest < lowest)
+        if (highest < lowest)
+        {
             std::swap(highest, lowest);
+        }
 
         bool reval = true;
 
-        for(T_ i = lowest; i <= highest && reval; i++)
+        for (T_ i = lowest; i <= highest && reval; i++)
+        {
             reval &= insert(i);
+        }
 
-        return (reval);
+        return reval;
     }
 
     /**
@@ -661,16 +682,18 @@ class EventValueRange
      */
     bool addRange(VAR_FLOAT lowest, VAR_FLOAT highest)
     {
-        if(highest < lowest)
+        if (highest < lowest)
+        {
             std::swap(highest, lowest);
+        }
 
-        bool reval = (highest != lowest);  // @suppress("Direct float comparison")
+        bool reval = (highest != lowest); // @suppress("Direct float comparison")
 
         values_.clear();
         insert(lowest);
         insert(highest);
 
-        return (reval);
+        return reval;
     }
 
     /**
@@ -702,7 +725,7 @@ class EventValueRange
      *
      * @return true if so, false otherwise
      */
-    [[nodiscard]] bool validValue(const Var &value) const;
+    [[nodiscard]] bool validValue(Var const &value) const;
 
     /**
      * @brief heck whether a value has the correct type for this range.
@@ -713,7 +736,7 @@ class EventValueRange
      *
      * @return true if so, false otherwise
      */
-    [[nodiscard]] bool validType(const Var &value) const;
+    [[nodiscard]] bool validType(Var const &value) const;
 
     /**
      * @brief Create a list of Events Event(name,x) where x is in the range
@@ -724,7 +747,7 @@ class EventValueRange
      *
      * @return the created list of events
      */
-    [[nodiscard]] EventCollection makeEventSet(const std::string &name) const;
+    [[nodiscard]] EventCollection makeEventSet(std::string const &name) const;
 
     /**
      * @brief Generic ostream - &lt;&lt; operator for EventValueRange.
@@ -734,9 +757,9 @@ class EventValueRange
      *
      * @return the modified stream
      */
-    friend std::ostream &operator<<(std::ostream &os, const EventValueRange &evr);
+    friend std::ostream &operator<<(std::ostream &os, EventValueRange const &evr);
 
-    private:
+  private:
     /**
      * @brief Template helper to ensure only Var's of the same type can be inserted
      * into the collection.
@@ -745,21 +768,21 @@ class EventValueRange
      *
      * @return true, it insertion successful, false otherwise
      */
-    template<typename T_>
+    template <typename T_>
     bool insert(const T_ &v)
     {
         bool reval = false;
-        if(values_.empty() || sameType(v, *(values_.begin())))
+        if (values_.empty() || sameType(v, *(values_.begin())))
         {
             values_.insert(v);
             reval = true;
         }
 
-        return (reval);
+        return reval;
     }
 
-    RangeValues      values_;          ///< Collection describing the range.
-    DistributionType type_{discrete};  ///< Indicates the type range.
+    RangeValues      values_;         ///< Collection describing the range.
+    DistributionType type_{discrete}; ///< Indicates the type range.
 };
 
 /**
@@ -768,7 +791,7 @@ class EventValueRange
  */
 class EventCatenation
 {
-    public:
+  public:
     using EventsCollection    = std::set<Event>;
     using EventsIterator      = EventsCollection::iterator;
     using EventsConstIterator = EventsCollection::const_iterator;
@@ -783,14 +806,14 @@ class EventCatenation
      *
      * @param event an event
      */
-    EventCatenation(const Event &event);
+    EventCatenation(Event const &event);
 
     /**
      * @brief Copy construct an EventList.
      *
      * @param rhs the right-hand-side event
      */
-    EventCatenation(const EventCatenation &rhs) = default;
+    EventCatenation(EventCatenation const &rhs) = default;
 
     /**
      * @brief Assign the right-hand-side to this.
@@ -799,7 +822,7 @@ class EventCatenation
      *
      * @return the modified Event-list
      */
-    EventCatenation &operator=(const EventCatenation &rhs) = default;
+    EventCatenation &operator=(EventCatenation const &rhs) = default;
 
     /**
      * @brief Append a single Event to the this.
@@ -808,7 +831,7 @@ class EventCatenation
      *
      * @return the modified Event-list
      */
-    EventCatenation &operator&&(const Event &event);
+    EventCatenation &operator&&(Event const &event);
 
     /**
      * @brief Append a list of Events to this.
@@ -817,7 +840,7 @@ class EventCatenation
      *
      * @return the modified Event-list
      */
-    EventCatenation &operator&&(const EventCatenation &el);
+    EventCatenation &operator&&(EventCatenation el);
 
     /**
      * @brief Check for emptiness.
@@ -832,22 +855,22 @@ class EventCatenation
     /**
      * @brief Check whether two lists are not conflicting (using the Event-definition of conflict).
      */
-    [[nodiscard]] bool notConflicting(const EventCatenation &eList) const;
+    [[nodiscard]] bool notConflicting(EventCatenation const &eList) const;
 
     /**
      * @brief Check whether this list matches the other EventCatenation.
      */
-    [[nodiscard]] bool matches(const EventCatenation &eList) const;
+    [[nodiscard]] bool matches(EventCatenation const &eList) const;
 
     /**
      * @brief Retrieve an event from this list by name.
      */
-    [[nodiscard]] Event eventByName(const std::string &name) const;
+    [[nodiscard]] Event eventByName(std::string const &name) const;
 
     /**
      * @brief Retrieve the collection of events.
      */
-    EventsCollection events() const
+    [[nodiscard]] EventsCollection events() const
     {
         return evts_;
     }
@@ -855,12 +878,12 @@ class EventCatenation
     /**
      * @brief Move name-specified event from this list to the other.
      */
-    bool moveEvent(const std::string &name, EventCatenation &el);
+    bool moveEvent(std::string const &name, EventCatenation &el);
 
     /**
      * @brief Check whether an event named name is in this list.
      */
-    [[nodiscard]] bool hasEvent(const std::string &event) const;
+    [[nodiscard]] bool hasEvent(std::string const &event) const;
 
     /**
      * @brief Iterator pointing to the start of the list of events.
@@ -890,12 +913,12 @@ class EventCatenation
     /**
      * @brief Enable associative containers.
      */
-    friend bool operator==(const EventCatenation &lhs, const EventCatenation &rhs);
+    friend bool operator==(EventCatenation const &lhs, EventCatenation const &rhs);
 
     /**
      * @brief Enable associative containers.
      */
-    friend bool operator<(const EventCatenation &lhs, const EventCatenation &rhs);
+    friend bool operator<(EventCatenation const &lhs, EventCatenation const &rhs);
 
     /**
      * @brief Generic ostream - &lt;&lt; operator for EventList.
@@ -905,10 +928,10 @@ class EventCatenation
      *
      * @return the modified stream
      */
-    friend std::ostream &operator<<(std::ostream &, const EventCatenation &eList);
+    friend std::ostream &operator<<(std::ostream &, EventCatenation const &eList);
 
-    private:
-    EventsCollection evts_;  ///< Ordered list of Events.
+  private:
+    EventsCollection evts_; ///< Ordered list of Events.
 };
 
 /**
@@ -919,7 +942,7 @@ class EventCatenation
  *
  * @return the newly created list of events
  */
-EventCatenation operator&&(const Event &lhs, const Event &rhs);
+EventCatenation operator&&(Event const &lhs, Event const &rhs);
 
 /**
  * @brief Tag for a list of statistical conditional Events.
@@ -927,7 +950,7 @@ EventCatenation operator&&(const Event &lhs, const Event &rhs);
  */
 class CondEvent
 {
-    public:
+  public:
     using CONDEVENT_LIST       = std::deque<CondEvent>;
     using CONDEVENT_LIST_ITER  = CONDEVENT_LIST::iterator;
     using CONDEVENT_LIST_CITER = CONDEVENT_LIST::const_iterator;
@@ -939,7 +962,7 @@ class CondEvent
      * @param events an event list
      * @param conds a condition list
      */
-    CondEvent(const EventCatenation &events = EventCatenation(), const EventCatenation &conds = EventCatenation());
+    CondEvent(EventCatenation const &events = EventCatenation(), EventCatenation const &conds = EventCatenation());
 
     /**
      * @brief Construct from a csv-object, more precisely from the column- headers
@@ -949,24 +972,24 @@ class CondEvent
      * @param csv a csv-reader
      * @param row header row index
      * @param lastEventIndex last column index that describes events
-     * @param isAccumulativeCSV if isAccummulative id true, then the last
+     * @param isAccumulative if isAccummulative id true, then the last
      *                          column are probability-values
      */
-    CondEvent(const CSVAnalyzer &csv, size_t row = 0, size_t lastEventIndex = 0, bool isAccumulativeCSV = false);
+    CondEvent(CSVAnalyzer const &csv, size_t row = 0, size_t lastEventIndex = 0, bool isAccumulative = false);
 
     /**
      * @brief Copy-construct CondEvent.
      *
      * @param rhs right-hand-side condition event
      */
-    CondEvent(const CondEvent &rhs) = default;
+    CondEvent(CondEvent const &rhs) = default;
 
     /**
      * @brief Assign right-hand-side to this.
      *
      * @param rhs right-hand-side condition event
      */
-    CondEvent &operator=(const CondEvent &rhs) = default;
+    CondEvent &operator=(CondEvent const &rhs) = default;
 
     /**
      * @brief Check for emptiness.
@@ -994,14 +1017,14 @@ class CondEvent
      *
      * @return the events list
      */
-    [[nodiscard]] const EventCatenation &event() const;
+    [[nodiscard]] EventCatenation const &event() const;
 
     /**
      * @brief Retrieve the condition-part.
      *
      * @return the condition list
      */
-    [[nodiscard]] const EventCatenation &condition() const;
+    [[nodiscard]] EventCatenation const &condition() const;
 
     /**
      * @brief Filter out conditions with names in the list "conds".
@@ -1010,14 +1033,14 @@ class CondEvent
      *
      * @return the filtered condition event
      */
-    [[nodiscard]] CondEvent filterConditions(const std::set<std::string> &conds) const;
+    [[nodiscard]] CondEvent filterConditions(std::set<std::string> const &conds) const;
 
     /**
      * @brief Check whether the right-hand-side is a match to this.
      * @param ce the condition event to match against
      * @return true if matching, false otherwise
      */
-    [[nodiscard]] bool isMatch(const CondEvent &ce) const;
+    [[nodiscard]] bool isMatch(CondEvent const &ce) const;
 
     /**
      * @brief Check whether the condition-part contains an event named name.
@@ -1026,7 +1049,7 @@ class CondEvent
      *
      * @return true if a condition of this name is contained, false else
      */
-    [[nodiscard]] bool containsCondition(const std::string &name) const;
+    [[nodiscard]] bool containsCondition(std::string const &name) const;
 
     /**
      * @brief Apply the chain rule of probability. Result in referenced parameter.
@@ -1052,7 +1075,7 @@ class CondEvent
      * @param name the name of the event for which to apply the chain rul
      * @return true if success, false otherwise
      */
-    bool chainRule(CONDEVENT_LIST &cel, const std::string &name) const;
+    bool chainRule(CONDEVENT_LIST &cel, std::string const &name) const;
 
     /**
      * @brief Apply the chain rule of probability. Result in referenced parameter.
@@ -1078,7 +1101,7 @@ class CondEvent
      *
      * @return true if success, false otherwise
      */
-    bool chainRule(CONDEVENT_LIST &cel, const std::vector<std::string> &nameList) const;
+    bool chainRule(CONDEVENT_LIST &cel, std::vector<std::string> const &nameList) const;
 
     /**
      * @brief Append an event to event-part.
@@ -1087,7 +1110,7 @@ class CondEvent
      *
      * @return the new condition event
      */
-    CondEvent &operator&&(const Event &el);
+    CondEvent &operator&&(Event const &el);
 
     /**
      * @brief Append an event to the condition-part.
@@ -1096,7 +1119,7 @@ class CondEvent
      *
      * @return the new condition event
      */
-    CondEvent &operator||(const Event &el);
+    CondEvent &operator||(Event const &el);
 
     /**
      * @brief Check whether the event-part contains an Event named name.
@@ -1105,7 +1128,7 @@ class CondEvent
      *
      * @return true, if the events contain it, false otherwise
      */
-    [[nodiscard]] bool hasEvent(const std::string &name) const;
+    [[nodiscard]] bool hasEvent(std::string const &name) const;
 
     /**
      * @brief Check whether the condition-part contains an Event named name.
@@ -1114,7 +1137,7 @@ class CondEvent
      *
      * @return true, if the conditions contain it, false otherwise
      */
-    [[nodiscard]] bool hasCondition(const std::string &name) const;
+    [[nodiscard]] bool hasCondition(std::string const &name) const;
 
     /**
      * @brief Equality operator. Needed in order to to enable associative containers.
@@ -1124,7 +1147,7 @@ class CondEvent
      *
      * @return true if equal, false otherwise
      */
-    friend bool operator==(const CondEvent &lhs, const CondEvent &rhs);
+    friend bool operator==(CondEvent const &lhs, CondEvent const &rhs);
 
     /**
      * @brief Less-than operator. Needed in order to to enable associative containers.
@@ -1134,7 +1157,7 @@ class CondEvent
      *
      * @return true if lhs less than rhs, false otherwise
      */
-    friend bool operator<(const CondEvent &lhs, const CondEvent &rhs);
+    friend bool operator<(CondEvent const &lhs, CondEvent const &rhs);
 
     /**
      * @brief Generic ostream - &lh;&lt; operator for CondEvent.
@@ -1144,12 +1167,13 @@ class CondEvent
      *
      * @return the modified stream
      */
-    friend std::ostream &operator<<(std::ostream &os, const CondEvent &ce);
+    friend std::ostream &operator<<(std::ostream &os, CondEvent const &ce);
 
-    protected:
-    private:
-    EventCatenation eList_;     ///< List of Events interpreted as events.
-    EventCatenation condList_;  ///< List of Events interpreted as conditions.
+  protected:
+
+  private:
+    EventCatenation eList_;    ///< List of Events interpreted as events.
+    EventCatenation condList_; ///< List of Events interpreted as conditions.
 };
 
 /**
@@ -1158,7 +1182,7 @@ class CondEvent
  * @param rhs right-hand-side event list
  * @return condition event ( P(lhs | rhs) )
  */
-CondEvent operator||(const EventCatenation &lhs, const EventCatenation &rhs);
+CondEvent operator||(EventCatenation const &lhs, EventCatenation const &rhs);
 
 using VALUERANGES_TYPE = std::map<std::string, EventValueRange>;
 class CSVAnalyzer;
@@ -1174,8 +1198,10 @@ struct ProbabilityFunction
      * @param eventValueRanges ranges for the events
      * @param conditionValueRanges ranges for the conditions
      */
-    ProbabilityFunction(VALUERANGES_TYPE eventValueRanges     = VALUERANGES_TYPE(),
-                        VALUERANGES_TYPE conditionValueRanges = VALUERANGES_TYPE());
+    explicit ProbabilityFunction(
+        VALUERANGES_TYPE eventValueRanges     = VALUERANGES_TYPE(),
+        VALUERANGES_TYPE conditionValueRanges = VALUERANGES_TYPE()
+    );
 
     virtual ~ProbabilityFunction() = default;
 
@@ -1195,7 +1221,7 @@ struct ProbabilityFunction
      *
      * @return true, if compatible, false otherwise
      */
-    bool possibleCondEvent(const CondEvent &ce, std::string &error) const;
+    bool possibleCondEvent(CondEvent const &ce, std::string &error) const;
 
     /**
      * @brief Probability of a conditional event.
@@ -1204,7 +1230,7 @@ struct ProbabilityFunction
      *
      * @return the probability
      */
-    [[nodiscard]] virtual long double P(const CondEvent &ce) const = 0;
+    [[nodiscard]] virtual long double P(CondEvent const &ce) const = 0;
 
     /**
      * @brief Delegate Probability from EventList to avoid excessive casting.
@@ -1213,7 +1239,7 @@ struct ProbabilityFunction
      *
      * @return the probability
      */
-    [[nodiscard]] virtual long double P(const EventCatenation &el) const = 0;
+    [[nodiscard]] virtual long double P(EventCatenation const &el) const = 0;
 
     /**
      * @brief Does the function satisfy probability requirements?
@@ -1221,7 +1247,7 @@ struct ProbabilityFunction
      */
     [[nodiscard]] virtual bool isDistribution() const
     {
-        return (true);
+        return true;
     }
 
     /**
@@ -1248,7 +1274,7 @@ struct ProbabilityFunction
      *
      * @return success
      */
-    bool addValueToEventRange(const std::string &name, const Var &val);
+    bool addValueToEventRange(std::string const &name, Var const &val);
 
     /**
      * @brief Add a Variant-value to the range of possible condition-values.
@@ -1259,9 +1285,9 @@ struct ProbabilityFunction
      * @return success
      */
 
-    bool addValueToConditionRange(const std::string &name, const Var &val);
+    bool addValueToConditionRange(std::string const &name, Var const &val);
 
-    protected:
+  protected:
     /**
      * @brief Get the index up to which we interpret as event-Events (as opposed to
      * condition-Events). Needed when we have a list like we get it from a csv.
@@ -1290,12 +1316,14 @@ struct ProbabilityFunction
      *
      * @return success
      */
-    bool             addValidValueToRange(VALUERANGES_TYPE  &range,
-                                          VALUERANGES_TYPE  &range_ortho,
-                                          const std::string &name,
-                                          const Var         &value);
-    VALUERANGES_TYPE eventValueRanges_;      ///< Map of ranges for events.
-    VALUERANGES_TYPE conditionValueRanges_;  ///< Map of ranges for conditions.
+    bool addValidValueToRange(
+        VALUERANGES_TYPE  &range,
+        VALUERANGES_TYPE  &range_ortho,
+        std::string const &name,
+        Var const         &value
+    );
+    VALUERANGES_TYPE eventValueRanges_;     ///< Map of ranges for events.
+    VALUERANGES_TYPE conditionValueRanges_; ///< Map of ranges for conditions.
 };
 
 /**
@@ -1303,13 +1331,16 @@ struct ProbabilityFunction
  */
 class UniformFloatFunction : public ProbabilityFunction
 {
-    public:
+  public:
     /**
      * @brief Storage for a set of parameters for a Uniform function (min/max).
      */
     struct UNIF_PARAM
     {
-        UNIF_PARAM(VAR_FLOAT l = 0.0L, VAR_FLOAT h = 1.0L) : low(l), high(h), occurrences(0.0L)
+        UNIF_PARAM(VAR_FLOAT l = 0.0L, VAR_FLOAT h = 1.0L)
+            : low(l)
+            , high(h)
+            , occurrences(0.0L)
         {
         }
 
@@ -1327,9 +1358,11 @@ class UniformFloatFunction : public ProbabilityFunction
      * @param maxVal maximal value of the range
      * @param conditionValueRanges ranges for the conditional events
      */
-    UniformFloatFunction(VAR_FLOAT               minVal               = 0.0L,
-                         VAR_FLOAT               maxVal               = 1.0L,
-                         const VALUERANGES_TYPE &conditionValueRanges = VALUERANGES_TYPE());
+    explicit UniformFloatFunction(
+        VAR_FLOAT minVal                             = 0.0L,
+        VAR_FLOAT maxVal                             = 1.0L,
+        const VALUERANGES_TYPE &conditionValueRanges = VALUERANGES_TYPE()
+    );
 
     /**
      * @brief Clone a copy of this.
@@ -1345,7 +1378,7 @@ class UniformFloatFunction : public ProbabilityFunction
      *
      * @return the probability
      */
-    [[nodiscard]] long double P(const CondEvent &ce) const override;
+    [[nodiscard]] long double P(CondEvent const &ce) const override;
 
     /**
      * @brief Delegate Probability from EventList to avoid excessive casting if we
@@ -1355,7 +1388,7 @@ class UniformFloatFunction : public ProbabilityFunction
      *
      * @return the probability
      */
-    [[nodiscard]] long double P(const EventCatenation &el) const override;
+    [[nodiscard]] long double P(EventCatenation const &el) const override;
 
     /**
      * @brief Reset the parameters of the probability function.
@@ -1373,7 +1406,7 @@ class UniformFloatFunction : public ProbabilityFunction
      */
     bool train(CSVAnalyzer csv, bool isAccumulativeCSV = false) override;
 
-    UNIF_PARAM_TABLE param_;  ///< Maps conditions to min-max-values.
+    UNIF_PARAM_TABLE param_; ///< Maps conditions to min-max-values.
 
     /**
      * @brief Generic ostream - &lh;&lt; operator for UniformFloatFunction.
@@ -1383,7 +1416,7 @@ class UniformFloatFunction : public ProbabilityFunction
      *
      * @return the modified out-stream
      */
-    friend std::ostream &operator<<(std::ostream &os, const UniformFloatFunction &uff);
+    friend std::ostream &operator<<(std::ostream &os, UniformFloatFunction const &uff);
 };
 
 /**
@@ -1391,7 +1424,7 @@ class UniformFloatFunction : public ProbabilityFunction
  */
 class GaussFunction : public ProbabilityFunction
 {
-    public:
+  public:
     /**
      * @brief Storage for a set of parameters for a Gaussian function.
      */
@@ -1403,7 +1436,10 @@ class GaussFunction : public ProbabilityFunction
          * @param m mu
          * @param s sigma
          */
-        GAUSS_PARAM(VAR_FLOAT m = 0.0L, VAR_FLOAT s = 0.0L) : mu(m), sigma(s), occurrences(0.0L)
+        explicit GAUSS_PARAM(VAR_FLOAT m = 0.0L, VAR_FLOAT s = 0.0L)
+            : mu(m)
+            , sigma(s)
+            , occurrences(0.0L)
         {
         }
 
@@ -1411,6 +1447,7 @@ class GaussFunction : public ProbabilityFunction
         long double sigma;
         long double occurrences;
     };
+
     using GAUSS_PARAM_TABLE = std::map<EventCatenation, GAUSS_PARAM>;
 
     /**
@@ -1419,7 +1456,7 @@ class GaussFunction : public ProbabilityFunction
      * @param mu expectation
      * @param sigma variance
      */
-    GaussFunction(long double mu = 0.0L, long double sigma = 1.0L);
+    explicit GaussFunction(long double mu = 0.0L, long double sigma = 1.0L);
 
     /**
      * @brief Clone a copy of this.
@@ -1428,7 +1465,7 @@ class GaussFunction : public ProbabilityFunction
      */
     [[nodiscard]] ProbabilityFunction *clone() const override
     {
-        return (new GaussFunction(*this));
+        return new GaussFunction(*this);
     }
 
     /**
@@ -1444,7 +1481,7 @@ class GaussFunction : public ProbabilityFunction
      *
      * @return the probability
      */
-    [[nodiscard]] long double P(const CondEvent &ce) const override;
+    [[nodiscard]] long double P(CondEvent const &ce) const override;
 
     /**
      * @brief Delegate Probability from EventList to avoid excessive casting if we
@@ -1454,7 +1491,7 @@ class GaussFunction : public ProbabilityFunction
      *
      * @return the probability
      */
-    [[nodiscard]] long double P(const EventCatenation &eventList) const override;
+    [[nodiscard]] long double P(EventCatenation const &eventList) const override;
 
     /**
      * @brief Estimate mu and sigma.
@@ -1478,7 +1515,7 @@ class GaussFunction : public ProbabilityFunction
      *
      * @return expectation
      */
-    [[nodiscard]] long double mu(const CondEvent &ce = CondEvent()) const;
+    [[nodiscard]] long double mu(CondEvent const &ce = CondEvent()) const;
 
     /**
      * @brief Retrieve variance.
@@ -1487,7 +1524,7 @@ class GaussFunction : public ProbabilityFunction
      *
      * @return variance
      */
-    [[nodiscard]] long double sigma(const CondEvent &ce = CondEvent()) const;
+    [[nodiscard]] long double sigma(CondEvent const &ce = CondEvent()) const;
 
     /**
      * @brief Generic ostream - &lh;&lt; operator for GaussFunction.
@@ -1497,10 +1534,10 @@ class GaussFunction : public ProbabilityFunction
      *
      * @return the modified out-stream
      */
-    friend std::ostream &operator<<(std::ostream &os, const GaussFunction &gf);
+    friend std::ostream &operator<<(std::ostream &os, GaussFunction const &gf);
 
-    private:
-    GAUSS_PARAM_TABLE param_;  ///< Maps conditions to Gauss-parameters.
+  private:
+    GAUSS_PARAM_TABLE param_; ///< Maps conditions to Gauss-parameters.
 };
 
 /**
@@ -1508,13 +1545,15 @@ class GaussFunction : public ProbabilityFunction
  */
 class ExponentialFunction : public ProbabilityFunction
 {
-    public:
+  public:
     /**
      * @brief Storage for a set of parameters for an exponential function.
      */
     struct EXP_PARAM
     {
-        EXP_PARAM(long double l = 1.0L) : lambda(l), occurrences(0.0L)
+        EXP_PARAM(long double l = 1.0L)
+            : lambda(l)
+            , occurrences(0.0L)
         {
         }
 
@@ -1528,7 +1567,7 @@ class ExponentialFunction : public ProbabilityFunction
      * @brief Default construct.
      * @param lambda expectation
      */
-    ExponentialFunction(VAR_FLOAT lambda = 1.0L);
+    explicit ExponentialFunction(VAR_FLOAT lambda = 1.0L);
 
     /**
      * @brief Clone a copy of this.
@@ -1537,7 +1576,7 @@ class ExponentialFunction : public ProbabilityFunction
      */
     [[nodiscard]] ProbabilityFunction *clone() const override
     {
-        return (new ExponentialFunction(*this));
+        return new ExponentialFunction(*this);
     }
 
     /**
@@ -1553,7 +1592,7 @@ class ExponentialFunction : public ProbabilityFunction
      *
      * @return the probability
      */
-    [[nodiscard]] long double P(const CondEvent &ce) const override;
+    [[nodiscard]] long double P(CondEvent const &ce) const override;
 
     /**
      * @brief Delegate Probability from EventList to avoid excessive casting if we
@@ -1563,7 +1602,7 @@ class ExponentialFunction : public ProbabilityFunction
      *
      * @return the probability
      */
-    [[nodiscard]] long double P(const EventCatenation &el) const override;
+    [[nodiscard]] long double P(EventCatenation const &el) const override;
 
     /**
      * @brief Estimate lambda for first column (must be float). Last column might be
@@ -1582,13 +1621,13 @@ class ExponentialFunction : public ProbabilityFunction
     /**
      * @brief Retrieve the expectation lambda.
      */
-    [[nodiscard]] long double lambda(const CondEvent &ce = CondEvent()) const;
+    [[nodiscard]] long double lambda(CondEvent const &ce = CondEvent()) const;
 
     /**
      * @brief Get the point where the cdf == 1/2.
      * P(0.0) &le; x &le; ln(2)/lambda_) = 0.5
      */
-    [[nodiscard]] long double ln2ByLambda(const CondEvent &ce = CondEvent()) const;
+    [[nodiscard]] long double ln2ByLambda(CondEvent const &ce = CondEvent()) const;
 
     /**
      * @brief Generic ostream - &lh;&lt; operator for ExponentialFunction.
@@ -1598,10 +1637,10 @@ class ExponentialFunction : public ProbabilityFunction
      *
      * @return the modified out-stream
      */
-    friend std::ostream &operator<<(std::ostream &os, const ExponentialFunction &d);
+    friend std::ostream &operator<<(std::ostream &os, ExponentialFunction const &d);
 
-    private:
-    EXP_PARAM_TABLE param_;  ///< Maps conditions to Exponential-parameters.
+  private:
+    EXP_PARAM_TABLE param_; ///< Maps conditions to Exponential-parameters.
 };
 
 /**
@@ -1613,7 +1652,9 @@ struct ACCUMULATION_DATA
     /**
      * @brief Construct with initial sum = 0.0 and number = 0
      */
-    ACCUMULATION_DATA(long double s = 0L, long double n = 0L) : sum(s), number(n)
+    explicit ACCUMULATION_DATA(long double s = 0L, long double n = 0L)
+        : sum(s)
+        , number(n)
     {
     }
 
@@ -1628,7 +1669,7 @@ using ACCUMULATION_MAP = std::map<EventCatenation, ACCUMULATION_DATA>;
  */
 class DiscreteProbability : public ProbabilityFunction
 {
-    public:
+  public:
     using PROB_TABLE = std::map<CondEvent, long double>;
 
     /**
@@ -1637,8 +1678,10 @@ class DiscreteProbability : public ProbabilityFunction
      * @param eventValueRanges ranges for the events
      * @param conditionValueRanges ranges for the conditions
      */
-    DiscreteProbability(const VALUERANGES_TYPE &eventValueRanges     = VALUERANGES_TYPE(),
-                        const VALUERANGES_TYPE &conditionValueRanges = VALUERANGES_TYPE());
+    explicit DiscreteProbability(
+        const VALUERANGES_TYPE &eventValueRanges     = VALUERANGES_TYPE(),
+        const VALUERANGES_TYPE &conditionValueRanges = VALUERANGES_TYPE()
+    );
 
     /**
      * @brief Clone a copy of this.
@@ -1694,7 +1737,7 @@ class DiscreteProbability : public ProbabilityFunction
      *
      * @return the probability
      */
-    long double P(const CondEvent &ce) const override;
+    long double P(CondEvent const &ce) const override;
 
     /**
      * @brief Delegate Probability from EventList to avoid excessive casting if we
@@ -1704,9 +1747,9 @@ class DiscreteProbability : public ProbabilityFunction
      *
      * @return the probability
      */
-    long double P(const EventCatenation &el) const override
+    long double P(EventCatenation const &el) const override
     {
-        return (P(CondEvent(el)));
+        return P(CondEvent(el));
     }
 
     /**
@@ -1732,7 +1775,7 @@ class DiscreteProbability : public ProbabilityFunction
      *
      * @return the modified out-stream
      */
-    friend std::ostream &operator<<(std::ostream &os, const DiscreteProbability &d);
+    friend std::ostream &operator<<(std::ostream &os, DiscreteProbability const &d);
 
     /**
      * @brief Reset the distribution.
@@ -1750,7 +1793,7 @@ class DiscreteProbability : public ProbabilityFunction
      */
     bool isUniform() const
     {
-        return (isUniform_);
+        return isUniform_;
     }
 
     /**
@@ -1759,10 +1802,10 @@ class DiscreteProbability : public ProbabilityFunction
      */
     bool isModified() const
     {
-        return (hasBeenModified_);
+        return hasBeenModified_;
     }
 
-    protected:
+  protected:
     /**
      * @brief Use the values (obtained by training) to update the ranges the
      * variables can assume. Don't remove any existing values.
@@ -1791,11 +1834,11 @@ class DiscreteProbability : public ProbabilityFunction
         hasBeenModified_ = mod;
     }
 
-    private:
+  private:
     bool         isUniform_{false};
     mutable bool hasBeenModified_{false};
     PROB_TABLE   values_;
 };
-};  // namespace util
+}; // namespace util
 
-#endif  // NS_UTIL_STATUTIL_H_INCLUDED
+#endif // NS_UTIL_STATUTIL_H_INCLUDED

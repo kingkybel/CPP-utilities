@@ -59,18 +59,18 @@ DEFINE_HAS_STATIC_MEMBER_FUNCTION(has_static_bool_fill, T::fill, bool (*)(void))
  * @tparam maxInstances maximum number of instances
  * @tparam minInstances minimum number of instances
  */
-template<typename T_, size_t maxInstances = 0, size_t minInstances = 1>
+template <typename T_, size_t maxInstances = 0, size_t minInstances = 1>
 struct InstancePool
 {
     using ObjectPointer           = std::shared_ptr<T_>;
     using ObjectContainerType     = std::unordered_set<ObjectPointer>;
     using ObjectContainerIterator = typename ObjectContainerType::iterator;
 
-    private:
+  private:
     static ObjectContainerType     avail_;
     static ObjectContainerIterator current_;
 
-    protected:
+  protected:
     /**
      * @brief Add an instance of the object type to the pool.
      *
@@ -78,9 +78,9 @@ struct InstancePool
      */
     static void addInstance(ObjectPointer pObject)
     {
-        if(avail_.find(pObject) == avail_.end())
+        if (avail_.find(pObject) == avail_.end())
         {
-            if(maxInstances > 0 && avail_.size() == maxInstances)
+            if (maxInstances > 0 && avail_.size() == maxInstances)
             {
                 std::stringstream ss;
                 ss << "Instance pool has reached the maximum number " << maxInstances << " of instances in class '"
@@ -96,13 +96,13 @@ struct InstancePool
     /**
      * @brief Remove an instance of the object type from the pool.
      *
-     * @param pObject ponter to the object to remove
+     * @param pObject pointer to the object to remove
      */
     static void removeInstance(ObjectPointer pObject)
     {
         auto found = avail_.find(pObject);
 
-        if(found != avail_.end())
+        if (found != avail_.end())
         {
             avail_.erase(found);
         }
@@ -115,7 +115,7 @@ struct InstancePool
      */
     static void removeFrontInstance()
     {
-        if(avail_.size() > 0)
+        if (!avail_.empty())
         {
             avail_.erase(*avail_.begin());
         }
@@ -131,7 +131,7 @@ struct InstancePool
         avail_.clear();
     }
 
-    public:
+  public:
     /**
      * @brief Retrieve an instance from the pool in round- robin-fashion, in case of multiple instance.
      *
@@ -139,28 +139,36 @@ struct InstancePool
      */
     static ObjectPointer getInstance()
     {
-        static_assert((maxInstances == 0 || minInstances <= maxInstances),
-                      "Minimal instance number must be less or equal to maximal instance number");
+        static_assert(
+            (maxInstances == 0 || minInstances <= maxInstances),
+            "Minimal instance number must be less or equal to maximal instance number"
+        );
 
         // make sure derived classes implement "static bool fill(){...}"
         // where the pool of instances is filled
         // with at least minInstances elements and at most
         // maxInstances elements
 
-        static_assert(has_static_bool_fill<T_>::value,
-                      "InstancePool<ValueT_> derived class needs static member 'bool fill()");
+        static_assert(
+            has_static_bool_fill<T_>::value,
+            "InstancePool<ValueT_> derived class needs static member 'bool fill()"
+        );
 
         [[maybe_unused]] static bool isFilled = T_::fill();
         // static size_t index    = avail_.size() - 1;
-        if(avail_.size() < minInstances)
+        if (avail_.size() < minInstances)
         {
             std::stringstream ss;
             ss << "Instance pool of '" << std::string(typeid(T_).name()) << "' [" << minInstances << "..";
 
-            if(maxInstances == 0)
+            if (maxInstances == 0)
+            {
                 ss << "∞";
+            }
             else
+            {
                 ss << maxInstances;
+            }
 
             ss << "] instances, but found " << avail_.size() << ".";
             throw std::overflow_error(ss.str());
@@ -168,10 +176,12 @@ struct InstancePool
 
         current_++;
 
-        if(current_ == avail_.end())
+        if (current_ == avail_.end())
+        {
             current_ = avail_.begin();
+        }
 
-        return (*current_);
+        return *current_;
     }
 
     /**
@@ -181,7 +191,7 @@ struct InstancePool
      */
     static size_t size()
     {
-        return (avail_.size());
+        return avail_.size();
     }
 
     /**
@@ -191,7 +201,7 @@ struct InstancePool
      */
     static bool hasRequiredInstances()
     {
-        return ((avail_.size() >= minInstances) && (avail_.size() <= maxInstances));
+        return (avail_.size() >= minInstances) && (avail_.size() <= maxInstances);
     }
 
     /**
@@ -201,27 +211,27 @@ struct InstancePool
      */
     static bool empty()
     {
-        return (avail_.size() == 0UL);
+        return avail_.empty();
     }
 };
 
 // define static members
-template<typename T_, size_t maxInstances, size_t minInstances>
+template <typename T_, size_t maxInstances, size_t minInstances>
 typename InstancePool<T_, maxInstances, minInstances>::ObjectContainerType
- InstancePool<T_, maxInstances, minInstances>::avail_;
+    InstancePool<T_, maxInstances, minInstances>::avail_;
 
-template<typename T_, size_t maxInstances, size_t minInstances>
+template <typename T_, size_t maxInstances, size_t minInstances>
 typename InstancePool<T_, maxInstances, minInstances>::ObjectContainerIterator
- InstancePool<T_, maxInstances, minInstances>::current_;
+    InstancePool<T_, maxInstances, minInstances>::current_;
 
 /**
  * @brief A singleton is an instance-pool with exactly one contained instance.
  */
-template<typename T_>
+template <typename T_>
 struct Singleton : public InstancePool<T_, 1, 1>
 {
 };
 
-};  // namespace util
+}; // namespace util
 
-#endif  // INSTANCE_POOL_H_INCLUDED
+#endif // INSTANCE_POOL_H_INCLUDED

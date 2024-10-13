@@ -43,14 +43,14 @@ namespace util
  * @param value the value to convert
  * @return std::string a string representation of the value
  */
-template<typename Value>
-inline std::string toString(const Value &value)
+template <typename Value>
+inline std::string toString(Value const &value)
 {
     std::stringstream ss;
 
     util::decorate(ss, value);
 
-    return (ss.str());
+    return ss.str();
 }
 
 /**
@@ -60,15 +60,15 @@ inline std::string toString(const Value &value)
  * @param value the value to convert
  * @return std::wstring  a wide string representation of the value
  */
-template<typename Value>
-inline std::wstring toWString(const Value &value)
+template <typename Value>
+inline std::wstring toWString(Value const &value)
 {
     std::wstringstream ss;
 
     decorate(ss, value);
 
-    return (ss.str());
+    return ss.str();
 }
-};  // namespace util
+}; // namespace util
 
-#endif  // NS_UTIL_TO_STRING_H_INCLUDED
+#endif // NS_UTIL_TO_STRING_H_INCLUDED

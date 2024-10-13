@@ -69,8 +69,11 @@ namespace util
             return ""; /* No match found */                                                                            \
         }                                                                                                              \
                                                                                                                        \
-        void printTypesAndBools()                                                                                      \
+        void printTypesAndBools(const std::string &graphVar)                                                           \
         {                                                                                                              \
+            TRACE_STR1((-- -- -- -- -- -- -- -- -- -- -- -- --));                                                      \
+            TRACE1(graphVar);                                                                                          \
+            TRACE0                                                                                                     \
             TRACE1(AllowMultipleVertices);                                                                             \
             TRACE1(AllowParallelEdges);                                                                                \
             TRACE1(AllowCycles);                                                                                       \
@@ -82,11 +85,12 @@ namespace util
             TRACE1(vertexStorage);                                                                                     \
             auto edgeStorage = scanForBoostSelector<EdgeStorage>();                                                    \
             TRACE1(edgeStorage);                                                                                       \
+            TRACE0                                                                                                     \
         }
 
     #define PRINT_TYPES_AND_BOOLS(graphP)                                                                              \
         {                                                                                                              \
-            graphP.printTypesAndBools();                                                                               \
+            graphP.printTypesAndBools(#graphP);                                                                        \
         }
 
 #else

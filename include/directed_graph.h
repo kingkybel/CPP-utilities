@@ -28,9 +28,9 @@
 
 #include "directed_graph_traits.h"
 #include "traits.h"
-#define DO_TRACE_
+// #define DO_TRACE_
 #include "traceutil.h"
-#define DO_GRAPH_DEBUG_TRACE_
+// #define DO_GRAPH_DEBUG_TRACE_
 #include "directed_graph_tests_debug_functions.h"
 
 #include <boost/graph/adjacency_list.hpp>
@@ -832,22 +832,31 @@ class directed_graph_base
      */
     bool createsCycle(VertexProperty const& vertexSource, VertexProperty const& vertexTarget, EdgeProperty const& edge)
     {
-        // Check if adding the edge creates a cycle
-        // This can be done using DFS or BFS
-        // For simplicity, we can use a straightforward approach
-        // Add the edge temporarily
+        // Get vertex descriptors for source and target vertices
         VertexDescriptor src = getVertexDescriptorUnsafe(vertexSource);
         VertexDescriptor tgt = getVertexDescriptorUnsafe(vertexTarget);
+
+        // Check if an edge between the source and target already exists
+        auto [existingEdge, exists] = boost::edge(src, tgt, graph_);
+
+        // If the edge already exists, no need to check for cycles
+        if (exists)
+        {
+            return false; // Adding another parallel edge doesn't introduce a cycle
+        }
+
+        // Add the edge temporarily
         boost::add_edge(src, tgt, edge, graph_);
 
-        // Check for cycles
+        // Check for cycles using DFS or BFS
         std::unordered_map<VertexDescriptor, bool> visited(boost::num_vertices(graph_));
         std::vector<VertexDescriptor>              recursion_stack;
 
         bool hasCycle = dfsCycleCheck(src, visited, recursion_stack);
 
-        // Remove the edge
+        // Remove the temporarily added edge
         boost::remove_edge(src, tgt, graph_);
+
         return hasCycle;
     }
 
@@ -915,7 +924,7 @@ using directed_graph = directed_graph_base<
  * <li>vertices stored in hash-set/set/vector depending on @c VertexProperty (hash? comparable?)</li>
  * <li>edges stored in hash-set/set/vector depending on @c EdgeProperty (hash? comparable?)</li>
  * <li>no vertices with same property allowed</li>
- * <li>parallel edges are allowed</li>
+ * <li>parallel edges are not allowed</li>
  * <li>no cycles allowed</li>
  * <li>throwing on existing vertices or edges, on parallel edges, or cycles; return false instead</li>
  * <li>overwriting edge-properties</li>
@@ -927,9 +936,9 @@ template <typename VertexProperty, typename EdgeProperty, typename ThrowOnError 
 using directed_acyclic_graph = directed_graph_base<
     VertexProperty,
     EdgeProperty,
-    disallow_multiple_vertices, // disallow_multiple_vertices_t,
-    allow_parallel_edges,       // allow_parallel_edges_t,
-    disallow_cycles,            // disallow_cycles_t,
+    disallow_multiple_vertices,
+    disallow_parallel_edges,
+    disallow_cycles,
     overwrite_edge_property,
     ThrowOnError>;
 

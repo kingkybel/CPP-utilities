@@ -38,7 +38,7 @@ namespace util
 {
 class FFT
 {
-    public:
+  public:
     using INTTYPE       = int64_t;
     using INTVECTOR     = std::vector<INTTYPE>;
     using FLOATTYPE     = long double;
@@ -47,10 +47,10 @@ class FFT
     using COMPLEXVECTOR = std::vector<COMPLEXVALUE>;
     using COMPLEXMATRIX = std::vector<COMPLEXVECTOR>;
 
-    private:
+  private:
     constexpr static FLOATTYPE PI = std::numbers::pi_v<FLOATTYPE>;
 
-    public:
+  public:
     /**
      * Default constructor.
      * @param logOfNumOfPoints number of points must be a power of 2, so we
@@ -58,27 +58,31 @@ class FFT
      * @param sampleRate the rate at which the input will be sampled
      * @param calibrate whether or not to calibrate on a 1kHz wave
      */
-    FFT(INTTYPE logOfNumOfPoints = 10, INTTYPE sampleRate = 1024, bool calibrate = false)
-    : logOfPoints_(logOfNumOfPoints)
-    , numOfPoints_(powTwo[logOfNumOfPoints])
-    , sampleRate_(sampleRate)
+    explicit FFT(INTTYPE logOfNumOfPoints = 10, INTTYPE sampleRate = 1'024, bool calibrate = false)
+        : logOfPoints_(logOfNumOfPoints)
+        , numOfPoints_(powTwo[logOfNumOfPoints])
+        , sampleRate_(sampleRate)
     {
         tapeOfDoubles_.resize(numOfPoints_);
 
-        if(calibrate)
+        if (calibrate)
         {
             // 1 kHz calibration wave
             FLOATTYPE TWO_KILO_PI        = 2.0 * FLOATTYPE(PI) * 1000.0L;
             FLOATTYPE CALIBRATION_FACTOR = 1600.0L;
 
-            for(INTTYPE i = 0; i < numOfPoints_; i++)
+            for (INTTYPE i = 0; i < numOfPoints_; i++)
+            {
                 tapeOfDoubles_[i] =
-                 CALIBRATION_FACTOR * std::sin((TWO_KILO_PI * i) / static_cast<FLOATTYPE>(sampleRate_));
+                    CALIBRATION_FACTOR * std::sin((TWO_KILO_PI * i) / static_cast<FLOATTYPE>(sampleRate_));
+            }
         }
         else
         {
-            for(INTTYPE i = 0; i < numOfPoints_; i++)
+            for (INTTYPE i = 0; i < numOfPoints_; i++)
+            {
                 tapeOfDoubles_[i] = FLOATTYPE(0);
+            }
         }
 
         sqrtOfPoints_ = std::sqrt(static_cast<FLOATTYPE>(numOfPoints_));
@@ -96,11 +100,11 @@ class FFT
         complexExpontials_.resize(logOfPoints_ + 1);
 
         // Pre-compute complex exponentials
-        for(INTTYPE l = 1; l <= logOfPoints_; l++)
+        for (INTTYPE l = 1; l <= logOfPoints_; l++)
         {
             (complexExpontials_[l]).resize(numOfPoints_);
 
-            for(INTTYPE i = 0; i < numOfPoints_; i++)
+            for (INTTYPE i = 0; i < numOfPoints_; i++)
             {
                 const static FLOATTYPE TWO_PI = 2. * PI;
                 FLOATTYPE              re     = std::cos(TWO_PI * i / FLOATTYPE(powTwo[l]));
@@ -114,15 +118,15 @@ class FFT
         INTTYPE rev        = 0;
         INTTYPE halfPoints = numOfPoints_ / 2;
 
-        for(INTTYPE i = 0; i < numOfPoints_ - 1; i++)
+        for (INTTYPE i = 0; i < numOfPoints_ - 1; i++)
         {
             bitReverseVector_[i] = rev;
             INTTYPE mask         = halfPoints;
 
             // add 1 backwards
-            while(rev >= mask)
+            while (rev >= mask)
             {
-                rev -= mask;  // turn off this bit
+                rev -= mask; // turn off this bit
                 mask >>= 1;
             }
 
@@ -135,16 +139,18 @@ class FFT
     FFT(const FFT &lhs)            = default;
     FFT &operator=(const FFT &lhs) = default;
 
-    INTTYPE numberOfPoints() const
+    [[nodiscard]] INTTYPE numberOfPoints() const
     {
-        return (numOfPoints_);
+        return numOfPoints_;
     }
 
     void loadFloatVector(FLOATVECTOR sampleVector)
     {
         INTTYPE cSample = sampleVector.size();
-        if(cSample > numOfPoints_)
+        if (cSample > numOfPoints_)
+        {
             return;
+        }
 
         auto start  = tapeOfDoubles_.begin();
         auto middle = start + cSample;
@@ -156,13 +162,15 @@ class FFT
 
         // copy samples from iterator to tail end of tape
         INTTYPE iTail = numOfPoints_ - cSample;
-        for(INTTYPE i = 0; i < cSample; i++)
+        for (INTTYPE i = 0; i < cSample; i++)
         {
             tapeOfDoubles_[i + iTail] = sampleVector[i];
         }
         // Initialize the FFT buffer
-        for(INTTYPE i = 0; i < numOfPoints_; i++)
+        for (INTTYPE i = 0; i < numOfPoints_; i++)
+        {
             set(i, tapeOfDoubles_[i]);
+        }
     }
 
     /**
@@ -191,16 +199,16 @@ class FFT
         // step = 2 ^ (level-1)
         // increm = 2 ^ level;
         INTTYPE step = 1;
-        for(INTTYPE level = 1; level <= logOfPoints_; level++)
+        for (INTTYPE level = 1; level <= logOfPoints_; level++)
         {
-            INTTYPE increm = step * 2;
+            INTTYPE increment = step * 2;
 
-            for(INTTYPE j = 0; j < step; j++)
+            for (INTTYPE j = 0; j < step; j++)
             {
                 // U = exp ( - 2 PI j / 2 ^ level )
                 COMPLEXVALUE U = complexExpontials_[level][j];
 
-                for(INTTYPE i = j; i < numOfPoints_; i += increm)
+                for (INTTYPE i = j; i < numOfPoints_; i += increment)
                 {
                     // butterfly
                     COMPLEXVALUE T = U;
@@ -216,68 +224,70 @@ class FFT
             step *= 2;
         }
 
-        return (transformedComplexVector_);
+        return transformedComplexVector_;
     }
 
-    FLOATVECTOR intensityVector() const
+    [[nodiscard]] FLOATVECTOR intensityVector() const
     {
         FLOATVECTOR reval;
 
-        for(auto v: transformedComplexVector_)
+        for (auto v: transformedComplexVector_)
+        {
             reval.push_back(std::abs(v / sqrtOfPoints_));
+        }
 
-        return (reval);
+        return reval;
     }
 
-    FLOATTYPE getIntensityAt(INTTYPE index) const
+    [[nodiscard]] FLOATTYPE getIntensityAt(INTTYPE index) const
     {
         assert(index < numOfPoints_);
 
-        return (std::abs(transformedComplexVector_[index]) / sqrtOfPoints_);
+        return std::abs(transformedComplexVector_[index]) / sqrtOfPoints_;
     }
 
-    FLOATTYPE realAt(INTTYPE index) const
+    [[nodiscard]] FLOATTYPE realAt(INTTYPE index) const
     {
         assert(index < numOfPoints_);
 
-        return (transformedComplexVector_[index].real());
+        return transformedComplexVector_[index].real();
     }
 
-    FLOATTYPE imagAt(INTTYPE index) const
+    [[nodiscard]] FLOATTYPE imagAt(INTTYPE index) const
     {
         assert(index < numOfPoints_);
 
-        return (transformedComplexVector_[index].imag());
+        return transformedComplexVector_[index].imag();
     }
 
-    INTTYPE getFrequencyOfSampleAt(INTTYPE point) const
+    [[nodiscard]] INTTYPE getFrequencyOfSampleAt(INTTYPE point) const
     {
         assert(point < numOfPoints_);
 
         // return frequency in Hz of a given point
         INTTYPE x = sampleRate_ * point;
 
-        return (x / numOfPoints_);
+        return x / numOfPoints_;
     }
 
-    INTTYPE HzToPoint(INTTYPE freq) const
+    [[nodiscard]] INTTYPE HzToPoint(INTTYPE freq) const
     {
-        return ((numOfPoints_ * freq) / sampleRate_);
+        return (numOfPoints_ * freq) / sampleRate_;
     }
 
-    INTTYPE MaxFreq() const
+    [[nodiscard]] INTTYPE MaxFreq() const
     {
-        return (sampleRate_);
+        return sampleRate_;
     }
 
-    INTTYPE Tape(INTTYPE i) const
+    [[nodiscard]] INTTYPE Tape(INTTYPE i) const
     {
         assert(i < numOfPoints_);
 
-        return (static_cast<INTTYPE>(tapeOfDoubles_[i]));
+        return static_cast<INTTYPE>(tapeOfDoubles_[i]);
     }
 
-    private:
+  private:
     void set(INTTYPE i, FLOATTYPE val)
     {
         transformedComplexVector_[bitReverseVector_[i]] = COMPLEXVALUE(val);
@@ -287,11 +297,11 @@ class FFT
     INTTYPE       numOfPoints_;
     INTTYPE       sampleRate_;
     FLOATTYPE     sqrtOfPoints_;
-    INTVECTOR     bitReverseVector_;          // bit reverse vector
-    COMPLEXVECTOR transformedComplexVector_;  // in-place FFT array
-    COMPLEXMATRIX complexExpontials_;         // exponentials
-    FLOATVECTOR   tapeOfDoubles_;             // recording tape
+    INTVECTOR     bitReverseVector_;         // bit reverse vector
+    COMPLEXVECTOR transformedComplexVector_; // in-place FFT array
+    COMPLEXMATRIX complexExpontials_;        // exponentials
+    FLOATVECTOR   tapeOfDoubles_;            // recording tape
 };
-};  // namespace util
+}; // namespace util
 
-#endif  // !defined(NS_UTIL_FFT_H_INCLUDED)
+#endif // !defined(NS_UTIL_FFT_H_INCLUDED)

@@ -56,7 +56,7 @@ struct resolve_modulo
      * @param invalid the value to use as "invalid"
      * @return true always, as resolution will always work
      */
-    template<typename T_>
+    template <typename T_>
     static bool resolve(T_ min, T_ max, T_ &val, T_ invalid)
     {
         const T_ dist = max - min + 1;
@@ -64,12 +64,14 @@ struct resolve_modulo
         val -= min;
         val %= dist;
 
-        if(val < 0)
+        if (val < 0)
+        {
             val += dist;
+        }
 
         val += min;
 
-        return (true);
+        return true;
     }
 };
 
@@ -89,7 +91,7 @@ struct resolve_throw
      * @param invalid the value to use as "invalid" - not used
      * @return never returns a value, always throws an exception
      */
-    template<typename T_>
+    template <typename T_>
     static bool resolve(T_ min, T_ max, T_ &val, T_ invalid)
     {
         std::stringstream ss;
@@ -118,12 +120,12 @@ struct resolve_invalid
      * @param invalid the value to use as "invalid"
      * @return always false
      */
-    template<typename T_>
+    template <typename T_>
     static bool resolve(T_ min, T_ max, T_ &val, T_ invalid)
     {
         val = invalid;
 
-        return (false);
+        return false;
     }
 };
 
@@ -131,7 +133,7 @@ struct resolve_invalid
  * @brief Test whether a type is an "out-of-bounds-resolver" for
  * static checks. This default delivers always false.
  */
-template<typename, typename = void>
+template <typename, typename = void>
 struct is_out_of_bounds_resolver : std::false_type
 {
 };
@@ -140,7 +142,7 @@ struct is_out_of_bounds_resolver : std::false_type
  * @brief Specialised test whether a type is an "out-of-bounds-resolver" for
  * static checks. This default delivers true for resolve_modulo.
  */
-template<>
+template <>
 struct is_out_of_bounds_resolver<resolve_modulo> : std::true_type
 {
 };
@@ -149,7 +151,7 @@ struct is_out_of_bounds_resolver<resolve_modulo> : std::true_type
  * @brief Specialised test whether a type is an "out-of-bounds-resolver" for
  * static checks. This default delivers true for resolve_invalid.
  */
-template<>
+template <>
 struct is_out_of_bounds_resolver<resolve_invalid> : std::true_type
 {
 };
@@ -158,7 +160,7 @@ struct is_out_of_bounds_resolver<resolve_invalid> : std::true_type
  * @brief Specialised test whether a type is an "out-of-bounds-resolver" for
  * static checks. This default delivers true for resolve_throw.
  */
-template<>
+template <>
 struct is_out_of_bounds_resolver<resolve_throw> : std::true_type
 {
 };
@@ -179,8 +181,8 @@ struct convert_scale
      * @param rhs limited_int value to convert
      * @return ValueT_ the converted value
      */
-    template<typename T_, typename LimitedInt2_>
-    static T_ convertFrom(T_ min_, T_ max_, const LimitedInt2_ &rhs)
+    template <typename T_, typename LimitedInt2_>
+    static T_ convertFrom(T_ min_, T_ max_, LimitedInt2_ const &rhs)
     {
         long double distLhs     = (static_cast<long double>(max_) - static_cast<long double>(min_));
         long double distRhs     = (rhs.max() - rhs.min());
@@ -189,7 +191,7 @@ struct convert_scale
         long double valLhsTo0   = valRhsTo0 * scaleFactor;
         T_          reval(valLhsTo0 + static_cast<long double>(min_));
 
-        return (reval);
+        return reval;
     }
 };
 
@@ -210,10 +212,10 @@ struct convert_circular_scale
      * @param rhs limited_int value to convert
      * @return ValueT_ the converted value
      */
-    template<typename T_, typename LimitedInt2_>
-    static T_ convertFrom(T_ min_, T_ max_, const LimitedInt2_ &rhs)
+    template <typename T_, typename LimitedInt2_>
+    static T_ convertFrom(T_ min_, T_ max_, LimitedInt2_ const &rhs)
     {
-        if(((rhs.min() + rhs.max() > 1) && rhs.min() != 0) || ((min_ + max_ > 1) && min_ != 0))
+        if (((rhs.min() + rhs.max() > 1) && rhs.min() != 0) || ((min_ + max_ > 1) && min_ != 0))
         {
             std::stringstream ss;
             ss << "convert_circular_scale::convertFrom(" << min_ << "," << max_ << "," << rhs
@@ -227,10 +229,12 @@ struct convert_circular_scale
         T_ scale        = lhsDist / rhsDist;
         T_ lhsValMapped = T_(static_cast<long double>(rhsValMapped) * static_cast<long double>(scale));
 
-        if(min_ < 0)
+        if (min_ < 0)
+        {
             lhsValMapped = (lhsValMapped - lhsDist) % lhsDist;
+        }
 
-        return (lhsValMapped);
+        return lhsValMapped;
     }
 };
 
@@ -238,7 +242,7 @@ struct convert_circular_scale
  * @brief Default test whether a type is an "limited-int-converter" for
  * static checks. This default delivers always false.
  */
-template<typename, typename = void>
+template <typename, typename = void>
 struct is_limited_int_converter : std::false_type
 {
 };
@@ -247,7 +251,7 @@ struct is_limited_int_converter : std::false_type
  * @brief Specialised test whether a type is an "limited-int-converter" for
  * static checks. This delivers true for convert_circular_scale.
  */
-template<>
+template <>
 struct is_limited_int_converter<convert_circular_scale> : std::true_type
 {
 };
@@ -256,7 +260,7 @@ struct is_limited_int_converter<convert_circular_scale> : std::true_type
  * @brief Specialised test whether a type is an "limited-int-converter" for
  * static checks. This delivers true for convert_scale.
  */
-template<>
+template <>
 struct is_limited_int_converter<convert_scale> : std::true_type
 {
 };
@@ -270,13 +274,14 @@ struct is_limited_int_converter<convert_scale> : std::true_type
  * @param Res_ type that deals with out of range [min,max] resolution
  * @param Conv_ type that deals with conversion between limited_int types
  */
-template<typename INT_, INT_ min_, INT_ max_, typename Res_ = resolve_modulo, typename Conv_ = convert_scale>
+template <typename INT_, INT_ min_, INT_ max_, typename Res_ = resolve_modulo, typename Conv_ = convert_scale>
 struct limited_int_traits
 {
     using Resolver  = Res_;
     using Converter = Conv_;
     static constexpr INT_ invalid_ =
-     (min_ != std::numeric_limits<INT_>::min() ? std::numeric_limits<INT_>::min() : std::numeric_limits<INT_>::max());
+        (min_ != std::numeric_limits<INT_>::min() ? std::numeric_limits<INT_>::min() : std::numeric_limits<INT_>::max()
+        );
 
     /**
      * @brief Return the unique invalid value for the limited_int.
@@ -288,7 +293,7 @@ struct limited_int_traits
         static_assert(is_limited_int_converter<Converter>::value, "invalid limited_int_converter");
         static_assert(is_out_of_bounds_resolver<Resolver>::value, "invalid out_of_bounds_resolver");
 
-        return (invalid_);
+        return invalid_;
     }
 
     /**
@@ -299,7 +304,7 @@ struct limited_int_traits
      */
     static bool withinBounds(const INT_ &val)
     {
-        return ((val >= min_) && (val <= max_) && (min_ < max_));
+        return (val >= min_) && (val <= max_) && (min_ < max_);
     }
 
     /**
@@ -310,12 +315,12 @@ struct limited_int_traits
      */
     static bool apply(INT_ &val)
     {
-        if(!withinBounds(val))
+        if (!withinBounds(val))
         {
-            return (Resolver::resolve(min_, max_, val, invalid()));
+            return Resolver::resolve(min_, max_, val, invalid());
         }
 
-        return (true);
+        return true;
     }
 
     /**
@@ -325,10 +330,10 @@ struct limited_int_traits
      * @param rhs the other limited int
      * @return INT_ the value in this limited_int type
      */
-    template<typename LimitedInt_>
-    static INT_ convertFrom(const LimitedInt_ &rhs)
+    template <typename LimitedInt_>
+    static INT_ convertFrom(LimitedInt_ const &rhs)
     {
-        return (Converter::convertFrom(min_, max_, rhs));
+        return Converter::convertFrom(min_, max_, rhs);
     }
 
     /**
@@ -341,13 +346,13 @@ struct limited_int_traits
      * @param isReverse whether we are looking in negative direction (true) or not (false)
      * @return LimitedInt_ the nth next value
      */
-    template<typename LimitedInt_, typename SummandType_>
-    static LimitedInt_ nth_next(const LimitedInt_ &val, const SummandType_ &n, bool isReverse)
+    template <typename LimitedInt_, typename SummandType_>
+    static LimitedInt_ nth_next(LimitedInt_ const &val, SummandType_ const &n, bool isReverse)
     {
         constexpr bool is_int_unsigned   = std::is_unsigned<LimitedInt_>();
         constexpr bool is_summand_signed = std::is_signed<SummandType_>();
-        if constexpr(is_int_unsigned && is_summand_signed)
-        {  //
+        if constexpr (is_int_unsigned && is_summand_signed)
+        { //
             n = -n;
             return isReverse ? (val.val() + n) : (val.val() - n);
         }
@@ -356,7 +361,7 @@ struct limited_int_traits
 };
 
 /* Forward declared iterator type. */
-template<typename LimitedIntTag>
+template <typename LimitedIntTag>
 class limited_int_iterator;
 
 /**
@@ -368,20 +373,22 @@ class limited_int_iterator;
  * @tparam max_ maximum value for this type, default to the standard maximum of the int type
  * @tparam Traits_ trais of the limited_int incluing the resolver and converter
  */
-template<typename IntT_,
-         IntT_ min_       = std::numeric_limits<IntT_>::min() + 1,
-         IntT_ max_       = std::numeric_limits<IntT_>::max(),
-         typename Traits_ = limited_int_traits<IntT_, min_, max_, resolve_modulo, convert_scale>>
+template <
+    typename IntT_,
+    IntT_ min_       = std::numeric_limits<IntT_>::min() + 1,
+    IntT_ max_       = std::numeric_limits<IntT_>::max(),
+    typename Traits_ = limited_int_traits<IntT_, min_, max_, resolve_modulo, convert_scale>>
 struct limited_int
 {
-    private:
-    explicit limited_int(bool dummy) : val_(Traits_::invalid_)
+  private:
+    explicit limited_int(bool dummy)
+        : val_(Traits_::invalid_)
     {
     }
 
     IntT_ val_ = min_;
 
-    public:
+  public:
     using TraitsType = Traits_;
     using iterator   = limited_int_iterator<limited_int<IntT_, min_, max_, Traits_>>;
 
@@ -390,13 +397,18 @@ struct limited_int
      *
      * @param val the value of this
      */
-    limited_int(IntT_ val = min_) : val_(val)
+    limited_int(IntT_ val = min_)
+        : val_(val)
     {
-        static_assert(true == std::is_integral<IntT_>::value,
-                      "limited_int<> needs integral type as template parameter");
+        static_assert(
+            true == std::is_integral<IntT_>::value,
+            "limited_int<> needs integral type as template parameter"
+        );
         static_assert(min_ < max_, "limited_int<> min needs to be smaller than max");
-        static_assert((min_ != std::numeric_limits<IntT_>::min()) || (max_ != std::numeric_limits<IntT_>::max()),
-                      "either min or max must be not equal numeric_limits min() and max()");
+        static_assert(
+            (min_ != std::numeric_limits<IntT_>::min()) || (max_ != std::numeric_limits<IntT_>::max()),
+            "either min or max must be not equal numeric_limits min() and max()"
+        );
 
         Traits_::apply(val_);
     }
@@ -410,8 +422,8 @@ struct limited_int
      * @tparam Traits2_ the traits of the rhs limited_int
      * @param rhs the value to convert from
      */
-    template<typename IntT2_, IntT2_ min2_, IntT2_ max2_, typename Traits2_>
-    limited_int(const limited_int<IntT2_, min2_, max2_, Traits2_> &rhs)
+    template <typename IntT2_, IntT2_ min2_, IntT2_ max2_, typename Traits2_>
+    limited_int(limited_int<IntT2_, min2_, max2_, Traits2_> const &rhs)
     {
         val_ = Traits_::convertFrom(rhs);
     }
@@ -423,7 +435,7 @@ struct limited_int
      */
     [[nodiscard]] bool isValid() const
     {
-        return (val_ != Traits_::invalid());
+        return val_ != Traits_::invalid();
     }
 
     /**
@@ -433,7 +445,7 @@ struct limited_int
      */
     static constexpr limited_int min()
     {
-        return (min_);
+        return min_;
     }
 
     /**
@@ -443,7 +455,7 @@ struct limited_int
      */
     static constexpr limited_int max()
     {
-        return (max_);
+        return max_;
     }
 
     /**
@@ -455,7 +467,7 @@ struct limited_int
     {
         static limited_int<IntT_, min_, max_, Traits_> invalidLimitedInt(false);
 
-        return (invalidLimitedInt);
+        return invalidLimitedInt;
     }
 
     /**
@@ -465,7 +477,7 @@ struct limited_int
      */
     IntT_ val() const
     {
-        return (val_);
+        return val_;
     }
 
     /**
@@ -475,7 +487,7 @@ struct limited_int
      */
     operator IntT_() const
     {
-        return (val());
+        return val();
     }
 
     /**
@@ -486,7 +498,7 @@ struct limited_int
      */
     static iterator begin(limited_int start = limited_int::min())
     {
-        return (iterator(start, false));
+        return iterator(start, false);
     }
 
     /**
@@ -497,7 +509,7 @@ struct limited_int
      */
     static iterator end(limited_int finish = limited_int::invalid())
     {
-        return (iterator(finish, false));
+        return iterator(finish, false);
     }
 
     /**
@@ -508,7 +520,7 @@ struct limited_int
      */
     static iterator rbegin(limited_int rstart = limited_int::max())
     {
-        return (iterator(rstart, true));
+        return iterator(rstart, true);
     }
 
     /**
@@ -519,7 +531,7 @@ struct limited_int
      */
     static iterator rend(limited_int rfinish = limited_int::invalid())
     {
-        return (iterator(rfinish, true));
+        return iterator(rfinish, true);
     }
 
     /**
@@ -529,16 +541,20 @@ struct limited_int
      * @param i the limited_int to stream
      * @return std::ostream& the modified stream
      */
-    friend std::ostream &operator<<(std::ostream &os, const limited_int &i)
+    friend std::ostream &operator<<(std::ostream &os, limited_int const &i)
     {
-        if(!i.isValid())
+        if (!i.isValid())
+        {
             os << "<INV>";
+        }
         else
+        {
             os << i.val();
+        }
         os << " "
            << "[" << static_cast<IntT_>(i.min()) << "," << static_cast<IntT_>(i.max()) << "]";
 
-        return (os);
+        return os;
     }
 };
 
@@ -546,20 +562,20 @@ struct limited_int
  * @brief Templated random access Iterator on a limited_int type.
  * @param LimitedInt the limited int to iterate over.
  */
-template<typename LimitedInt>
+template <typename LimitedInt>
 class limited_int_iterator
 {
-    public:
+  public:
     using iterator_category = std::random_access_iterator_tag;
     using value_type        = LimitedInt;
     using difference_type   = LimitedInt;
     using pointer           = LimitedInt *;
     using reference         = LimitedInt &;
 
-    private:
+  private:
     using IntType = decltype(LimitedInt::invalid().val());
 
-    static const LimitedInt getEnd(LimitedInt start, bool isReverse)
+    static LimitedInt const getEnd(LimitedInt start, bool isReverse)
     {
         LimitedInt reval = LimitedInt::invalid();
 
@@ -567,12 +583,12 @@ class limited_int_iterator
         {
             reval = start + (isReverse ? +1 : -1);
         }
-        catch(...)
+        catch (...)
         {
             //
         }
 
-        return (reval);
+        return reval;
     }
 
     void makeStep(IntType n_step, bool isReverse)
@@ -580,7 +596,7 @@ class limited_int_iterator
         iterEl_ = LimitedInt::TraitsType::nth_next(iterEl_, n_step, isReverse);
     }
 
-    public:
+  public:
     /**
      * @brief Construct a new limited_int_iterator object.
      *
@@ -588,13 +604,13 @@ class limited_int_iterator
      * @param isReverse whether to iterate in positve (false) or negative (true) direction.
      */
     limited_int_iterator(LimitedInt start, bool isReverse)
-    : iterEl_(start)
-    , end_(getEnd(start, isReverse))
-    , isReverse_(isReverse)
+        : iterEl_(start)
+        , end_(getEnd(start, isReverse))
+        , isReverse_(isReverse)
     {
     }
 
-    limited_int_iterator(const limited_int_iterator<LimitedInt> &) = default;
+    limited_int_iterator(limited_int_iterator<LimitedInt> const &) = default;
 
     /**
      * @brief Postfix increment.
@@ -604,7 +620,7 @@ class limited_int_iterator
     limited_int_iterator &operator++()
     {
         makeStep(1, isReverse_);
-        return (*this);
+        return *this;
     }
 
     /**
@@ -617,7 +633,7 @@ class limited_int_iterator
         limited_int_iterator<LimitedInt> tmp(*this);
         operator++();
 
-        return (tmp);
+        return tmp;
     }
 
     /**
@@ -630,7 +646,7 @@ class limited_int_iterator
     {
         makeStep(step, isReverse_);
 
-        return (*this);
+        return *this;
     }
 
     /**
@@ -642,7 +658,7 @@ class limited_int_iterator
     {
         makeStep(-1, isReverse_);
 
-        return (*this);
+        return *this;
     }
 
     /**
@@ -655,7 +671,7 @@ class limited_int_iterator
         limited_int_iterator<LimitedInt> tmp(*this);
         operator--();
 
-        return (tmp);
+        return tmp;
     }
 
     /**
@@ -668,7 +684,7 @@ class limited_int_iterator
     {
         makeStep(-step, isReverse_);
 
-        return (*this);
+        return *this;
     }
 
     /**
@@ -678,10 +694,10 @@ class limited_int_iterator
      * @param rhs right-hand-side iterator
      * @return true, if lhs is equal to rhs, false otherwise
      */
-    friend inline bool operator==(const limited_int_iterator<LimitedInt> &lhs,
-                                  const limited_int_iterator<LimitedInt> &rhs)
+    friend inline bool
+        operator==(limited_int_iterator<LimitedInt> const &lhs, limited_int_iterator<LimitedInt> const &rhs)
     {
-        return (lhs.iterEl_ == rhs.iterEl_);
+        return lhs.iterEl_ == rhs.iterEl_;
     }
 
     /**
@@ -691,10 +707,10 @@ class limited_int_iterator
      * @param rhs right-hand-side iterator
      * @return true, if lhs is not equal to rhs, false otherwise
      */
-    friend inline bool operator!=(const limited_int_iterator<LimitedInt> &lhs,
-                                  const limited_int_iterator<LimitedInt> &rhs)
+    friend inline bool
+        operator!=(limited_int_iterator<LimitedInt> const &lhs, limited_int_iterator<LimitedInt> const &rhs)
     {
-        return (!(lhs.iterEl_ == rhs.iterEl_));
+        return !(lhs.iterEl_ == rhs.iterEl_);
     }
 
     /**
@@ -704,7 +720,7 @@ class limited_int_iterator
      */
     LimitedInt &operator*()
     {
-        return (iterEl_);
+        return iterEl_;
     }
 
     /**
@@ -714,7 +730,7 @@ class limited_int_iterator
      */
     LimitedInt *operator->()
     {
-        return (&iterEl_);
+        return &iterEl_;
     }
 
     /**
@@ -724,18 +740,18 @@ class limited_int_iterator
      * @param it the iterator to stream
      * @return std::ostream& the modified stream
      */
-    friend std::ostream &operator<<(std::ostream &os, const limited_int_iterator<LimitedInt> &it)
+    friend std::ostream &operator<<(std::ostream &os, limited_int_iterator<LimitedInt> const &it)
     {
         os << "&*" << it.iterEl_;
 
-        return (os);
+        return os;
     }
 
-    private:
+  private:
     LimitedInt       iterEl_;
-    const LimitedInt end_;
-    const bool       isReverse_;
+    LimitedInt const end_;
+    bool const       isReverse_;
 };
-};  // namespace util
+}; // namespace util
 
-#endif  // LIMITED_INT_H_INCLUDED
+#endif // LIMITED_INT_H_INCLUDED

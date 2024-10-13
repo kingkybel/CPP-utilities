@@ -41,8 +41,8 @@ namespace util
 {
 struct no_such_key : std::runtime_error
 {
-    no_such_key(const std::string& key = "<NO OPEN KEY>")
-    : std::runtime_error(std::string("cannot find stats for for key '" + key + "'"))
+    no_such_key(std::string const& key = "<NO OPEN KEY>")
+        : std::runtime_error(std::string("cannot find stats for for key '" + key + "'"))
     {
     }
 };
@@ -51,7 +51,7 @@ struct no_such_key : std::runtime_error
  * @brief Simple timer class for performance tests.
  * Add
  * <ul>
- *      <li> RESET_PERF: reset the perfomance recording structures </li>
+ *      <li> RESET_PERF: reset the performance recording structures </li>
  *      <li> START_PERF: Add this to start the recording of time </li>
  *      <li> START_NAMED_PERF(name): Add this to start the recording of time with an alias </li>
  *      <li> SIMULATE_TIME(time_ns): simulate time to speed up otherwise lengthy operations/tests </li>
@@ -61,10 +61,11 @@ struct no_such_key : std::runtime_error
  */
 class performance_timer
 {
-    public:
+  public:
     using clock_t      = std::chrono::high_resolution_clock;
     using second_t     = std::chrono::duration<double, std::ratio<1>>;
     using nanosecond_t = std::chrono::duration<double, std::ratio<1>>;
+
     struct stats
     {
         int32_t                          start_line_     = -1;
@@ -75,7 +76,7 @@ class performance_timer
         double                           aggregate_time_ = 0.0;
     };
 
-    private:
+  private:
     performance_timer()                              = default;
     performance_timer(performance_timer&)            = delete;
     performance_timer& operator=(performance_timer&) = delete;
@@ -84,7 +85,7 @@ class performance_timer
     std::unordered_map<std::string, std::string> alias_{};
     std::deque<std::string>                      marker_stack_{};
 
-    public:
+  public:
     /**
      * @brief Singleton instance.
      *
@@ -108,21 +109,23 @@ class performance_timer
     /**
      * @brief Start the recording of time.
      *
-     * @param key unique string to identify the section of code to measuer.
+     * @param key unique string to identify the section of code to measure.
      * @param start_line line in the code where recording starts
-     * @param alias an optional alis to make it easier to find the statistics structure where perfomance is recorded.
+     * @param alias an optional alis to make it easier to find the statistics structure where performance is recorded.
      */
-    void start(const std::string& key, int32_t start_line, std::optional<std::string> alias = {})
+    void start(std::string const& key, int32_t start_line, std::optional<std::string> alias = {})
     {
         auto found = stat_map_.find(key);
-        if(found == stat_map_.end())
+        if (found == stat_map_.end())
         {
             // insert an element
             auto emplaced = stat_map_.emplace(key, stats{});
             found         = emplaced.first;
         }
-        if(alias)
+        if (alias)
+        {
             alias_[alias.value()] = key;
+        }
 
         found->second.start_line_ = start_line;
         found->second.start_      = clock_t::now();
@@ -137,18 +140,22 @@ class performance_timer
      */
     void end(int32_t end_line)
     {
-        if(marker_stack_.empty())
+        if (marker_stack_.empty())
+        {
             throw util::no_such_key();
+        }
 
         auto key = marker_stack_[0];
         marker_stack_.pop_front();
         auto found = stat_map_.find(key);
-        if(found == stat_map_.end())
+        if (found == stat_map_.end())
+        {
             throw util::no_such_key(key);
+        }
         found->second.end_line_ = end_line;
         found->second.end_      = clock_t::now();
         found->second.aggregate_time_ +=
-         (std::chrono::duration_cast<nanosecond_t>(found->second.end_ - found->second.start_).count());
+            (std::chrono::duration_cast<nanosecond_t>(found->second.end_ - found->second.start_).count());
         stat_map_[key];
     }
 
@@ -160,10 +167,10 @@ class performance_timer
     void simulate_time(std::chrono::nanoseconds time_ns)
     {
         // increase the times for every timing frame on the stack by given nano-seconds
-        for(const auto& key: marker_stack_)
+        for (auto const& key: marker_stack_)
         {
             auto found = stat_map_.find(key);
-            found->second.aggregate_time_ += time_ns.count() / 1e6;
+            found->second.aggregate_time_ += static_cast<double>(time_ns.count()) / 1e6;
         }
     }
 
@@ -183,16 +190,22 @@ class performance_timer
      * @param key string-key or alias
      * @return util::performance_timer::stats the statistics for the given key, or empty stats if key cannot be found
      */
-    auto get_stat(const std::string& key) const
+    auto get_stat(std::string const& key) const
     {
         auto found = stat_map_.find(key);
-        if(found != stat_map_.end())
+        if (found != stat_map_.end())
+        {
             return found->second;
+        }
         auto found_alias = alias_.find(key);
-        if(found_alias != alias_.end())
+        if (found_alias != alias_.end())
+        {
             found = stat_map_.find(found_alias->second);
-        if(found != stat_map_.end())
+        }
+        if (found != stat_map_.end())
+        {
             return found->second;
+        }
         return stats{};
     }
 
@@ -210,12 +223,12 @@ class performance_timer
      * @brief ostream operator
      *
      * @param os outstream to be modified
-     * @param tmr perfomance timer object
+     * @param tmr performance timer object
      * @return std::ostream& the modified stream
      */
-    friend std::ostream& operator<<(std::ostream& os, const util::performance_timer& tmr)
+    friend std::ostream& operator<<(std::ostream& os, util::performance_timer const& tmr)
     {
-        for(const auto& stat: tmr.get_stats())
+        for (auto const& stat: tmr.get_stats())
         {
             os << stat.first << std::endl;
             os << "\tlines:          " << stat.second.start_line_ << "->" << stat.second.end_line_ << std::endl;
@@ -228,32 +241,32 @@ class performance_timer
     }
 };
     #if defined DO_PERFORMANCE_
-        #define RESET_PERF                                             \
-            {                                                          \
-                auto& the_timer = util::performance_timer::instance(); \
-                the_timer.reset();                                     \
+        #define RESET_PERF                                                                                             \
+            {                                                                                                          \
+                auto& the_timer = util::performance_timer::instance();                                                 \
+                the_timer.reset();                                                                                     \
             }
 
-        #define START_PERF                                                              \
-            {                                                                           \
-                auto&             the_timer = util::performance_timer::instance();      \
-                std::stringstream ss;                                                   \
-                ss << __FILE__ << ":" << __LINE__ << "(" << __PRETTY_FUNCTION__ << ")"; \
-                the_timer.start(ss.str(), __LINE__);                                    \
+        #define START_PERF                                                                                             \
+            {                                                                                                          \
+                auto&             the_timer = util::performance_timer::instance();                                     \
+                std::stringstream ss;                                                                                  \
+                ss << __FILE__ << ":" << __LINE__ << "(" << __PRETTY_FUNCTION__ << ")";                                \
+                the_timer.start(ss.str(), __LINE__);                                                                   \
             }
 
-        #define START_NAMED_PERF(name)                                                  \
-            {                                                                           \
-                auto&             the_timer = util::performance_timer::instance();      \
-                std::stringstream ss;                                                   \
-                ss << __FILE__ << ":" << __LINE__ << "(" << __PRETTY_FUNCTION__ << ")"; \
-                the_timer.start(ss.str(), __LINE__, #name);                             \
+        #define START_NAMED_PERF(name)                                                                                 \
+            {                                                                                                          \
+                auto&             the_timer = util::performance_timer::instance();                                     \
+                std::stringstream ss;                                                                                  \
+                ss << __FILE__ << ":" << __LINE__ << "(" << __PRETTY_FUNCTION__ << ")";                                \
+                the_timer.start(ss.str(), __LINE__, #name);                                                            \
             }
 
-        #define END_PERF                                               \
-            {                                                          \
-                auto& the_timer = util::performance_timer::instance(); \
-                the_timer.end(__LINE__);                               \
+        #define END_PERF                                                                                               \
+            {                                                                                                          \
+                auto& the_timer = util::performance_timer::instance();                                                 \
+                the_timer.end(__LINE__);                                                                               \
             }
 
     #else
@@ -262,8 +275,8 @@ class performance_timer
         #define START_NAMED_PERF(name)
         #define SIMULATE_TIME(time_ns)
         #define END_PERF
-    #endif  // defined DO_PERFORMANCE_
+    #endif // defined DO_PERFORMANCE_
 
-};  // namespace util
+}; // namespace util
 
-#endif  // NS_UTIL_TIMER_H_INCLUDED
+#endif // NS_UTIL_TIMER_H_INCLUDED

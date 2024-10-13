@@ -32,7 +32,7 @@
 #include <cstdlib>
 #include <initializer_list>
 #include <iostream>
-#include <limits.h>
+#include <climits>
 
 namespace util
 {
@@ -41,7 +41,7 @@ namespace util
  *
  * @tparam T_ type of the object to convert
  */
-template<typename T_>
+template <typename T_>
 union bit_converter
 {
     using DataType                           = T_;
@@ -58,7 +58,8 @@ union bit_converter
      *
      * @param data object to convert
      */
-    bit_converter(DataType data = T_{}) : data_(data)
+    bit_converter(DataType data = T_{})
+        : data_(data)
     {
     }
 
@@ -71,12 +72,12 @@ union bit_converter
      * @return bit_converter the converter object
      * @throw std::length_error
      */
-    template<typename ElType_>
+    template <typename ElType_>
     static bit_converter from(std::initializer_list<ElType_> initList)
     {
         bit_converter   reval;
-        const long long numOfBytes = initList.size() * (sizeof(ElType_) / BYTES_IN_CHAR) * sizeof(int8_t);
-        if(numOfBytes > BYTES_IN_DATA)
+        long long const numOfBytes = initList.size() * (sizeof(ElType_) / BYTES_IN_CHAR) * sizeof(int8_t);
+        if (numOfBytes > BYTES_IN_DATA)
         {
             throw std::length_error("Total size of bytes of given arguments exceeeds actual size of bit_converter");
         }
@@ -86,12 +87,13 @@ union bit_converter
             ElType_ el;
             uint8_t byte[sizeof(ElType_)];
         };
+
         size_t i{0UL};
         size_t byteNum{0UL};
-        for(auto v: initList)
+        for (auto v: initList)
         {
             BytesOfEl b{v};
-            for(size_t j = 0UL; j < sizeof(ElType_); j++)
+            for (size_t j = 0UL; j < sizeof(ElType_); j++)
             {
                 byteNum             = i * sizeof(ElType_) + j;
                 reval.byte[byteNum] = (byteNum < numOfBytes) ? b.byte[j] : 0U;
@@ -99,10 +101,12 @@ union bit_converter
             i++;
         }
 
-        while(byteNum < BYTES_IN_DATA)
+        while (byteNum < BYTES_IN_DATA)
+        {
             reval.byte[byteNum++] = false;
+        }
 
-        return (reval);
+        return reval;
     }
 
     /**
@@ -112,7 +116,7 @@ union bit_converter
      */
     operator DataType()
     {
-        return (data_);
+        return data_;
     }
 
     /**
@@ -122,13 +126,13 @@ union bit_converter
      * @param StartBit_ bit where to start the conversion
      * @return std::bitset<NumberOfBits_> the bitset
      */
-    template<long long NumberOfBits_ = BITS_IN_DATA>
+    template <long long NumberOfBits_ = BITS_IN_DATA>
     std::bitset<NumberOfBits_> asBitset(long long StartBit_ = 0LL) const
     {
         static_assert(NumberOfBits_ > 0, "Number of requested bits needs to be greater than 0.");
         std::bitset<BITS_IN_DATA> allbits(0ULL);
 
-        for(size_t ullCount = BYTES_IN_DATA; ullCount > 0; ullCount--)
+        for (size_t ullCount = BYTES_IN_DATA; ullCount > 0; ullCount--)
         {
             allbits <<= CHAR_BIT;
             allbits |= std::bitset<BITS_IN_DATA>(byte[ullCount - 1]);
@@ -136,16 +140,16 @@ union bit_converter
 
         std::bitset<NumberOfBits_> reval;
 
-        for(long long i = 0; i < NumberOfBits_; i++)
+        for (long long i = 0; i < NumberOfBits_; i++)
         {
             long long allIdx = (i + StartBit_);
-            if(allIdx >= 0LL && allIdx < BITS_IN_DATA)
+            if (allIdx >= 0LL && allIdx < BITS_IN_DATA)
             {
                 reval[i] = allbits[allIdx];
             }
         }
 
-        return (reval);
+        return reval;
     }
 
     /**
@@ -155,17 +159,17 @@ union bit_converter
      */
     void rotate(long long bitsToShift)
     {
-        if(bitsToShift != 0LL)
+        if (bitsToShift != 0LL)
         {
             std::bitset<BITS_IN_DATA> allBits = asBitset();
             bool                      toLeft  = (bitsToShift < 0);
 
             bitsToShift %= BITS_IN_DATA;
 
-            for(long long shiftCount = 0; shiftCount < std::abs(bitsToShift); shiftCount++)
+            for (long long shiftCount = 0; shiftCount < std::abs(bitsToShift); shiftCount++)
             {
                 bool extremeIsSet = (toLeft) ? allBits[BITS_IN_DATA - 1] : allBits[0];
-                if(toLeft)
+                if (toLeft)
                 {
                     allBits <<= 1;
                     allBits.set(0, extremeIsSet);
@@ -179,7 +183,7 @@ union bit_converter
 
             static constexpr std::bitset<BITS_IN_DATA> mask = (static_cast<unsigned long long>(-1));
 
-            for(size_t ullCount = 0; ullCount < BITS_IN_DATA; ullCount++)
+            for (size_t ullCount = 0; ullCount < BITS_IN_DATA; ullCount++)
             {
                 setBit(ullCount, allBits[ullCount]);
             }
@@ -194,7 +198,7 @@ union bit_converter
      */
     uint8_t& operator[](long long n)
     {
-        return (byte[n]);
+        return byte[n];
     }
 
     /**
@@ -203,9 +207,9 @@ union bit_converter
      * @param n number of the byte
      * @return uint8_t the byte
      */
-    uint8_t getByte(long long n) const
+    [[nodiscard]] uint8_t getByte(long long n) const
     {
-        return (byte[n]);
+        return byte[n];
     }
 
     /**
@@ -225,13 +229,13 @@ union bit_converter
      * @param bitIndex index of the bit
      * @return true, if bit at the index is set, false otherwise
      */
-    bool getBit(long long bitIndex) const
+    [[nodiscard]] bool getBit(long long bitIndex) const
     {
         long long byteIdx = bitIndex / 8;
 
         uint8_t mask = (1 << (bitIndex % 8));
 
-        return ((byte[byteIdx] & mask) == mask);
+        return (byte[byteIdx] & mask) == mask;
     }
 
     /**
@@ -245,12 +249,16 @@ union bit_converter
         long long byteIdx = bitIndex >> 3;
         uint8_t   mask    = (1 << (bitIndex % 8));
 
-        if(b == true)
+        if (b == true)
+        {
             byte[byteIdx] |= mask;
+        }
         else
+        {
             byte[byteIdx] &= ~mask;
+        }
     }
 };
-};  // namespace util
+}; // namespace util
 
-#endif  // NS_UTIL_BIT_CONVERTER_H_INCLUDED
+#endif // NS_UTIL_BIT_CONVERTER_H_INCLUDED

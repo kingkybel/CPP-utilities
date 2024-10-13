@@ -43,8 +43,9 @@ namespace util
  */
 class grid_error : public std::out_of_range
 {
-    public:
-    grid_error(const std::string &what_arg) : std::out_of_range(what_arg)
+  public:
+    grid_error(std::string const &what_arg)
+        : std::out_of_range(what_arg)
     {
     }
 };
@@ -54,10 +55,10 @@ class grid_error : public std::out_of_range
  *
  * @tparam EL_TYPE element-type
  */
-template<class EL_TYPE>
+template <class EL_TYPE>
 class gridBase
 {
-    public:
+  public:
     /**
      * @brief enumeration of modes for growing the grid
      */
@@ -82,13 +83,15 @@ class gridBase
     /**
      * @brief Default constructor.
      */
-    gridBase(EL_TYPE defaultValue = EL_TYPE()) : defaultValue_(defaultValue), mode_(Mode::AutoGrow)
+    gridBase(EL_TYPE defaultValue = EL_TYPE())
+        : defaultValue_(defaultValue)
+        , mode_(Mode::AutoGrow)
     {
     }
 
-    gridBase(const gridBase<EL_TYPE> &rhs)            = default;
+    gridBase(gridBase<EL_TYPE> const &rhs)            = default;
     virtual ~gridBase()                               = default;
-    gridBase &operator=(const gridBase<EL_TYPE> &rhs) = default;
+    gridBase &operator=(gridBase<EL_TYPE> const &rhs) = default;
 
     /**
      * @brief Set the mode to a new one.
@@ -107,7 +110,7 @@ class gridBase
      */
     Mode getMode() const
     {
-        return (mode_);
+        return mode_;
     }
 
     /**
@@ -117,7 +120,7 @@ class gridBase
      */
     Mode isAutoGrowX() const
     {
-        return ((mode_ | Mode::AutoGrowX) == Mode::AutoGrowX);
+        return (mode_ | Mode::AutoGrowX) == Mode::AutoGrowX;
     }
 
     /**
@@ -127,31 +130,32 @@ class gridBase
      */
     Mode isAutoGrowY() const
     {
-        return ((mode_ | Mode::AutoGrowY) == Mode::AutoGrowY);
+        return (mode_ | Mode::AutoGrowY) == Mode::AutoGrowY;
     }
 
     /**
-     * @brief Check whether autogrow in X- and Y-dimention is set.
+     * @brief Check whether autogrow in X- and Y-dimension is set.
      *
      * @return true, if set, false otherwise
      */
     Mode isAutoGrow() const
     {
-        return ((mode_ | Mode::AutoGrow) == Mode::AutoGrow);
+        return (mode_ | Mode::AutoGrow) == Mode::AutoGrow;
     }
 
     ////////////////////////////////////////////////////////////////////////
     //                                                                    //
     //                    pure virtual functions                          //
     //                                                                    //
-    virtual void     resize(const size_t newDimX, const size_t newDimY)                     = 0;
+    virtual void     resize(size_t const newDimX, size_t const newDimY)                     = 0;
     virtual size_t   sizeX() const                                                          = 0;
     virtual size_t   sizeY() const                                                          = 0;
-    virtual EL_TYPE &get(const size_t indexX, const size_t indexY)                          = 0;
-    virtual EL_TYPE  get(const size_t indexX, const size_t indexY) const                    = 0;
-    virtual void     set(const size_t indexX, const size_t indexY, const EL_TYPE &newValue) = 0;
+    virtual EL_TYPE &get(size_t const indexX, size_t const indexY)                          = 0;
+    virtual EL_TYPE  get(size_t const indexX, size_t const indexY) const                    = 0;
+    virtual void     set(size_t const indexX, size_t const indexY, const EL_TYPE &newValue) = 0;
     virtual void     show(DisplayMode mode)                                                 = 0;
     virtual void     setAll(const EL_TYPE &p_elValue)                                       = 0;
+
     //                                                                    //
     ////////////////////////////////////////////////////////////////////////
 
@@ -162,7 +166,7 @@ class gridBase
      */
     EL_TYPE getDefaultValue() const
     {
-        return (defaultValue_);
+        return defaultValue_;
     }
 
     /**
@@ -172,7 +176,7 @@ class gridBase
      */
     EL_TYPE &refDefaultValue()
     {
-        return (defaultValue_);
+        return defaultValue_;
     }
 
     /**
@@ -185,7 +189,7 @@ class gridBase
         defaultValue_ = defaultValue;
     }
 
-    private:
+  private:
     EL_TYPE defaultValue_;
     Mode    mode_;
 };
@@ -195,19 +199,20 @@ class gridBase
  */
 class index_pair : public std::pair<size_t, size_t>
 {
-    public:
+  public:
     /**
      * @brief Default constructor.
      * @param x x-coordinate
      * @param y y-coordinate
      */
-    index_pair(size_t x = 0, size_t y = 0) : std::pair<size_t, size_t>(x, y)
+    index_pair(size_t x = 0, size_t y = 0)
+        : std::pair<size_t, size_t>(x, y)
     {
     }
 
-    index_pair(const index_pair &rhs)            = default;
+    index_pair(index_pair const &rhs)            = default;
     virtual ~index_pair()                        = default;
-    index_pair &operator=(const index_pair &rhs) = default;
+    index_pair &operator=(index_pair const &rhs) = default;
 
     /**
      * @brief Get the x-component.
@@ -216,7 +221,7 @@ class index_pair : public std::pair<size_t, size_t>
      */
     size_t &x()
     {
-        return (second);
+        return second;
     }
 
     /**
@@ -226,7 +231,7 @@ class index_pair : public std::pair<size_t, size_t>
      */
     size_t &y()
     {
-        return (first);
+        return first;
     }
 
     /**
@@ -236,7 +241,7 @@ class index_pair : public std::pair<size_t, size_t>
      */
     size_t x() const
     {
-        return (second);
+        return second;
     }
 
     /**
@@ -246,7 +251,7 @@ class index_pair : public std::pair<size_t, size_t>
      */
     size_t y() const
     {
-        return (first);
+        return first;
     }
 
     /**
@@ -255,9 +260,9 @@ class index_pair : public std::pair<size_t, size_t>
      * @param lhs left-hand-side
      * @param rhs right-hand-side
      */
-    friend bool operator==(const index_pair &lhs, const index_pair &rhs)
+    friend bool operator==(index_pair const &lhs, index_pair const &rhs)
     {
-        return ((lhs.y() == rhs.y()) && (lhs.x() == rhs.x()));
+        return (lhs.y() == rhs.y()) && (lhs.x() == rhs.x());
     }
 
     /**
@@ -266,9 +271,9 @@ class index_pair : public std::pair<size_t, size_t>
      * @param lhs left-hand-side
      * @param rhs right-hand-side
      */
-    friend bool operator!=(const index_pair &lhs, const index_pair &rhs)
+    friend bool operator!=(index_pair const &lhs, index_pair const &rhs)
     {
-        return ((lhs.y() != rhs.y()) || (lhs.x() != rhs.x()));
+        return (lhs.y() != rhs.y()) || (lhs.x() != rhs.x());
     }
 
     /**
@@ -277,9 +282,9 @@ class index_pair : public std::pair<size_t, size_t>
      * @param lhs left-hand-side
      * @param rhs right-hand-side
      */
-    friend bool operator<(const index_pair &lhs, const index_pair &rhs)
+    friend bool operator<(index_pair const &lhs, index_pair const &rhs)
     {
-        return ((lhs.y() < rhs.y()) || ((lhs.y() == rhs.y()) && (lhs.x() < rhs.x())));
+        return (lhs.y() < rhs.y()) || ((lhs.y() == rhs.y()) && (lhs.x() < rhs.x()));
     }
 
     /**
@@ -288,9 +293,9 @@ class index_pair : public std::pair<size_t, size_t>
      * @param lhs left-hand-side
      * @param rhs right-hand-side
      */
-    friend bool operator<=(const index_pair &lhs, const index_pair &rhs)
+    friend bool operator<=(index_pair const &lhs, index_pair const &rhs)
     {
-        return ((lhs.y() < rhs.y()) || ((lhs.y() == rhs.y()) && (lhs.x() <= rhs.x())));
+        return (lhs.y() < rhs.y()) || ((lhs.y() == rhs.y()) && (lhs.x() <= rhs.x()));
     }
 
     /**
@@ -299,9 +304,9 @@ class index_pair : public std::pair<size_t, size_t>
      * @param lhs left-hand-side
      * @param rhs right-hand-side
      */
-    friend bool operator>(const index_pair &lhs, const index_pair &rhs)
+    friend bool operator>(index_pair const &lhs, index_pair const &rhs)
     {
-        return ((lhs.y() > rhs.y()) || ((lhs.y() == rhs.y()) && (lhs.x() > rhs.x())));
+        return (lhs.y() > rhs.y()) || ((lhs.y() == rhs.y()) && (lhs.x() > rhs.x()));
     }
 
     /**
@@ -310,9 +315,9 @@ class index_pair : public std::pair<size_t, size_t>
      * @param lhs left-hand-side
      * @param rhs right-hand-side
      */
-    friend bool operator>=(const index_pair &lhs, const index_pair &rhs)
+    friend bool operator>=(index_pair const &lhs, index_pair const &rhs)
     {
-        return ((lhs.y() > rhs.y()) || ((lhs.y() == rhs.y()) && (lhs.x() >= rhs.x())));
+        return (lhs.y() > rhs.y()) || ((lhs.y() == rhs.y()) && (lhs.x() >= rhs.x()));
     }
 
     /**
@@ -323,11 +328,11 @@ class index_pair : public std::pair<size_t, size_t>
      *
      * @return the modified stream
      */
-    friend std::ostream &operator<<(std::ostream &os, const index_pair &ind)
+    friend std::ostream &operator<<(std::ostream &os, index_pair const &ind)
     {
         os << "(" << ind.x() << "," << ind.y() << ")";
 
-        return (os);
+        return os;
     }
 
     /**
@@ -339,7 +344,7 @@ class index_pair : public std::pair<size_t, size_t>
     void increment(index_pair dims)
     {
         x()++;
-        if(x() == dims.x())
+        if (x() == dims.x())
         {
             x() = 0;
             y()++;
@@ -355,7 +360,7 @@ class index_pair : public std::pair<size_t, size_t>
      */
     bool isWithinBounds(index_pair dims) const
     {
-        return ((x() < dims.x()) && (y() < dims.y()));
+        return (x() < dims.x()) && (y() < dims.y());
     }
 };
 
@@ -364,10 +369,10 @@ class index_pair : public std::pair<size_t, size_t>
  *
  * @tparam EL_TYPE element-type
  */
-template<typename EL_TYPE = long double>
+template <typename EL_TYPE = long double>
 class sparse_grid : public gridBase<EL_TYPE>
 {
-    private:
+  private:
     using DATA_CONTAINER = std::map<index_pair, EL_TYPE>;
     using INDEXSET       = std::set<size_t>;
     using INDEXSETMAP    = std::map<size_t, INDEXSET>;
@@ -381,7 +386,7 @@ class sparse_grid : public gridBase<EL_TYPE>
         Remove = 0x02
     };
 
-    public:
+  public:
     using iterator  = typename DATA_CONTAINER::iterator;
     using iteratorX = INDEXSET::iterator;
     using iteratorY = INDEXSET::iterator;
@@ -393,7 +398,7 @@ class sparse_grid : public gridBase<EL_TYPE>
      */
     iterator begin()
     {
-        return (data_.begin());
+        return data_.begin();
     }
 
     /**
@@ -403,7 +408,7 @@ class sparse_grid : public gridBase<EL_TYPE>
      */
     iterator end()
     {
-        return (data_.end());
+        return data_.end();
     }
 
     /**
@@ -418,14 +423,12 @@ class sparse_grid : public gridBase<EL_TYPE>
     {
         auto indexIter = xIndices_.find(y);
 
-        if(indexIter == xIndices_.end())
+        if (indexIter == xIndices_.end())
         {
-            return (iteratorX{nullptr});
+            return iteratorX{nullptr};
         }
 
-        auto xIter = (indexIter->second).begin();
-
-        return (xIter);
+        return (indexIter->second).begin();
     }
 
     /**
@@ -436,12 +439,12 @@ class sparse_grid : public gridBase<EL_TYPE>
     {
         auto indexIter = xIndices_.find(y);
 
-        if(indexIter == xIndices_.end())
+        if (indexIter == xIndices_.end())
         {
-            return (iteratorX{nullptr});
+            return iteratorX{nullptr};
         }
 
-        return ((indexIter->second).end());
+        return (indexIter->second).end();
     }
 
     /**
@@ -452,7 +455,7 @@ class sparse_grid : public gridBase<EL_TYPE>
      */
     bool iteratorXValid(iteratorX iter)
     {
-        return ((iter == iteratorX{nullptr}) ? false : true);
+        return (iter == iteratorX{nullptr}) ? false : true;
     }
 
     /**
@@ -463,7 +466,7 @@ class sparse_grid : public gridBase<EL_TYPE>
      */
     bool iteratorYValid(iteratorY iter)
     {
-        return ((iter == iteratorY{nullptr}) ? false : true);
+        return (iter == iteratorY{nullptr}) ? false : true;
     }
 
     /**
@@ -476,14 +479,12 @@ class sparse_grid : public gridBase<EL_TYPE>
     {
         auto indexIter = yIndices_.find(x);
 
-        if(indexIter == yIndices_.end())
+        if (indexIter == yIndices_.end())
         {
-            return (iteratorY{nullptr});
+            return iteratorY{nullptr};
         }
 
-        auto yIter = (indexIter->second).begin();
-
-        return (yIter);
+        return (indexIter->second).begin();
     }
 
     /**
@@ -495,12 +496,12 @@ class sparse_grid : public gridBase<EL_TYPE>
     {
         auto indexIter = yIndices_.find(x);
 
-        if(indexIter == yIndices_.end())
+        if (indexIter == yIndices_.end())
         {
-            return (iteratorY{nullptr});
+            return iteratorY{nullptr};
         }
 
-        return ((indexIter->second).end());
+        return (indexIter->second).end();
     }
 
     /**
@@ -511,19 +512,21 @@ class sparse_grid : public gridBase<EL_TYPE>
      * @param defaultValue default value to return if a cell has not been set
      * @param mode auto-grow behaviour
      */
-    sparse_grid(size_t                                 dimX         = 0,
-                size_t                                 dimY         = 0,
-                EL_TYPE                                defaultValue = EL_TYPE(),
-                typename util::gridBase<EL_TYPE>::Mode mode         = util::gridBase<EL_TYPE>::Mode::AutoGrow)
-    : util::gridBase<EL_TYPE>(defaultValue)
-    , dims_(dimX, dimY)
+    sparse_grid(
+        size_t dimX                                 = 0,
+        size_t dimY                                 = 0,
+        EL_TYPE defaultValue                        = EL_TYPE(),
+        typename util::gridBase<EL_TYPE>::Mode mode = util::gridBase<EL_TYPE>::Mode::AutoGrow
+    )
+        : util::gridBase<EL_TYPE>(defaultValue)
+        , dims_(dimX, dimY)
     {
         setMode(mode);
     }
 
-    sparse_grid(const sparse_grid<EL_TYPE> &rhs)                    = default;
+    sparse_grid(sparse_grid<EL_TYPE> const &rhs)                    = default;
     virtual ~sparse_grid()                                          = default;
-    sparse_grid<EL_TYPE> operator=(const sparse_grid<EL_TYPE> &rhs) = default;
+    sparse_grid<EL_TYPE> operator=(sparse_grid<EL_TYPE> const &rhs) = default;
 
     /**
      * @brief Set the element value at coorinates (x, y).
@@ -532,27 +535,27 @@ class sparse_grid : public gridBase<EL_TYPE>
      * @param y Y-position
      * @param value the new value
      */
-    void set(const size_t x, const size_t y, const EL_TYPE &value)
+    void set(size_t const x, size_t const y, const EL_TYPE &value)
     {
         auto autoGrowX = this->util::gridBase<EL_TYPE>::isAutoGrowX();
         auto autoGrowY = this->util::gridBase<EL_TYPE>::isAutoGrowY();
 
-        if((x < dims_.x() || autoGrowX) && (y < dims_.y() || autoGrowY))
+        if ((x < dims_.x() || autoGrowX) && (y < dims_.y() || autoGrowY))
         {
             index_pair insertIndex;
 
             insertIndex.x() = x;
             insertIndex.y() = y;
 
-            if(value != this->util::gridBase<EL_TYPE>::getDefaultValue())
+            if (value != this->util::gridBase<EL_TYPE>::getDefaultValue())
             {
                 data_.insert(DATA_CONTAINER::value_type(insertIndex, value));
                 updateIndexSets(x, y, IndexSetOper::Insert);
             }
-            else  // if the new value equals the default value
+            else // if the new value equals the default value
             {
                 // if there is a value already there, we delete it
-                if(data_.find(insertIndex) != data_.end())
+                if (data_.find(insertIndex) != data_.end())
                 {
                     data_.erase(data_.find(insertIndex));
                     updateIndexSets(x, y, IndexSetOper::Remove);
@@ -576,7 +579,7 @@ class sparse_grid : public gridBase<EL_TYPE>
      *
      * @return the value at coordinates (x,y)
      */
-    EL_TYPE &get(const size_t x, const size_t y)
+    EL_TYPE &get(size_t const x, size_t const y)
 
     {
         index_pair ind(x, y);
@@ -584,9 +587,9 @@ class sparse_grid : public gridBase<EL_TYPE>
         auto       autoGrowX = this->util::gridBase<EL_TYPE>::isAutoGrowX();
         auto       autoGrowY = this->util::gridBase<EL_TYPE>::isAutoGrowY();
 
-        if((x < dims_.x() || autoGrowX) && (y < dims_.y() || autoGrowY))
+        if ((x < dims_.x() || autoGrowX) && (y < dims_.y() || autoGrowY))
         {
-            if(iter == data_.end())
+            if (iter == data_.end())
             {
                 set(x, y, this->util::gridBase<EL_TYPE>::getDefaultValue());
                 iter = data_.find(index_pair(x, y));
@@ -597,7 +600,7 @@ class sparse_grid : public gridBase<EL_TYPE>
             throw grid_error("Get a value at " + toString(ind) + " out of bounds" + toString(dims_) + ".");
         }
 
-        return (iter->second);
+        return iter->second;
     }
 
     /**
@@ -608,18 +611,18 @@ class sparse_grid : public gridBase<EL_TYPE>
      *
      * @return the value at coordinates (x,y)
      */
-    EL_TYPE get(const size_t x, const size_t y) const
+    EL_TYPE get(size_t const x, size_t const y) const
 
     {
         index_pair findIndex(x, y);
         auto       iter = data_.find(findIndex);
 
-        if(iter == data_.end())
+        if (iter == data_.end())
         {
-            return (this->util::gridBase<EL_TYPE>::getDefaultValue());
+            return this->util::gridBase<EL_TYPE>::getDefaultValue();
         }
 
-        return (iter->second);
+        return iter->second;
     }
 
     /**
@@ -628,12 +631,12 @@ class sparse_grid : public gridBase<EL_TYPE>
      * @param nNewSizeX new size in x-dimension
      * @param nNewSizeY new size in y-dimension
      */
-    void resize(const size_t nNewSizeX, const size_t nNewSizeY)
+    void resize(size_t const nNewSizeX, size_t const nNewSizeY)
 
     {
         // if we make the scheme larger in all dimensions, then we just need
         // to adjust the sizes
-        if(nNewSizeX >= dims_.x() && nNewSizeY >= dims_.y())
+        if (nNewSizeX >= dims_.x() && nNewSizeY >= dims_.y())
         {
             dims_.x() = nNewSizeX;
             dims_.y() = nNewSizeY;
@@ -647,9 +650,9 @@ class sparse_grid : public gridBase<EL_TYPE>
 
             auto iter = data_.begin();
 
-            while(iter != data_.end())
+            while (iter != data_.end())
             {
-                if((iter->first).x() >= dims_.x() || (iter->first).y() >= dims_.y())
+                if ((iter->first).x() >= dims_.x() || (iter->first).y() >= dims_.y())
                 {
                     // delete the map element
                     iter = data_.erase(iter);
@@ -668,7 +671,7 @@ class sparse_grid : public gridBase<EL_TYPE>
      */
     size_t sizeX() const
     {
-        return (dims_.x());
+        return dims_.x();
     }
 
     /**
@@ -677,7 +680,7 @@ class sparse_grid : public gridBase<EL_TYPE>
      */
     size_t sizeY() const
     {
-        return (dims_.y());
+        return dims_.y();
     }
 
     /**
@@ -688,45 +691,53 @@ class sparse_grid : public gridBase<EL_TYPE>
     void show(typename util::gridBase<EL_TYPE>::DisplayMode mode = util::gridBase<EL_TYPE>::DisplayMode::Stats)
     {
         std::cout << "grid sizeX=" << sizeX() << "grid sizeY=" << sizeY() << std::endl;
-        if((mode | util::gridBase<EL_TYPE>::DisplayMode::Stats) == util::gridBase<EL_TYPE>::DisplayMode::Stats)
+        if ((mode | util::gridBase<EL_TYPE>::DisplayMode::Stats) == util::gridBase<EL_TYPE>::DisplayMode::Stats)
         {
             double totalValues = static_cast<double>(sizeX()) * static_cast<double>(sizeY());
             double fillPercentage;
 
-            if(totalValues > 0.0)
-                fillPercentage = (tatic_cast<double>((data_.size())) / (totalValues)) * 100.0;
+            if (totalValues > 0.0)
+            {
+                fillPercentage = (tatic_cast<double>(data_.size()) / (totalValues)) * 100.0;
+            }
             else
+            {
                 fillPercentage = 0.0;
+            }
             std::cout << "\telements different from default value:" << fillPercentage << "%" << std::endl;
         }
 
         auto iter = data_.begin();
 
-        if((mode | util::gridBase<EL_TYPE>::DisplayMode::Full) == util::gridBase<EL_TYPE>::DisplayMode::Full)
+        if ((mode | util::gridBase<EL_TYPE>::DisplayMode::Full) == util::gridBase<EL_TYPE>::DisplayMode::Full)
         {
             index_pair runner;
             index_pair start(0, 0);
             index_pair end;
 
             // display all elements and the gaps between them
-            while(iter != data_.end())
+            while (iter != data_.end())
             {
                 // end point (of the gap)
                 end = iter->first;
 
                 // if there is a non-empty gap
-                if(start < end)
+                if (start < end)
                 {
                     // start from the start point and iterate through all
                     // indices that are not equal end and that are lexical
                     // before end
-                    for(runner = start; runner != end && runner.isWithinBounds(dims_); runner.increment(dims_))
+                    for (runner = start; runner != end && runner.isWithinBounds(dims_); runner.increment(dims_))
                     {
                         std::cout << this->util::gridBase<EL_TYPE>::getDefaultValue();
-                        if(runner.x() == dims_.x() - 1)
+                        if (runner.x() == dims_.x() - 1)
+                        {
                             std::cout << std::endl;
+                        }
                         else
+                        {
                             std::cout << ",";
+                        }
                     }
 
                     start = end;
@@ -735,37 +746,45 @@ class sparse_grid : public gridBase<EL_TYPE>
 
                 std::cout << iter->second;
 
-                if((iter->first).x() == dims_.x() - 1)
+                if ((iter->first).x() == dims_.x() - 1)
+                {
                     std::cout << std::endl;
+                }
                 else
+                {
                     std::cout << ",";
+                }
 
                 iter++;
             }
 
             // now write the remaining fields
-            for(runner = start; runner.isWithinBounds(dims_); runner.increment(dims_))
+            for (runner = start; runner.isWithinBounds(dims_); runner.increment(dims_))
             {
                 std::cout << this->util::gridBase<EL_TYPE>::getDefaultValue();
-                if(runner.x() == dims_.x() - 1)
+                if (runner.x() == dims_.x() - 1)
+                {
                     std::cout << std::endl;
+                }
                 else
+                {
                     std::cout << ",";
+                }
             }
         }
-        else if((mode | util::gridBase<EL_TYPE>::DisplayMode::Sparse) == util::gridBase<EL_TYPE>::DisplayMode::Sparse)
+        else if ((mode | util::gridBase<EL_TYPE>::DisplayMode::Sparse) == util::gridBase<EL_TYPE>::DisplayMode::Sparse)
         {
             size_t line = 0;
 
-            if(iter != data_.end())
+            if (iter != data_.end())
             {
                 std::cout << "line [" << (iter->first).y() << "]\t";
                 line = (iter->first).y();
             }
 
-            while(iter != data_.end())
+            while (iter != data_.end())
             {
-                if(line != (iter->first).y())
+                if (line != (iter->first).y())
                 {
                     std::cout << std::endl;
                     line = (iter->first).y();
@@ -839,9 +858,9 @@ class sparse_grid : public gridBase<EL_TYPE>
      *
      * @return the element at position (x, y)
      */
-    EL_TYPE operator()(const size_t x, const size_t y) const
+    EL_TYPE operator()(size_t const x, size_t const y) const
     {
-        return (get(x, y));
+        return get(x, y);
     }
 
     /**
@@ -852,20 +871,21 @@ class sparse_grid : public gridBase<EL_TYPE>
      *
      * @return the element at position (x, y)
      */
-    EL_TYPE &operator()(const size_t x, const size_t y)
+    EL_TYPE &operator()(size_t const x, size_t const y)
     {
-        if(x >= sizeX() || y >= sizeY())
+        if (x >= sizeX() || y >= sizeY())
         {
-            if(!this->util::gridBase<EL_TYPE>::isAutoGrow())
+            if (!this->util::gridBase<EL_TYPE>::isAutoGrow())
             {
-                throw grid_error("Get a value at " + toString(index_pair(x, y)) + " out of bounds" + toString(dims_)
-                                 + ".");
+                throw grid_error(
+                    "Get a value at " + toString(index_pair(x, y)) + " out of bounds" + toString(dims_) + "."
+                );
             }
         }
 
         createDataEntry(x, y);
 
-        return (get(x, y));
+        return get(x, y);
     }
 
     /**
@@ -877,31 +897,31 @@ class sparse_grid : public gridBase<EL_TYPE>
      */
     void updateIndexSets(size_t x, size_t y, IndexSetOper operationMode)
     {
-        if(operationMode == IndexSetOper::Insert)
+        if (operationMode == IndexSetOper::Insert)
         {
             INDEXSET setToInsert;
 
-            if(xIndices_.find(y) == xIndices_.end())
+            if (xIndices_.find(y) == xIndices_.end())
             {
                 xIndices_.insert(INDEXSETMAP::value_type(y, setToInsert));
             }
 
             ((xIndices_.find(y))->second).insert(x);
 
-            if(yIndices_.find(x) == yIndices_.end())
+            if (yIndices_.find(x) == yIndices_.end())
             {
                 yIndices_.insert(INDEXSETMAP::value_type(x, setToInsert));
             }
 
             ((yIndices_.find(x))->second).insert(y);
         }
-        else if(operationMode == IndexSetOper::Remove)
+        else if (operationMode == IndexSetOper::Remove)
         {
-            if(xIndices_.find(y) != xIndices_.end())
+            if (xIndices_.find(y) != xIndices_.end())
             {
                 xIndices_.erase(xIndices_.find(y));
             }
-            if(xIndices_.find(y) != yIndices_.end())
+            if (xIndices_.find(y) != yIndices_.end())
             {
                 yIndices_.erase(yIndices_.find(x));
             }
@@ -921,15 +941,17 @@ class sparse_grid : public gridBase<EL_TYPE>
 
         std::cout << "m_xIndices=" << xIndices_.size() << " m_yIndices=" << yIndices_.size() << std::endl;
 
-        if(iterX == xIndices_.end())
+        if (iterX == xIndices_.end())
+        {
             std::cout << "==== row " << y << " not found,";
+        }
         else
         {
             std::cout << (iterX->second).size() << " x-Indices attached to row " << y << std::endl;
 
             auto iy = (iterX->second).begin();
 
-            while(iy != (iterX->second).end())
+            while (iy != (iterX->second).end())
             {
                 std::cout << *iy << ",";
                 iy++;
@@ -937,15 +959,17 @@ class sparse_grid : public gridBase<EL_TYPE>
             std::cout << std::endl;
         }
 
-        if(iterY == yIndices_.end())
+        if (iterY == yIndices_.end())
+        {
             std::cout << " line " << x << " not found,";
+        }
         else
         {
             std::cout << (iterY->second).size() << " y-Indices attached to row " << x << std::endl;
 
             auto ix = (iterY->second).begin();
 
-            while(ix != (iterY->second).end())
+            while (ix != (iterY->second).end())
             {
                 std::cout << *ix << ",";
                 ix++;
@@ -963,9 +987,9 @@ class sparse_grid : public gridBase<EL_TYPE>
      * @param x X-position
      * @param y Y-position
      */
-    void createDataEntry(const size_t x, const size_t y)
+    void createDataEntry(size_t const x, size_t const y)
     {
-        if((x < dims_.x()) && (y < dims_.y()) || this->util::gridBase<EL_TYPE>::isAutoGrow())
+        if ((x < dims_.x() && y < dims_.y()) || this->util::gridBase<EL_TYPE>::isAutoGrow())
         {
             index_pair insertPoint;
 
@@ -982,7 +1006,7 @@ class sparse_grid : public gridBase<EL_TYPE>
         }
     }
 
-    private:
+  private:
     index_pair     dims_;
     DATA_CONTAINER data_;
     INDEXSETMAP    xIndices_;
@@ -994,17 +1018,17 @@ class sparse_grid : public gridBase<EL_TYPE>
  *
  * @tparam EL_TYPE element-type
  */
-template<typename EL_TYPE = long double>
+template <typename EL_TYPE = long double>
 class grid : public gridBase<EL_TYPE>
 {
-    private:
+  private:
     using EL_VECT   = std::vector<EL_TYPE>;
     using EL_MATRIX = std::vector<EL_VECT>;
 
     // variables
     EL_MATRIX values_;
 
-    public:
+  public:
     /**
      * @brief Default constructor.
      *
@@ -1013,53 +1037,55 @@ class grid : public gridBase<EL_TYPE>
      * @param pDefaultValue default value to use when a data value has not been explicitly set
      * @param mode mode to use for this grid
      */
-    grid(const size_t                           dimX          = 0,
-         const size_t                           dimY          = 0,
-         EL_TYPE                               *pDefaultValue = 0,
-         typename util::gridBase<EL_TYPE>::Mode mode          = util::gridBase<EL_TYPE>::Mode::AutoGrow)
-    : gridBase<EL_TYPE>()
+    grid(
+        size_t const dimX                           = 0,
+        size_t const dimY                           = 0,
+        EL_TYPE *pDefaultValue                      = 0,
+        typename util::gridBase<EL_TYPE>::Mode mode = util::gridBase<EL_TYPE>::Mode::AutoGrow
+    )
+        : gridBase<EL_TYPE>()
     {
         setMode(mode);
 
-        if(pDefaultValue != NULL)
+        if (pDefaultValue != NULL)
         {
             setDefaultValue(*pDefaultValue);
         }
 
-        for(size_t iIndexX = 0; iIndexX < dimX; iIndexX++)
+        for (size_t iIndexX = 0; iIndexX < dimX; iIndexX++)
         {
             values_.push_back(vector<EL_TYPE>(dimY));
         }
     }
 
-    grid(const grid<EL_TYPE> &rhs)                     = default;
+    grid(grid<EL_TYPE> const &rhs)                     = default;
     virtual ~grid()                                    = default;
-    grid<EL_TYPE> &operator=(const grid<EL_TYPE> &rhs) = default;
+    grid<EL_TYPE> &operator=(grid<EL_TYPE> const &rhs) = default;
 
     /**
-     * @brief Retrieve the (current) size of the grid in X-dimensiuon.
+     * @brief Retrieve the (current) size of the grid in X-dimension.
      *
      * @return the size
      */
     size_t sizeX() const
     {
-        return (values_.size());
+        return values_.size();
     }
 
     /**
-     * @brief Retrieve the (current) size of the grid in Y-dimensiuon.
+     * @brief Retrieve the (current) size of the grid in Y-dimension.
      *
      * @return the size; if size in X dimension is 0, then size in Y-dimension is automatically also 0.
      */
     size_t sizeY() const
     {
-        if(values_.size())
+        if (values_.size())
         {
-            return (values_[0].size());
+            return values_[0].size();
         }
         else
         {
-            return (0);
+            return 0;
         }
     }
 
@@ -1069,28 +1095,28 @@ class grid : public gridBase<EL_TYPE>
      * @param newX new X-dimension
      * @param newY new Y-dimension
      */
-    void resize(const size_t newX, const size_t newY)
+    void resize(size_t const newX, size_t const newY)
 
     {
         values_.resize(newX);
 
-        for(size_t x = 0; x < newX; x++)
+        for (size_t x = 0; x < newX; x++)
         {
             values_[x].resize(newY);
         }
     }
 
     /**
-     * @brief Retrieve the element at posion (x, y).
+     * @brief Retrieve the element at position (x, y).
      *
      * @param x X-position
      * @param y Y-position
      *
      * @return the element
      */
-    EL_TYPE &get(const size_t x, const size_t y)
+    EL_TYPE &get(size_t const x, size_t const y)
     {
-        return ((values_[x])[y]);
+        return (values_[x])[y];
     }
 
     /**
@@ -1100,9 +1126,9 @@ class grid : public gridBase<EL_TYPE>
      */
     void setAll(const EL_TYPE &value)
     {
-        for(size_t x = 0; x < sizeY(); x++)
+        for (size_t x = 0; x < sizeY(); x++)
         {
-            for(size_t y = 0; y < sizeX(); y++)
+            for (size_t y = 0; y < sizeX(); y++)
             {
                 set(x, y, value);
             }
@@ -1116,11 +1142,11 @@ class grid : public gridBase<EL_TYPE>
      * @param y Y-position
      * @param value the value to set
      */
-    void set(const size_t x, const size_t y, const EL_TYPE &value)
+    void set(size_t const x, size_t const y, const EL_TYPE &value)
     {
-        if(x >= sizeX() || y >= sizeY())
+        if (x >= sizeX() || y >= sizeY())
         {
-            if(this->util::gridBase<EL_TYPE>::isAutoGrow())
+            if (this->util::gridBase<EL_TYPE>::isAutoGrow())
             {
                 resize(std::max(x + 1, sizeX()), std::max(y + 1, sizeY()));
             }
@@ -1137,17 +1163,17 @@ class grid : public gridBase<EL_TYPE>
      *
      * @return the element
      */
-    EL_TYPE &operator()(const size_t x, const size_t y = 0)
+    EL_TYPE &operator()(size_t const x, size_t const y = 0)
     {
-        if(x >= sizeX() || y >= sizeY())
+        if (x >= sizeX() || y >= sizeY())
         {
-            if(this->util::gridBase<EL_TYPE>::isAutoGrow())
+            if (this->util::gridBase<EL_TYPE>::isAutoGrow())
             {
                 resize(std::max(x + 1, sizeX()), std::max(y + 1, sizeY()));
             }
         }
 
-        return ((values_[x])[y]);
+        return (values_[x])[y];
     }
 
     /**
@@ -1158,15 +1184,16 @@ class grid : public gridBase<EL_TYPE>
      *
      * @return the element
      */
-    EL_TYPE operator()(const size_t x, const size_t y = 0) const
+    EL_TYPE operator()(size_t const x, size_t const y = 0) const
     {
-        if(x >= sizeX() || y >= sizeY())
+        if (x >= sizeX() || y >= sizeY())
         {
-            throw grid_error("Get a value at " + toString(index_pair(x, y)) + " out of bounds [" + sizeX() + ","
-                             + sizeY() + "].");
+            throw grid_error(
+                "Get a value at " + toString(index_pair(x, y)) + " out of bounds [" + sizeX() + "," + sizeY() + "]."
+            );
         }
 
-        return ((values_[x])[y]);
+        return (values_[x])[y];
     }
 
     /**
@@ -1175,13 +1202,13 @@ class grid : public gridBase<EL_TYPE>
      * @param mode
      */
     void
-     show(typename util::gridBase<EL_TYPE>::DisplayMode mode = util::gridBase<EL_TYPE>::DisplayMode::Full /*unused*/)
+        show(typename util::gridBase<EL_TYPE>::DisplayMode mode = util::gridBase<EL_TYPE>::DisplayMode::Full /*unused*/)
     {
         std::cout << "Rectangular Data (" << sizeX() << " x " << sizeY() << ")" << std::endl;
 
-        for(size_t y = 0; y < sizeY(); y++)
+        for (size_t y = 0; y < sizeY(); y++)
         {
-            for(size_t x = 0; x < sizeX(); x++)
+            for (size_t x = 0; x < sizeX(); x++)
             {
                 std::cout << get(x, y) << "\t";
             }
@@ -1193,6 +1220,6 @@ class grid : public gridBase<EL_TYPE>
     }
 };
 
-};  // namepace util
+}; // namespace util
 
-#endif  // NS_UTIL_GRID_H_INCLUDED
+#endif // NS_UTIL_GRID_H_INCLUDED

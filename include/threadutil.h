@@ -45,15 +45,18 @@ struct mutexed_object_base
     std::mutex   mtx;
 };
 
-template<typename... MtxObjT_>
+template <typename... MtxObjT_>
 struct deferred_lock_barrier
 {
     std::tuple<MtxObjT_...> objs;
-    void                    synchronise()
+
+    void synchronise()
     {
         std::vector<std::unique_lock<std::mutex>> locks;
-        for(auto& i: std::index_sequence_for<MtxObjT_...>())
+        for (auto& i: std::index_sequence_for<MtxObjT_...>())
+        {
             locks.emplace_back(std::unique_lock<std::mutex>(std::get<i>(objs).mtx, std::defer_lock));
+        }
     }
 };
 
@@ -67,7 +70,7 @@ struct deferred_lock_barrier
  * @return std::future<decltype(func(std::forward<Args>(args)...))> a future that encapsulates the result, including any
  * exception
  */
-template<typename Func, typename... Args>
+template <typename Func, typename... Args>
 auto make_exception_safe_future(Func&& func, Args&&... args) -> std::future<decltype(func(std::forward<Args>(args)...))>
 {
     using ResultType = decltype(func(std::forward<Args>(args)...));
@@ -79,12 +82,12 @@ auto make_exception_safe_future(Func&& func, Args&&... args) -> std::future<decl
         // Call the provided function and set the result in the promise
         promise.set_value(func(std::forward<Args>(args)...));
     }
-    catch(const std::exception& ex)
+    catch (std::exception const& ex)
     {
         // Handle exceptions and set the exception in the promise
         promise.set_exception(std::current_exception());
     }
-    catch(...)
+    catch (...)
     {
         // Handle non-standard exceptions and set them in the promise
         promise.set_exception(std::current_exception());
@@ -110,7 +113,7 @@ struct ThreadFuncBase
  * @tparam Func function type
  * @tparam Args args-type variadic for compiletime polymorph functions
  */
-template<typename Func, typename... Args>
+template <typename Func, typename... Args>
 struct ThreadFunction : public ThreadFuncBase
 {
     /**
@@ -119,7 +122,9 @@ struct ThreadFunction : public ThreadFuncBase
      * @param func function
      * @param args arguments
      */
-    ThreadFunction(Func&& func, Args&&... args) : func_(func), args_(std::tuple<Args...>(args...))
+    explicit ThreadFunction(Func&& func, Args&&... args)
+        : func_(func)
+        , args_(std::tuple<Args...>(args...))
     {
     }
 
@@ -133,15 +138,15 @@ struct ThreadFunction : public ThreadFuncBase
         return make_thread_(args_, std::index_sequence_for<Args...>());
     }
 
-    private:
+  private:
     /**
      * @brief Helper to make a variadic list from the tuple again and call the function
      *
      * @tparam Is index sequence
      * @param tuple the tuple to pack
      */
-    template<std::size_t... Is>
-    void package_tuple_and_call_function_(const std::tuple<Args...>& tuple, std::index_sequence<Is...>)
+    template <std::size_t... Is>
+    void package_tuple_and_call_function_(std::tuple<Args...> const& tuple, std::index_sequence<Is...>)
     {
         func_(std::get<Is>(args_)...);
     }
@@ -153,8 +158,8 @@ struct ThreadFunction : public ThreadFuncBase
      * @tparam Is index sequence
      * @param tuple the tuple to pack
      */
-    template<std::size_t... Is>
-    std::thread make_thread_(const std::tuple<Args...>& tuple, std::index_sequence<Is...>)
+    template <std::size_t... Is>
+    std::thread make_thread_(std::tuple<Args...> const& tuple, std::index_sequence<Is...>)
     {
         return std::thread{func_, std::get<Is>(args_)...};
     }
@@ -174,7 +179,7 @@ struct ThreadFunction : public ThreadFuncBase
  * @param args arguments for the thread function
  * @return std::shared_ptr<ThreadFuncBase> shared pointer to the thread-function
  */
-template<typename Func_, typename... Args_>
+template <typename Func_, typename... Args_>
 std::shared_ptr<ThreadFuncBase> make_thread_func_ptr(Func_ func, Args_... args)
 {
     auto pFunc = std::make_shared<ThreadFunction<Func_, Args_...>>(std::move(func), std::move(args)...);
@@ -184,9 +189,9 @@ std::shared_ptr<ThreadFuncBase> make_thread_func_ptr(Func_ func, Args_... args)
 
 namespace
 {
-    using millis                    = std::chrono::milliseconds;
-    auto default_priority_intervals = std::vector<millis>{millis{50}, millis{200}, millis{500}, millis{1000}};
-};
+using millis                    = std::chrono::milliseconds;
+auto default_priority_intervals = std::vector<millis>{millis{50}, millis{200}, millis{500}, millis{1'000}};
+}; // namespace
 
 /**
  * @brief Priority thread wrapper.
@@ -208,7 +213,7 @@ struct PriorityThread
      * @param rhs right-hand-side
      * @return true, if lhs has lower priority than rhs, false otherwise
      */
-    friend bool operator<(const PriorityThread& lhs, const PriorityThread& rhs)
+    friend bool operator<(PriorityThread const& lhs, PriorityThread const& rhs)
     {
         return lhs.priority_ < rhs.priority_;
     }
@@ -218,7 +223,7 @@ struct PriorityThread
      *
      * @return uint64_t the ID
      */
-    uint64_t id() const
+    [[nodiscard]] uint64_t id() const
     {
         return id_;
     }
@@ -228,7 +233,7 @@ struct PriorityThread
      *
      * @return uint64_t the current priority
      */
-    uint64_t priority() const
+    [[nodiscard]] uint64_t priority() const
     {
         return priority_;
     }
@@ -246,7 +251,7 @@ struct PriorityThread
      *
      * @return chrono::steady_clock::time_point the arrival-time
      */
-    std::chrono::steady_clock::time_point arrival_time() const
+    [[nodiscard]] std::chrono::steady_clock::time_point arrival_time() const
     {
         return arrival_time_;
     }
@@ -256,7 +261,7 @@ struct PriorityThread
         return pThreadFunc_->start_thread();
     }
 
-    private:
+  private:
     uint64_t                              id_;
     uint64_t                              priority_;
     std::chrono::steady_clock::time_point arrival_time_;
@@ -271,14 +276,16 @@ struct PriorityThread
  */
 class ThreadScheduler
 {
-    public:
-    explicit ThreadScheduler(const auto& priority_intervals = default_priority_intervals,
-                             uint64_t    pool_size          = std::thread::hardware_concurrency() * 2);
+  public:
+    explicit ThreadScheduler(
+        auto const& priority_intervals = default_priority_intervals,
+        uint64_t pool_size             = std::thread::hardware_concurrency() * 2
+    );
 
     ~ThreadScheduler();
 
     /**
-     * @brief Therminate the thread-scheduler.
+     * @brief Terminate the thread-scheduler.
      */
     void terminate();
 
@@ -292,12 +299,14 @@ class ThreadScheduler
      * @param func thread function
      * @param args arguments for the thread function
      */
-    template<typename Func_, typename... Args_>
+    template <typename Func_, typename... Args_>
     void addThread(uint64_t id, uint64_t priority, Func_&& func, Args_&&... args)
     {
-        PriorityThread priority_thread{id,
-                                       priority,
-                                       make_thread_func_ptr(std::forward<Func_>(func), std::forward<Args_>(args)...)};
+        PriorityThread priority_thread{
+            id,
+            priority,
+            make_thread_func_ptr(std::forward<Func_>(func), std::forward<Args_>(args)...)
+        };
         {
             std::unique_lock<std::mutex> lock(mutex_);
             priority_thread_queue_.push(priority_thread);
@@ -306,7 +315,7 @@ class ThreadScheduler
         cv_.notify_one();
     }
 
-    private:
+  private:
     void        processQueueThread();
     std::thread processQueue();
 
@@ -316,7 +325,7 @@ class ThreadScheduler
     std::mutex                          mutex_;
     std::condition_variable             cv_;
     std::thread                         queue_processor_thread_;
-    volatile bool                       terminate_ = false;
+    bool volatile terminate_ = false;
 };
 
 // using namespace std;
@@ -344,6 +353,6 @@ class ThreadScheduler
 //     return 0;
 // }
 
-};  // namespace util
+}; // namespace util
 
-#endif  // NS_UTIL_THREADUTIL_H_INCLUDED
+#endif // NS_UTIL_THREADUTIL_H_INCLUDED

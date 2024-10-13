@@ -40,7 +40,7 @@ namespace util
  *
  * @tparam CharT_ char-type
  */
-template<typename CharT_ = char>
+template <typename CharT_ = char>
 struct ci_char_traits : public std::char_traits<CharT_>
 {
     /**
@@ -54,7 +54,7 @@ struct ci_char_traits : public std::char_traits<CharT_>
     {
         wchar_t C1 = towupper(wchar_t{c1});
         wchar_t C2 = towupper(wchar_t{c2});
-        return (C1 == C2);
+        return C1 == C2;
     }
 
     /**
@@ -67,7 +67,7 @@ struct ci_char_traits : public std::char_traits<CharT_>
     {
         wchar_t C1 = towupper(wchar_t{c1});
         wchar_t C2 = towupper(wchar_t{c2});
-        return (C1 != C2);
+        return C1 != C2;
     }
 
     /**
@@ -81,7 +81,7 @@ struct ci_char_traits : public std::char_traits<CharT_>
     {
         wchar_t C1 = towupper(wchar_t{c1});
         wchar_t C2 = towupper(wchar_t{c2});
-        return (C1 < C2);
+        return C1 < C2;
     }
 
     /**
@@ -94,24 +94,28 @@ struct ci_char_traits : public std::char_traits<CharT_>
      * @param n number of chars to compare
      * @return int index of the first different char
      */
-    static int compare(const CharT_ *s1, const CharT_ *s2, size_t n)
+    static int compare(CharT_ const *s1, CharT_ const *s2, size_t n)
     {
-        if(n == 0UL)
-            return (0);
+        if (n == 0UL)
+        {
+            return 0;
+        }
 
-        if(s1 == nullptr)
-            return (s2 == nullptr ? 0 : -1);
+        if (s1 == nullptr)
+        {
+            return s2 == nullptr ? 0 : -1;
+        }
 
         long i = 0;
 
-        while((i < (long)n) && (*s1) && (*s2) && (eq(*s1, *s2)))
+        while ((i < (long)n) && (*s1) && (*s2) && (eq(*s1, *s2)))
         {
             s1++;
             s2++;
             i++;
         }
 
-        return (i == (long)n ? 0 : lt(*s1, *s2) ? (-i - 1) : (eq(*s1, *s2) ? 0 : i + 1));
+        return i == (long)n ? 0 : lt(*s1, *s2) ? (-i - 1) : (eq(*s1, *s2) ? 0 : i + 1);
     }
 
     /**
@@ -122,18 +126,20 @@ struct ci_char_traits : public std::char_traits<CharT_>
      * @param c character to search for
      * @return const char* pointer to the first occurrence of c in the string s, or nullptr if it cannot be found
      */
-    static const char *find(const CharT_ *s, int n, char c)
+    static char const *find(CharT_ const *s, int n, char c)
     {
-        const CharT_ *reval = nullptr;
-        while(n-- > 0 && reval == nullptr)
+        CharT_ const *reval = nullptr;
+        while (n-- > 0 && reval == nullptr)
         {
-            if(towupper(wchar_t{*s}) == towupper(wchar_t{c}))
+            if (towupper(wchar_t{*s}) == towupper(wchar_t{c}))
+            {
                 reval = s;
+            }
 
             ++s;
         }
 
-        return (reval);
+        return reval;
     }
 };
 
@@ -153,7 +159,7 @@ using ci_wstring = std::basic_string<wchar_t, ci_char_traits<wchar_t>, std::allo
 using ci_u8string = std::basic_string<char8_t, ci_char_traits<char8_t>, std::allocator<char8_t>>;
 #endif
 
-#if __cplusplus >= 201103L
+#if __cplusplus >= 201'103L
 /**
  * @brief Case-insensitive @c char16_t string type.
  */
@@ -165,7 +171,7 @@ using ci_u16string = std::basic_string<char16_t, ci_char_traits<char16_t>, std::
 using ci_u32string = std::basic_string<char32_t, ci_char_traits<char32_t>, std::allocator<char32_t>>;
 #endif
 
-};
+}; // namespace util
 
 namespace std
 {
@@ -173,13 +179,13 @@ namespace std
  * @brief Overload the standard hash function for case insensitive strings to
  * enable ci_strings as elements in hash containers
  */
-template<>
+template <>
 struct hash<util::ci_string>
 {
-    std::size_t operator()(const util::ci_string &s) const
+    std::size_t operator()(util::ci_string const &s) const
     {
         std::hash<std::string> hasher;
-        std::string            strLower = util::convert<std::string>(util::toLower(s));
+        auto                   strLower = util::convert<std::string>(util::toLower(s));
         TRACE1(strLower);
         return hasher(strLower);
     }
@@ -189,13 +195,13 @@ struct hash<util::ci_string>
  * @brief Overload the standard hash function for wide case insensitive strings to
  * enable ci_wstrings as elements in hash containers
  */
-template<>
+template <>
 struct hash<util::ci_wstring>
 {
-    std::size_t operator()(const util::ci_wstring &s) const
+    std::size_t operator()(util::ci_wstring const &s) const
     {
         std::hash<std::wstring> hasher;
-        std::wstring            strLower = util::convert<std::wstring>(util::toLower(s));
+        auto                    strLower = util::convert<std::wstring>(util::toLower(s));
         return hasher(strLower);
     }
 };
@@ -208,11 +214,11 @@ struct hash<util::ci_wstring>
  *
  * @return the modified stream
  */
-inline std::ostream &operator<<(std::ostream &os, const util::ci_string &str)
+inline std::ostream &operator<<(std::ostream &os, util::ci_string const &str)
 {
     os << str.c_str();
 
-    return (os);
+    return os;
 }
 
 /**
@@ -223,11 +229,11 @@ inline std::ostream &operator<<(std::ostream &os, const util::ci_string &str)
  *
  * @return the modified stream
  */
-inline std::wostream &operator<<(std::wostream &os, const util::ci_wstring &str)
+inline std::wostream &operator<<(std::wostream &os, util::ci_wstring const &str)
 {
     os << str.c_str();
 
-    return (os);
+    return os;
 }
 
 #ifdef _GLIBCXX_USE_CHAR8_T
@@ -236,13 +242,13 @@ inline std::wostream &operator<<(std::wostream &os, const util::ci_wstring &str)
  * @brief Overload the standard hash function for wide case insensitive strings to
  * enable ci_u8strings as elements in hash containers
  */
-template<>
+template <>
 struct hash<util::ci_u8string>
 {
-    std::size_t operator()(const util::ci_u8string &s) const
+    std::size_t operator()(util::ci_u8string const &s) const
     {
         std::hash<std::u8string> hasher;
-        std::u8string            strLower = util::convert<std::u8string>(util::toLower(s));
+        auto                     strLower = util::convert<std::u8string>(util::toLower(s));
         return hasher(strLower);
     }
 };
@@ -256,27 +262,27 @@ struct hash<util::ci_u8string>
  * @return the modified stream
  */
 inline std::basic_ostream<char8_t, std::char_traits<char8_t>> &
- operator<<(std::basic_ostream<char8_t, std::char_traits<char8_t>> &os, const util::ci_u8string &s)
+    operator<<(std::basic_ostream<char8_t, std::char_traits<char8_t>> &os, util::ci_u8string const &s)
 {
     os << s.c_str();
 
-    return (os);
+    return os;
 }
 #endif
 
-#if __cplusplus >= 201103L
+#if __cplusplus >= 201'103L
 
 /**
  * @brief Overload the standard hash function for wide case insensitive strings to
  * enable ci_u16strings as elements in hash containers
  */
-template<>
+template <>
 struct hash<util::ci_u16string>
 {
-    std::size_t operator()(const util::ci_u16string &s) const
+    std::size_t operator()(util::ci_u16string const &s) const
     {
         std::hash<std::u16string> hasher;
-        std::u16string            strLower = util::convert<std::u16string>(util::toLower(s));
+        auto                      strLower = util::convert<std::u16string>(util::toLower(s));
         return hasher(strLower);
     }
 };
@@ -290,24 +296,24 @@ struct hash<util::ci_u16string>
  * @return the modified stream
  */
 inline std::basic_ostream<char16_t, std::char_traits<char16_t>> &
- operator<<(std::basic_ostream<char16_t, std::char_traits<char16_t>> &os, const util::ci_u16string &s)
+    operator<<(std::basic_ostream<char16_t, std::char_traits<char16_t>> &os, util::ci_u16string const &s)
 {
     os << s.c_str();
 
-    return (os);
+    return os;
 }
 
 /**
  * @brief Overload the standard hash function for wide case insensitive strings to
  * enable ci_u32strings as elements in hash containers
  */
-template<>
+template <>
 struct hash<util::ci_u32string>
 {
-    std::size_t operator()(const util::ci_u32string &s) const
+    std::size_t operator()(util::ci_u32string const &s) const
     {
         std::hash<std::u32string> hasher;
-        std::u32string            strLower = util::convert<std::u32string>(util::toLower(s));
+        auto                      strLower = util::convert<std::u32string>(util::toLower(s));
         return hasher(strLower);
     }
 };
@@ -321,13 +327,13 @@ struct hash<util::ci_u32string>
  * @return the modified stream
  */
 inline std::basic_ostream<char32_t, std::char_traits<char32_t>> &
- operator<<(std::basic_ostream<char32_t, std::char_traits<char32_t>> &os, const util::ci_u32string &s)
+    operator<<(std::basic_ostream<char32_t, std::char_traits<char32_t>> &os, util::ci_u32string const &s)
 {
     os << s.c_str();
 
-    return (os);
+    return os;
 }
 #endif
-};  // namespace std
+}; // namespace std
 
-#endif  // NS_UTIL_CI_STRING_H_INCLUDED
+#endif // NS_UTIL_CI_STRING_H_INCLUDED

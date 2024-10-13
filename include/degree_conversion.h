@@ -38,28 +38,37 @@
 namespace util
 {
 using Deg180Traits =
- limited_int_traits<int64_t, DEGREE_180_MIN, DEGREE_180_MAX, resolve_modulo, convert_circular_scale>;
+    limited_int_traits<int64_t, DEGREE_180_MIN, DEGREE_180_MAX, resolve_modulo, convert_circular_scale>;
 using Deg180 = limited_int<int64_t, DEGREE_180_MIN, DEGREE_180_MAX, Deg180Traits>;
 
 using Deg360Traits =
- limited_int_traits<int64_t, DEGREE_360_MIN, DEGREE_360_MAX, resolve_modulo, convert_circular_scale>;
+    limited_int_traits<int64_t, DEGREE_360_MIN, DEGREE_360_MAX, resolve_modulo, convert_circular_scale>;
 using Deg360 = limited_int<int64_t, DEGREE_360_MIN, DEGREE_360_MAX, Deg360Traits>;
 
 using Rad2PiTraits = limited_int_traits<int64_t, MICRO_RAD_MIN, MICRO_RAD_2PI, resolve_modulo, convert_circular_scale>;
 using Rad2Pi       = limited_int<int64_t, 0, MICRO_RAD_2PI, Rad2PiTraits>;
 
-using MilliMTraits =
- limited_int_traits<int64_t, -FACTOR_METER_TO_MILLI_METER, FACTOR_METER_TO_MILLI_METER, resolve_invalid, convert_scale>;
+using MilliMTraits = limited_int_traits<
+    int64_t,
+    -FACTOR_METER_TO_MILLI_METER,
+    FACTOR_METER_TO_MILLI_METER,
+    resolve_invalid,
+    convert_scale>;
 using MilliM = limited_int<int64_t, -FACTOR_METER_TO_MILLI_METER, FACTOR_METER_TO_MILLI_METER, MilliMTraits>;
 
-using MicroMTraits =
- limited_int_traits<int64_t, -FACTOR_METER_TO_MICRO_METER, FACTOR_METER_TO_MICRO_METER, resolve_invalid, convert_scale>;
+using MicroMTraits = limited_int_traits<
+    int64_t,
+    -FACTOR_METER_TO_MICRO_METER,
+    FACTOR_METER_TO_MICRO_METER,
+    resolve_invalid,
+    convert_scale>;
 using MicroM = limited_int<int64_t, -FACTOR_METER_TO_MICRO_METER, FACTOR_METER_TO_MICRO_METER, MicroMTraits>;
 
 using MilliM2MillionTraits =
- limited_int_traits<int64_t, TWO_MILLION_MM_MIN, TWO_MILLION_MM_MAX, resolve_invalid, convert_scale>;
+    limited_int_traits<int64_t, TWO_MILLION_MM_MIN, TWO_MILLION_MM_MAX, resolve_invalid, convert_scale>;
 using MilliM2Million = limited_int<int64_t, TWO_MILLION_MM_MIN, TWO_MILLION_MM_MAX, MilliM2MillionTraits>;
 
-};
+}; // namespace util
+
 // namespace util
-#endif  // DEGREE_CONVERSION_H_INCLUDED
+#endif // DEGREE_CONVERSION_H_INCLUDED

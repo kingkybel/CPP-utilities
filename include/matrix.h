@@ -47,61 +47,59 @@
 
 namespace util
 {
-template<typename T>
+template <typename T>
 inline T normalMin(T val)
 {
-    return (std::numeric_limits<T>::min());
+    return std::numeric_limits<T>::min();
 }
 
 inline float normalMin(std::complex<float> val)
 {
-    return (std::numeric_limits<float>::min());
+    return std::numeric_limits<float>::min();
 }
 
 inline double normalMin(std::complex<double> val)
 {
-    return (std::numeric_limits<double>::min());
+    return std::numeric_limits<double>::min();
 }
 
 inline long double normalMin(std::complex<long double> val)
 {
-    return (std::numeric_limits<long double>::min());
+    return std::numeric_limits<long double>::min();
 }
 
 struct matrix_interface
 {
-    virtual ~matrix_interface()
-    {
-    }
+    virtual ~matrix_interface() = default;
 
     /**
      * @brief Retrieve the horizontal extent of the matrix.
      * @return x-dimension
      */
-    virtual size_t sizeX() const = 0;
+    [[nodiscard]] virtual size_t sizeX() const = 0;
 
     /**
      * @brief Retrieve the vertical extent of the matrix.
      * @return y-dimension
      */
-    virtual size_t sizeY() const = 0;
+    [[nodiscard]] virtual size_t sizeY() const = 0;
 
     /**
      * @brief Check whether coordinates (x,y) are within the matrix.
      * @return true if so, false otherwise
      */
-    bool withinBounds(size_t x, size_t y) const
+    [[nodiscard]] bool withinBounds(size_t x, size_t y) const
     {
-        return ((x < sizeX()) && (y < sizeY()));
+        return (x < sizeX()) && (y < sizeY());
     }
 
     /**
      * @brief Check whether this is a square matrix.
      * @return true if so, false otherwise
      */
-    bool isSquare() const
+    [[nodiscard]] bool isSquare() const
     {
-        return (sizeX() == sizeY());
+        return sizeX() == sizeY();
     }
 
     /**
@@ -111,9 +109,9 @@ struct matrix_interface
      * @param rhs the right-hand-side matrix.
      * @return true if so, false otherwise
      */
-    bool isAddCompatible(const matrix_interface &rhs) const
+    [[nodiscard]] bool isAddCompatible(matrix_interface const &rhs) const
     {
-        return ((sizeX() == rhs.sizeX()) && (sizeY() == rhs.sizeY()));
+        return (sizeX() == rhs.sizeX()) && (sizeY() == rhs.sizeY());
     }
 
     /**
@@ -122,9 +120,9 @@ struct matrix_interface
      * @param rhs the right-hand-side matrix.
      * @return true if so, false otherwise
      */
-    bool isMultCompatible(const matrix_interface &rhs) const
+    [[nodiscard]] bool isMultCompatible(matrix_interface const &rhs) const
     {
-        return (sizeX() == rhs.sizeY());
+        return sizeX() == rhs.sizeY();
     }
 
     /**
@@ -133,70 +131,70 @@ struct matrix_interface
      * @param rhs the right-hand-side matrix.
      * @return true if so, false otherwise
      */
-    bool isSolveCompatible(const matrix_interface &rhs) const
+    [[nodiscard]] bool isSolveCompatible(matrix_interface const &rhs) const
     {
-        return (isSquare() && (sizeY() == rhs.sizeY()));
+        return isSquare() && (sizeY() == rhs.sizeY());
     }
 
     /**
      * @brief Check whether this is a horizontal vector-shaped matrix.
      * @return true if so, false otherwise
      */
-    bool isHVector() const
+    [[nodiscard]] bool isHVector() const
     {
-        return (1 == sizeY());
+        return 1 == sizeY();
     }
 
     /**
      * @brief Check whether this is a vertical vector-shaped matrix.
      * @return true if so, false otherwise
      */
-    bool isVVector() const
+    [[nodiscard]] bool isVVector() const
     {
-        return (1 == sizeX());
+        return 1 == sizeX();
     }
 
     /**
      * @brief Check whether this is a diagonal matrix.
      * @return true if so, false otherwise
      */
-    virtual bool isDiagonal() const = 0;
+    [[nodiscard]] virtual bool isDiagonal() const = 0;
 
     /**
      * @brief Check whether this is a scalar matrix.
      * @return true if so, false otherwise
      */
-    virtual bool isScalar() const = 0;
+    [[nodiscard]] virtual bool isScalar() const = 0;
 
     /**
      * @brief Check whether this is a unit matrix.
      * @return true if so, false otherwise
      */
-    virtual bool isUnit() const = 0;
+    [[nodiscard]] virtual bool isUnit() const = 0;
 
     /**
      * @brief Check whether this is a upper triangular matrix.
      * @return true if so, false otherwise
      */
-    virtual bool isUpperTriangular() const = 0;
+    [[nodiscard]] virtual bool isUpperTriangular() const = 0;
 
     /**
      * @brief Check whether this is a lower triangular matrix.
      * @return true if so, false otherwise
      */
-    virtual bool isLowerTriangular() const = 0;
+    [[nodiscard]] virtual bool isLowerTriangular() const = 0;
 
     /**
      * @brief Check whether this is a symmetric matrix.
      * @return true if so, false otherwise
      */
-    virtual bool isSymmetric() const = 0;
+    [[nodiscard]] virtual bool isSymmetric() const = 0;
 
     /**
      * @brief Check whether this is a skew-symmetric matrix.
      * @return true if so, false otherwise
      */
-    virtual bool isSkewSymmetric() const = 0;
+    [[nodiscard]] virtual bool isSkewSymmetric() const = 0;
 };
 
 enum class operType
@@ -210,49 +208,54 @@ enum class operType
 
 class matrixSizesIncompatible : public std::logic_error
 {
-    public:
-    matrixSizesIncompatible(const std::string &what_arg) : logic_error(what_arg)
+  public:
+    explicit matrixSizesIncompatible(std::string const &what_arg)
+        : logic_error(what_arg)
     {
     }
 };
 
 class matrixScalarMustNotBeZero : public std::logic_error
 {
-    public:
-    matrixScalarMustNotBeZero(const std::string &what_arg) : logic_error(what_arg)
+  public:
+    explicit matrixScalarMustNotBeZero(std::string const &what_arg)
+        : logic_error(what_arg)
     {
     }
 };
 
 class matrixMustBeSquare : public std::logic_error
 {
-    public:
-    matrixMustBeSquare(const std::string &what_arg) : logic_error(what_arg)
+  public:
+    explicit matrixMustBeSquare(std::string const &what_arg)
+        : logic_error(what_arg)
     {
     }
 };
 
 class matrixIndexOutOfBounds : public std::out_of_range
 {
-    public:
-    matrixIndexOutOfBounds(const std::string &what_arg) : out_of_range(what_arg)
+  public:
+    explicit matrixIndexOutOfBounds(std::string const &what_arg)
+        : out_of_range(what_arg)
     {
     }
 };
 
 class matrixIsSingular : public std::logic_error
 {
-    public:
-    matrixIsSingular(const std::string &what_arg) : logic_error(what_arg)
+  public:
+    explicit matrixIsSingular(std::string const &what_arg)
+        : logic_error(what_arg)
     {
     }
 };
 
-template<bool enable = false>
-void checkBounds(const matrix_interface &lhs, size_t x, size_t y, const std::string &location);
+template <bool enable = false>
+void checkBounds(matrix_interface const &lhs, size_t x, size_t y, std::string const &location);
 
-template<>
-void checkBounds<false>(const matrix_interface &lhs, size_t x, size_t y, const std::string &location);
+template <>
+void checkBounds<false>(matrix_interface const &lhs, size_t x, size_t y, std::string const &location);
 
 /**
  * @brief matrix template
@@ -269,10 +272,10 @@ void checkBounds<false>(const matrix_interface &lhs, size_t x, size_t y, const s
  * @param enableBoundsCheck check the boundaries when accessing elements if set
  *                          to true
  */
-template<typename T = long double, bool enableBoundsCheck = false>
+template <typename T = long double, bool enableBoundsCheck = false>
 class matrix : public matrix_interface
 {
-    private:
+  private:
     using row_t = std::vector<T>;
     using mat_t = std::vector<row_t>;
 
@@ -293,22 +296,28 @@ class matrix : public matrix_interface
     {
         m_.clear();
 
-        if(xDim == 0)
+        if (xDim == 0)
+        {
             xDim = 1;
+        }
 
-        if(yDim == 0)
+        if (yDim == 0)
+        {
             yDim = xDim;
+        }
 
         row_t newRow = row_t(xDim);
 
-        for(size_t y = 0; y < yDim; y++)
+        for (size_t y = 0; y < yDim; y++)
+        {
             m_.push_back(newRow);
+        }
 
-        return (m_);
+        return m_;
     }
 
-    public:
-    matrix(const matrix &rhs) = default;
+  public:
+    matrix(matrix const &rhs) = default;
 
     /**
      * @brief Default constructor.
@@ -325,12 +334,12 @@ class matrix : public matrix_interface
         size_t count    = 0;
         size_t maxCount = this->matrix::sizeX() * this->matrix::sizeY();
 
-        while(it != l.end() && count < maxCount)
+        while (it != l.end() && count < maxCount)
         {
             (*this)(x, y) = *it;
             x++;
 
-            if(x == this->matrix::sizeX())
+            if (x == this->matrix::sizeX())
             {
                 x = 0;
                 y++;
@@ -344,13 +353,14 @@ class matrix : public matrix_interface
      * @brief Move copy constructor.
      * @param rhs right-hand-side matrix - will be reset
      */
-    matrix(matrix &&rhs) : m_(rhs.m_)
+    matrix(matrix &&rhs) noexcept
+        : m_(rhs.m_)
     {
         rhs.initializeData();
     }
 
-    ~matrix()                            = default;
-    matrix &operator=(const matrix &rhs) = default;
+    ~matrix() override                   = default;
+    matrix &operator=(matrix const &rhs) = default;
 
     /**
      * @brief Move assignment operator.
@@ -359,12 +369,12 @@ class matrix : public matrix_interface
      */
     matrix &operator=(matrix &&rhs)
     {
-        if(this != &rhs)
+        if (this != &rhs)
         {
             m_ = rhs.m_;
             rhs.initializeData();
         }
-        return (*this);
+        return *this;
     }
 
     /**
@@ -380,10 +390,12 @@ class matrix : public matrix_interface
         matrix<T, enableBoundsCheck> reval(l.size(), l.size());
         auto                         it = l.begin();
 
-        for(size_t i = 0; i < l.size(); i++)
+        for (size_t i = 0; i < l.size(); i++)
+        {
             reval(i, i) = *it++;
+        }
 
-        return (reval);
+        return reval;
     }
 
     /**
@@ -394,14 +406,16 @@ class matrix : public matrix_interface
      *
      * @return a scalar matrix with diagonal c-values
      */
-    static matrix<T, enableBoundsCheck> scalar(size_t dim, const T &c = T(1.0L))
+    static matrix<T, enableBoundsCheck> scalar(size_t dim, T const &c = T(1.0L))
     {
         matrix<T, enableBoundsCheck> reval(dim);
 
-        for(size_t i = 0; i < reval.sizeX(); i++)
+        for (size_t i = 0; i < reval.sizeX(); i++)
+        {
             reval(i, i) = c;
+        }
 
-        return (reval);
+        return reval;
     }
 
     /**
@@ -414,10 +428,12 @@ class matrix : public matrix_interface
         matrix<T, enableBoundsCheck> reval(l.size(), 1);
         auto                         it = l.begin();
 
-        for(size_t i = 0; i < l.size(); i++)
+        for (size_t i = 0; i < l.size(); i++)
+        {
             reval(i, 0) = *it++;
+        }
 
-        return (reval);
+        return reval;
     }
 
     /**
@@ -432,28 +448,30 @@ class matrix : public matrix_interface
         matrix<T, enableBoundsCheck> reval(1, l.size());
         auto                         it = l.begin();
 
-        for(size_t i = 0; i < l.size(); i++)
+        for (size_t i = 0; i < l.size(); i++)
+        {
             reval(0, i) = *it++;
+        }
 
-        return (reval);
+        return reval;
     }
 
     /**
      * @brief Retrieve the horizontal extent of the matrix.
      * @return x-dimension
      */
-    size_t sizeX() const
+    [[nodiscard]] size_t sizeX() const
     {
-        return (sizeY() == 0 ? 0 : m_[0].size());
+        return sizeY() == 0 ? 0 : m_[0].size();
     }
 
     /**
      * @brief Retrieve the vertical extent of the matrix.
      * @return y-dimension
      */
-    size_t sizeY() const
+    [[nodiscard]] size_t sizeY() const
     {
-        return (m_.size());
+        return m_.size();
     }
 
     /**
@@ -467,29 +485,42 @@ class matrix : public matrix_interface
      *
      * @throw matrixSizesIncompatible
      */
-    static void assertCompatibleSizes(const matrix<T, enableBoundsCheck> &lhs,
-                                      const matrix<T, enableBoundsCheck> &rhs,
-                                      const operType                     &operation,
-                                      const std::string                  &location)
+    static void assertCompatibleSizes(
+        matrix<T, enableBoundsCheck> const &lhs,
+        matrix<T, enableBoundsCheck> const &rhs,
+        operType const                     &operation,
+        std::string const                  &location
+    )
     {
-        if(operation == operType::MatrixAdd || operation == operType::MatrixSub)
+        if (operation == operType::MatrixAdd || operation == operType::MatrixSub)
         {
-            if(!lhs.isAddCompatible(rhs))
-                throw matrixSizesIncompatible(location + ": matrix-size lhs (" + toString(lhs.sizeX()) + ","
-                                              + toString(lhs.sizeY()) + ") is not equal matrix-size rhs("
-                                              + toString(rhs.sizeX()) + "," + toString(rhs.sizeY()) + ").");
+            if (!lhs.isAddCompatible(rhs))
+            {
+                throw matrixSizesIncompatible(
+                    location + ": matrix-size lhs (" + toString(lhs.sizeX()) + "," + toString(lhs.sizeY()) +
+                    ") is not equal matrix-size rhs(" + toString(rhs.sizeX()) + "," + toString(rhs.sizeY()) + ")."
+                );
+            }
         }
-        else if(operation == operType::MatrixMult)
+        else if (operation == operType::MatrixMult)
         {
-            if(lhs.sizeX() != rhs.sizeY())
-                throw matrixSizesIncompatible(location + ": x-dimension of lhs-matrix (" + toString(lhs.sizeX())
-                                              + ") is not equal to y-dimension rhs (" + toString(rhs.sizeY()) + ").");
+            if (lhs.sizeX() != rhs.sizeY())
+            {
+                throw matrixSizesIncompatible(
+                    location + ": x-dimension of lhs-matrix (" + toString(lhs.sizeX()) +
+                    ") is not equal to y-dimension rhs (" + toString(rhs.sizeY()) + ")."
+                );
+            }
         }
-        else if(operation == operType::MatrixSolve)
+        else if (operation == operType::MatrixSolve)
         {
-            if(lhs.sizeY() != rhs.sizeY())
-                throw matrixSizesIncompatible(location + ": matrix-y-dimension lhs " + toString(lhs.sizeY())
-                                              + " is not equal matrix-y-dimension rhs " + toString(rhs.sizeY()) + ".");
+            if (lhs.sizeY() != rhs.sizeY())
+            {
+                throw matrixSizesIncompatible(
+                    location + ": matrix-y-dimension lhs " + toString(lhs.sizeY()) +
+                    " is not equal matrix-y-dimension rhs " + toString(rhs.sizeY()) + "."
+                );
+            }
         }
     }
 
@@ -499,10 +530,12 @@ class matrix : public matrix_interface
      * @param location the location in the class
      * @throw matrixScalarMustNotBeZero
      */
-    static void assertNotZero(T c, const std::string &location)
+    static void assertNotZero(T c, std::string const &location)
     {
-        if(c == T(0))
+        if (c == T(0))
+        {
             throw matrixScalarMustNotBeZero(location + ": scalar " + toString(c) + "must not be 0(Zero).");
+        }
     }
 
     /**
@@ -514,10 +547,12 @@ class matrix : public matrix_interface
      *
      * @throw matrixMustBeSquare
      */
-    static void assertSquare(const matrix<T, enableBoundsCheck> &lhs, const std::string &location)
+    static void assertSquare(matrix<T, enableBoundsCheck> const &lhs, std::string const &location)
     {
-        if(!lhs.isSquare())
+        if (!lhs.isSquare())
+        {
             throw matrixMustBeSquare(location + ": operation only defined for square matrices.");
+        }
     }
 
     /**
@@ -533,7 +568,7 @@ class matrix : public matrix_interface
         // if enableBoundsCheck==false, this will be an empty function
         checkBounds<enableBoundsCheck>(*this, x, y, "T& matrix<T,enableBoundsCheck>::operator()");
 
-        return (m_[y][x]);
+        return m_[y][x];
     }
 
     /**
@@ -549,7 +584,7 @@ class matrix : public matrix_interface
         // if enableBoundsCheck==false, this will be an empty function
         checkBounds<enableBoundsCheck>(*this, x, y, "T matrix<T,enableBoundsCheck>::operator() const");
 
-        return (m_[y][x]);
+        return m_[y][x];
     }
 
     /**
@@ -563,7 +598,7 @@ class matrix : public matrix_interface
     {
         checkBounds<enableBoundsCheck>(*this, 0, y, "row_t& matrix<T,enableBoundsCheck>::row(y)");
 
-        return (m_[y]);
+        return m_[y];
     }
 
     /**
@@ -577,7 +612,7 @@ class matrix : public matrix_interface
     {
         checkBounds<enableBoundsCheck>(*this, 0, y, "row_t& matrix<T,enableBoundsCheck>::row(y)");
 
-        return (m_[y]);
+        return m_[y];
     }
 
     /**
@@ -588,9 +623,9 @@ class matrix : public matrix_interface
      * @return the same matrix; plus has no effect
      *
      */
-    friend matrix<T, enableBoundsCheck> operator+(const matrix<T, enableBoundsCheck> &rhs)
+    friend matrix<T, enableBoundsCheck> operator+(matrix<T, enableBoundsCheck> const &rhs)
     {
-        return (rhs);
+        return rhs;
     }
 
     /**
@@ -600,15 +635,19 @@ class matrix : public matrix_interface
      *
      * @return the negated matrix
      */
-    friend matrix<T, enableBoundsCheck> operator-(const matrix<T, enableBoundsCheck> &rhs)
+    friend matrix<T, enableBoundsCheck> operator-(matrix<T, enableBoundsCheck> const &rhs)
     {
         matrix<T, enableBoundsCheck> temp(rhs);
 
-        for(size_t y = 0; y < temp.sizeY(); y++)
-            for(size_t x = 0; x < temp.sizeX(); x++)
+        for (size_t y = 0; y < temp.sizeY(); y++)
+        {
+            for (size_t x = 0; x < temp.sizeX(); x++)
+            {
                 temp(x, y) = -temp(x, y);
+            }
+        }
 
-        return (temp);
+        return temp;
     }
 
     /**
@@ -619,16 +658,20 @@ class matrix : public matrix_interface
      *
      * @return the sum of the two matrices
      */
-    friend matrix<T, enableBoundsCheck> operator+(const matrix<T, enableBoundsCheck> &lhs,
-                                                  const matrix<T, enableBoundsCheck> &rhs)
+    friend matrix<T, enableBoundsCheck>
+        operator+(matrix<T, enableBoundsCheck> const &lhs, matrix<T, enableBoundsCheck> const &rhs)
     {
         assertCompatibleSizes(lhs, rhs, operType::MatrixAdd, "operator+(lhs,rhs)");
         matrix<T, enableBoundsCheck> reval = lhs;
-        for(size_t y = 0; y < reval.sizeY(); y++)
-            for(size_t x = 0; x < reval.sizeX(); x++)
+        for (size_t y = 0; y < reval.sizeY(); y++)
+        {
+            for (size_t x = 0; x < reval.sizeX(); x++)
+            {
                 reval(x, y) += rhs(x, y);
+            }
+        }
 
-        return (reval);
+        return reval;
     }
 
     /**
@@ -638,12 +681,12 @@ class matrix : public matrix_interface
      *
      * @return the sum of this with the rhs
      */
-    matrix<T, enableBoundsCheck> &operator+=(const matrix<T, enableBoundsCheck> &rhs)
+    matrix<T, enableBoundsCheck> &operator+=(matrix<T, enableBoundsCheck> const &rhs)
     {
         assertCompatibleSizes(*this, rhs, operType::MatrixAdd, "operator+=(rhs)");
         *this = *this + rhs;
 
-        return (*this);
+        return *this;
     }
 
     /**
@@ -654,18 +697,22 @@ class matrix : public matrix_interface
      *
      * @return the result of lhs-rhs
      */
-    friend matrix<T, enableBoundsCheck> operator-(const matrix<T, enableBoundsCheck> &lhs,
-                                                  const matrix<T, enableBoundsCheck> &rhs)
+    friend matrix<T, enableBoundsCheck>
+        operator-(matrix<T, enableBoundsCheck> const &lhs, matrix<T, enableBoundsCheck> const &rhs)
     {
         assertCompatibleSizes(lhs, rhs, operType::MatrixAdd, "operator-(lhs,rhs)");
 
         matrix<T, enableBoundsCheck> reval = lhs;
 
-        for(size_t y = 0; y < reval.sizeY(); y++)
-            for(size_t x = 0; x < reval.sizeX(); x++)
+        for (size_t y = 0; y < reval.sizeY(); y++)
+        {
+            for (size_t x = 0; x < reval.sizeX(); x++)
+            {
                 reval(x, y) -= rhs(x, y);
+            }
+        }
 
-        return (reval);
+        return reval;
     }
 
     /**
@@ -673,13 +720,13 @@ class matrix : public matrix_interface
      * @param rhs right-hand-side matrix
      * @return the result of *this - rhs
      */
-    matrix<T, enableBoundsCheck> &operator-=(const matrix<T, enableBoundsCheck> &rhs)
+    matrix<T, enableBoundsCheck> &operator-=(matrix<T, enableBoundsCheck> const &rhs)
     {
         assertCompatibleSizes(*this, rhs, operType::MatrixSub, "operator-=(rhs)");
 
         *this = *this - rhs;
 
-        return (*this);
+        return *this;
     }
 
     /**
@@ -688,15 +735,19 @@ class matrix : public matrix_interface
      * @param c right-hand-side constant scalar value
      * @return the result of lhs*c
      */
-    friend matrix<T, enableBoundsCheck> operator*(const matrix<T, enableBoundsCheck> &lhs, const T &c)
+    friend matrix<T, enableBoundsCheck> operator*(matrix<T, enableBoundsCheck> const &lhs, T const &c)
     {
         matrix<T, enableBoundsCheck> reval = lhs;
 
-        for(size_t y = 0; y < reval.sizeY(); y++)
-            for(size_t x = 0; x < reval.sizeX(); x++)
+        for (size_t y = 0; y < reval.sizeY(); y++)
+        {
+            for (size_t x = 0; x < reval.sizeX(); x++)
+            {
                 reval(x, y) *= c;
+            }
+        }
 
-        return (reval);
+        return reval;
     }
 
     /**
@@ -707,15 +758,19 @@ class matrix : public matrix_interface
      *
      * @return the result of c*rhs
      */
-    friend matrix<T, enableBoundsCheck> operator*(const T &c, const matrix<T, enableBoundsCheck> &rhs)
+    friend matrix<T, enableBoundsCheck> operator*(T const &c, matrix<T, enableBoundsCheck> const &rhs)
     {
         matrix<T, enableBoundsCheck> reval = rhs;
 
-        for(size_t y = 0; y < reval.sizeY(); y++)
-            for(size_t x = 0; x < reval.sizeX(); x++)
+        for (size_t y = 0; y < reval.sizeY(); y++)
+        {
+            for (size_t x = 0; x < reval.sizeX(); x++)
+            {
                 reval(x, y) *= c;
+            }
+        }
 
-        return (reval);
+        return reval;
     }
 
     /**
@@ -725,11 +780,11 @@ class matrix : public matrix_interface
      *
      * @return the result of *this * c
      */
-    matrix<T, enableBoundsCheck> &operator*=(const T &c)
+    matrix<T, enableBoundsCheck> &operator*=(T const &c)
     {
         *this = *this * c;
 
-        return (*this);
+        return *this;
     }
 
     /**
@@ -738,25 +793,29 @@ class matrix : public matrix_interface
      * @param rhs right-hand-side matrix
      * @return the product lhs*rhs
      */
-    friend matrix<T, enableBoundsCheck> operator*(const matrix<T, enableBoundsCheck> &lhs,
-                                                  const matrix<T, enableBoundsCheck> &rhs)
+    friend matrix<T, enableBoundsCheck>
+        operator*(matrix<T, enableBoundsCheck> const &lhs, matrix<T, enableBoundsCheck> const &rhs)
     {
         assertCompatibleSizes(lhs, rhs, operType::MatrixMult, "operator*(lhs,rhs)");
 
         matrix<T, enableBoundsCheck> reval(rhs.sizeX(), lhs.sizeY());
 
-        for(size_t y = 0; y < lhs.sizeY(); y++)
-            for(size_t x = 0; x < rhs.sizeX(); x++)
+        for (size_t y = 0; y < lhs.sizeY(); y++)
+        {
+            for (size_t x = 0; x < rhs.sizeX(); x++)
             {
                 //                    reval(y, x) = T(0);
                 //                    for (size_t k = 0; k < lhs.sizeX(); k++)
                 //                        reval(y, x) += lhs(k, y) * rhs(x, k);
                 reval(x, y) = T(0);
-                for(size_t k = 0; k < lhs.sizeX(); k++)
+                for (size_t k = 0; k < lhs.sizeX(); k++)
+                {
                     reval(x, y) += lhs(k, y) * rhs(x, k);
+                }
             }
+        }
 
-        return (reval);
+        return reval;
     }
 
     /**
@@ -766,11 +825,11 @@ class matrix : public matrix_interface
      *
      * @return the result of *this * rhs
      */
-    matrix<T, enableBoundsCheck> &operator*=(const matrix<T, enableBoundsCheck> &rhs)
+    matrix<T, enableBoundsCheck> &operator*=(matrix<T, enableBoundsCheck> const &rhs)
     {
         *this = *this * rhs;
 
-        return (*this);
+        return *this;
     }
 
     /**
@@ -781,17 +840,21 @@ class matrix : public matrix_interface
      *
      * @return the result of lhs/c
      */
-    friend matrix<T, enableBoundsCheck> operator/(const matrix<T, enableBoundsCheck> &lhs, const T &c)
+    friend matrix<T, enableBoundsCheck> operator/(matrix<T, enableBoundsCheck> const &lhs, T const &c)
     {
         assertNotZero(c, "operator/(lhs,c)");
 
         matrix<T, enableBoundsCheck> reval = lhs;
 
-        for(size_t y = 0; y < reval.sizeY(); y++)
-            for(size_t x = 0; x < reval.sizeX(); x++)
+        for (size_t y = 0; y < reval.sizeY(); y++)
+        {
+            for (size_t x = 0; x < reval.sizeX(); x++)
+            {
                 reval(x, y) /= c;
+            }
+        }
 
-        return (reval);
+        return reval;
     }
 
     /**
@@ -802,9 +865,9 @@ class matrix : public matrix_interface
      *
      * @return the result of c/rhs
      */
-    friend matrix<T, enableBoundsCheck> operator/(const T &c, const matrix<T, enableBoundsCheck> &rhs)
+    friend matrix<T, enableBoundsCheck> operator/(T const &c, matrix<T, enableBoundsCheck> const &rhs)
     {
-        return (!rhs * c);
+        return !rhs * c;
     }
 
     /**
@@ -815,10 +878,10 @@ class matrix : public matrix_interface
      *
      * @return the result of lhs/rhs
      */
-    friend matrix<T, enableBoundsCheck> operator/(const matrix<T, enableBoundsCheck> &lhs,
-                                                  const matrix<T, enableBoundsCheck> &rhs)
+    friend matrix<T, enableBoundsCheck>
+        operator/(matrix<T, enableBoundsCheck> const &lhs, matrix<T, enableBoundsCheck> const &rhs)
     {
-        return (lhs * !rhs);
+        return lhs * !rhs;
     }
 
     /**
@@ -826,13 +889,13 @@ class matrix : public matrix_interface
      * @param c scalar
      * @return the result of *this * c
      */
-    matrix<T, enableBoundsCheck> &operator/=(const T &c)
+    matrix<T, enableBoundsCheck> &operator/=(T const &c)
     {
         assertNotZero(c, "operator/=(lhs,c)");
 
         *this = *this / c;
 
-        return (*this);
+        return *this;
     }
 
     /**
@@ -840,16 +903,18 @@ class matrix : public matrix_interface
      * @param pow power
      * @return lhs ^ pow
      */
-    friend matrix<T, enableBoundsCheck> operator^(const matrix<T, enableBoundsCheck> &lhs, const size_t &pow)
+    friend matrix<T, enableBoundsCheck> operator^(matrix<T, enableBoundsCheck> const &lhs, size_t const &pow)
     {
         assertSquare(lhs, "operator^(lhs,pow)");
 
         matrix<T, enableBoundsCheck> reval(lhs);
 
-        for(size_t i = 2; i <= pow; i++)
+        for (size_t i = 2; i <= pow; i++)
+        {
             reval = lhs * reval;
+        }
 
-        return (reval);
+        return reval;
     }
 
     /**
@@ -859,13 +924,13 @@ class matrix : public matrix_interface
      *
      * @return *this ^ pow
      */
-    matrix<T, enableBoundsCheck> &operator^=(const size_t &pow)
+    matrix<T, enableBoundsCheck> &operator^=(size_t const &pow)
     {
         assertSquare(*this, "operator^=(pow)");
 
         *this = *this ^ pow;
 
-        return (*this);
+        return *this;
     }
 
     /**
@@ -873,17 +938,19 @@ class matrix : public matrix_interface
      * @param rhs right-hand-side matrix
      * @return rhs.transposed
      */
-    friend matrix<T, enableBoundsCheck> operator~(const matrix<T, enableBoundsCheck> &rhs)
+    friend matrix<T, enableBoundsCheck> operator~(matrix<T, enableBoundsCheck> const &rhs)
     {
         matrix<T, enableBoundsCheck> reval(rhs.sizeY(), rhs.sizeX());
 
-        for(size_t y = 0; y < rhs.sizeY(); y++)
-            for(size_t x = 0; x < rhs.sizeX(); x++)
+        for (size_t y = 0; y < rhs.sizeY(); y++)
+        {
+            for (size_t x = 0; x < rhs.sizeX(); x++)
             {
                 reval(y, x) = rhs(x, y);
             }
+        }
 
-        return (reval);
+        return reval;
     }
 
     /**
@@ -891,20 +958,26 @@ class matrix : public matrix_interface
      * possible.
      *
      * @param newXDim new x-dimension
-     * @param newYdimnew y-dimension
+     * @param newYDim new y-dimension
      */
-    void resize(size_t newXDim, size_t newYdim)
+    void resize(size_t newXDim, size_t newYDim)
     {
-        if(newXDim == 0)
+        if (newXDim == 0)
+        {
             newXDim = sizeX();
+        }
 
-        if(newYdim == 0)
-            newYdim = sizeY();
+        if (newYDim == 0)
+        {
+            newYDim = sizeY();
+        }
 
-        mat_t tmp = initializeData(newYdim, newXDim);
+        mat_t tmp = initializeData(newYDim, newXDim);
 
-        for(size_t y = 0; y < std::min(sizeY(), newYdim); y++)
+        for (size_t y = 0; y < std::min(sizeY(), newYDim); y++)
+        {
             std::copy(row(y).begin(), row(y).begin() + (std::min(newXDim, sizeX())), tmp[y].begin());
+        }
 
         std::swap(tmp, m_);
     }
@@ -914,11 +987,11 @@ class matrix : public matrix_interface
      * @param rhs right-hand-side matrix
      * @return lhs^(-1)
      */
-    friend matrix<T, enableBoundsCheck> operator!(const matrix<T, enableBoundsCheck> &rhs)
+    friend matrix<T, enableBoundsCheck> operator!(matrix<T, enableBoundsCheck> const &rhs)
     {
         matrix<T, enableBoundsCheck> reval = rhs;
 
-        return (reval.inv());
+        return reval.inv();
     }
 
     /**
@@ -933,17 +1006,19 @@ class matrix : public matrix_interface
         // initialize the return matrix as the unit-matrix of sizeX
         matrix<T, enableBoundsCheck> reval = matrix<T, enableBoundsCheck>::scalar(sizeX(), T(1.0L));
 
-        for(size_t k = 0; k < sizeX(); k++)
+        for (size_t k = 0; k < sizeX(); k++)
         {
             // if we can not find a new pivot-element then the matrix is
             // singular and cannot be inverted
             long long pivIdx = pivot(k);
 
-            if(pivIdx == -1)
+            if (pivIdx == -1)
+            {
                 throw matrixIsSingular("matrix<T,enableBoundsCheck>::operator!: Inversion of a singular matrix");
+            }
 
             // swap rows so that the pivot element is on the diagonal at k
-            if(pivIdx != 0)
+            if (pivIdx != 0)
             {
                 std::swap(row(k), row(pivIdx));
             }
@@ -952,18 +1027,18 @@ class matrix : public matrix_interface
             // ensuring that the value at (k,k) == 1
             T pivotVal = (*this)(k, k);
 
-            for(size_t x = 0; x < sizeX(); x++)
+            for (size_t x = 0; x < sizeX(); x++)
             {
                 (*this)(x, k) /= pivotVal;
                 reval(x, k) /= pivotVal;
             }
 
-            for(size_t y = 0; y < sizeY(); y++)
+            for (size_t y = 0; y < sizeY(); y++)
             {
-                if(y != k)
+                if (y != k)
                 {
                     T a2 = (*this)(k, y);
-                    for(size_t x = 0; x < sizeX(); x++)
+                    for (size_t x = 0; x < sizeX(); x++)
                     {
                         (*this)(x, y) -= a2 * (*this)(x, k);
                         reval(x, y) -= a2 * reval(x, k);
@@ -972,7 +1047,7 @@ class matrix : public matrix_interface
             }
         }
 
-        return (reval);
+        return reval;
     }
 
     /**
@@ -982,7 +1057,7 @@ class matrix : public matrix_interface
      *
      * @return matrix representing the solutions
      */
-    matrix<T, enableBoundsCheck> solve(const matrix<T, enableBoundsCheck> &v) const
+    matrix<T, enableBoundsCheck> solve(matrix<T, enableBoundsCheck> const &v) const
     {
         assertSquare(*this, "matrix<T,enableBoundsCheck>::solve(v)");
         assertCompatibleSizes(*this, v, operType::MatrixSolve, "matrix<T,enableBoundsCheck>::solve(v)");
@@ -990,10 +1065,12 @@ class matrix : public matrix_interface
         matrix<T, enableBoundsCheck> temp      = *this;
         matrix<T, enableBoundsCheck> solutions = v;
 
-        for(size_t pivIdx = 0; pivIdx < sizeX(); pivIdx++)
+        for (size_t pivIdx = 0; pivIdx < sizeX(); pivIdx++)
         {
-            if(temp.pivot(pivIdx, &solutions) == -1)
+            if (temp.pivot(pivIdx, &solutions) == -1)
+            {
                 throw matrixIsSingular("matrix<T,enableBoundsCheck>::solve(): Singular matrix!");
+            }
 
             size_t x;
             size_t y;
@@ -1004,32 +1081,40 @@ class matrix : public matrix_interface
             // diagonal.
             T pivotValue = temp(pivIdx, pivIdx);
 
-            for(x = pivIdx; x < temp.sizeX(); x++)
+            for (x = pivIdx; x < temp.sizeX(); x++)
+            {
                 temp(x, pivIdx) /= pivotValue;
+            }
 
-            for(x = 0; x < solutions.sizeX(); x++)
+            for (x = 0; x < solutions.sizeX(); x++)
+            {
                 solutions(x, pivIdx) /= pivotValue;
+            }
             ////////////////////////////////////////////////////////////////
 
             // empty the column except the diagonal of the temporary
-            for(y = 0; y < sizeY(); y++)
+            for (y = 0; y < sizeY(); y++)
             {
-                if(y != pivIdx)
+                if (y != pivIdx)
                 {
                     T rowFactor = temp(pivIdx, y);
-                    if(rowFactor != T(0))
+                    if (rowFactor != T(0))
                     {
-                        for(x = pivIdx; x < temp.sizeX(); x++)
+                        for (x = pivIdx; x < temp.sizeX(); x++)
+                        {
                             temp(x, y) -= rowFactor * temp(x, pivIdx);
+                        }
 
-                        for(x = 0; x < solutions.sizeX(); x++)
+                        for (x = 0; x < solutions.sizeX(); x++)
+                        {
                             solutions(x, y) -= rowFactor * solutions(x, pivIdx);
+                        }
                     }
                 }
             }
         }
 
-        return (solutions);
+        return solutions;
     }
 
 #if defined HAVE_LEGACY_DETERMINANT_METHOD
@@ -1047,34 +1132,42 @@ class matrix : public matrix_interface
 
         matrix<T, enableBoundsCheck> temp(*this);
 
-        for(size_t k = 0; k < sizeX(); k++)
+        for (size_t k = 0; k < sizeX(); k++)
         {
             int indx = temp.pivot(k);
 
-            if(indx == -1)
+            if (indx == -1)
+            {
                 return 0;
+            }
 
-            if(indx != 0)
+            if (indx != 0)
+            {
                 reval = -reval;
+            }
 
             reval *= temp(k, k);
 
-            for(size_t x = k + 1; x < sizeX(); x++)
+            for (size_t x = k + 1; x < sizeX(); x++)
             {
                 piv = temp(x, k) / temp(k, k);
 
-                for(size_t y = k + 1; y < sizeY(); y++)
+                for (size_t y = k + 1; y < sizeY(); y++)
+                {
                     temp(x, y) -= piv * temp(k, y);
+                }
             }
         }
-        if(std::abs(reval) < normalMin(reval))
+        if (std::abs(reval) < normalMin(reval))
+        {
             reval = T(0);
+        }
 
-        return (reval);
+        return reval;
     }
-#endif  // defined HAVE_LEGACY_DETERMINANT_METHOD
+#endif // defined HAVE_LEGACY_DETERMINANT_METHOD
 
-    private:  // make the recursive method private
+  private: // make the recursive method private
     /**
      * @brief Calculate the sub-determinant of this matrix at level n. This is a
      * recursive method.
@@ -1085,28 +1178,32 @@ class matrix : public matrix_interface
     {
         assertSquare(*this, "matrix<T,enableBoundsCheck>::det()");
         T                            reval = T(0);
-        matrix<T, enableBoundsCheck> submatrix(sizeX() - 1, sizeY() - 1);
-        if(n == 2)
-            return ((*this)(0, 0) * (*this)(1, 1) - (*this)(1, 0) * (*this)(0, 1));
+        matrix<T, enableBoundsCheck> subMatrix(sizeX() - 1, sizeY() - 1);
+        if (n == 2)
+        {
+            return (*this)(0, 0) * (*this)(1, 1) - (*this)(1, 0) * (*this)(0, 1);
+        }
         else
         {
             T       pm    = T(1.0L);
-            const T minus = T(-1.0L);
+            T const minus = T(-1.0L);
 
-            for(size_t x = 0; x < n; x++)
+            for (size_t x = 0; x < n; x++)
             {
                 size_t subi = 0;
 
-                for(size_t i = 1; i < n; i++)
+                for (size_t i = 1; i < n; i++)
                 {
                     size_t subj = 0;
 
-                    for(size_t j = 0; j < n; j++)
+                    for (size_t j = 0; j < n; j++)
                     {
-                        if(j == x)
+                        if (j == x)
+                        {
                             continue;
+                        }
 
-                        submatrix(subi, subj) = (*this)(i, j);
+                        subMatrix(subi, subj) = (*this)(i, j);
                         subj++;
                     }
                     subi++;
@@ -1117,10 +1214,10 @@ class matrix : public matrix_interface
             }
         }
 
-        return (reval);
+        return reval;
     }
 
-    public:
+  public:
     /**
      * @brief Calculate the determinant of this matrix.
      *
@@ -1128,7 +1225,7 @@ class matrix : public matrix_interface
      */
     T det() const
     {
-        return (determinantR(sizeX()));
+        return determinantR(sizeX());
     }
 
     /**
@@ -1139,13 +1236,17 @@ class matrix : public matrix_interface
     {
         T reval = T(0);
 
-        for(size_t x = 0; x < sizeX(); x++)
-            for(size_t y = 0; y < sizeY(); y++)
+        for (size_t x = 0; x < sizeX(); x++)
+        {
+            for (size_t y = 0; y < sizeY(); y++)
+            {
                 reval += (*this)(x, y) * (*this)(x, y);
+            }
+        }
 
         reval = sqrt(reval);
 
-        return (reval);
+        return reval;
     }
 
     /**
@@ -1156,7 +1257,7 @@ class matrix : public matrix_interface
     {
         matrix<T, enableBoundsCheck> inv = !(*this);
 
-        return (norm() * inv.norm());
+        return norm() * inv.norm();
     }
 
     /**
@@ -1174,15 +1275,19 @@ class matrix : public matrix_interface
 
         matrix<T, enableBoundsCheck> subMat(sizeX() - 1, sizeY() - 1);
 
-        for(size_t x1 = 0, x2 = 0; x1 < sizeX(); x1++)
+        for (size_t x1 = 0, x2 = 0; x1 < sizeX(); x1++)
         {
-            if(x1 == x)
-                continue;
-
-            for(size_t y1 = 0, y2 = 0; y1 < sizeY(); y1++)
+            if (x1 == x)
             {
-                if(y1 == y)
+                continue;
+            }
+
+            for (size_t y1 = 0, y2 = 0; y1 < sizeY(); y1++)
+            {
+                if (y1 == y)
+                {
                     continue;
+                }
 
                 subMat(x2, y2) = (*this)(x1, y1);
                 y2++;
@@ -1192,10 +1297,12 @@ class matrix : public matrix_interface
 
         T cof = subMat.det();
 
-        if((x + y) % 2 == 1)
+        if ((x + y) % 2 == 1)
+        {
             cof = -cof;
+        }
 
-        return (cof);
+        return cof;
     }
 
     /**
@@ -1209,11 +1316,15 @@ class matrix : public matrix_interface
 
         matrix<T, enableBoundsCheck> reval(sizeX(), sizeY());
 
-        for(size_t x = 0; x < sizeX(); x++)
-            for(size_t y = 0; y < sizeY(); y++)
+        for (size_t x = 0; x < sizeX(); x++)
+        {
+            for (size_t y = 0; y < sizeY(); y++)
+            {
                 reval(x, y) = cofact(x, y);
+            }
+        }
 
-        return (reval);
+        return reval;
     }
 
     /**
@@ -1221,9 +1332,9 @@ class matrix : public matrix_interface
      *
      * @return true if so, false otherwise
      */
-    bool isSingular() const
+    [[nodiscard]] bool isSingular() const
     {
-        return (!isSquare() || det() == T(0));
+        return !isSquare() || det() == T(0);
     }
 
     /**
@@ -1231,17 +1342,25 @@ class matrix : public matrix_interface
      *
      * @return true if so, false otherwise
      */
-    bool isDiagonal() const
+    [[nodiscard]] bool isDiagonal() const
     {
-        if(!isSquare())
-            return (false);
+        if (!isSquare())
+        {
+            return false;
+        }
 
-        for(size_t y = 0; y < sizeX(); y++)
-            for(size_t x = 0; x < sizeY(); x++)
-                if(x != y && (*this)(x, y) != T(0))
-                    return (false);
+        for (size_t y = 0; y < sizeX(); y++)
+        {
+            for (size_t x = 0; x < sizeY(); x++)
+            {
+                if (x != y && (*this)(x, y) != T(0))
+                {
+                    return false;
+                }
+            }
+        }
 
-        return (true);
+        return true;
     }
 
     /**
@@ -1249,18 +1368,24 @@ class matrix : public matrix_interface
      *
      * @return true if so, false otherwise
      */
-    bool isScalar() const
+    [[nodiscard]] bool isScalar() const
     {
-        if(!isDiagonal())
-            return (false);
+        if (!isDiagonal())
+        {
+            return false;
+        }
 
         T v = (*this)(0, 0);
 
-        for(size_t xy = 1; xy < sizeX(); xy++)
-            if((*this)(xy, xy) != v)
-                return (false);
+        for (size_t xy = 1; xy < sizeX(); xy++)
+        {
+            if ((*this)(xy, xy) != v)
+            {
+                return false;
+            }
+        }
 
-        return (true);
+        return true;
     }
 
     /**
@@ -1268,12 +1393,14 @@ class matrix : public matrix_interface
      *
      * @return true if so, false otherwise
      */
-    bool isUnit() const
+    [[nodiscard]] bool isUnit() const
     {
-        if(isScalar() && (*this)(0, 0) == T(1.0L))
-            return (true);
+        if (isScalar() && (*this)(0, 0) == T(1.0L))
+        {
+            return true;
+        }
 
-        return (false);
+        return false;
     }
 
     /**
@@ -1281,14 +1408,20 @@ class matrix : public matrix_interface
      *
      * @return true if so, false otherwise
      */
-    bool isNull() const
+    [[nodiscard]] bool isNull() const
     {
-        for(size_t y = 0; y < sizeX(); y++)
-            for(size_t x = 0; x < sizeY(); x++)
-                if((*this)(x, y) != T(0))
-                    return (false);
+        for (size_t y = 0; y < sizeX(); y++)
+        {
+            for (size_t x = 0; x < sizeY(); x++)
+            {
+                if ((*this)(x, y) != T(0))
+                {
+                    return false;
+                }
+            }
+        }
 
-        return (true);
+        return true;
     }
 
     /**
@@ -1296,17 +1429,25 @@ class matrix : public matrix_interface
      *
      * @return true if so, false otherwise
      */
-    bool isSymmetric() const
+    [[nodiscard]] bool isSymmetric() const
     {
-        if(!isSquare())
-            return (false);
+        if (!isSquare())
+        {
+            return false;
+        }
 
-        for(size_t y = 1; y < sizeY(); y++)
-            for(size_t x = 0; x < y; x++)
-                if((*this)(x, y) != (*this)(y, x))
-                    return (false);
+        for (size_t y = 1; y < sizeY(); y++)
+        {
+            for (size_t x = 0; x < y; x++)
+            {
+                if ((*this)(x, y) != (*this)(y, x))
+                {
+                    return false;
+                }
+            }
+        }
 
-        return (true);
+        return true;
     }
 
     /**
@@ -1314,17 +1455,25 @@ class matrix : public matrix_interface
      *
      * @return true if so, false otherwise
      */
-    bool isSkewSymmetric() const
+    [[nodiscard]] bool isSkewSymmetric() const
     {
-        if(!isSquare())
-            return (false);
+        if (!isSquare())
+        {
+            return false;
+        }
 
-        for(size_t y = 1; y < sizeY(); y++)
-            for(size_t x = 0; x < y; x++)
-                if((*this)(x, y) != -(*this)(y, x))
-                    return (false);
+        for (size_t y = 1; y < sizeY(); y++)
+        {
+            for (size_t x = 0; x < y; x++)
+            {
+                if ((*this)(x, y) != -(*this)(y, x))
+                {
+                    return false;
+                }
+            }
+        }
 
-        return (true);
+        return true;
     }
 
     /**
@@ -1332,34 +1481,50 @@ class matrix : public matrix_interface
      *
      * @return true if so, false otherwise
      */
-    bool isUpperTriangular() const
+    [[nodiscard]] bool isUpperTriangular() const
     {
-        if(!isSquare())
-            return (false);
+        if (!isSquare())
+        {
+            return false;
+        }
 
-        for(size_t y = 1; y < sizeY(); y++)
-            for(size_t x = 0; x < y; x++)
-                if((*this)(x, y) != T(0))
-                    return (false);
+        for (size_t y = 1; y < sizeY(); y++)
+        {
+            for (size_t x = 0; x < y; x++)
+            {
+                if ((*this)(x, y) != T(0))
+                {
+                    return false;
+                }
+            }
+        }
 
-        return (true);
+        return true;
     }
 
     /**
      * @brief Check whether this is a lower triangular matrix.
      * @return true if so, false otherwise
      */
-    bool isLowerTriangular() const
+    [[nodiscard]] bool isLowerTriangular() const
     {
-        if(!isSquare())
-            return (false);
+        if (!isSquare())
+        {
+            return false;
+        }
 
-        for(size_t x = 1; x < sizeX(); x++)
-            for(size_t y = 0; y < x; y++)
-                if((*this)(x, y) != T(0))
-                    return (false);
+        for (size_t x = 1; x < sizeX(); x++)
+        {
+            for (size_t y = 0; y < x; y++)
+            {
+                if ((*this)(x, y) != T(0))
+                {
+                    return false;
+                }
+            }
+        }
 
-        return (true);
+        return true;
     }
 
     /**
@@ -1370,9 +1535,9 @@ class matrix : public matrix_interface
      *
      * @return true if equal, false, otherwise
      */
-    friend bool operator==(const matrix<T, enableBoundsCheck> &lhs, const matrix<T, enableBoundsCheck> &rhs)
+    friend bool operator==(matrix<T, enableBoundsCheck> const &lhs, matrix<T, enableBoundsCheck> const &rhs)
     {
-        return (lhs.m_ == rhs.m_);
+        return lhs.m_ == rhs.m_;
     }
 
     /**
@@ -1383,9 +1548,9 @@ class matrix : public matrix_interface
      *
      * @return true if *NOT* equal, false, otherwise
      */
-    friend bool operator!=(const matrix<T, enableBoundsCheck> &lhs, const matrix<T, enableBoundsCheck> &rhs)
+    friend bool operator!=(matrix<T, enableBoundsCheck> const &lhs, matrix<T, enableBoundsCheck> const &rhs)
     {
-        return (!(lhs == rhs));
+        return !(lhs == rhs);
     }
 
     /**
@@ -1398,15 +1563,17 @@ class matrix : public matrix_interface
      */
     friend std::istream &operator>>(std::istream &istrm, matrix<T, enableBoundsCheck> &m)
     {
-        for(size_t y = 0; y < m.sizeY(); y++)
-            for(size_t x = 0; x < m.sizeX(); x++)
+        for (size_t y = 0; y < m.sizeY(); y++)
+        {
+            for (size_t x = 0; x < m.sizeX(); x++)
             {
                 T val;
                 istrm >> val;
                 m(y, x) = val;
             }
+        }
 
-        return (istrm);
+        return istrm;
     }
 
     /**
@@ -1417,22 +1584,22 @@ class matrix : public matrix_interface
      *
      * @return reference to the stream
      */
-    friend std::ostream &operator<<(std::ostream &ostrm, const matrix<T, enableBoundsCheck> &m)
+    friend std::ostream &operator<<(std::ostream &ostrm, matrix<T, enableBoundsCheck> const &m)
     {
-        for(size_t y = 0; y < m.sizeY(); y++)
+        for (size_t y = 0; y < m.sizeY(); y++)
         {
-            for(size_t x = 0; x < m.sizeX(); x++)
+            for (size_t x = 0; x < m.sizeX(); x++)
             {
-                const T &v = m(x, y);
+                T const &v = m(x, y);
                 ostrm << v << '\t';
             }
 
             ostrm << std::endl;
         }
-        return (ostrm);
+        return ostrm;
     }
 
-    private:
+  private:
     /**
      * @brief Partial pivoting method.
      *
@@ -1446,36 +1613,40 @@ class matrix : public matrix_interface
         long long   k    = pivX;
         long double amax = 0.0L;
 
-        for(size_t x = pivX; x < sizeX(); x++)
+        for (size_t x = pivX; x < sizeX(); x++)
         {
             long double temp = abs((*this)(pivX, x));
 
-            if(temp > amax)
+            if (temp > amax)
             {
                 amax = temp;
                 k    = x;
             }
         }
-        if((*this)(pivX, k) == T(0))
-            return (-1);
-
-        if(k != static_cast<long long>(pivX))
+        if ((*this)(pivX, k) == T(0))
         {
-            std::swap(row(k), row(pivX));
-            if(solutions != 0)
-                std::swap(solutions->row(k), solutions->row(pivX));
-
-            return (k);
+            return -1;
         }
 
-        return (0);
+        if (k != static_cast<long long>(pivX))
+        {
+            std::swap(row(k), row(pivX));
+            if (solutions != 0)
+            {
+                std::swap(solutions->row(k), solutions->row(pivX));
+            }
+
+            return k;
+        }
+
+        return 0;
     }
 };
 
-template<bool enable>
-inline void checkBounds(const matrix_interface &lhs, size_t x, size_t y, const std::string &location)
+template <bool enable>
+inline void checkBounds(matrix_interface const &lhs, size_t x, size_t y, std::string const &location)
 {
-    if(!lhs.withinBounds(x, y))
+    if (!lhs.withinBounds(x, y))
     {
         std::stringstream ss;
         ss << location << ": index (" << x << "," << y << ") is out of bounds (" << lhs.sizeX() << "," << lhs.sizeY()
@@ -1484,11 +1655,11 @@ inline void checkBounds(const matrix_interface &lhs, size_t x, size_t y, const s
     }
 }
 
-template<>
-inline void checkBounds<false>(const matrix_interface &lhs, size_t x, size_t y, const std::string &location)
+template <>
+inline void checkBounds<false>(matrix_interface const &lhs, size_t x, size_t y, std::string const &location)
 {
 }
 
-};  // namespace util
+}; // namespace util
 
-#endif  // NS_UTIL_MATRIX_H_INCLUDED
+#endif // NS_UTIL_MATRIX_H_INCLUDED

@@ -28,44 +28,48 @@
 
 #include <string>
 #include <unordered_map>
+#include <utility>
+
 namespace util
 {
 
 namespace BracketKey
 {
-    using Type                        = std::string_view;
-    constexpr Type NONE               = "";
-    constexpr Type BOOL               = "bool";
-    constexpr Type CHAR               = "char";
-    constexpr Type INT                = "int";
-    constexpr Type FLOAT              = "float";
-    constexpr Type STRING             = "string";
-    constexpr Type VECTOR             = "vector";
-    constexpr Type DEQUE              = "deque";
-    constexpr Type SET                = "set";
-    constexpr Type UNORDERED_SET      = "unordered_set";
-    constexpr Type MULTISET           = "multiset";
-    constexpr Type UNORDERED_MULTISET = "unordered_multiset";
-    constexpr Type MAP                = "map";
-    constexpr Type UNORDERED_MAP      = "unordered_map";
-    constexpr Type MULTIMAP           = "multimap";
-    constexpr Type UNORDERED_MULTIMAP = "unordered_multimap";
-    constexpr Type PAIR               = "pair";
-    constexpr Type TUPLE              = "tuple";
-    constexpr Type SLASH              = "slash";
-    constexpr Type BACKSLASH          = "backslash";
-    constexpr Type PIPE               = "pipe";
-};
+using Type                        = std::string_view;
+constexpr Type NONE               = "";
+constexpr Type BOOL               = "bool";
+constexpr Type CHAR               = "char";
+constexpr Type INT                = "int";
+constexpr Type FLOAT              = "float";
+constexpr Type STRING             = "string";
+constexpr Type VECTOR             = "vector";
+constexpr Type DEQUE              = "deque";
+constexpr Type SET                = "set";
+constexpr Type UNORDERED_SET      = "unordered_set";
+constexpr Type MULTISET           = "multiset";
+constexpr Type UNORDERED_MULTISET = "unordered_multiset";
+constexpr Type MAP                = "map";
+constexpr Type UNORDERED_MAP      = "unordered_map";
+constexpr Type MULTIMAP           = "multimap";
+constexpr Type UNORDERED_MULTIMAP = "unordered_multimap";
+constexpr Type PAIR               = "pair";
+constexpr Type TUPLE              = "tuple";
+constexpr Type SLASH              = "slash";
+constexpr Type BACKSLASH          = "backslash";
+constexpr Type PIPE               = "pipe";
+}; // namespace BracketKey
+
 namespace
 {
-    struct LeftInnerRight
-    {
-        std::string left;
-        std::string inner;
-        std::string right;
-    };
+struct LeftInnerRight
+{
+    std::string left;
+    std::string inner;
+    std::string right;
+};
 
-    const auto &DEFAULT_BRACKETS = std::unordered_map<util::BracketKey::Type, LeftInnerRight>{{
+auto const &DEFAULT_BRACKETS = std::unordered_map<util::BracketKey::Type, LeftInnerRight>{
+    {
      {util::BracketKey::NONE, {"", " ", ""}},         {util::BracketKey::BOOL, {"", " ", ""}},
      {util::BracketKey::CHAR, {"'", " ", "'"}},       {util::BracketKey::INT, {"", " ", ""}},
      {util::BracketKey::FLOAT, {"", " ", ""}},        {util::BracketKey::STRING, {"\"", ",", "\""}},
@@ -77,13 +81,14 @@ namespace
      {util::BracketKey::PAIR, {"(", ",", ")"}},       {util::BracketKey::TUPLE, {"(", ",", ")"}},
      {util::BracketKey::SLASH, {"/", "/", ""}},       {util::BracketKey::BACKSLASH, {"\\", "\\", ""}},
      {util::BracketKey::PIPE, {"|", "|", "|"}},
-    }};
-
+     }
 };
+
+}; // namespace
 
 class Brackets
 {
-    public:
+  public:
     /**
      * @brief Default constructor.
      * @param type standard type of bracket. defaulted to NONE.
@@ -92,7 +97,7 @@ class Brackets
     {
         auto found = util::DEFAULT_BRACKETS.find(type);
         // only accept default bracket-keys in this constructor
-        if(found != util::DEFAULT_BRACKETS.end())
+        if (found != util::DEFAULT_BRACKETS.end())
         {
             type_  = std::string{type};
             left_  = std::string{found->second.left};
@@ -108,15 +113,15 @@ class Brackets
      * @param inner inner bracket string
      * @param right right bracket string
      */
-    Brackets(util::BracketKey::Type type, const std::string &left, const std::string &inner, const std::string &right)
-    : type_(std::string{type})
-    , left_(left)
-    , inner_(inner)
-    , right_(right)
+    Brackets(util::BracketKey::Type type, std::string left, std::string inner, std::string const &right)
+        : type_(std::string{type})
+        , left_(std::move(left))
+        , inner_(std::move(inner))
+        , right_(right)
     {
     }
 
-    Brackets(const Brackets &rhs) = default;
+    Brackets(Brackets const &rhs) = default;
 
     /**
      * @brief Get the left (opening) bracket.
@@ -125,9 +130,9 @@ class Brackets
      *
      * @return the left bracket as string.
      */
-    const std::string left(const std::string &customLeft = "", const std::string &customRight = "") const
+    [[nodiscard]] std::string const left(std::string const &customLeft = "", std::string const &customRight = "") const
     {
-        return (customLeft + left_ + customRight);
+        return customLeft + left_ + customRight;
     }
 
     /**
@@ -137,9 +142,9 @@ class Brackets
      *
      * @return the left bracket as string.
      */
-    const std::string inner(const std::string &customLeft = "", const std::string &customRight = "") const
+    [[nodiscard]] std::string const inner(std::string const &customLeft = "", std::string const &customRight = "") const
     {
-        return (customLeft + inner_ + customRight);
+        return customLeft + inner_ + customRight;
     }
 
     /**
@@ -149,18 +154,18 @@ class Brackets
      *
      * @return the right bracket as string.
      */
-    const std::string right(const std::string &customLeft = "", const std::string &customRight = "") const
+    [[nodiscard]] std::string const right(std::string const &customLeft = "", std::string const &customRight = "") const
     {
-        return (customLeft + right_ + customRight);
+        return customLeft + right_ + customRight;
     }
 
-    private:
+  private:
     // save the values as std::string and convert to different string types when required
     std::string type_;
     std::string left_;
     std::string inner_;
     std::string right_;
 };
-};  // namespace util
+}; // namespace util
 
-#endif  // NS_UTIL_BRACKETS_H_INCLUDED
+#endif // NS_UTIL_BRACKETS_H_INCLUDED

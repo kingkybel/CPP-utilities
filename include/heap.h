@@ -23,8 +23,8 @@
  * @author: Dieter J Kybelksties
  */
 
-#ifndef HEAP_H_INCLUDED
-#define HEAP_H_INCLUDED
+#ifndef NS_UTIL_HEAP_H_INCLUDED
+#define NS_UTIL_HEAP_H_INCLUDED
 
 #include <algorithm>
 #include <functional>
@@ -40,7 +40,7 @@ namespace util
  * @tparam T_ element type
  * @tparam Compare comparison function type, by default comparison is std::greater, which results in a min-heap
  */
-template<typename T_, typename Compare = std::greater<T_>>
+template <typename T_, typename Compare = std::greater<T_>>
 class heap
 {
     std::vector<T_> arr_;
@@ -52,9 +52,9 @@ class heap
      * @param idx the child whose parent to look for
      * @return size_t the parent
      */
-    static size_t parentOf_(const size_t idx)
+    static size_t parentOf_(size_t const idx)
     {
-        return (idx > 0UL ? (((idx - 1)) / 2UL) : 0UL);
+        return idx > 0UL ? ((idx - 1) / 2UL) : 0UL;
     }
 
     /**
@@ -64,10 +64,10 @@ class heap
      */
     void bubbleUp_(size_t nodeIdx)
     {
-        if(nodeIdx != 0UL)
+        if (nodeIdx != 0UL)
         {
             size_t parentIdx = parentOf_(nodeIdx);
-            if(Compare()(arr_[parentIdx], arr_[nodeIdx]))
+            if (Compare()(arr_[parentIdx], arr_[nodeIdx]))
             {
                 std::swap(arr_[parentIdx], arr_[nodeIdx]);
                 bubbleUp_(parentIdx);
@@ -86,42 +86,51 @@ class heap
         size_t leftIdx  = nodeIndex * 2 + 1;
         size_t rightIdx = nodeIndex * 2 + 2;
 
-        if(rightIdx >= last_)
+        if (rightIdx >= last_)
         {
-            if(leftIdx >= last_)
+            if (leftIdx >= last_)
+            {
                 return;
+            }
             else
+            {
                 minIdx = leftIdx;
+            }
         }
         else
         {
-            if(!Compare()(arr_[leftIdx], arr_[rightIdx]))
+            if (!Compare()(arr_[leftIdx], arr_[rightIdx]))
+            {
                 minIdx = leftIdx;
+            }
             else
+            {
                 minIdx = rightIdx;
+            }
         }
 
-        if(Compare()(arr_[nodeIndex], arr_[minIdx]))
+        if (Compare()(arr_[nodeIndex], arr_[minIdx]))
         {
             std::swap(arr_[minIdx], arr_[nodeIndex]);
             bubbleDown_(minIdx);
         }
     }
 
-    public:
+  public:
     heap()                = default;
-    heap(const heap &rhs) = default;
+    heap(heap const &rhs) = default;
     virtual ~heap()       = default;
 
     /**
      * @brief Get the top element
-     *
-     * @return ValueT_* const pointer to the top element, nullpt if heap is empty
+     * @return pointer to the top element, nullptr if heap is empt
      */
-    T_ *const top()
+    T_ *top()
     {
-        if(empty())
+        if (empty())
+        {
             return nullptr;
+        }
         return &arr_[0];
     }
 
@@ -130,7 +139,7 @@ class heap
      */
     void pop()
     {
-        if(!empty())
+        if (!empty())
         {
             // Replace root with last_ element
             arr_[0] = arr_[last_ - 1];
@@ -151,8 +160,10 @@ class heap
     {
         // Increase the size of Heap by 1
         last_++;
-        if(last_ >= arr_.size())
+        if (last_ >= arr_.size())
+        {
             arr_.resize(last_);
+        }
 
         // Insert the element at end of Heap
         arr_[last_ - 1] = key;
@@ -164,9 +175,9 @@ class heap
      *
      * @return size_t the size
      */
-    size_t size() const
+    [[nodiscard]] size_t size() const
     {
-        return (last_);
+        return last_;
     }
 
     /**
@@ -177,10 +188,12 @@ class heap
      */
     T_ operator[](size_t index) const
     {
-        if(index > last_)
+        if (index > last_)
+        {
             throw std::out_of_range("");
+        }
 
-        return (arr_[index]);
+        return arr_[index];
     }
 
     /**
@@ -188,9 +201,9 @@ class heap
      *
      * @return true, if it is, false otherwise
      */
-    bool empty() const
+    [[nodiscard]] bool empty() const
     {
-        return (size() == 0UL);
+        return size() == 0UL;
     }
 
     /**
@@ -200,14 +213,14 @@ class heap
      * @param h the heap to stream
      * @return std::ostream& the modified output stream
      */
-    friend std::ostream &operator<<(std::ostream &os, const heap &h)
+    friend std::ostream &operator<<(std::ostream &os, heap const &h)
     {
         size_t layerSize  = 1;
         size_t layerCount = 1;
-        for(size_t i = 0; i < h.size(); i++)
+        for (size_t i = 0; i < h.size(); i++)
         {
             os << h[i];
-            if(layerCount == layerSize)
+            if (layerCount == layerSize)
             {
                 os << " | ";
                 layerSize *= 2;
@@ -230,15 +243,15 @@ class heap
  * @tparam T_ type of elements
  * @tparam Compare comparison function type, by default comparison is std::greater, which results in a min-heap
  */
-template<typename T_, typename Compare = std::greater<T_>>
+template <typename T_, typename Compare = std::greater<T_>>
 class std_heap
 {
     std::vector<T_> arr_;
     size_t          last_ = 0UL;
 
-    public:
+  public:
     std_heap()                    = default;
-    std_heap(const std_heap &rhs) = default;
+    std_heap(std_heap const &rhs) = default;
     virtual ~std_heap()           = default;
 
     /**
@@ -248,8 +261,10 @@ class std_heap
      */
     T_ *const top()
     {
-        if(empty())
+        if (empty())
+        {
             return nullptr;
+        }
         return &arr_[0];
     }
 
@@ -261,8 +276,10 @@ class std_heap
         std::pop_heap(arr_.begin(), arr_.begin() + last_, Compare());
         last_--;
 
-        if(last_ < arr_.size() / 2)
+        if (last_ < arr_.size() / 2)
+        {
             arr_.resize(last_);
+        }
     }
 
     /**
@@ -274,8 +291,10 @@ class std_heap
     {
         // Increase the size of Heap by 1
         last_++;
-        if(arr_.size() < size())
+        if (arr_.size() < size())
+        {
             arr_.resize(size() + 1);
+        }
 
         arr_[size() - 1] = Key;
         // Insert the element at end of Heap
@@ -287,9 +306,9 @@ class std_heap
      *
      * @return size_t the size
      */
-    size_t size() const
+    [[nodiscard]] size_t size() const
     {
-        return (last_);
+        return last_;
     }
 
     /**
@@ -300,10 +319,12 @@ class std_heap
      */
     T_ operator[](size_t index) const
     {
-        if(index >= last_)
+        if (index >= last_)
+        {
             throw std::out_of_range("");
+        }
 
-        return (arr_[index]);
+        return arr_[index];
     }
 
     /**
@@ -311,9 +332,9 @@ class std_heap
      *
      * @return true, if it is, false otherwise
      */
-    bool empty() const
+    [[nodiscard]] bool empty() const
     {
-        return (size() == 0UL);
+        return size() == 0UL;
     }
 
     /**
@@ -323,15 +344,15 @@ class std_heap
      * @param h the heap to stream
      * @return std::ostream& the modified output stream
      */
-    friend std::ostream &operator<<(std::ostream &os, const std_heap &h)
+    friend std::ostream &operator<<(std::ostream &os, std_heap const &h)
     {
         size_t layerSize  = 1;
         size_t layerCount = 1;
 
-        for(size_t i = 0; i < h.size(); i++)
+        for (size_t i = 0; i < h.size(); i++)
         {
             os << h[i];
-            if(layerCount == layerSize)
+            if (layerCount == layerSize)
             {
                 os << " | ";
                 layerSize *= 2;
@@ -344,9 +365,9 @@ class std_heap
             }
         }
 
-        return (os);
+        return os;
     }
 };
-};  // namepace util
+}; // namespace util
 
-#endif  // HEAP_H_INCLUDED
+#endif // NS_UTIL_HEAP_H_INCLUDED
