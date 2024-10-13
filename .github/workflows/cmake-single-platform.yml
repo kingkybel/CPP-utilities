@@ -30,6 +30,7 @@ jobs:
         libraries: filesystem program_options system
         platform: x64
         configuration: Release
+        directory: /usr
     - name: Show paths
       run: |
         printf 'Boost has been unpacked to: %s\n' '${{ steps.boost.outputs.root }}'
