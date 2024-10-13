@@ -36,31 +36,16 @@ jobs:
       run: sudo apt-get install libmpfr-dev libmpfr-doc
       
     - name: Build Boost
-      id: boost
-      uses: egor-tensin/build-boost@v1
-      with:
-        version: 1.86.0
-        libraries: filesystem program_options system
-        platform: x64
-        configuration: Release
-    - name: Show paths
       run: |
-        printf 'Boost has been unpacked to: %s\n' '${{ steps.boost.outputs.root }}'
-        printf 'Libraries can be found here: %s\n' '${{ steps.boost.outputs.librarydir }}'        
-      shell: bash
+        BOOST_VER=1_86_0
+        BOOST_VER_DOT=1.86.0
+        wget -O boost_${BOOST_VER}.tar.gz https://sourceforge.net/projects/boost/files/boost/${BOOST_VER_DOT}/boost_${BOOST_VER}.tar.gz/download
+        tar -xvf boost_${BOOST_VER}.tar.gz
+        cd boost_${BOOST_VER}
+        ./bootstrap.sh --prefix=/usr/
+        ./b2
+        sudo ./b2 install
       
-    - name: Cache Boost
-      uses: actions/cache@v2
-      with:
-        path: '${{ runner.workspace }}/boost_*.tar.gz'
-        key: 'boost-1.86.0'
-    
-    - name: Build Boost
-      # This won't re-download the archive unnecessarily:
-      uses: egor-tensin/build-boost@v1
-      with:
-        version: 1.86.0
-        
     - name: Configure CMake
       # Configure CMake in a 'build' subdirectory. `CMAKE_BUILD_TYPE` is only required if you are using a single-configuration generator such as make.
       # See https://cmake.org/cmake/help/latest/variable/CMAKE_BUILD_TYPE.html?highlight=cmake_build_type
