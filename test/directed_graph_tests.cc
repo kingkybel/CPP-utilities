@@ -28,7 +28,7 @@
 #include "to_string.h"
 // #define DO_TRACE_
 #include "traceutil.h"
-#define DO_GRAPH_DEBUG_TRACE_
+//#define DO_GRAPH_DEBUG_TRACE_
 #include "directed_graph_tests_debug_functions.h"
 
 #include <cmath>
@@ -77,7 +77,7 @@ class DirectedGraphTest : public ::testing::Test
 TEST_F(DirectedGraphTest, directed_graph_base_test)
 {
     directed_graph_base<string, string> g{};
-    PRINT_TYPES_AND_BOOLS(g);
+    //    PRINT_TYPES_AND_BOOLS(g);
 
     ASSERT_FALSE(g.addEdge(A, B, E01)) << "adding an edge with none of the vertices existing should not work";
     ASSERT_TRUE(g.addVertex(A)) << "adding vertex 'A' to empty graph should work";
@@ -93,7 +93,7 @@ TEST_F(DirectedGraphTest, directed_graph_base_test)
 TEST_F(DirectedGraphTest, directed_acyclic_graph_tests)
 {
     directed_acyclic_graph<string, string> g{};
-    PRINT_TYPES_AND_BOOLS(g);
+    //    PRINT_TYPES_AND_BOOLS(g);
 
     ASSERT_FALSE(g.addEdge(A, B, E01)) << "adding an edge with none of the vertices existing should not work";
     ASSERT_TRUE(g.addVertex(A)) << "adding vertex 'A' to empty graph should work";
@@ -148,10 +148,10 @@ TEST_F(DirectedGraphTest, directed_acyclic_graph_tests)
 
     ASSERT_TRUE(g.hasEdge(B, E, E05));
     ASSERT_FALSE(g.hasEdge(B, E, E06));
-    ASSERT_TRUE(g.addEdge(B, E, E06)
-    ) << "adding an edge with same source and target should overwrite the edge-property";
-    ASSERT_FALSE(g.hasEdge(B, E, E05));
-    ASSERT_TRUE(g.hasEdge(B, E, E06));
+    ASSERT_TRUE(g.addEdge(B, E, E06)) << "parallel edges are not allowed for this type of graph - but overwrite edge";
+    ASSERT_TRUE(g.hasEdge(B, E, E05));
+    ASSERT_EQ(g.findParallelEdges(B, E).size(), 1UL);
+    ASSERT_FALSE(g.hasEdge(B, E, E06));
 
     ASSERT_TRUE(g.hasVertex(C));
     ASSERT_TRUE(g.hasEdge(B, C, E02));
@@ -166,7 +166,7 @@ TEST_F(DirectedGraphTest, directed_acyclic_graph_tests)
 TEST_F(DirectedGraphTest, directed_acyclic_throwing_graph_tests)
 {
     directed_acyclic_graph<string, string, throw_on_error> g{};
-    PRINT_TYPES_AND_BOOLS(g);
+    //    PRINT_TYPES_AND_BOOLS(g);
 
     ASSERT_THROW(g.addEdge(A, B, E01), vertex_existence_error)
         << "adding an edge with none of the vertices existing should not work";
@@ -224,10 +224,10 @@ TEST_F(DirectedGraphTest, directed_acyclic_throwing_graph_tests)
 
     ASSERT_TRUE(g.hasEdge(B, E, E05));
     ASSERT_FALSE(g.hasEdge(B, E, E06));
-    ASSERT_TRUE(g.addEdge(B, E, E06)
-    ) << "adding an edge with same source and target should overwrite the edge-property";
-    ASSERT_FALSE(g.hasEdge(B, E, E05));
-    ASSERT_TRUE(g.hasEdge(B, E, E06));
+    ASSERT_TRUE(g.addEdge(B, E, E06)) << "parallel edges are not allowed for this type of graph";
+    ASSERT_TRUE(g.hasEdge(B, E, E05));
+    ASSERT_FALSE(g.hasEdge(B, E, E06));
+    ASSERT_EQ(g.findParallelEdges(B, E).size(), 1UL);
 
     ASSERT_TRUE(g.hasVertex(C));
     ASSERT_TRUE(g.hasEdge(B, C, E02));
@@ -242,7 +242,7 @@ TEST_F(DirectedGraphTest, directed_acyclic_throwing_graph_tests)
 TEST_F(DirectedGraphTest, directed_acyclic_parallel_graph_tests)
 {
     directed_acyclic_parallel_graph<string, string> g{};
-    PRINT_TYPES_AND_BOOLS(g);
+    //    PRINT_TYPES_AND_BOOLS(g);
 
     ASSERT_FALSE(g.addEdge(A, B, E01)) << "adding an edge with none of the vertices existing should not work";
     ASSERT_TRUE(g.addVertex(A)) << "adding vertex 'A' to empty graph should work";
@@ -297,9 +297,8 @@ TEST_F(DirectedGraphTest, directed_acyclic_parallel_graph_tests)
 
     ASSERT_TRUE(g.hasEdge(B, E, E05));
     ASSERT_FALSE(g.hasEdge(B, E, E06));
-    ASSERT_TRUE(g.addEdge(B, E, E06)
-    ) << "adding an edge with same source and target should overwrite the edge-property";
-    ASSERT_FALSE(g.hasEdge(B, E, E05));
+    ASSERT_TRUE(g.addEdge(B, E, E06)) << "adding an edge with same source and target should create a parallel edge";
+    ASSERT_TRUE(g.hasEdge(B, E, E05));
     ASSERT_TRUE(g.hasEdge(B, E, E06));
 
     ASSERT_TRUE(g.hasVertex(C));
@@ -373,9 +372,8 @@ TEST_F(DirectedGraphTest, directed_acyclic_parallel_throwing_graph_tests)
 
     ASSERT_TRUE(g.hasEdge(B, E, E05));
     ASSERT_FALSE(g.hasEdge(B, E, E06));
-    ASSERT_TRUE(g.addEdge(B, E, E06)
-    ) << "adding an edge with same source and target should overwrite the edge-property";
-    ASSERT_FALSE(g.hasEdge(B, E, E05));
+    ASSERT_TRUE(g.addEdge(B, E, E06)) << "adding an edge with same source and target should create a parallel edge";
+    ASSERT_TRUE(g.hasEdge(B, E, E05));
     ASSERT_TRUE(g.hasEdge(B, E, E06));
 
     ASSERT_TRUE(g.hasVertex(C));
@@ -401,26 +399,20 @@ TEST_F(DirectedGraphTest, directed_acyclic_parallel_throwing_graph_tests)
 
 TEST_F(DirectedGraphTest, directed_acyclic_parallel_throwing_graph_parallel_tests)
 {
-    directed_graph<string, string>                                        def_g{};
-    directed_acyclic_parallel_graph<string, string, util::throw_on_error> dag{};
+    directed_graph<string, string> defaultDirectedGraph{};
+    //    PRINT_TYPES_AND_BOOLS(defaultDirectedGraph);
+    directed_acyclic_parallel_graph<string, string, util::throw_on_error> acyclicParallelGraph{};
+    //    PRINT_TYPES_AND_BOOLS(acyclicParallelGraph);
+    defaultDirectedGraph.addVertices(A, B);
+    acyclicParallelGraph.addVertices(A, B);
 
-    ASSERT_TRUE(def_g.addVertex(A));
-    ASSERT_TRUE(def_g.addVertex(B));
-    TRACE1(def_g.getVertices());
-    ASSERT_TRUE(def_g.addEdge(A, B, "Extra1"));
-    TRACE1(def_g.findParallelEdges(A, B));
-    ASSERT_TRUE(def_g.addEdge(A, B, "Extra2")); // << overwrites the current edge rather than adding a parallel edge
-    TRACE1(def_g.findParallelEdges(A, B));
-    TRACE1(def_g.getVertices());
-    ASSERT_TRUE(def_g.hasEdge(A, B, "Extra1")); // << fails here
+    ASSERT_TRUE(defaultDirectedGraph.addEdge(A, B, "Extra1"));
+    ASSERT_TRUE(acyclicParallelGraph.addEdge(A, B, "Extra1"));
+    TRACE1(defaultDirectedGraph.findParallelEdges(A, B));
+    TRACE1(acyclicParallelGraph.findParallelEdges(A, B));
 
-    ASSERT_TRUE(dag.addVertex(A));
-    ASSERT_TRUE(dag.addVertex(B));
-    TRACE1(dag.getVertices());
-    ASSERT_TRUE(dag.addEdge(A, B, "Extra1"));
-    TRACE1(dag.findParallelEdges(A, B));
-    ASSERT_TRUE(dag.addEdge(A, B, "Extra2")); // << overwrites the current edge rather than adding a parallel edge
-    TRACE1(dag.findParallelEdges(A, B));
-    TRACE1(dag.getVertices());
-    ASSERT_TRUE(dag.hasEdge(A, B, "Extra1")); // << fails here
+    ASSERT_TRUE(defaultDirectedGraph.addEdge(A, B, "Extra2"));
+    TRACE1(defaultDirectedGraph.findParallelEdges(A, B));
+    ASSERT_TRUE(acyclicParallelGraph.addEdge(A, B, "Extra2"));
+    TRACE1(acyclicParallelGraph.findParallelEdges(A, B));
 }

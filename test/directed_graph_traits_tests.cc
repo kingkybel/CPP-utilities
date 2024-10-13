@@ -204,25 +204,25 @@ TEST_F(GraphTraitsTest, storage_selector_test)
     // hashable, is comparable and intended multiplicity in the graph
 
     // clang-format off
-testCorrectTypes<Comparable,              allow_parallel_edges_t,    allow_multiple_vertices_t,    boost::multisetS,      boost::multisetS>();
-testCorrectTypes<Comparable,              disallow_parallel_edges_t, allow_multiple_vertices_t,    boost::setS,           boost::multisetS>();
-testCorrectTypes<Comparable,              disallow_parallel_edges_t, allow_multiple_vertices_t,    boost::setS,           boost::multisetS>();
-testCorrectTypes<Comparable,              disallow_parallel_edges_t, disallow_multiple_vertices_t, boost::setS,           boost::setS>();
+testCorrectTypes<Comparable,              allow_parallel_edges,    allow_multiple_vertices,    boost::multisetS,      boost::multisetS>();
+testCorrectTypes<Comparable,              disallow_parallel_edges, allow_multiple_vertices,    boost::setS,           boost::multisetS>();
+testCorrectTypes<Comparable,              disallow_parallel_edges, allow_multiple_vertices,    boost::setS,           boost::multisetS>();
+testCorrectTypes<Comparable,              disallow_parallel_edges, disallow_multiple_vertices, boost::setS,           boost::setS>();
 
-testCorrectTypes<Hashable,                allow_parallel_edges_t,    allow_multiple_vertices_t,    boost::hash_multisetS, boost::hash_multisetS>();
-testCorrectTypes<Hashable,                disallow_parallel_edges_t, allow_multiple_vertices_t,    boost::hash_setS,      boost::hash_multisetS>();
-testCorrectTypes<Hashable,                allow_parallel_edges_t,    disallow_multiple_vertices_t, boost::hash_multisetS, boost::hash_setS>();
-testCorrectTypes<Hashable,                disallow_parallel_edges_t, disallow_multiple_vertices_t, boost::hash_setS,      boost::hash_setS>();
+testCorrectTypes<Hashable,                allow_parallel_edges,    allow_multiple_vertices,    boost::hash_multisetS, boost::hash_multisetS>();
+testCorrectTypes<Hashable,                disallow_parallel_edges, allow_multiple_vertices,    boost::hash_setS,      boost::hash_multisetS>();
+testCorrectTypes<Hashable,                allow_parallel_edges,    disallow_multiple_vertices, boost::hash_multisetS, boost::hash_setS>();
+testCorrectTypes<Hashable,                disallow_parallel_edges, disallow_multiple_vertices, boost::hash_setS,      boost::hash_setS>();
 
-testCorrectTypes<HashableAndComparable,   allow_parallel_edges_t,    allow_multiple_vertices_t,    boost::hash_multisetS, boost::hash_multisetS>();
-testCorrectTypes<HashableAndComparable,   disallow_parallel_edges_t, allow_multiple_vertices_t,    boost::hash_setS,      boost::hash_multisetS>();
-testCorrectTypes<HashableAndComparable,   allow_parallel_edges_t,    disallow_multiple_vertices_t, boost::hash_multisetS, boost::hash_setS>();
-testCorrectTypes<HashableAndComparable,   disallow_parallel_edges_t, disallow_multiple_vertices_t, boost::hash_setS,      boost::hash_setS>();
+testCorrectTypes<HashableAndComparable,   allow_parallel_edges,    allow_multiple_vertices,    boost::hash_multisetS, boost::hash_multisetS>();
+testCorrectTypes<HashableAndComparable,   disallow_parallel_edges, allow_multiple_vertices,    boost::hash_setS,      boost::hash_multisetS>();
+testCorrectTypes<HashableAndComparable,   allow_parallel_edges,    disallow_multiple_vertices, boost::hash_multisetS, boost::hash_setS>();
+testCorrectTypes<HashableAndComparable,   disallow_parallel_edges, disallow_multiple_vertices, boost::hash_setS,      boost::hash_setS>();
 
-testCorrectTypes<NotHashableOrComparable, allow_parallel_edges_t,    allow_multiple_vertices_t,    boost::vecS,           boost::vecS>();
-testCorrectTypes<NotHashableOrComparable, disallow_parallel_edges_t, allow_multiple_vertices_t,    boost::vecS,           boost::vecS>();
-testCorrectTypes<NotHashableOrComparable, disallow_parallel_edges_t, allow_multiple_vertices_t,    boost::vecS,           boost::vecS>();
-testCorrectTypes<NotHashableOrComparable, disallow_parallel_edges_t, disallow_multiple_vertices_t, boost::vecS,           boost::vecS>();
+testCorrectTypes<NotHashableOrComparable, allow_parallel_edges,    allow_multiple_vertices,    boost::vecS,           boost::vecS>();
+testCorrectTypes<NotHashableOrComparable, disallow_parallel_edges, allow_multiple_vertices,    boost::vecS,           boost::vecS>();
+testCorrectTypes<NotHashableOrComparable, disallow_parallel_edges, allow_multiple_vertices,    boost::vecS,           boost::vecS>();
+testCorrectTypes<NotHashableOrComparable, disallow_parallel_edges, disallow_multiple_vertices, boost::vecS,           boost::vecS>();
     // clang-format on
 }
 
@@ -231,11 +231,11 @@ TEST_F(GraphTraitsTest, has_option_test)
     // clang-format off
     // formatter needs to be switched off, because otherwise "(...)" around the template is removed and the
     // ASSERT_TRUE - macro interprets comma separated arguments
-    ASSERT_TRUE((has_option<allow_multiple_vertices_t, allow_multiple_vertices_t, allow_parallel_edges_t>::value));
-    ASSERT_FALSE((has_option<disallow_multiple_vertices_t, allow_multiple_vertices_t, allow_parallel_edges_t>::value));
-    ASSERT_TRUE((has_option<allow_parallel_edges_t, allow_multiple_vertices_t, allow_parallel_edges_t>::value));
-    ASSERT_FALSE((has_option<disallow_parallel_edges_t, allow_multiple_vertices_t, allow_parallel_edges_t>::value));
-    ASSERT_FALSE((has_option<disallow_cycles_t>::value));
+    ASSERT_TRUE((has_option<allow_multiple_vertices, allow_multiple_vertices, allow_parallel_edges>::value));
+    ASSERT_FALSE((has_option<disallow_multiple_vertices, allow_multiple_vertices, allow_parallel_edges>::value));
+    ASSERT_TRUE((has_option<allow_parallel_edges, allow_multiple_vertices, allow_parallel_edges>::value));
+    ASSERT_FALSE((has_option<disallow_parallel_edges, allow_multiple_vertices, allow_parallel_edges>::value));
+    ASSERT_FALSE((has_option<disallow_cycles>::value));
     // clang-format on
 }
 
