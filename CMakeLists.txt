@@ -67,12 +67,14 @@ include_directories(
         ${Boost_INCLUDE_DIRS}
         BEFORE SYSTEM ${CMAKE_SOURCE_DIR}/include
         system
+        ${CMAKE_SOURCE_DIR}
 )
 link_directories(
         BEFORE SYSTEM ${CMAKE_SOURCE_DIR}/build/lib
         /usr/local/lib
         ${Boost_LIBRARY_DIR_RELEASE}
         system
+        ${CMAKE_SOURCE_DIR}
 )
 
 add_subdirectory(src)
