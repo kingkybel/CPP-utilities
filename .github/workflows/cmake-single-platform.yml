@@ -42,7 +42,7 @@ jobs:
         version: 1.86.0
         libraries: filesystem program_options system
         platform: x64
-        configuration: RelWithDebugInfo
+        configuration: Release
     - name: Show paths
       run: |
         printf 'Boost has been unpacked to: %s\n' '${{ steps.boost.outputs.root }}'
